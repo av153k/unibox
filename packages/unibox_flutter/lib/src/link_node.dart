@@ -29,7 +29,7 @@ class UniboxLinkScope extends InheritedWidget {
   /// Creates a scope that opens links with [open].
   const UniboxLinkScope({required this.open, required super.child, super.key});
 
-  /// Follows [url] the way the host application navigates.
+  /// Follows the url a link points at, the way the host application navigates.
   final LinkOpener open;
 
   /// The opener of the closest enclosing scope, or `null` when there is none.
