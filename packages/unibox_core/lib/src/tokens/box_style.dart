@@ -3,6 +3,7 @@ import 'box_border.dart';
 import 'box_color.dart';
 import 'box_shadow.dart';
 import 'box_spacing.dart';
+import 'box_text_style.dart';
 
 /// A reusable, immutable bundle of box tokens.
 ///
@@ -10,11 +11,16 @@ import 'box_spacing.dart';
 /// parameters on top of a style with [merge], so flat parameters always win
 /// over matching style tokens.
 ///
+/// A [textStyle] is the one exception to "a box styles itself": typography is
+/// inherited by the descendants of the box, the way CSS font properties and
+/// Flutter's `DefaultTextStyle` are. Every other token only affects the box.
+///
 /// ```dart
 /// const cardStyle = BoxStyle(
 ///   padding: BoxSpacing.all(16),
 ///   backgroundColor: BoxColor.white,
 ///   borderRadius: 12,
+///   textStyle: BoxTextStyle(fontSize: 16),
 /// );
 /// ```
 final class BoxStyle {
@@ -38,6 +44,7 @@ final class BoxStyle {
     this.borderRadius,
     this.border,
     this.shadow,
+    this.textStyle,
   });
 
   // Layout.
@@ -100,6 +107,14 @@ final class BoxStyle {
   /// The drop shadow painted behind the box.
   final BoxShadow? shadow;
 
+  // Typography.
+
+  /// The typography inherited by the descendants of the box.
+  ///
+  /// Merging two styles merges their text styles token by token, so a box can
+  /// change a single font token of an inherited style.
+  final BoxTextStyle? textStyle;
+
   /// Whether no token is set.
   bool get isEmpty => this == const BoxStyle();
 
@@ -126,6 +141,7 @@ final class BoxStyle {
     double? borderRadius,
     BoxBorder? border,
     BoxShadow? shadow,
+    BoxTextStyle? textStyle,
   }) {
     return BoxStyle(
       direction: direction ?? this.direction,
@@ -146,6 +162,7 @@ final class BoxStyle {
       borderRadius: borderRadius ?? this.borderRadius,
       border: border ?? this.border,
       shadow: shadow ?? this.shadow,
+      textStyle: textStyle ?? this.textStyle,
     );
   }
 
@@ -181,6 +198,7 @@ final class BoxStyle {
       borderRadius: other.borderRadius ?? borderRadius,
       border: other.border ?? border,
       shadow: other.shadow ?? shadow,
+      textStyle: textStyle?.merge(other.textStyle) ?? other.textStyle,
     );
   }
 
@@ -204,7 +222,8 @@ final class BoxStyle {
       other.backgroundColor == backgroundColor &&
       other.borderRadius == borderRadius &&
       other.border == border &&
-      other.shadow == shadow;
+      other.shadow == shadow &&
+      other.textStyle == textStyle;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -226,6 +245,7 @@ final class BoxStyle {
     borderRadius,
     border,
     shadow,
+    textStyle,
   ]);
 
   @override
@@ -249,6 +269,7 @@ final class BoxStyle {
       if (borderRadius != null) 'borderRadius: $borderRadius',
       if (border != null) 'border: $border',
       if (shadow != null) 'shadow: $shadow',
+      if (textStyle != null) 'textStyle: $textStyle',
     ];
     return 'BoxStyle(${tokens.join(', ')})';
   }

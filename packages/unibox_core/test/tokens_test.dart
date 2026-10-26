@@ -194,6 +194,25 @@ void main() {
       expect(copy, isNot(style));
     });
 
+    test('merges text styles token by token', () {
+      const base = BoxStyle(
+        textStyle: BoxTextStyle(fontSize: 16, color: BoxColor.black),
+      );
+      const overlay = BoxStyle(textStyle: BoxTextStyle(color: BoxColor.white));
+
+      final merged = base.merge(overlay);
+
+      expect(merged.textStyle?.fontSize, 16);
+      expect(merged.textStyle?.color, BoxColor.white);
+    });
+
+    test('keeps the text style when the overlay has none', () {
+      const style = BoxStyle(textStyle: BoxTextStyle(fontSize: 16));
+
+      expect(style.merge(const BoxStyle(gap: 8)).textStyle, style.textStyle);
+      expect(const BoxStyle(gap: 8).merge(style).textStyle, style.textStyle);
+    });
+
     test('implements value equality', () {
       const style = BoxStyle(
         direction: Axis.vertical,
@@ -203,12 +222,18 @@ void main() {
         padding: BoxSpacing.all(8),
         border: BoxBorder(width: 1),
         shadow: BoxShadow(),
+        textStyle: BoxTextStyle(fontSize: 16),
       );
 
       expect(style, style.copyWith());
       expect(style.hashCode, style.copyWith().hashCode);
       expect(style, isNot(style.copyWith(mainAlign: MainAlign.center)));
+      expect(
+        style,
+        isNot(style.copyWith(textStyle: BoxTextStyle(fontSize: 18))),
+      );
       expect(style.toString(), contains('direction: Axis.vertical'));
+      expect(style.toString(), contains('textStyle'));
     });
   });
 

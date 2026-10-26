@@ -132,6 +132,23 @@ void main() {
       expect(box.computedHoverStyle.backgroundColor, BoxColor.black);
     });
 
+    test('resolves its typography from the style and the flat tokens', () {
+      const box = Box(
+        textStyle: BoxTextStyle(color: BoxColor.black),
+        style: BoxStyle(
+          textStyle: BoxTextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      );
+
+      expect(box.computedTextStyle.fontSize, 16);
+      expect(box.computedTextStyle.fontWeight, FontWeight.bold);
+      expect(box.computedTextStyle.color, BoxColor.black);
+    });
+
+    test('resolves an empty typography without a text style', () {
+      expect(const Box().computedTextStyle.isEmpty, isTrue);
+    });
+
     test('reports interactivity from its callbacks', () {
       expect(const Box(onTap: _noop).isInteractive, isTrue);
       expect(const Box(onLongPress: _noop).isInteractive, isTrue);

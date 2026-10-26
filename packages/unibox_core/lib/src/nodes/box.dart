@@ -5,6 +5,7 @@ import '../tokens/box_color.dart';
 import '../tokens/box_shadow.dart';
 import '../tokens/box_spacing.dart';
 import '../tokens/box_style.dart';
+import '../tokens/box_text_style.dart';
 import 'ui_node.dart';
 
 /// A flex container and the primary building block of Unibox.
@@ -54,6 +55,7 @@ class Box extends UINode {
     this.borderRadius,
     this.border,
     this.shadow,
+    this.textStyle,
     this.style,
     this.hoverStyle,
     this.onTap,
@@ -128,6 +130,15 @@ class Box extends UINode {
   /// The drop shadow painted behind the box.
   final BoxShadow? shadow;
 
+  // Typography.
+
+  /// The typography inherited by the children of this box.
+  ///
+  /// Text nodes inside the box take every token they do not set themselves from
+  /// here, which mirrors CSS font inheritance and Flutter's
+  /// `DefaultTextStyle`. It never affects layout.
+  final BoxTextStyle? textStyle;
+
   // Style tokens.
 
   /// A reusable bundle of tokens, overridden by the flat parameters above.
@@ -167,6 +178,7 @@ class Box extends UINode {
     borderRadius: borderRadius,
     border: border,
     shadow: shadow,
+    textStyle: textStyle,
   );
 
   /// The resolved style of this box in its resting state.
@@ -183,6 +195,12 @@ class Box extends UINode {
     final restingStyle = computedStyle;
     return hoverStyle == null ? restingStyle : restingStyle.merge(hoverStyle);
   }
+
+  /// The typography of this box, or an empty style when none is set.
+  ///
+  /// Renderers hand this to their descendants as the ambient text style.
+  BoxTextStyle get computedTextStyle =>
+      computedStyle.textStyle ?? const BoxTextStyle();
 
   /// Whether this box defines a distinct hovered appearance.
   bool get hasHoverStyle => hoverStyle != null;

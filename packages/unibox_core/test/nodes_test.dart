@@ -34,6 +34,39 @@ void main() {
       expect(node.maxLines, isNull);
       expect(node.overflow, isNull);
     });
+
+    test('stores the typography tokens it can inherit', () {
+      const node = TextNode(
+        'Hello',
+        lineHeight: 1.5,
+        fontFamily: 'Inter',
+        letterSpacing: 0.4,
+      );
+
+      expect(node.lineHeight, 1.5);
+      expect(node.fontFamily, 'Inter');
+      expect(node.letterSpacing, 0.4);
+    });
+
+    test('resolves its typography from the style and the flat tokens', () {
+      const node = TextNode(
+        'Hello',
+        fontSize: 20,
+        style: BoxTextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: BoxColor.black,
+        ),
+      );
+
+      expect(node.computedStyle.fontSize, 20);
+      expect(node.computedStyle.fontWeight, FontWeight.bold);
+      expect(node.computedStyle.color, BoxColor.black);
+    });
+
+    test('resolves an empty typography without tokens', () {
+      expect(const TextNode('Hello').computedStyle.isEmpty, isTrue);
+    });
   });
 
   group('ImageNode', () {
