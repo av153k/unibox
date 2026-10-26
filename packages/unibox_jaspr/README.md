@@ -43,7 +43,7 @@ rendering nothing.
 | `flex`                        | `flex-grow` / `flex-shrink: 1` / `flex-basis: 0`        |
 | `onTap` / `onLongPress`       | `click` and pointer listeners plus `cursor: pointer`    |
 | `onHover`                     | `mouseenter` / `mouseleave` listeners                   |
-| `hoverStyle`                  | scoped `.unibox-box-…` and `.unibox-box-…:hover` rules  |
+| `stateStyles`                 | scoped `.unibox-box-…` rules, one per state             |
 
 `width`/`height: double.infinity` becomes `100%`, numbers become logical pixels
 (`px`). Tokens that are left unset emit no CSS property at all, so browser
@@ -52,22 +52,55 @@ renderer follows with `DefaultTextStyle`.
 
 Opaque colors render as `#rrggbb`, translucent colors as `rgba(…)`.
 
-### Hover styles
+### State styles
 
-Inline styles always beat a `:hover` pseudo class, so a box with a `hoverStyle`
-is rendered as a class plus a small `<style>` element right before it:
+Inline styles always beat a pseudo class, so a box with state styles is rendered
+as a class plus a small `<style>` element right before it:
 
 ```html
 <style>
   .unibox-box-1f3c9a7b { … }
-  .unibox-box-1f3c9a7b:hover { … }
+  @media all and (hover: hover) {
+    .unibox-box-1f3c9a7b:hover { … }
+  }
+  .unibox-box-1f3c9a7b:focus-visible { … }
+  .unibox-box-1f3c9a7b:active { … }
+  .unibox-box-1f3c9a7b[aria-disabled="true"] { … }
 </style>
 <div class="unibox-box-1f3c9a7b">…</div>
 ```
 
-The class name is a hash of the resolved styles, which keeps the output
-deterministic: server rendered markup and the hydrated client agree without any
-extra state, and boxes that share a style share a class.
+| Unibox state        | CSS selector                                    |
+| ------------------- | ----------------------------------------------- |
+| `BoxState.hover`    | `:hover` inside `@media (hover: hover)`          |
+| `BoxState.focus`    | `:focus-visible`                                |
+| `BoxState.pressed`  | `:active`                                       |
+| `BoxState.disabled` | `[aria-disabled="true"]`                        |
+
+Every rule carries only the tokens of its state, so the browser layers them over
+the resting rule the way CSS always does, and `hoverStyle` is nothing but the
+`BoxState.hover` entry. Hover sits inside a media query so a touch screen cannot
+get stuck in a hovered look, and focus uses `:focus-visible` so a mouse click
+never paints a focus ring.
+
+The class name is a hash of the resolved styles and of every state, which keeps
+the output deterministic: server rendered markup and the hydrated client agree
+without any extra state, and boxes that share a style share a class.
+
+### Semantics
+
+| Unibox                                   | Attribute                        |
+| ---------------------------------------- | -------------------------------- |
+| `BoxRole.button` / `.link` / `.heading`  | `role="button"`, `link`, `heading` |
+| `BoxRole.checkbox` / `.switch_`          | `role="checkbox"` / `switch`     |
+| `semantics.label`                        | `aria-label`                     |
+| `semantics.checked`                      | `aria-checked="true"` / `"false"` |
+| `enabled: false`                         | `aria-disabled="true"`           |
+| a role the user can act on               | `tabindex="0"` plus `keydown` / `keyup` |
+
+A box with such a role enters the tab order and activates on Enter and Space,
+with `preventDefault` so Space does not scroll the page. A disabled box carries
+`aria-disabled`, keeps its layout, and gets no listener at all.
 
 ### Interaction
 

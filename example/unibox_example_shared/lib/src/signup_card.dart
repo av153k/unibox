@@ -11,6 +11,9 @@ abstract final class ExamplePalette {
   /// The accent while the pointer is over the button.
   static const BoxColor accentHover = BoxColor.rgb(0x1D, 0x4E, 0xD8);
 
+  /// The accent while the button is pressed.
+  static const BoxColor accentPressed = BoxColor.rgb(0x16, 0x3E, 0xB0);
+
   /// The background of the card.
   static const BoxColor surface = BoxColor.white;
 
@@ -255,12 +258,21 @@ UINode _heading() {
 }
 
 /// The newsletter opt-in, a tappable row with a hand drawn checkbox.
+///
+/// The checkbox is drawn out of boxes, so before `semantics` a screen reader
+/// only found a label. The role and the checked state make it a checkbox for
+/// assistive technologies, and the role also puts it in the tab order.
 UINode _newsletterRow(SignupFormState state, TapCallback onToggle) {
   return Box(
     direction: Axis.horizontal,
     gap: 12,
     crossAlign: CrossAlign.center,
     onTap: onToggle,
+    semantics: BoxSemantics(
+      role: BoxRole.checkbox,
+      label: 'Release notes',
+      checked: state.newsletter,
+    ),
     children: <UINode>[
       Box(
         direction: Axis.horizontal,
@@ -294,6 +306,11 @@ UINode _newsletterRow(SignupFormState state, TapCallback onToggle) {
 }
 
 /// The action area: a full width submit button and the docs link below it.
+///
+/// The button is a hand drawn control, so its state lives in the node: `enabled`
+/// decides whether it reacts, `stateStyles` describes how it looks in every
+/// state and `semantics` makes it a real button for a keyboard and a screen
+/// reader. Nothing here needs a second code path per target.
 UINode _footer(SignupFormState state, TapCallback onSubmit) {
   return Box(
     direction: Axis.vertical,
@@ -301,29 +318,29 @@ UINode _footer(SignupFormState state, TapCallback onSubmit) {
     children: <UINode>[
       Box(
         onTap: onSubmit,
+        enabled: state.isComplete,
         direction: Axis.horizontal,
         mainAlign: MainAlign.center,
         width: double.infinity,
         padding: const BoxSpacing.symmetric(horizontal: 18, vertical: 12),
         borderRadius: 10,
-        backgroundColor: state.isComplete
-            ? ExamplePalette.accent
-            : ExamplePalette.border,
-        hoverStyle: state.isComplete
-            ? const BoxStyle(backgroundColor: ExamplePalette.accentHover)
-            : null,
-        children: <UINode>[
-          TextNode(
-            'Create account',
-            style: ExampleType.button.merge(
-              BoxTextStyle(
-                color: state.isComplete
-                    ? ExamplePalette.surface
-                    : ExamplePalette.muted,
-              ),
-            ),
+        backgroundColor: ExamplePalette.accent,
+        textStyle: ExampleType.button,
+        stateStyles: const <BoxState, BoxStyle>{
+          BoxState.hover: BoxStyle(backgroundColor: ExamplePalette.accentHover),
+          BoxState.pressed: BoxStyle(
+            backgroundColor: ExamplePalette.accentPressed,
           ),
-        ],
+          BoxState.focus: BoxStyle(
+            border: BoxBorder(color: ExamplePalette.text),
+          ),
+          BoxState.disabled: BoxStyle(
+            backgroundColor: ExamplePalette.border,
+            textStyle: BoxTextStyle(color: ExamplePalette.muted),
+          ),
+        },
+        semantics: BoxSemantics(role: BoxRole.button, label: 'Create account'),
+        children: <UINode>[const TextNode('Create account')],
       ),
       const Box(
         direction: Axis.horizontal,

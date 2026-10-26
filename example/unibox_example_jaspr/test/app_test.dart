@@ -49,7 +49,7 @@ void main() {
       );
     });
 
-    testComponents('registers a click listener on the opt-in and the button', (
+    testComponents('registers a click listener on the opt-in only', (
       tester,
     ) async {
       tester.pumpComponent(const UniboxExampleApp());
@@ -61,7 +61,39 @@ void main() {
           )
           .toList();
 
+      expect(clickable, hasLength(1));
+
+      final TestRenderElement button = elementsOf(find.tag('div')).firstWhere(
+        (TestRenderElement element) => element.attributes?['role'] == 'button',
+      );
+      expect(button.attributes?['aria-disabled'], 'true');
+      expect(button.attributes?.containsKey('tabindex'), isFalse);
+    });
+
+    testComponents('enables the button once the form is complete', (
+      tester,
+    ) async {
+      tester.pumpComponent(
+        const UniboxExampleApp(
+          initialState: SignupFormState(name: 'Ada', email: 'ada@example.com'),
+        ),
+      );
+
+      final List<TestRenderElement> clickable = elementsOf(find.tag('div'))
+          .where(
+            (TestRenderElement element) =>
+                element.events?.containsKey('click') ?? false,
+          )
+          .toList();
+
       expect(clickable, hasLength(2));
+
+      final TestRenderElement button = elementsOf(find.tag('div')).firstWhere(
+        (TestRenderElement element) => element.attributes?['role'] == 'button',
+      );
+      expect(button.attributes?['aria-disabled'], isNull);
+      expect(button.attributes?['tabindex'], '0');
+      expect(button.events?.keys, contains('keydown'));
     });
 
     testComponents('checks the opt-in when the newsletter is on', (

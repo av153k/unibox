@@ -83,6 +83,46 @@ Precedence, from strongest to weakest: the tokens of the node, the tokens of its
 `style`, the typography of the closest enclosing box, the `DefaultTextStyle` of
 the host application, and finally the Flutter default.
 
+## State mapping
+
+A box style can differ per interaction state. The states stack like CSS pseudo
+classes: hover, then focus, then press, each laid over the resting style.
+
+| Unibox state        | Flutter                                                     |
+| ------------------- | ----------------------------------------------------------- |
+| `BoxState.hover`    | `MouseRegion` toggling a rebuild, `hoverStyle` is its sugar  |
+| `BoxState.focus`    | `Focus`, only when `semantics.role` can be acted on          |
+| `BoxState.pressed`  | `GestureDetector.onTapDown` / `onTapUp` / `onTapCancel`      |
+| `BoxState.disabled` | `enabled: false` on the handlers                            |
+| enter / space       | `Focus.onKeyEvent` calling the `onTap` callback              |
+
+`hoverStyle` is the long hand of `stateStyles[BoxState.hover]`; an entry in the
+map wins over it. A box with a role the user can act on joins the tab order and
+activates on Enter (on key down) and Space (on key up), which is what a button
+does everywhere else.
+
+`enabled: false` keeps the layout and the widget shape: the box still renders,
+takes its `BoxState.disabled` style, reports itself as disabled through
+`Semantics`, and gets no pointer cursor, no hover tracking and no callbacks.
+
+## Semantics mapping
+
+| Unibox                                  | Flutter                                                |
+| --------------------------------------- | ------------------------------------------------------ |
+| `BoxRole.button`                        | `Semantics(button: true)`                              |
+| `BoxRole.link`                          | `Semantics(link: true)`                                |
+| `BoxRole.heading`                       | `Semantics(header: true)`                              |
+| `BoxRole.checkbox` + `checked`           | `Semantics(checked: …)`                                |
+| `BoxRole.switch_` + `checked`            | `Semantics(toggled: …)`                                |
+| `semantics.label`                        | `Semantics(label: …)`, replacing the contents           |
+| `enabled`                                | `Semantics(enabled: …)`                                |
+| a focusable role                         | `Semantics(focusable: true, focused: …)`                |
+
+A box without semantics renders no extra `Semantics` node, so a plain container
+costs nothing. A box with a label excludes the semantics of its contents: the
+label *is* the accessible name, which keeps the announced text and the visible
+text from drifting apart.
+
 ## Image mapping
 
 | Unibox                        | Flutter                                             |
