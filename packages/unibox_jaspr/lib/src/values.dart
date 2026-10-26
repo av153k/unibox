@@ -261,6 +261,20 @@ Styles toPositionedStyles(core.PositionedNode node) {
   );
 }
 
+/// Builds the CSS of a single line text input or a text area.
+///
+/// Inputs are replaced elements: the browser gives them an intrinsic width, its
+/// own padding and its own border. Stretching the field over the available width
+/// with `box-sizing: border-box` reproduces the layout a Flutter `TextField` gets
+/// from the column it lives in. Typography and colors stay with the browser, so
+/// the field keeps matching the platform it is shown on.
+Styles toTextInputStyles() {
+  return Styles(
+    boxSizing: BoxSizing.borderBox,
+    width: const Unit.percent(100),
+  );
+}
+
 /// Builds the CSS of a box from its resolved [core.BoxStyle].
 ///
 /// Unset token values are omitted so that browser defaults (and inherited

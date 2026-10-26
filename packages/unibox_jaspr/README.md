@@ -168,6 +168,35 @@ A `PositionedNode` without any offset keeps its natural place, exactly like the
 `Positioned` widget Flutter never needed, and a `PositionedNode` rendered
 outside a stack falls back to its child.
 
+## Text input mapping
+
+A `TextInputNode` becomes `<input type="text">`, `<input type="password">` when
+`obscureText` is set, or a `<textarea>` when `multiline` is set. The field is
+stretched over the available width with `box-sizing: border-box` — the layout a
+Flutter `TextField` gets from the column it lives in — while typography, padding
+and border stay with the browser.
+
+| Unibox        | Jaspr / HTML                                           |
+| ------------- | ------------------------------------------------------ |
+| `value`       | `value` attribute (input) or text content (text area)  |
+| `placeholder` | `placeholder` attribute                                |
+| `obscureText` | `type="password"`                                      |
+| `multiline`   | `<textarea>` instead of `<input>`                      |
+| `maxLines`    | `rows` of the text area                                |
+| `onChanged`   | `input` listener                                       |
+| `onSubmitted` | `keydown` listener: `Enter`, or `Ctrl`/`Cmd` + `Enter` |
+
+A `value` makes the field controlled: rendering the node again with a new value
+replaces what the user typed. Without a value the field keeps its own content and
+only reports changes through `onChanged`.
+
+`onSubmitted` fires on a bare `Enter` for a single line field and on
+`Ctrl`/`Cmd` + `Enter` for a text area, because a plain `Enter` inserts a newline
+there — the same split a Flutter `TextField` has with a multiline keyboard type.
+
+Both listeners read the field through the `package:web` DOM types Jaspr itself
+uses for `EventCallback`, which `universal_web` re-exports on every platform.
+
 ## Testing
 
 ```sh
@@ -175,5 +204,5 @@ dart test
 ```
 
 Component tests use `jaspr_test`; `test/support/harness.dart` exposes
-`pumpNode`, `stylesOf`, `classesOf` and `cssOf` helpers to assert on the
-rendered DOM.
+`pumpNode`, `elementOf`, `stylesOf`, `classesOf`, `attributesOf` and `cssOf`
+helpers to assert on the rendered DOM.

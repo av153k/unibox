@@ -5,6 +5,7 @@ import 'box.dart';
 import 'image_node.dart';
 import 'link_node.dart';
 import 'stack_node.dart';
+import 'text_input_node.dart';
 import 'text_node.dart';
 
 /// Renders [node] as a Jaspr [Component].
@@ -18,6 +19,7 @@ Component renderJaspr(core.UINode node) {
     final core.LinkNode link => UniboxLink(node: link),
     final core.StackNode stack => UniboxStack(node: stack),
     final core.PositionedNode positioned => renderJaspr(positioned.child),
+    final core.TextInputNode textInput => UniboxTextInput(node: textInput),
     final core.TextNode text => UniboxText(node: text),
     _ => throw UnsupportedError(
       'No Jaspr renderer for ${node.runtimeType}.',
