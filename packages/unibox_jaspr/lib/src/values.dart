@@ -139,24 +139,54 @@ TextAlign toCssTextAlign(core.TextAlign align) {
   };
 }
 
-/// Builds the CSS of a text node.
+/// Builds the declarations that make the descendants of a box inherit its
+/// typography.
 ///
-/// Typography tokens that are unset are omitted, so the text inherits its
-/// font size, weight and color from the surrounding box, just like a Flutter
-/// `Text` inherits from `DefaultTextStyle`.
-Styles toTextStyles(core.TextNode node) {
-  final core.BoxColor? color = node.color;
-  final core.TextAlign? textAlign = node.textAlign;
-  final core.FontWeight? fontWeight = node.fontWeight;
-  final double? fontSize = node.fontSize;
+/// Every token maps to a CSS property that is inherited by default
+/// (`font-size`, `font-weight`, `font-family`, `line-height`, `letter-spacing`
+/// and `color`), which is what makes a box behave like the `DefaultTextStyle` a
+/// Flutter box installs. The line height is written unitless so descendants
+/// scale with their own font size, exactly like `TextStyle.height`.
+///
+/// Returns `null` when [textStyle] sets no token, so a box without typography
+/// emits no font declaration at all.
+Styles? toTypographyStyles(core.BoxTextStyle textStyle) {
+  if (textStyle.isEmpty) {
+    return null;
+  }
+
+  final core.FontWeight? weight = textStyle.fontWeight;
+  final core.BoxColor? color = textStyle.color;
+  final String? fontFamily = textStyle.fontFamily;
+  final double? fontSize = textStyle.fontSize;
+  final double? lineHeight = textStyle.lineHeight;
+  final double? letterSpacing = textStyle.letterSpacing;
 
   return Styles(
-    color: color == null ? null : toCssColor(color),
-    textAlign: textAlign == null ? null : toCssTextAlign(textAlign),
     fontSize: fontSize == null ? null : Unit.pixels(fontSize),
-    fontWeight: fontWeight == null ? null : toCssFontWeight(fontWeight),
+    fontWeight: weight == null ? null : toCssFontWeight(weight),
+    color: color == null ? null : toCssColor(color),
+    fontFamily: fontFamily == null ? null : FontFamily(fontFamily),
+    letterSpacing: letterSpacing == null ? null : Unit.pixels(letterSpacing),
+    lineHeight: lineHeight == null ? null : Unit.expression('$lineHeight'),
+  );
+}
+
+/// Builds the CSS of a text node.
+///
+/// Only the typography tokens that are set are emitted, so the text inherits
+/// everything else from the surrounding box, just like a Flutter `Text` inherits
+/// from `DefaultTextStyle`.
+Styles toTextStyles(core.TextNode node) {
+  final core.TextAlign? textAlign = node.textAlign;
+  final Styles? typography = toTypographyStyles(node.computedStyle);
+
+  final Styles own = Styles(
+    textAlign: textAlign == null ? null : toCssTextAlign(textAlign),
     raw: _truncationStyles(node.maxLines, node.overflow),
   );
+
+  return typography == null ? own : own.combine(typography);
 }
 
 /// Builds the CSS that truncates text after [maxLines].
@@ -264,12 +294,18 @@ Styles toPositionedStyles(core.PositionedNode node) {
 /// Builds the CSS of a single line text input or a text area.
 ///
 /// Inputs are replaced elements: the browser gives them an intrinsic width, its
-/// own padding and its own border. Stretching the field over the available width
-/// with `box-sizing: border-box` reproduces the layout a Flutter `TextField` gets
-/// from the column it lives in. Typography and colors stay with the browser, so
-/// the field keeps matching the platform it is shown on.
+/// own padding, its own border and its own font. Stretching the field over the
+/// available width with `box-sizing: border-box` reproduces the layout a Flutter
+/// `TextField` gets from the column it lives in, and `font: inherit` makes the
+/// field adopt the typography of the enclosing box instead of the browser's
+/// form font — the same thing the Flutter renderer does when a box sets
+/// typography.
 Styles toTextInputStyles() {
-  return Styles(boxSizing: BoxSizing.borderBox, width: const Unit.percent(100));
+  return Styles(
+    boxSizing: BoxSizing.borderBox,
+    width: const Unit.percent(100),
+    raw: const <String, String>{'font': 'inherit'},
+  );
 }
 
 /// Builds the CSS of a box from its resolved [core.BoxStyle].
@@ -291,7 +327,7 @@ Styles toBoxStyles(core.BoxStyle style, {bool interactive = false}) {
   final double? borderRadius = style.borderRadius;
   final int? flex = style.flex;
 
-  return Styles(
+  final Styles boxStyles = Styles(
     boxSizing: BoxSizing.borderBox,
     display: direction == null ? null : Display.flex,
     flexDirection: direction == null ? null : toCssFlexDirection(direction),
@@ -324,4 +360,10 @@ Styles toBoxStyles(core.BoxStyle style, {bool interactive = false}) {
     overflow: overflow == null ? null : toCssOverflow(overflow),
     cursor: interactive ? Cursor.pointer : null,
   );
+
+  final Styles? typography = toTypographyStyles(
+    style.textStyle ?? const core.BoxTextStyle(),
+  );
+
+  return typography == null ? boxStyles : boxStyles.combine(typography);
 }

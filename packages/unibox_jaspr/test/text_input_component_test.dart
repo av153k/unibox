@@ -15,6 +15,7 @@ void main() {
       expect(stylesOf(find.tag('input')), <String, String>{
         'box-sizing': 'border-box',
         'width': '100%',
+        'font': 'inherit',
       });
     });
 
