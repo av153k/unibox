@@ -39,10 +39,10 @@ class UniboxStack extends StatelessWidget {
   /// Renders [node] as a stack child, honouring its absolute offsets.
   Widget _child(core.UINode node) {
     if (node is! core.PositionedNode) {
-      return renderFlutter(node);
+      return renderNode(node);
     }
 
-    final Widget child = renderFlutter(node.child);
+    final Widget child = renderNode(node.child);
 
     if (node.isUnpositioned) {
       return child;

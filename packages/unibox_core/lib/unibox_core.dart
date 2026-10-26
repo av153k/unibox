@@ -11,7 +11,8 @@
 ///   [FontWeight], [TextAlign], [TextOverflow]),
 /// * the immutable node tree rooted in [UINode]: [Box], [TextNode],
 ///   [ImageNode], [LinkNode], [StackNode], [PositionedNode] and
-///   [TextInputNode].
+///   [TextInputNode],
+/// * [validateTree], which reports nodes that a renderer cannot honour.
 library;
 
 export 'src/callbacks.dart';
@@ -29,3 +30,4 @@ export 'src/tokens/box_color.dart';
 export 'src/tokens/box_shadow.dart';
 export 'src/tokens/box_spacing.dart';
 export 'src/tokens/box_style.dart';
+export 'src/validation.dart';

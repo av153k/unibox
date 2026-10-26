@@ -124,7 +124,7 @@ class _UniboxBoxState extends State<UniboxBox> {
   /// Renders [node] and makes it flexible along the parent's main axis when it
   /// declares a [core.BoxStyle.flex] factor or an infinite main dimension.
   Widget _buildChild(core.UINode node, core.Axis? direction) {
-    final Widget child = renderFlutter(node);
+    final Widget child = renderNode(node);
 
     if (direction == null || node is! core.Box) {
       return child;

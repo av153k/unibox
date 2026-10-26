@@ -61,7 +61,7 @@ class UniboxLink extends StatelessWidget {
             node.onTap?.call();
             open?.call(node.url);
           },
-          child: renderFlutter(node.child),
+          child: renderNode(node.child),
         ),
       ),
     );

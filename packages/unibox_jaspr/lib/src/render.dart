@@ -11,6 +11,9 @@ import 'text_node.dart';
 
 /// Renders [node] as a Jaspr [Component].
 ///
+/// In debug builds the tree is validated first: a tree that a renderer cannot
+/// honour is printed to stdout, and an invalid one throws a [StateError].
+///
 /// Node types without a web renderer yet throw an [UnsupportedError] so a
 /// partially rendered tree can never be shipped silently.
 ///
@@ -18,6 +21,15 @@ import 'text_node.dart';
 /// nodes keeps each element (and the DOM state it owns) attached to the node it
 /// belongs to.
 Component renderJaspr(core.UINode node) {
+  _reportTreeIssues(node);
+  return renderNode(node);
+}
+
+/// Renders [node] without validating its subtree.
+///
+/// The renderers use it for children, which were validated as part of the tree
+/// their caller rendered. Prefer [renderJaspr].
+Component renderNode(core.UINode node) {
   return switch (node) {
     final core.Box box => UniboxBox(box: box, key: toJasprKey(box.key)),
     final core.ImageNode image => UniboxImage(
@@ -33,7 +45,7 @@ Component renderJaspr(core.UINode node) {
       key: toJasprKey(stack.key),
     ),
     final core.PositionedNode positioned => Component.fragment(<Component>[
-      renderJaspr(positioned.child),
+      renderNode(positioned.child),
     ], key: toJasprKey(positioned.key)),
     final core.TextInputNode textInput => UniboxTextInput(
       node: textInput,
@@ -45,6 +57,32 @@ Component renderJaspr(core.UINode node) {
     ),
     _ => throw UnsupportedError('No Jaspr renderer for ${node.runtimeType}.'),
   };
+}
+
+/// Reports the tree issues of [node], in debug builds only.
+///
+/// Server rendering has no widget inspector, so warnings go to stdout next to
+/// the request log, while errors throw to stop the response before it is wrong.
+void _reportTreeIssues(core.UINode node) {
+  assert(() {
+    final List<core.TreeIssue> issues = core.validateTree(node);
+    final List<core.TreeIssue> errors = issues
+        .where((core.TreeIssue issue) => issue.isError)
+        .toList(growable: false);
+
+    if (errors.isNotEmpty) {
+      throw StateError(
+        'Unibox: the node tree cannot be rendered:\n${errors.join('\n')}',
+      );
+    }
+
+    for (final core.TreeIssue issue in issues) {
+      // ignore: avoid_print
+      print('Unibox warning: $issue');
+    }
+
+    return true;
+  }());
 }
 
 /// Renders any Unibox node as a Jaspr [Component].

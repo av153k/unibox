@@ -45,7 +45,7 @@ class UniboxPositioned extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    final Component child = renderJaspr(node.child);
+    final Component child = renderNode(node.child);
 
     if (node.isUnpositioned) {
       return div(<Component>[child], styles: toStackChildStyles());
@@ -62,7 +62,7 @@ Component _stackChild(core.UINode node) {
   }
 
   return div(
-    <Component>[renderJaspr(node)],
+    <Component>[renderNode(node)],
     key: toJasprKey(node.key),
     styles: toStackChildStyles(),
   );

@@ -269,10 +269,7 @@ Styles toPositionedStyles(core.PositionedNode node) {
 /// from the column it lives in. Typography and colors stay with the browser, so
 /// the field keeps matching the platform it is shown on.
 Styles toTextInputStyles() {
-  return Styles(
-    boxSizing: BoxSizing.borderBox,
-    width: const Unit.percent(100),
-  );
+  return Styles(boxSizing: BoxSizing.borderBox, width: const Unit.percent(100));
 }
 
 /// Builds the CSS of a box from its resolved [core.BoxStyle].
@@ -316,7 +313,9 @@ Styles toBoxStyles(core.BoxStyle style, {bool interactive = false}) {
     maxHeight: toCssUnit(style.maxHeight),
     padding: padding == null ? null : toCssSpacing(padding),
     margin: margin == null ? null : toCssSpacing(margin),
-    backgroundColor: backgroundColor == null ? null : toCssColor(backgroundColor),
+    backgroundColor: backgroundColor == null
+        ? null
+        : toCssColor(backgroundColor),
     radius: borderRadius == null
         ? null
         : BorderRadius.circular(Unit.pixels(borderRadius)),

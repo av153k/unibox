@@ -34,7 +34,7 @@ class UniboxBox extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final List<Component> children = box.children
-        .map(renderJaspr)
+        .map(renderNode)
         .toList(growable: false);
     final Map<String, EventCallback> events = _buildEvents(box);
     final Map<String, EventCallback>? listeners = events.isEmpty

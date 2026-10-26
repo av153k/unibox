@@ -28,7 +28,7 @@ class UniboxLink extends StatelessComponent {
     final bool newTab = node.newTab;
 
     return a(
-      <Component>[renderJaspr(node.child)],
+      <Component>[renderNode(node.child)],
       href: node.url,
       target: newTab ? Target.blank : null,
       attributes: newTab ? _newTabAttributes : null,
