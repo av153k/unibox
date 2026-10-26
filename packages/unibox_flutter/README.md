@@ -25,7 +25,7 @@ Widget widget = card.toWidget();
 | ----------------------------------- | -------------------------------------------------- |
 | `direction: Axis.horizontal`        | `Row`                                              |
 | `direction: Axis.vertical`          | `Column`                                           |
-| no `direction`                      | `Column` (block-like stacking)                      |
+| no `direction`                      | `Column`, the same as `Axis.vertical`              |
 | `gap`                               | `SizedBox` separators between children              |
 | `mainAlign` / `crossAlign`          | `mainAxisAlignment` / `crossAxisAlignment`          |
 | `padding` / `margin`                | inner / outer `Padding`                             |

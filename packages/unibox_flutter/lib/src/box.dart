@@ -41,9 +41,8 @@ class _UniboxBoxState extends State<UniboxBox> {
     }
 
     if (style.overflow == core.Overflow.scroll) {
-      final core.Axis axis = style.direction ?? core.Axis.vertical;
       content = SingleChildScrollView(
-        scrollDirection: toAxis(axis),
+        scrollDirection: toAxis(style.resolvedDirection),
         child: content,
       );
     }
@@ -95,19 +94,21 @@ class _UniboxBoxState extends State<UniboxBox> {
 
   /// Lays out the children, inserting `gap` separators between them.
   ///
-  /// Without a [core.BoxStyle.direction] the children are stacked in a column,
-  /// mirroring the block layout of a `<div>`.
+  /// The direction resolves to a column when the box does not name one (see
+  /// [core.BoxStyle.resolvedDirection]), so `gap`, `mainAlign` and `crossAlign`
+  /// apply to every box instead of only to the ones that spelled the direction
+  /// out.
   Widget _buildContent(core.Box box, core.BoxStyle style) {
     if (box.children.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    final core.Axis? direction = style.direction;
+    final core.Axis direction = style.resolvedDirection;
     final double? gap = style.gap;
     final List<Widget> children = <Widget>[];
 
     for (var index = 0; index < box.children.length; index++) {
-      if (direction != null && index > 0 && gap != null && gap > 0) {
+      if (index > 0 && gap != null && gap > 0) {
         children.add(
           direction == core.Axis.horizontal
               ? SizedBox(width: gap)
@@ -115,14 +116,6 @@ class _UniboxBoxState extends State<UniboxBox> {
         );
       }
       children.add(_buildChild(box.children[index], direction));
-    }
-
-    if (direction == null) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      );
     }
 
     final MainAxisAlignment mainAxisAlignment = toMainAxisAlignment(
@@ -149,12 +142,12 @@ class _UniboxBoxState extends State<UniboxBox> {
     );
   }
 
-  /// Renders [node] and makes it flexible along the parent's main axis when it
+  /// Renders [node] and makes it flexible along the parent's `direction` when it
   /// declares a [core.BoxStyle.flex] factor or an infinite main dimension.
-  Widget _buildChild(core.UINode node, core.Axis? direction) {
+  Widget _buildChild(core.UINode node, core.Axis direction) {
     final Widget child = renderNode(node);
 
-    if (direction == null || node is! core.Box) {
+    if (node is! core.Box) {
       return child;
     }
 

@@ -13,10 +13,10 @@ const Duration _longPressDuration = Duration(milliseconds: 500);
 
 /// Renders a [core.Box] as a styled `<div>`.
 ///
-/// A box with a [core.Box.direction] becomes a CSS flex container whose
-/// `flex-direction`, `justify-content`, `align-items` and `gap` mirror the
-/// `Row`/`Column` the same node renders to in Flutter. Everything else is plain
-/// CSS: `width`, `height`, `padding`, `border`, `border-radius`, `box-shadow`,
+/// A box is a CSS flex container whose `flex-direction`, `justify-content`,
+/// `align-items` and `gap` mirror the `Row`/`Column` the same node renders to in
+/// Flutter; a box without a direction is a column. Everything else is plain CSS:
+/// `width`, `height`, `padding`, `border`, `border-radius`, `box-shadow`,
 /// `overflow` and friends.
 ///
 /// The styles of a state cannot be expressed with inline styles, since those

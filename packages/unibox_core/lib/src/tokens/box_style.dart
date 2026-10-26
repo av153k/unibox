@@ -50,7 +50,20 @@ final class BoxStyle {
   // Layout.
 
   /// The layout direction of the children.
+  ///
+  /// Unset means "not specified"; [resolvedDirection] is what the renderers
+  /// actually lay the children out in.
   final Axis? direction;
+
+  /// The direction the renderers lay the children out in.
+  ///
+  /// An unset [direction] means [Axis.vertical], never "no layout of its own":
+  /// a box is a flex container on every target, and a column is the only shape
+  /// a Flutter `Column` and a CSS flex column agree on. Resolving the default
+  /// once, here, is what keeps `gap`, [mainAlign], [crossAlign] and the `flex`
+  /// of a child from silently doing nothing on a box that never named a
+  /// direction.
+  Axis get resolvedDirection => direction ?? Axis.vertical;
 
   /// Distribution of the children along the main axis.
   final MainAlign? mainAlign;

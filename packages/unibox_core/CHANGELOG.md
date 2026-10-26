@@ -10,6 +10,10 @@ The first release of the platform agnostic core.
 - Style tokens: `BoxStyle`, `BoxTextStyle`, `BoxColor`, `BoxSpacing`,
   `BoxBorder`, `BoxShadow`, plus the semantics tokens `BoxSemantics` and
   `BoxRole`.
+- Layout defaults: `BoxStyle.resolvedDirection` resolves an unset `direction` to
+  `Axis.vertical`, so a box is a flex container on every target and `gap`, the
+  alignment tokens and a child's `flex` apply whether or not the direction is
+  written out.
 - Typography inheritance: `Box.textStyle` is inherited by the descendants, every
   other token applies to the box itself.
 - Interaction states: `BoxState`, `Box.stateStyles`, `Box.enabled` and

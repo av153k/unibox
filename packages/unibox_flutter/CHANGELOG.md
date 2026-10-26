@@ -7,6 +7,8 @@ The first release of the Flutter renderer.
 - `renderFlutter` and `UINode.toWidget()` for every core node.
 - Boxes map to `Row`, `Column`, `Stack`, `Padding`, `DecoratedBox`,
   `ClipRect`, `SingleChildScrollView`, `GestureDetector` and `MouseRegion`.
+- A box without a direction maps to a `Column`, the same as `Axis.vertical`, so
+  `gap`, `mainAlign`, `crossAlign` and a child's `flex` apply to every box.
 - Typography is inherited through `DefaultTextStyle`; a `TextInputNode` opts in
   through `UniboxTextStyleScope`, so a field follows the box that owns it.
 - Interaction states: hover, focus, press and disabled, with `Focus` and

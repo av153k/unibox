@@ -75,8 +75,10 @@ class Box extends UINode {
 
   /// The direction children are laid out in.
   ///
-  /// When `null` the box is not a flex container: children are stacked
-  /// vertically in Flutter and flow as block content on the web.
+  /// Defaults to [Axis.vertical]: a box without a direction is a column, and it
+  /// is one on every target, so leaving the direction out never changes the
+  /// shape of the tree between Flutter and the web. See
+  /// [BoxStyle.resolvedDirection].
   final Axis? direction;
 
   /// Distribution of children along the main axis.

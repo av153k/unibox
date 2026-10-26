@@ -8,6 +8,8 @@ The first release of the Jaspr (HTML/CSS) renderer.
 - Boxes map to flex containers with inline styles, and to scoped rules when they
   need `:hover` inside `@media (hover: hover)`, `:focus-visible`, `:active` or
   `[aria-disabled="true"]`.
+- A box without a direction is a flex column, the same shape the Flutter
+  renderer gives it, so `gap` and the alignment tokens apply to every box.
 - Typography is inherited through the CSS font properties, which matches the
   `DefaultTextStyle` the Flutter renderer installs.
 - Roles become `role`, `aria-label`, `aria-checked`, `aria-disabled` and

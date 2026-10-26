@@ -36,6 +36,7 @@ All nodes extend `abstract class UINode`.
 
 1. **`Box`** (Layout & Container):
    - **Flat layout props:** `direction`, `mainAlign`, `crossAlign`, `gap`, `flex`, `overflow`.
+   - **Direction default:** an unset `direction` resolves to `Axis.vertical` (`BoxStyle.resolvedDirection`), so every box is a flex container on every target and `gap`, `mainAlign`, `crossAlign` and a child's `flex` never silently do nothing.
    - **Dimensions:** `width`, `height`, `minWidth`, `maxWidth`, `minHeight`, `maxHeight` (`double?`).
    - **Visuals:** `padding`, `margin`, `backgroundColor`, `borderRadius` (`double?`), `border`, `shadow`.
    - **Actions:** `onTap`, `onLongPress`, `onHover`.
@@ -54,7 +55,7 @@ All nodes extend `abstract class UINode`.
 
 ### Flutter (`unibox_flutter`)
 - Provide `node.toWidget()` and `renderFlutter(UINode)`.
-- `Box` with `direction != null` maps to `Flex` (`Row`/`Column`) with `SizedBox` gap separators.
+- `Box` maps to a `Row`/`Column`; an unset direction means a column.
 - `Box` with `overflow: Overflow.scroll` wraps in `SingleChildScrollView`.
 - `onTap` maps to `GestureDetector`.
 - `onHover` maps to `MouseRegion`.
@@ -66,7 +67,8 @@ All nodes extend `abstract class UINode`.
 - Provide `node.toComponent()` and `renderJaspr(UINode)`.
 - Refer to `https://jaspr.site/llms.txt` for Jaspr 0.24 syntax.
 - `Box` renders a `<div>` with `boxSizing: BoxSizing.borderBox`.
-- Map layout to CSS flexbox (`display: flex`, `gap`, etc.).
+- Map layout to CSS flexbox (`display: flex`, `gap`, etc.); a box without a
+  direction is a flex column.
 - `width == double.infinity` maps to `100.percent`.
 - `LinkNode` outputs a native `<a>` tag with `href` and `target`.
 - `StackNode` renders `<div style="position: relative">`.
@@ -110,7 +112,17 @@ never inherited (CSS does not inherit them either).
   targets, exactly like combining `double.infinity` with an unbounded
   `SizedBox` in plain Flutter.
 
-### 5.4 Interaction
+### 5.4 Parity
+- One tree, one shape: a node has to produce the same layout on both targets, so
+  a default that only one of them has is a bug. `direction` is the case that
+  matters: an unset direction means `Axis.vertical` everywhere rather than the
+  `Column` of one target and the block flow of the other.
+- A default lives in the model (`BoxStyle.resolvedDirection`), not in each
+  renderer, so the two can only ever agree on it.
+- A token that cannot take effect is either honoured or reported by
+  `validateTree`; silently accepting it is not an option.
+
+### 5.5 Interaction
 - A box reacts to tap, long press, hover, focus and press. These five states
   exist on pointer, keyboard and touch input alike, so no state is web-only or
   Flutter-only.
@@ -121,7 +133,7 @@ never inherited (CSS does not inherit them either).
   `BoxSemantics.role` is one the user can act on. A plain container never does.
 - Dragging, scrolling gestures and pointer move tracking are out of scope.
 
-### 5.5 Non-goals
+### 5.6 Non-goals
 - No CSS cascade: no selectors, no specificity, no `inherit` keyword, no
   `!important`. Typography is the single inherited axis.
 - No style sheet abstraction with class names; shared looks are expressed as
@@ -130,7 +142,7 @@ never inherited (CSS does not inherit them either).
   is the single, explicit exception: host content enters the tree as an opaque
   payload that only its own renderer accepts, and any other renderer throws.
 
-### 5.6 Compatibility
+### 5.7 Compatibility
 - Additions (new optional parameters, new nodes, new tokens) are minor.
 - Renames and removals are breaking: keep the old name as a deprecated
   forwarding constructor or getter for at least one minor release.

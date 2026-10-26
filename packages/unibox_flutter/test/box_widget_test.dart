@@ -49,18 +49,34 @@ void main() {
       expect(inNode(find.byType(Row)), findsNothing);
     });
 
-    testWidgets('stacks children in a Column without a direction', (
+    testWidgets('lays children out in a Column without a direction', (
       tester,
     ) async {
       await pumpNode(
         tester,
-        const core.Box(children: [core.Box(height: 10), core.Box(height: 10)]),
+        const core.Box(
+          gap: 4,
+          crossAlign: core.CrossAlign.center,
+          children: [core.Box(height: 10), core.Box(height: 10)],
+        ),
       );
 
       final Column column = tester.widget<Column>(find.byType(Column));
 
-      expect(column.children, hasLength(2));
-      expect(tester.getSize(find.byKey(nodeKey)).height, 20);
+      expect(column.children, hasLength(3));
+      expect((column.children[1] as SizedBox).height, 4);
+      expect(column.mainAxisAlignment, MainAxisAlignment.start);
+      expect(column.crossAxisAlignment, CrossAxisAlignment.center);
+      expect(tester.getSize(find.byKey(nodeKey)).height, 24);
+    });
+
+    testWidgets('expands a flexible child without a direction', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(children: [core.Box(height: 10, flex: 2)]),
+      );
+
+      expect(tester.widget<Expanded>(find.byType(Expanded)).flex, 2);
     });
 
     testWidgets('inserts horizontal gap separators between children', (

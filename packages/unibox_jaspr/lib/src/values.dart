@@ -312,11 +312,13 @@ Styles toTextInputStyles() {
 ///
 /// Unset token values are omitted so that browser defaults (and inherited
 /// typography) apply, mirroring how the Flutter renderer leaves unset
-/// properties to `DefaultTextStyle`.
+/// properties to `DefaultTextStyle`. The flex properties are the exception:
+/// every box is a flex container, and a box without a direction is a column,
+/// which is the `Column` the same node renders to in Flutter.
 ///
 /// [interactive] adds a pointer cursor for boxes that react to input.
 Styles toBoxStyles(core.BoxStyle style, {bool interactive = false}) {
-  final core.Axis? direction = style.direction;
+  final core.Axis direction = style.resolvedDirection;
   final core.BoxBorder? border = style.border;
   final core.BoxShadow? shadow = style.shadow;
   final core.BoxSpacing? padding = style.padding;
@@ -329,15 +331,13 @@ Styles toBoxStyles(core.BoxStyle style, {bool interactive = false}) {
 
   final Styles boxStyles = Styles(
     boxSizing: BoxSizing.borderBox,
-    display: direction == null ? null : Display.flex,
-    flexDirection: direction == null ? null : toCssFlexDirection(direction),
-    justifyContent: direction == null
-        ? null
-        : toCssJustifyContent(style.mainAlign ?? core.MainAlign.start),
-    alignItems: direction == null
-        ? null
-        : toCssAlignItems(style.crossAlign ?? core.CrossAlign.start),
-    gap: direction == null || gap == null ? null : Gap.all(Unit.pixels(gap)),
+    display: Display.flex,
+    flexDirection: toCssFlexDirection(direction),
+    justifyContent: toCssJustifyContent(
+      style.mainAlign ?? core.MainAlign.start,
+    ),
+    alignItems: toCssAlignItems(style.crossAlign ?? core.CrossAlign.start),
+    gap: gap == null ? null : Gap.all(Unit.pixels(gap)),
     flex: flex == null
         ? null
         : Flex(grow: flex.toDouble(), shrink: 1, basis: Unit.zero),

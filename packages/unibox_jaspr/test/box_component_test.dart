@@ -14,13 +14,42 @@ void main() {
       expect(find.tag('div'), findsOneComponent);
       expect(stylesOf(find.tag('div')), <String, String>{
         'box-sizing': 'border-box',
+        'display': 'flex',
+        'flex-direction': 'column',
+        'justify-content': 'start',
+        'align-items': 'start',
       });
     });
 
     testComponents('omits styles for unset tokens', (tester) async {
       pumpNode(tester, const core.Box(children: [core.Box()]));
 
-      expect(stylesOf(find.tag('div').first).keys, <String>['box-sizing']);
+      final Map<String, String> styles = stylesOf(find.tag('div').first);
+
+      expect(styles.containsKey('gap'), isFalse);
+      expect(styles.containsKey('width'), isFalse);
+      expect(styles.containsKey('padding'), isFalse);
+      expect(styles.containsKey('background-color'), isFalse);
+    });
+
+    testComponents('lays children out in a column without a direction', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          gap: 6,
+          crossAlign: core.CrossAlign.center,
+          children: [core.Box(height: 20), core.Box(height: 30)],
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div').first);
+
+      expect(styles['display'], 'flex');
+      expect(styles['flex-direction'], 'column');
+      expect(styles['align-items'], 'center');
+      expect(styles['gap'], '6px');
     });
 
     testComponents('maps a horizontal direction to a flex row', (tester) async {

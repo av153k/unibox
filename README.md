@@ -35,6 +35,10 @@ What both renderers agree on:
 
 - **One tree, two targets.** The same nodes become widgets and HTML/CSS, with
   the same layout, spacing and typography.
+- **Defaults are part of the contract.** A box is a flex container on both
+  targets and an unset `direction` means a column on both, so the tree keeps its
+  shape and `gap`, `mainAlign`, `crossAlign` and a child's `flex` never silently
+  do nothing.
 - **Typography is inherited.** A box states its font tokens once and its texts
   only say what makes them different, like CSS and `DefaultTextStyle` do.
 - **Interaction states in the model.** Hover, focus, press and disabled are

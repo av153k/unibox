@@ -30,7 +30,7 @@ rendering nothing.
 | always                        | `<div>` with `box-sizing: border-box`                  |
 | `direction: Axis.horizontal`  | `display: flex` + `flex-direction: row`                |
 | `direction: Axis.vertical`    | `display: flex` + `flex-direction: column`             |
-| no `direction`                | plain block `<div>`                                    |
+| no `direction`                | `display: flex` + `flex-direction: column`, as above   |
 | `mainAlign` / `crossAlign`    | `justify-content` / `align-items` (`start` by default)  |
 | `gap`                         | `gap`                                                  |
 | `width`, `height`, `min*`, `max*` | `width`, `height`, `min-width`, ...                |

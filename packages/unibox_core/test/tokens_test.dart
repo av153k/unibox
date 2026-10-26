@@ -160,6 +160,15 @@ void main() {
       expect(const BoxStyle(gap: 8).isEmpty, isFalse);
     });
 
+    test('resolves an unset direction to a column', () {
+      expect(const BoxStyle().direction, isNull);
+      expect(const BoxStyle().resolvedDirection, Axis.vertical);
+      expect(
+        const BoxStyle(direction: Axis.horizontal).resolvedDirection,
+        Axis.horizontal,
+      );
+    });
+
     test('merge lets the overlay win', () {
       const base = BoxStyle(
         padding: BoxSpacing.all(16),
