@@ -9,6 +9,45 @@ List<TestRenderElement> elementsOf(Finder finder) => <TestRenderElement>[
 /// The single DOM element rendered for [finder].
 TestRenderElement elementOf(Finder finder) => elementsOf(finder).single;
 
+/// The CSS an element ends up with once inheritance is resolved.
+///
+/// Only the properties CSS inherits are collected, and the closest declaration
+/// wins, which is exactly what a browser does for typography. A box that is
+/// styled through a scoped class rule is skipped, since its declarations live in
+/// a `<style>` block rather than on the element.
+Map<String, String> inheritedStylesOf(Finder finder) {
+  const Set<String> inherited = <String>{
+    'font-size',
+    'font-weight',
+    'font-family',
+    'font-style',
+    'line-height',
+    'letter-spacing',
+    'color',
+  };
+
+  final Map<String, String> resolved = <String, String>{};
+  TestRenderObject? current = elementOf(finder);
+
+  while (current != null) {
+    final Map<String, String>? styles = current is TestRenderElement
+        ? current.styles
+        : null;
+
+    if (styles != null) {
+      for (final MapEntry<String, String> style in styles.entries) {
+        if (inherited.contains(style.key)) {
+          resolved.putIfAbsent(style.key, () => style.value);
+        }
+      }
+    }
+
+    current = current.parent;
+  }
+
+  return resolved;
+}
+
 /// The DOM element of a component tree, if any.
 TestRenderElement _domElementOf(Element element) {
   DomElement? domElement;
