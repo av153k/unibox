@@ -211,4 +211,80 @@ void main() {
       expect(style.toString(), contains('direction: Axis.vertical'));
     });
   });
+
+  group('BoxTextStyle', () {
+    test('starts empty', () {
+      expect(const BoxTextStyle().isEmpty, isTrue);
+      expect(const BoxTextStyle(fontSize: 16).isEmpty, isFalse);
+    });
+
+    test('stores every typography token', () {
+      const style = BoxTextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.semiBold,
+        color: BoxColor.black,
+        lineHeight: 1.5,
+        fontFamily: 'Inter',
+        letterSpacing: 0.2,
+      );
+
+      expect(style.fontSize, 18);
+      expect(style.fontWeight, FontWeight.semiBold);
+      expect(style.color, BoxColor.black);
+      expect(style.lineHeight, 1.5);
+      expect(style.fontFamily, 'Inter');
+      expect(style.letterSpacing, 0.2);
+    });
+
+    test('merge lets the overlay win', () {
+      const base = BoxTextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: BoxColor.black,
+      );
+      const overlay = BoxTextStyle(color: BoxColor.white, lineHeight: 1.4);
+
+      final merged = base.merge(overlay);
+
+      expect(merged.fontSize, 16);
+      expect(merged.fontWeight, FontWeight.normal);
+      expect(merged.color, BoxColor.white);
+      expect(merged.lineHeight, 1.4);
+    });
+
+    test('merge keeps the base when the overlay is null or empty', () {
+      const base = BoxTextStyle(fontSize: 16);
+
+      expect(base.merge(null), same(base));
+      expect(base.merge(const BoxTextStyle()), base);
+    });
+
+    test('copyWith replaces only the given tokens', () {
+      const style = BoxTextStyle(fontSize: 16, color: BoxColor.black);
+
+      final copy = style.copyWith(fontWeight: FontWeight.bold);
+
+      expect(copy.fontSize, 16);
+      expect(copy.color, BoxColor.black);
+      expect(copy.fontWeight, FontWeight.bold);
+      expect(copy, isNot(style));
+    });
+
+    test('implements value equality', () {
+      const style = BoxTextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: BoxColor.black,
+        lineHeight: 1.5,
+        fontFamily: 'Inter',
+        letterSpacing: 0.2,
+      );
+
+      expect(style, style.copyWith());
+      expect(style.hashCode, style.copyWith().hashCode);
+      expect(style, isNot(style.copyWith(fontSize: 18)));
+      expect(style.toString(), contains('fontSize: 16.0'));
+      expect(style.toString(), contains('fontFamily: Inter'));
+    });
+  });
 }

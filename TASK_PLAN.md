@@ -35,7 +35,7 @@
 - [x] Task 21: Assert in the Flutter link renderer that a link without an `UniboxLinkScope` and without `onTap` is a host configuration error, and update the existing link tests.
 
 ### Phase 7: Inherited typography
-- [ ] Task 22: Implement the `BoxTextStyle` token (`fontSize`, `fontWeight`, `color`, `lineHeight`, `fontFamily`, `letterSpacing`) with `merge`, `copyWith`, equality and token tests.
+- [x] Task 22: Implement the `BoxTextStyle` token (`fontSize`, `fontWeight`, `color`, `lineHeight`, `fontFamily`, `letterSpacing`) with `merge`, `copyWith`, equality and token tests.
 - [ ] Task 23: Wire `textStyle` into `BoxStyle` and as a flat `Box` parameter, and give `TextNode` an optional `style: BoxTextStyle` with a `computedStyle` getter.
 - [ ] Task 24: Flutter renderer — wrap box children in `DefaultTextStyle` when typography is set, map the new text tokens and let `TextField` adopt the inherited style.
 - [ ] Task 25: Jaspr renderer — emit inherited typography on the `<div>` (`font-size`, `color`, `line-height`, ...) so CSS inheritance matches `DefaultTextStyle`.

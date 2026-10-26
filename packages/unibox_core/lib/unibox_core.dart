@@ -30,4 +30,5 @@ export 'src/tokens/box_color.dart';
 export 'src/tokens/box_shadow.dart';
 export 'src/tokens/box_spacing.dart';
 export 'src/tokens/box_style.dart';
+export 'src/tokens/box_text_style.dart';
 export 'src/validation.dart';
