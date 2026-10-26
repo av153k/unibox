@@ -79,9 +79,12 @@ as a class plus a small `<style>` element right before it:
 
 Every rule carries only the tokens of its state, so the browser layers them over
 the resting rule the way CSS always does, and `hoverStyle` is nothing but the
-`BoxState.hover` entry. Hover sits inside a media query so a touch screen cannot
-get stuck in a hovered look, and focus uses `:focus-visible` so a mouse click
-never paints a focus ring.
+`BoxState.hover` entry. That includes the flex layout: `flex-direction`,
+`justify-content` and `align-items` stay with the resting rule, because a state
+rule that restated them would reset the layout — hovering a row would turn it
+into a column. Hover sits inside a media query so a touch screen cannot get
+stuck in a hovered look, and focus uses `:focus-visible` so a mouse click never
+paints a focus ring.
 
 The class name is a hash of the resolved styles and of every state, which keeps
 the output deterministic: server rendered markup and the hydrated client agree
@@ -208,6 +211,13 @@ like they do on any other website.
 `onClick`, because `onClick` calls `preventDefault()` and would stop the browser
 from following the link. A link without `onTap` renders no listeners at all.
 
+The anchor also declares `color: inherit` and `text-decoration: none`, which
+turns off the two things a browser adds to a link on its own. A link is not a
+text node, so the typography of its box has to reach it explicitly, and the
+Flutter renderer draws the child of a link exactly as it is — no link colour, no
+underline — so leaving the user agent styles in place would make the same tree
+look different on the two targets.
+
 Relative destinations need no rewriting, and the Flutter renderer delegates the
 actual navigation to the host through `UniboxLinkScope`.
 
@@ -237,8 +247,12 @@ outside a stack falls back to its child.
 A `TextInputNode` becomes `<input type="text">`, `<input type="password">` when
 `obscureText` is set, or a `<textarea>` when `multiline` is set. The field is
 stretched over the available width with `box-sizing: border-box` — the layout a
-Flutter `TextField` gets from the column it lives in — while typography, padding
-and border stay with the browser.
+Flutter `TextField` gets from the column it lives in — and it inherits the font,
+the colour and the line height of its box, which is what sizes it.
+
+Everything a browser draws around a form field by itself is stripped: no border,
+no padding, no background. A Flutter field carries no Material decoration either,
+so the box around a field is the only thing that draws one, on both targets.
 
 | Unibox        | Jaspr / HTML                                           |
 | ------------- | ------------------------------------------------------ |

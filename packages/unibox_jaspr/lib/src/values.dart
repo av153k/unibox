@@ -294,17 +294,29 @@ Styles toPositionedStyles(core.PositionedNode node) {
 /// Builds the CSS of a single line text input or a text area.
 ///
 /// Inputs are replaced elements: the browser gives them an intrinsic width, its
-/// own padding, its own border and its own font. Stretching the field over the
-/// available width with `box-sizing: border-box` reproduces the layout a Flutter
-/// `TextField` gets from the column it lives in, and `font: inherit` makes the
-/// field adopt the typography of the enclosing box instead of the browser's
-/// form font — the same thing the Flutter renderer does when a box sets
-/// typography.
+/// own padding, its own border, its own font and its own colour. Stretching the
+/// field over the available width with `box-sizing: border-box` reproduces the
+/// layout a Flutter `TextField` gets from the column it lives in, `font: inherit`
+/// makes the field adopt the typography of the enclosing box — including the line
+/// height, which is what sizes the field — and `color: inherit` keeps the text it
+/// receives the same colour as the text around it.
+///
+/// Everything else is stripped away, down to the border and the padding, because
+/// the Flutter renderer renders a field without Material's decoration as well:
+/// the box around a field draws the border and the padding on both targets, so a
+/// field looks the same on either of them and not like a browser widget on one
+/// and a Material widget on the other.
 Styles toTextInputStyles() {
   return Styles(
     boxSizing: BoxSizing.borderBox,
     width: const Unit.percent(100),
-    raw: const <String, String>{'font': 'inherit'},
+    raw: const <String, String>{
+      'font': 'inherit',
+      'color': 'inherit',
+      'border': 'none',
+      'padding': '0',
+      'background-color': 'transparent',
+    },
   );
 }
 
@@ -317,8 +329,28 @@ Styles toTextInputStyles() {
 /// which is the `Column` the same node renders to in Flutter.
 ///
 /// [interactive] adds a pointer cursor for boxes that react to input.
-Styles toBoxStyles(core.BoxStyle style, {bool interactive = false}) {
-  final core.Axis direction = style.resolvedDirection;
+///
+/// [declaredOnly] turns the filled in flex layout off, so only the tokens the
+/// style actually sets are emitted. That is what a state rule needs: a `:hover`
+/// rule that restated the whole flex layout would reset the `flex-direction`,
+/// `justify-content` and `align-items` of the resting rule, so hovering a row
+/// would silently turn it into a column — the browser layers a state rule over
+/// the resting one the same way the Flutter renderer merges a state style, and
+/// both may only contribute what the state mentions.
+Styles toBoxStyles(
+  core.BoxStyle style, {
+  bool interactive = false,
+  bool declaredOnly = false,
+}) {
+  final core.Axis? direction = declaredOnly
+      ? style.direction
+      : style.resolvedDirection;
+  final core.MainAlign? mainAlign = declaredOnly
+      ? style.mainAlign
+      : style.mainAlign ?? core.MainAlign.start;
+  final core.CrossAlign? crossAlign = declaredOnly
+      ? style.crossAlign
+      : style.crossAlign ?? core.CrossAlign.start;
   final core.BoxBorder? border = style.border;
   final core.BoxShadow? shadow = style.shadow;
   final core.BoxSpacing? padding = style.padding;
@@ -331,12 +363,10 @@ Styles toBoxStyles(core.BoxStyle style, {bool interactive = false}) {
 
   final Styles boxStyles = Styles(
     boxSizing: BoxSizing.borderBox,
-    display: Display.flex,
-    flexDirection: toCssFlexDirection(direction),
-    justifyContent: toCssJustifyContent(
-      style.mainAlign ?? core.MainAlign.start,
-    ),
-    alignItems: toCssAlignItems(style.crossAlign ?? core.CrossAlign.start),
+    display: declaredOnly ? null : Display.flex,
+    flexDirection: direction == null ? null : toCssFlexDirection(direction),
+    justifyContent: mainAlign == null ? null : toCssJustifyContent(mainAlign),
+    alignItems: crossAlign == null ? null : toCssAlignItems(crossAlign),
     gap: gap == null ? null : Gap.all(Unit.pixels(gap)),
     flex: flex == null
         ? null

@@ -350,6 +350,34 @@ void main() {
       expect(css, contains('width: 80px;'));
     });
 
+    testComponents('leaves the flex layout out of a state rule', (
+      tester,
+    ) async {
+      // A state rule is layered over the resting rule, exactly like a state
+      // style is merged over the resting style in Flutter. Restating the flex
+      // layout there would reset it: hovering this row would turn it into a
+      // column and move the label to the start.
+      pumpNode(
+        tester,
+        const core.Box(
+          direction: core.Axis.horizontal,
+          mainAlign: core.MainAlign.center,
+          onTap: _noop,
+          hoverStyle: core.BoxStyle(backgroundColor: core.BoxColor.black),
+        ),
+      );
+
+      final String className = classesOf(find.tag('div'))!;
+      final String css = cssOf(find.tag('style'));
+      final String hoverRule = _ruleOf(css, '.$className:hover');
+
+      expect(hoverRule, contains('background-color: #000000;'));
+      expect(hoverRule, isNot(contains('flex-direction')));
+      expect(hoverRule, isNot(contains('justify-content')));
+      expect(hoverRule, isNot(contains('align-items')));
+      expect(hoverRule, isNot(contains('display')));
+    });
+
     testComponents('derives the same class name for identical styles', (
       tester,
     ) async {
@@ -395,4 +423,21 @@ void main() {
 /// A node type no renderer knows about.
 class _UnknownNode extends core.UINode {
   const _UnknownNode();
+}
+
+/// Does nothing, for a box that only needs to be interactive.
+void _noop() {}
+
+/// The body of the CSS rule [selector] in [css].
+///
+/// The hover rule of a box lives inside an `@media` block, so the assertions of
+/// a state rule have to look at that rule alone instead of the whole stylesheet.
+String _ruleOf(String css, String selector) {
+  final int start = css.indexOf('$selector {');
+  if (start == -1) {
+    throw StateError('No rule for $selector in:\n$css');
+  }
+
+  final int end = css.indexOf('}', start);
+  return css.substring(start, end);
 }

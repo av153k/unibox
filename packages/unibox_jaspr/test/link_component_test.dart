@@ -32,6 +32,22 @@ void main() {
       expect(attributesOf(find.tag('a'))['href'], '/docs');
     });
 
+    testComponents('cancels the user agent styling of a link', (tester) async {
+      // The browser colours a link blue and underlines it. Flutter draws the
+      // child of a link as it is, so leaving the user agent styles in place would
+      // make the same tree look different on the two targets: the anchor takes
+      // its colour from the box instead and adds no decoration of its own.
+      pumpNode(
+        tester,
+        const core.LinkNode('/docs', child: core.TextNode('Docs')),
+      );
+
+      expect(stylesOf(find.tag('a')), <String, String>{
+        'color': 'inherit',
+        'text-decoration': 'none',
+      });
+    });
+
     testComponents('wraps any child node', (tester) async {
       pumpNode(
         tester,

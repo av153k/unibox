@@ -15,6 +15,13 @@ import 'render.dart';
 /// [core.LinkNode.onTap] is called from a plain `click` listener instead of the
 /// component's `onClick`, because `onClick` would call `preventDefault()` and
 /// stop the browser from following the link.
+///
+/// The anchor declares `color: inherit` and `text-decoration: none`, which turns
+/// off the two things the browser adds to a link on its own. An `<a>` is not a
+/// text node, so the typography of the enclosing box has to reach it explicitly,
+/// and Flutter's link renderer draws its child as it is — no underline, no link
+/// colour — so leaving the user agent styles in place would make the same tree
+/// look different on the two targets.
 class UniboxLink extends StatelessComponent {
   /// Creates a renderer for [node].
   const UniboxLink({required this.node, super.key});
@@ -32,12 +39,22 @@ class UniboxLink extends StatelessComponent {
       href: node.url,
       target: newTab ? Target.blank : null,
       attributes: newTab ? _newTabAttributes : null,
+      styles: _anchorStyles,
       events: onTap == null
           ? null
           : <String, EventCallback>{'click': (event) => onTap()},
     );
   }
 }
+
+/// The declarations that cancel what the browser does to a link by itself.
+///
+/// `color: inherit` makes the anchor use the typography of its box instead of the
+/// user agent link colour, and `text-decoration: none` removes the underline, so
+/// a link is drawn exactly like the text the node tree describes.
+const Styles _anchorStyles = Styles(
+  raw: <String, String>{'color': 'inherit', 'text-decoration': 'none'},
+);
 
 /// Attributes that make a `target="_blank"` link safe.
 const Map<String, String> _newTabAttributes = <String, String>{

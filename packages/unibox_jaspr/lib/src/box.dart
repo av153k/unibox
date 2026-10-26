@@ -130,10 +130,11 @@ class UniboxBox extends StatelessComponent {
   ///
   /// Only the tokens of the state are emitted, so the browser layers them over
   /// the resting rule exactly like the Flutter renderer layers them over the
-  /// resting style.
+  /// resting style. That includes the flex layout: the resting rule already
+  /// decided it, and a state rule that restated it would move the content.
   Styles? _stateStyles(core.BoxState state) {
     final core.BoxStyle? style = box.stateStyle(state);
-    return style == null ? null : toBoxStyles(style);
+    return style == null ? null : toBoxStyles(style, declaredOnly: true);
   }
 
   /// The accessibility attributes of the box, or `null` when it needs none.

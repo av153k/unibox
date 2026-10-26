@@ -16,7 +16,29 @@ void main() {
         'box-sizing': 'border-box',
         'width': '100%',
         'font': 'inherit',
+        'color': 'inherit',
+        'border': 'none',
+        'padding': '0',
+        'background-color': 'transparent',
       });
+    });
+
+    testComponents('renders a text input without the browser form chrome', (
+      tester,
+    ) async {
+      // A browser draws a border, a padding and a background around a field of
+      // its own. Neither of those has a Flutter counterpart: the renderer draws
+      // a field without Material chrome, so the box around it is the only thing
+      // that decides how a field looks on either target.
+      pumpNode(tester, const core.TextInputNode());
+
+      final Map<String, String> styles = stylesOf(find.tag('input'));
+
+      expect(styles['border'], 'none');
+      expect(styles['padding'], '0');
+      expect(styles['background-color'], 'transparent');
+      expect(styles['font'], 'inherit');
+      expect(styles['color'], 'inherit');
     });
 
     testComponents('writes the value of a controlled input', (tester) async {
