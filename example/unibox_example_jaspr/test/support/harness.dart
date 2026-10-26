@@ -14,7 +14,9 @@ TestRenderElement elementOf(Finder finder) => elementsOf(finder).single;
 /// Only the properties CSS inherits are collected, and the closest declaration
 /// wins, which is exactly what a browser does for typography. A box that is
 /// styled through a scoped class rule is skipped, since its declarations live in
-/// a `<style>` block rather than on the element.
+/// a `<style>` block rather than on the element. A value of `inherit` is skipped
+/// as well: it is not a value but the instruction to keep looking up the tree,
+/// which is what a renderer writes when it cancels a user agent default.
 Map<String, String> inheritedStylesOf(Finder finder) {
   const Set<String> inherited = <String>{
     'font-size',
@@ -36,7 +38,7 @@ Map<String, String> inheritedStylesOf(Finder finder) {
 
     if (styles != null) {
       for (final MapEntry<String, String> style in styles.entries) {
-        if (inherited.contains(style.key)) {
+        if (inherited.contains(style.key) && style.value != 'inherit') {
           resolved.putIfAbsent(style.key, () => style.value);
         }
       }

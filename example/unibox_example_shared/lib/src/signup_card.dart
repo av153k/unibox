@@ -40,13 +40,27 @@ abstract final class ExamplePalette {
 ///
 /// Typography is the one thing a box passes down to its children, so the card
 /// states it once per area and the text nodes only repeat a token they
-/// override. The rendered result is identical in Flutter and on the web: a
+/// override. The result is identical in Flutter and on the web: a
 /// `DefaultTextStyle` on one side, plain CSS inheritance on the other.
 abstract final class ExampleType {
+  /// The line height of the example, as a multiple of the font size.
+  ///
+  /// The unitless form is the only one that means the same thing in CSS and in
+  /// Flutter, so every text of the card gets the same leading on both targets.
+  /// A font *family* is deliberately left out: a family is a host decision — the
+  /// Flutter app inherits the platform font from its theme, the web app declares
+  /// a stack on the document — and both platforms end up on their own UI font,
+  /// which is the closest a family can get across two applications.
+  static const double lineHeight = 1.45;
+
   /// The body text of the card.
+  ///
+  /// This is the style the card installs, so everything below it inherits the
+  /// line height and only overrides size, weight and colour.
   static const BoxTextStyle body = BoxTextStyle(
     fontSize: 14,
     color: ExamplePalette.text,
+    lineHeight: lineHeight,
   );
 
   /// Supporting text, such as hints and the status line.
@@ -181,22 +195,42 @@ Box buildSignupCard({
     children: <UINode>[
       _banner(),
       _heading(),
-      TextInputNode(
-        value: state.name,
-        placeholder: 'Ada Lovelace',
-        onChanged: onNameChanged,
-        onSubmitted: (_) => onSubmit(),
+      _field(
+        TextInputNode(
+          value: state.name,
+          placeholder: 'Ada Lovelace',
+          onChanged: onNameChanged,
+          onSubmitted: (_) => onSubmit(),
+        ),
       ),
-      TextInputNode(
-        value: state.email,
-        placeholder: 'ada@example.com',
-        onChanged: onEmailChanged,
-        onSubmitted: (_) => onSubmit(),
+      _field(
+        TextInputNode(
+          value: state.email,
+          placeholder: 'ada@example.com',
+          onChanged: onEmailChanged,
+          onSubmitted: (_) => onSubmit(),
+        ),
       ),
       _newsletterRow(state, onNewsletterToggled),
       _footer(state, onSubmit),
       ?status,
     ],
+  );
+}
+
+/// A text field of the form.
+///
+/// The node only says what the field is for, so the box around it says what the
+/// field looks like: both renderers keep the platform field free of its own
+/// chrome — no Material underline, no browser border and padding — which makes
+/// this box the only thing that draws a field, on either target.
+UINode _field(TextInputNode node) {
+  return Box(
+    padding: const BoxSpacing.symmetric(horizontal: 12, vertical: 10),
+    backgroundColor: ExamplePalette.surface,
+    borderRadius: 10,
+    border: const BoxBorder(color: ExamplePalette.border),
+    children: <UINode>[node],
   );
 }
 

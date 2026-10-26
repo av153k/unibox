@@ -4,6 +4,7 @@ import 'package:unibox_example_jaspr/app.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
 
 import 'support/harness.dart';
+import 'support/visual_facts.dart';
 
 /// The CSS weight of a core weight, as the renderer emits it.
 String weightOf(core.FontWeight weight) {
@@ -59,6 +60,14 @@ Map<String, String> describedAttributesOf(String label) {
 
 void main() {
   group('card parity', () {
+    testComponents('renders every box the way the fixture describes it', (
+      tester,
+    ) async {
+      tester.pumpComponent(const UniboxExampleApp());
+
+      expect(boxFactsOf(), CardParity.boxes);
+    });
+
     testComponents('renders every text with the shared typography', (
       tester,
     ) async {
@@ -86,6 +95,13 @@ void main() {
         if (color != null) {
           expect(styles['color'], colorOf(color), reason: fact.text);
         }
+        if (expected.lineHeight != null) {
+          expect(
+            styles['line-height'],
+            '${expected.lineHeight}',
+            reason: fact.text,
+          );
+        }
       }
     });
 
@@ -93,6 +109,33 @@ void main() {
       tester.pumpComponent(const UniboxExampleApp());
 
       expect(find.tag('input'), findsNComponents(CardParity.inputCount));
+    });
+
+    testComponents('renders a field without the browser form chrome', (
+      tester,
+    ) async {
+      tester.pumpComponent(const UniboxExampleApp());
+
+      final Map<String, String> styles = stylesOf(find.tag('input').first);
+
+      expect(styles['border'], 'none');
+      expect(styles['padding'], '0');
+      expect(styles['background-color'], 'transparent');
+      // The typography of the card reaches the field, which is what keeps its
+      // text and its height the same as in Flutter.
+      expect(styles['font'], 'inherit');
+      expect(styles['color'], 'inherit');
+    });
+
+    testComponents('renders a link without the browser link styling', (
+      tester,
+    ) async {
+      tester.pumpComponent(const UniboxExampleApp());
+
+      final Map<String, String> styles = stylesOf(find.tag('a'));
+
+      expect(styles['color'], 'inherit');
+      expect(styles['text-decoration'], 'none');
     });
 
     testComponents('describes every shared role', (tester) async {

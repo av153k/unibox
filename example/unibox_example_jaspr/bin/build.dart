@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:jaspr/server.dart';
-import 'package:unibox_example_jaspr/app.dart';
+import 'package:unibox_example_jaspr/document.dart';
 
 /// Renders the example to a static HTML file.
 ///
@@ -16,7 +16,7 @@ import 'package:unibox_example_jaspr/app.dart';
 Future<void> main() async {
   Jaspr.initializeApp();
 
-  final ResponseLike page = await renderComponent(const UniboxExampleApp());
+  final ResponseLike page = await renderComponent(buildExampleDocument());
 
   final File file = File('build/index.html')
     ..createSync(recursive: true)
