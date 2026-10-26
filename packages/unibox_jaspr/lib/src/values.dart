@@ -223,6 +223,44 @@ Styles toImageStyles(core.ImageNode node) {
   );
 }
 
+/// Builds the CSS of a stack node.
+///
+/// The stack is a relative grid into which every child is placed in the same
+/// cell. Layering children that way keeps the container sized to the largest
+/// child, which is what a Flutter `Stack` does, while still letting absolutely
+/// positioned children resolve their offsets against the stack itself.
+Styles toStackStyles(core.StackNode node) {
+  return Styles(
+    position: Position.relative(),
+    display: Display.grid,
+    width: toCssUnit(node.width),
+    height: toCssUnit(node.height),
+  );
+}
+
+/// The CSS that puts a child into the single cell of its stack.
+///
+/// Children placed like this overlap each other, painted in source order, so the
+/// last one ends up on top.
+Styles toStackChildStyles() {
+  return Styles(raw: const <String, String>{'grid-area': '1 / 1'});
+}
+
+/// Builds the CSS of a [core.PositionedNode] that declares at least one offset.
+///
+/// The offsets are resolved against the nearest positioned ancestor, which is
+/// the stack the node belongs to.
+Styles toPositionedStyles(core.PositionedNode node) {
+  return Styles(
+    position: Position.absolute(
+      top: toCssUnit(node.top),
+      right: toCssUnit(node.right),
+      bottom: toCssUnit(node.bottom),
+      left: toCssUnit(node.left),
+    ),
+  );
+}
+
 /// Builds the CSS of a box from its resolved [core.BoxStyle].
 ///
 /// Unset token values are omitted so that browser defaults (and inherited

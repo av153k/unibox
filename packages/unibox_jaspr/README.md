@@ -147,6 +147,27 @@ from following the link. A link without `onTap` renders no listeners at all.
 Relative destinations need no rewriting, and the Flutter renderer delegates the
 actual navigation to the host through `UniboxLinkScope`.
 
+## Stack mapping
+
+A `StackNode` becomes a `<div>` with `position: relative` and `display: grid`.
+Every child is placed in the same grid cell, so the children overlap and paint in
+source order (last on top) while the container still sizes to its largest child —
+a `Stack` with `Clip.none` in Flutter.
+
+| Unibox                     | Jaspr / CSS                                          |
+| -------------------------- | ---------------------------------------------------- |
+| `StackNode`                | `position: relative` plus `display: grid`            |
+| `StackNode.width`/`height` | `width`/`height` (`double.infinity` → `100%`)        |
+| plain child                | `grid-area: 1 / 1` cell wrapper                      |
+| `PositionedNode`           | `position: absolute` plus `top`/`right`/`bottom`/`left` |
+
+Each child is wrapped in a cell `<div>`: the overlap is a property of the
+container, and the rendered child already carries its own inline styles.
+
+A `PositionedNode` without any offset keeps its natural place, exactly like the
+`Positioned` widget Flutter never needed, and a `PositionedNode` rendered
+outside a stack falls back to its child.
+
 ## Testing
 
 ```sh
