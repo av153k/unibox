@@ -128,6 +128,25 @@ A single dimension keeps the natural aspect ratio, just like an `Image` that
 only constrains one side. Relative sources need no rewriting: the browser
 resolves them against the page while the Flutter renderer loads them as assets.
 
+## Link mapping
+
+A `LinkNode` becomes a real `<a>` element, so the link keeps working without
+JavaScript: middle clicks, the context menu, prefetching and crawlers all behave
+like they do on any other website.
+
+| Unibox   | Jaspr / CSS                                          |
+| -------- | ---------------------------------------------------- |
+| `url`    | `href`                                               |
+| `newTab` | `target="_blank"` plus `rel="noopener noreferrer"`   |
+| `onTap`  | `click` listener that runs alongside the navigation  |
+
+`onTap` is attached as a plain `click` listener rather than the component's
+`onClick`, because `onClick` calls `preventDefault()` and would stop the browser
+from following the link. A link without `onTap` renders no listeners at all.
+
+Relative destinations need no rewriting, and the Flutter renderer delegates the
+actual navigation to the host through `UniboxLinkScope`.
+
 ## Testing
 
 ```sh

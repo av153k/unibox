@@ -3,6 +3,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'box.dart';
 import 'image_node.dart';
+import 'link_node.dart';
 import 'text_node.dart';
 
 /// Renders [node] as a Jaspr [Component].
@@ -13,6 +14,7 @@ Component renderJaspr(core.UINode node) {
   return switch (node) {
     final core.Box box => UniboxBox(box: box),
     final core.ImageNode image => UniboxImage(node: image),
+    final core.LinkNode link => UniboxLink(node: link),
     final core.TextNode text => UniboxText(node: text),
     _ => throw UnsupportedError(
       'No Jaspr renderer for ${node.runtimeType}.',
