@@ -1,0 +1,374 @@
+import 'dart:async';
+
+import 'package:jaspr_test/jaspr_test.dart';
+import 'package:unibox_core/unibox_core.dart' as core;
+import 'package:unibox_jaspr/unibox_jaspr.dart';
+
+import 'support/harness.dart';
+
+void main() {
+  group('Box layout', () {
+    testComponents('renders an empty box as a single div', (tester) async {
+      pumpNode(tester, const core.Box());
+
+      expect(find.tag('div'), findsOneComponent);
+      expect(stylesOf(find.tag('div')), <String, String>{
+        'box-sizing': 'border-box',
+      });
+    });
+
+    testComponents('omits styles for unset tokens', (tester) async {
+      pumpNode(tester, const core.Box(children: [core.Box()]));
+
+      expect(stylesOf(find.tag('div').first).keys, <String>['box-sizing']);
+    });
+
+    testComponents('maps a horizontal direction to a flex row', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          direction: core.Axis.horizontal,
+          children: [core.Box(width: 20, height: 20), core.Box(width: 30)],
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div').first);
+
+      expect(find.tag('div'), findsNComponents(3));
+      expect(styles['display'], 'flex');
+      expect(styles['flex-direction'], 'row');
+      expect(styles['justify-content'], 'start');
+      expect(styles['align-items'], 'start');
+      expect(styles.containsKey('gap'), isFalse);
+    });
+
+    testComponents('maps a vertical direction to a flex column', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          direction: core.Axis.vertical,
+          mainAlign: core.MainAlign.spaceBetween,
+          crossAlign: core.CrossAlign.center,
+          gap: 12,
+          children: [core.Box(height: 20), core.Box(height: 30)],
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div').first);
+
+      expect(styles['flex-direction'], 'column');
+      expect(styles['justify-content'], 'space-between');
+      expect(styles['align-items'], 'center');
+      expect(styles['gap'], '12px');
+    });
+
+    testComponents('maps main axis alignment', (tester) async {
+      const Map<core.MainAlign, String> mainAligns = {
+        core.MainAlign.center: 'center',
+        core.MainAlign.end: 'end',
+        core.MainAlign.spaceAround: 'space-around',
+        core.MainAlign.spaceEvenly: 'space-evenly',
+      };
+
+      for (final MapEntry<core.MainAlign, String> entry in mainAligns.entries) {
+        pumpNode(
+          tester,
+          core.Box(direction: core.Axis.horizontal, mainAlign: entry.key),
+        );
+
+        expect(stylesOf(find.tag('div').first)['justify-content'], entry.value);
+      }
+    });
+
+    testComponents('stretches children across the cross axis', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          direction: core.Axis.horizontal,
+          crossAlign: core.CrossAlign.stretch,
+        ),
+      );
+
+      expect(stylesOf(find.tag('div'))['align-items'], 'stretch');
+    });
+
+    testComponents('renders child nodes as nested divs', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          direction: core.Axis.vertical,
+          children: [core.Box(height: 10), core.Box(height: 20)],
+        ),
+      );
+
+      expect(find.tag('div'), findsNComponents(3));
+      expect(stylesOf(find.tag('div').at(1))['height'], '10px');
+      expect(stylesOf(find.tag('div').at(2))['height'], '20px');
+    });
+  });
+
+  group('Box styling', () {
+    testComponents('maps dimensions and expands infinite ones', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          width: 120,
+          height: double.infinity,
+          minWidth: 40,
+          maxWidth: 60.5,
+          minHeight: 10,
+          maxHeight: 20,
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div'));
+
+      expect(styles['width'], '120px');
+      expect(styles['height'], '100%');
+      expect(styles['min-width'], '40px');
+      expect(styles['max-width'], '60.5px');
+      expect(styles['min-height'], '10px');
+      expect(styles['max-height'], '20px');
+    });
+
+    testComponents('maps padding and margin to four sided spacing', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          padding: core.BoxSpacing.only(left: 4, top: 8, right: 12, bottom: 16),
+          margin: core.BoxSpacing.all(6),
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div'));
+
+      expect(styles['padding'], '8px 12px 16px 4px');
+      expect(styles['margin'], '6px');
+    });
+
+    testComponents('maps background, radius, border and shadow', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          backgroundColor: core.BoxColor.rgb(0x2D, 0x6C, 0xF3),
+          borderRadius: 12,
+          border: core.BoxBorder(width: 2, color: core.BoxColor.black),
+          shadow: core.BoxShadow(
+            offsetX: 0,
+            offsetY: 4,
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div'));
+
+      expect(styles['background-color'], '#2d6cf3');
+      expect(styles['border-radius'], '12px');
+      expect(styles['border'], 'solid #000000 2px');
+      expect(styles['box-shadow'], '0px 4px 8px 2px #000000');
+    });
+
+    testComponents('maps translucent colors to rgba', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(backgroundColor: core.BoxColor.rgba(0, 0, 0, 128)),
+      );
+
+      expect(
+        stylesOf(find.tag('div'))['background-color'],
+        'rgba(0, 0, 0, 0.502)',
+      );
+    });
+
+    testComponents('drops invisible borders', (tester) async {
+      pumpNode(tester, const core.Box(border: core.BoxBorder.none()));
+
+      expect(stylesOf(find.tag('div')).containsKey('border'), isFalse);
+    });
+
+    testComponents('maps overflow values', (tester) async {
+      const Map<core.Overflow, String> overflows = {
+        core.Overflow.visible: 'visible',
+        core.Overflow.hidden: 'hidden',
+        core.Overflow.scroll: 'auto',
+      };
+
+      for (final MapEntry<core.Overflow, String> entry in overflows.entries) {
+        pumpNode(tester, core.Box(overflow: entry.key));
+
+        expect(stylesOf(find.tag('div'))['overflow'], entry.value);
+      }
+    });
+
+    testComponents('maps flex to a flex item', (tester) async {
+      pumpNode(tester, const core.Box(flex: 2));
+
+      final Map<String, String> styles = stylesOf(find.tag('div'));
+
+      expect(styles['flex-grow'], '2');
+      expect(styles['flex-shrink'], '1');
+      expect(styles['flex-basis'], '0');
+    });
+
+    testComponents('flat parameters win over style tokens', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          width: 50,
+          style: core.BoxStyle(width: 200, height: 30),
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div'));
+
+      expect(styles['width'], '50px');
+      expect(styles['height'], '30px');
+    });
+  });
+
+  group('Box interactions', () {
+    testComponents('calls onTap when clicked and shows a pointer cursor', (
+      tester,
+    ) async {
+      var taps = 0;
+      pumpNode(
+        tester,
+        core.Box(onTap: () => taps++, children: const [core.Box()]),
+      );
+
+      expect(stylesOf(find.tag('div').first)['cursor'], 'pointer');
+
+      await tester.click(find.tag('div').first);
+
+      expect(taps, 1);
+    });
+
+    testComponents('keeps a static box free of listeners', (tester) async {
+      pumpNode(tester, const core.Box());
+
+      expect(elementOf(find.tag('div')).events, isNull);
+      expect(stylesOf(find.tag('div')).containsKey('cursor'), isFalse);
+    });
+
+    testComponents('reports hover changes', (tester) async {
+      final List<bool> hovers = <bool>[];
+      pumpNode(tester, core.Box(onHover: hovers.add));
+
+      tester.dispatchEvent(find.tag('div'), 'mouseenter');
+      tester.dispatchEvent(find.tag('div'), 'mouseleave');
+
+      expect(hovers, <bool>[true, false]);
+    });
+
+    testComponents('fires onLongPress after the press threshold', (
+      tester,
+    ) async {
+      var longPresses = 0;
+      pumpNode(tester, core.Box(onLongPress: () => longPresses++));
+
+      tester.dispatchEvent(find.tag('div'), 'pointerdown');
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+
+      expect(longPresses, 1);
+
+      tester.dispatchEvent(find.tag('div'), 'pointerup');
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+
+      expect(longPresses, 1);
+    });
+
+    testComponents('cancels the long press when the pointer is released', (
+      tester,
+    ) async {
+      var longPresses = 0;
+      pumpNode(tester, core.Box(onLongPress: () => longPresses++));
+
+      tester.dispatchEvent(find.tag('div'), 'pointerdown');
+      tester.dispatchEvent(find.tag('div'), 'pointerup');
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+
+      expect(longPresses, 0);
+    });
+  });
+
+  group('Box hover styles', () {
+    testComponents('scopes hover styles into a stylesheet', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          width: 80,
+          backgroundColor: core.BoxColor.white,
+          hoverStyle: core.BoxStyle(backgroundColor: core.BoxColor.black),
+        ),
+      );
+
+      expect(find.tag('style'), findsOneComponent);
+      expect(stylesOf(find.tag('div')), isEmpty);
+
+      final String className = classesOf(find.tag('div'))!;
+      expect(className, matches(RegExp(r'^unibox-box-[0-9a-f]{8}$')));
+
+      final String css = cssOf(find.tag('style'));
+      expect(css, contains('.$className {'));
+      expect(css, contains('.$className:hover {'));
+      expect(css, contains('background-color: #ffffff;'));
+      expect(css, contains('background-color: #000000;'));
+      expect(css, contains('width: 80px;'));
+    });
+
+    testComponents('derives the same class name for identical styles', (
+      tester,
+    ) async {
+      const core.BoxStyle hoverStyle = core.BoxStyle(
+        backgroundColor: core.BoxColor.black,
+      );
+      pumpNode(
+        tester,
+        const core.Box(
+          children: [
+            core.Box(hoverStyle: hoverStyle),
+            core.Box(hoverStyle: hoverStyle),
+          ],
+        ),
+      );
+
+      expect(
+        classesOf(find.tag('div').at(1)),
+        classesOf(find.tag('div').at(2)),
+      );
+    });
+  });
+
+  group('renderJaspr', () {
+    testComponents('toComponent renders the same tree', (tester) async {
+      const core.Box node = core.Box(
+        width: 30,
+        height: 30,
+        backgroundColor: core.BoxColor.black,
+      );
+
+      tester.pumpComponent(node.toComponent());
+
+      expect(stylesOf(find.tag('div'))['width'], '30px');
+    });
+
+    test('throws for nodes without a Jaspr renderer', () {
+      expect(() => renderJaspr(const _UnknownNode()), throwsUnsupportedError);
+    });
+  });
+}
+
+/// A node type no renderer knows about.
+class _UnknownNode extends core.UINode {
+  const _UnknownNode();
+}
