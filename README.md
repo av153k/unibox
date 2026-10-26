@@ -28,6 +28,19 @@ final card = Box(
 Dependencies flow in one direction only: both renderers depend on
 `unibox_core`, and `unibox_core` never depends on a renderer.
 
+## Examples
+
+[`example/`](example/README.md) contains a signup card described once and
+rendered by both targets: `unibox_example_flutter` hosts it in a
+`StatefulWidget`, `unibox_example_jaspr` in a `StatefulComponent`, and
+`unibox_example_shared` holds the node tree and the form state they share.
+
+```shell
+(cd example/unibox_example_shared && dart test)
+(cd example/unibox_example_jaspr && dart test)
+(cd example/unibox_example_flutter && flutter test)
+```
+
 ## Development
 
 This repository is a [Dart workspace](https://dart.dev/tools/pub/workspaces).

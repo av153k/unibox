@@ -1,0 +1,253 @@
+import 'package:test/test.dart';
+import 'package:unibox_core/unibox_core.dart';
+import 'package:unibox_example_shared/unibox_example_shared.dart';
+
+/// Every node of [root], depth first.
+List<UINode> flatten(UINode root) => <UINode>[
+  root,
+  for (final UINode child in root.children) ...flatten(child),
+];
+
+/// The text of every [TextNode] in [root], depth first.
+List<String> textsIn(UINode root) =>
+    flatten(root)
+        .whereType<TextNode>()
+        .map((TextNode node) => node.text)
+        .toList();
+
+/// The innermost box that contains a [TextNode] with [label].
+Box boxAround(UINode root, String label) =>
+    flatten(root)
+        .whereType<Box>()
+        .lastWhere((Box box) => textsIn(box).contains(label));
+
+/// Stands in for a host application: records what the card reports.
+final class RecordingHost {
+  /// The names reported through `onNameChanged`.
+  final List<String> names = <String>[];
+
+  /// The emails reported through `onEmailChanged`.
+  final List<String> emails = <String>[];
+
+  /// How often the newsletter opt-in was toggled.
+  int newsletterToggles = 0;
+
+  /// How often the form was submitted.
+  int submissions = 0;
+
+  /// Builds the card for [state] with recording callbacks.
+  Box card([SignupFormState state = const SignupFormState()]) {
+    return buildSignupCard(
+      state: state,
+      onNameChanged: names.add,
+      onEmailChanged: emails.add,
+      onNewsletterToggled: () => newsletterToggles++,
+      onSubmit: () => submissions++,
+    );
+  }
+}
+
+void main() {
+  group('SignupFormState', () {
+    test('starts empty and incomplete', () {
+      const SignupFormState state = SignupFormState();
+
+      expect(state.isDirty, isFalse);
+      expect(state.isComplete, isFalse);
+      expect(state.newsletter, isFalse);
+      expect(state.submitted, isFalse);
+    });
+
+    test('is complete once a name and an email address are entered', () {
+      const SignupFormState state = SignupFormState(
+        name: 'Ada',
+        email: 'ada@example.com',
+      );
+
+      expect(state.isDirty, isTrue);
+      expect(state.isComplete, isTrue);
+    });
+
+    test('ignores a whitespace only name', () {
+      const SignupFormState state = SignupFormState(
+        name: '   ',
+        email: 'ada@example.com',
+      );
+
+      expect(state.isComplete, isFalse);
+    });
+
+    test('copyWith replaces only the given fields', () {
+      const SignupFormState state = SignupFormState(
+        name: 'Ada',
+        email: 'ada@example.com',
+        newsletter: true,
+      );
+
+      final SignupFormState next = state.copyWith(submitted: true);
+
+      expect(next.name, 'Ada');
+      expect(next.email, 'ada@example.com');
+      expect(next.newsletter, isTrue);
+      expect(next.submitted, isTrue);
+    });
+
+    test('submits only once the form is complete', () {
+      expect(
+        submitSignupForm(const SignupFormState(name: 'Ada')).submitted,
+        isFalse,
+      );
+      expect(
+        submitSignupForm(
+          const SignupFormState(name: 'Ada', email: 'ada@example.com'),
+        ).submitted,
+        isTrue,
+      );
+    });
+  });
+
+  group('buildSignupCard', () {
+    test('renders a controlled field for the name and the email', () {
+      final List<TextInputNode> fields = flatten(
+        RecordingHost().card(
+          const SignupFormState(name: 'Ada', email: 'ada@example.com'),
+        ),
+      ).whereType<TextInputNode>().toList();
+
+      expect(fields, hasLength(2));
+      expect(fields[0].value, 'Ada');
+      expect(fields[0].placeholder, 'Ada Lovelace');
+      expect(fields[1].value, 'ada@example.com');
+      expect(fields[1].placeholder, 'ada@example.com');
+    });
+
+    test('reports typed values to the host', () {
+      final RecordingHost host = RecordingHost();
+      final List<TextInputNode> fields = flatten(host.card())
+          .whereType<TextInputNode>()
+          .toList();
+
+      fields[0].onChanged!('Ada');
+      fields[1].onChanged!('ada@example.com');
+
+      expect(host.names, <String>['Ada']);
+      expect(host.emails, <String>['ada@example.com']);
+    });
+
+    test('submits when enter is pressed in a field', () {
+      final RecordingHost host = RecordingHost();
+      final List<TextInputNode> fields = flatten(host.card())
+          .whereType<TextInputNode>()
+          .toList();
+
+      fields[1].onSubmitted!('ada@example.com');
+
+      expect(host.submissions, 1);
+    });
+
+    test('submits when the button is tapped', () {
+      final RecordingHost host = RecordingHost();
+
+      boxAround(
+        host.card(const SignupFormState(name: 'Ada', email: 'ada@example.com')),
+        'Create account',
+      ).onTap!();
+
+      expect(host.submissions, 1);
+    });
+
+    test('toggles the newsletter opt-in', () {
+      final RecordingHost host = RecordingHost();
+
+      boxAround(host.card(), 'Release notes').onTap!();
+
+      expect(host.newsletterToggles, 1);
+    });
+
+    test('colors the checkbox and checks it when the opt-in is on', () {
+      final Box checkbox = flatten(
+        RecordingHost().card(const SignupFormState(newsletter: true)),
+      ).whereType<Box>().firstWhere((Box box) => box.width == 24);
+
+      expect(checkbox.backgroundColor, ExamplePalette.accent);
+      expect(checkbox.border?.color, ExamplePalette.accent);
+      expect(textsIn(checkbox), <String>['✓']);
+    });
+
+    test('leaves the checkbox empty while the opt-in is off', () {
+      final Box checkbox = flatten(RecordingHost().card())
+          .whereType<Box>()
+          .firstWhere((Box box) => box.width == 24);
+
+      expect(checkbox.backgroundColor, ExamplePalette.surface);
+      expect(checkbox.children, isEmpty);
+    });
+
+    test('shows no hint before the form is touched', () {
+      expect(
+        textsIn(RecordingHost().card()),
+        isNot(contains('Add a name and an email address.')),
+      );
+    });
+
+    test('asks for the missing value while the form is incomplete', () {
+      final Box card = RecordingHost().card(const SignupFormState(name: 'Ada'));
+
+      expect(textsIn(card), contains('Add a name and an email address.'));
+    });
+
+    test('confirms that a complete form can be submitted', () {
+      final Box card = RecordingHost().card(
+        const SignupFormState(name: 'Ada', email: 'ada@example.com'),
+      );
+
+      expect(textsIn(card), contains('Looks good - press Create account.'));
+    });
+
+    test('replaces the hint with a confirmation after submitting', () {
+      final Box card = RecordingHost().card(
+        const SignupFormState(
+          name: 'Ada',
+          email: 'ada@example.com',
+          submitted: true,
+        ),
+      );
+
+      final List<String> texts = textsIn(card);
+
+      expect(texts, contains('Thanks, Ada! We will write to ada@example.com.'));
+      expect(texts, isNot(contains('Looks good - press Create account.')));
+    });
+
+    test('links to the documentation in a new tab', () {
+      final LinkNode link = flatten(RecordingHost().card())
+          .whereType<LinkNode>()
+          .single;
+
+      expect(link.url, 'https://unibox.dev');
+      expect(link.newTab, isTrue);
+      expect(textsIn(link), <String>['Read the docs']);
+    });
+
+    test('layers the avatar chip over the banner', () {
+      final StackNode stack = flatten(RecordingHost().card())
+          .whereType<StackNode>()
+          .single;
+
+      expect(stack.children, hasLength(2));
+      expect(stack.children.first, isA<Box>());
+      expect((stack.children.last as PositionedNode).child, isA<Box>());
+    });
+  });
+
+  group('buildExamplePage', () {
+    test('fills the surface in both directions', () {
+      final Box page = buildExamplePage(RecordingHost().card());
+
+      expect(page.width, double.infinity);
+      expect(page.height, double.infinity);
+      expect(page.backgroundColor, ExamplePalette.canvas);
+      expect(page.children.single, isA<Box>());
+    });
+  });
+}
