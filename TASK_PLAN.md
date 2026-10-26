@@ -56,7 +56,7 @@
 ### Phase 10: Host embeds
 - [x] Task 35: Core — `abstract class EmbedNode extends UINode` with an `Object get payload`, documented as the escape hatch for host specific content.
 - [x] Task 36: Flutter — `WidgetNode(Widget)` accepted by `renderFlutter`, with an `UnsupportedError` for foreign payloads.
-- [ ] Task 37: Jaspr — `ComponentNode(Component)` accepted by `renderJaspr` with the same contract.
+- [x] Task 37: Jaspr — `ComponentNode(Component)` accepted by `renderJaspr` with the same contract.
 
 ### Phase 11: Public readiness
 - [ ] Task 38: Add the MIT `LICENSE`, per package `CHANGELOG.md` files and the `repository`, `homepage`, `issue_tracker` and `topics` pubspec metadata while keeping `publish_to: none`.

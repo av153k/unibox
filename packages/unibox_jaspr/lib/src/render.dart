@@ -2,6 +2,7 @@ import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'box.dart';
+import 'embed_node.dart';
 import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
@@ -54,6 +55,14 @@ Component renderNode(core.UINode node) {
     final core.TextNode text => UniboxText(
       node: text,
       key: toJasprKey(text.key),
+    ),
+    final ComponentNode embed => Component.fragment(<Component>[
+      embed.component,
+    ], key: toJasprKey(embed.key)),
+    final core.EmbedNode embed => throw UnsupportedError(
+      'No Jaspr renderer for ${embed.runtimeType}: it carries a '
+      '${embed.payload.runtimeType}, and only a ComponentNode can be rendered '
+      'by this package.',
     ),
     _ => throw UnsupportedError('No Jaspr renderer for ${node.runtimeType}.'),
   };
