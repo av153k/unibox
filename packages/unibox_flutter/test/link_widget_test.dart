@@ -5,12 +5,17 @@ import 'package:unibox_flutter/unibox_flutter.dart';
 
 import 'support/harness.dart';
 
+/// The scope a host application is expected to provide around its tree.
+Widget scope(Widget child) =>
+    UniboxLinkScope(open: (String url) {}, child: child);
+
 void main() {
   group('LinkNode', () {
     testWidgets('renders its child', (tester) async {
       await pumpNode(
         tester,
         const core.LinkNode('https://unibox.dev', child: core.TextNode('Docs')),
+        wrap: scope,
       );
 
       expect(find.text('Docs'), findsOneWidget);
@@ -73,22 +78,22 @@ void main() {
       expect(events, <String>['onTap', 'open:https://unibox.dev']);
     });
 
-    testWidgets('taps safely without a scope', (tester) async {
+    testWidgets('reports a link that can neither open nor call back', (
+      tester,
+    ) async {
       await pumpNode(
         tester,
         const core.LinkNode('https://unibox.dev', child: core.TextNode('Docs')),
       );
 
-      await tester.tap(find.text('Docs'));
-      await tester.pump();
-
-      expect(tester.takeException(), isNull);
+      expect(tester.takeException(), isAssertionError);
     });
 
     testWidgets('shows a click cursor', (tester) async {
       await pumpNode(
         tester,
         const core.LinkNode('https://unibox.dev', child: core.TextNode('Docs')),
+        wrap: scope,
       );
 
       final MouseRegion region = tester.widget<MouseRegion>(
@@ -106,6 +111,7 @@ void main() {
       await pumpNode(
         tester,
         const core.LinkNode('https://unibox.dev', child: core.TextNode('Docs')),
+        wrap: scope,
       );
 
       expect(

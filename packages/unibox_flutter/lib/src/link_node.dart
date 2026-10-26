@@ -20,8 +20,10 @@ typedef LinkOpener = FutureOr<void> Function(String url);
 /// );
 /// ```
 ///
-/// Without a scope, links still call their own
-/// [core.LinkNode.onTap] and behave like any other tappable region.
+/// Without a scope, a link only calls its own [core.LinkNode.onTap]. A link
+/// with neither a scope nor an `onTap` would look tappable and do nothing on
+/// tap, so rendering one is reported as a host configuration error in debug
+/// builds.
 /// [core.LinkNode.newTab] only affects the web renderer.
 class UniboxLinkScope extends InheritedWidget {
   /// Creates a scope that opens links with [open].
@@ -50,6 +52,14 @@ class UniboxLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final LinkOpener? open = UniboxLinkScope.maybeOf(context);
+
+    assert(
+      open != null || node.onTap != null,
+      'Unibox: "${node.url}" is rendered as a link, but no UniboxLinkScope is '
+      'above it and the node has no onTap, so tapping it does nothing. Wrap '
+      'the tree in an UniboxLinkScope(open: ...) or give the LinkNode an '
+      'onTap callback.',
+    );
 
     return Semantics(
       link: true,

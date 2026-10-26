@@ -90,7 +90,9 @@ UniboxLinkScope(
 ```
 
 Links render as a click-cursor region that is exposed to screen readers as a
-link. Without a scope, tapping a link only calls its own `onTap`.
+link. Without a scope, tapping a link only calls its own `onTap`, and a link
+with neither a scope nor an `onTap` is reported as a host configuration error in
+debug builds instead of silently doing nothing.
 
 ## Stack mapping
 
