@@ -15,4 +15,5 @@
 /// ```
 library;
 
+export 'src/link_node.dart' show LinkOpener, UniboxLinkScope;
 export 'src/render.dart';

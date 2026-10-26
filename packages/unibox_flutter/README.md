@@ -69,3 +69,25 @@ Typography tokens that are left unset are not passed to Flutter, so the ambient
 
 A source that fails to load renders an empty box with the declared dimensions
 instead of throwing, so a broken image never breaks the layout.
+
+## Link mapping
+
+| Unibox   | Flutter                                        |
+| -------- | ---------------------------------------------- |
+| `child`  | the rendered child                             |
+| `onTap`  | `GestureDetector.onTap`                        |
+| `url`    | followed through `UniboxLinkScope`             |
+| `newTab` | web only, ignored by the Flutter renderer      |
+
+Flutter has no browser of its own, so the host application decides what
+following a link means and the renderer only reports the destination:
+
+```dart
+UniboxLinkScope(
+  open: (String url) => launchUrl(Uri.parse(url)),
+  child: renderFlutter(page),
+);
+```
+
+Links render as a click-cursor region that is exposed to screen readers as a
+link. Without a scope, tapping a link only calls its own `onTap`.

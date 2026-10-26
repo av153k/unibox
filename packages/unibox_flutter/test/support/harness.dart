@@ -9,14 +9,22 @@ const Key nodeKey = ValueKey<String>('unibox-node');
 /// Renders [node] centered on the default 800x600 test surface.
 ///
 /// The [Center] hands loose constraints to the node, which mirrors how a node
-/// is usually embedded and keeps fixed sizes measurable.
-Future<void> pumpNode(WidgetTester tester, core.UINode node) async {
+/// is usually embedded and keeps fixed sizes measurable. [wrap] injects
+/// inherited configuration, such as a [UniboxLinkScope], around the node.
+Future<void> pumpNode(
+  WidgetTester tester,
+  core.UINode node, {
+  Widget Function(Widget child)? wrap,
+}) async {
+  final Widget rendered = KeyedSubtree(
+    key: nodeKey,
+    child: renderFlutter(node),
+  );
+
   await tester.pumpWidget(
     Directionality(
       textDirection: TextDirection.ltr,
-      child: Center(
-        child: KeyedSubtree(key: nodeKey, child: renderFlutter(node)),
-      ),
+      child: Center(child: wrap == null ? rendered : wrap(rendered)),
     ),
   );
 }
