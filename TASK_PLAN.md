@@ -22,5 +22,5 @@
 - [x] Task 15: Jaspr `TextInputNode` — Implement `<input>` / `<textarea>` (controlled value, input/submit DOM events) with component tests.
 
 ### Phase 4: Integration & Verification
-- [ ] Task 16: Build an `example` package with a shared interactive form/card rendered across both Flutter and Jaspr targets.
-- [ ] Task 17: Run workspace-wide `dart analyze` and execute all test suites across all packages to verify zero errors and clean builds.
+- [x] Task 16: Build an `example` package with a shared interactive form/card rendered across both Flutter and Jaspr targets.
+- [x] Task 17: Run workspace-wide `dart analyze` and execute all test suites across all packages to verify zero errors and clean builds.
