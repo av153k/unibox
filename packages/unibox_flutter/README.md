@@ -91,3 +91,16 @@ UniboxLinkScope(
 
 Links render as a click-cursor region that is exposed to screen readers as a
 link. Without a scope, tapping a link only calls its own `onTap`.
+
+## Stack mapping
+
+| Unibox                            | Flutter                              |
+| --------------------------------- | ------------------------------------ |
+| `StackNode.children`              | `Stack` children, painted in order   |
+| `StackNode.width` / `height`      | `SizedBox` around the stack          |
+| `PositionedNode` offsets          | `Positioned`                         |
+| `PositionedNode` without offsets  | plain stack child                    |
+
+Stacks behave like CSS `overflow: visible` and do not clip their content. A
+`PositionedNode` rendered outside a `StackNode` renders its child without
+applying the offsets, because offsets are relative to the enclosing stack.
