@@ -133,5 +133,120 @@ void main() {
       expect(inNode(find.byType(TextField)), findsOneWidget);
       expect(find.text('Send'), findsOneWidget);
     });
+
+    testWidgets('asks for the keyboard of its input type', (tester) async {
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(inputType: core.InputType.email),
+      );
+
+      expect(renderedField(tester).keyboardType, TextInputType.emailAddress);
+      expect(renderedField(tester).autofillHints, <String>[
+        AutofillHints.email,
+      ]);
+    });
+
+    testWidgets('maps every input type', (tester) async {
+      const Map<core.InputType, TextInputType> expected =
+          <core.InputType, TextInputType>{
+            core.InputType.text: TextInputType.text,
+            core.InputType.email: TextInputType.emailAddress,
+            core.InputType.number: TextInputType.number,
+            core.InputType.phone: TextInputType.phone,
+            core.InputType.url: TextInputType.url,
+          };
+
+      for (final MapEntry<core.InputType, TextInputType> entry
+          in expected.entries) {
+        await pumpMaterialNode(
+          tester,
+          core.TextInputNode(inputType: entry.key),
+        );
+
+        expect(
+          renderedField(tester).keyboardType,
+          entry.value,
+          reason: 'for ${entry.key.name}',
+        );
+      }
+    });
+
+    testWidgets('keeps a multiline field on the plain text keyboard', (
+      tester,
+    ) async {
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(
+          multiline: true,
+          inputType: core.InputType.email,
+        ),
+      );
+
+      expect(renderedField(tester).keyboardType, TextInputType.multiline);
+      expect(renderedField(tester).autofillHints, isNull);
+    });
+
+    testWidgets('disables the field without losing its value', (tester) async {
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(value: 'locked', enabled: false),
+      );
+
+      expect(renderedField(tester).enabled, isFalse);
+      expect(currentText(tester), 'locked');
+    });
+
+    testWidgets('passes read only through', (tester) async {
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(value: 'locked', readOnly: true),
+      );
+
+      expect(renderedField(tester).readOnly, isTrue);
+    });
+
+    testWidgets('takes focus when it is autofocused', (tester) async {
+      await pumpMaterialNode(tester, const core.TextInputNode(autofocus: true));
+      await tester.pump();
+
+      expect(renderedField(tester).autofocus, isTrue);
+      expect(renderedField(tester).focusNode?.hasFocus, isTrue);
+    });
+
+    testWidgets('reports focus changes', (tester) async {
+      final List<bool> focuses = <bool>[];
+
+      await pumpMaterialNode(
+        tester,
+        core.TextInputNode(onFocusChanged: focuses.add),
+      );
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump();
+
+      expect(focuses, <bool>[true, false]);
+    });
+
+    testWidgets('announces its label', (tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(semanticsLabel: 'Email address'),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(TextField)),
+        isSemantics(
+          label: 'Email address',
+          isTextField: true,
+          hasEnabledState: true,
+          isEnabled: true,
+        ),
+      );
+
+      handle.dispose();
+    });
   });
 }
