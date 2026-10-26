@@ -39,7 +39,7 @@
 - [x] Task 23: Wire `textStyle` into `BoxStyle` and as a flat `Box` parameter, and give `TextNode` an optional `style: BoxTextStyle` with a `computedStyle` getter.
 - [x] Task 24: Flutter renderer — wrap box children in `DefaultTextStyle` when typography is set, map the new text tokens and let `TextField` adopt the inherited style.
 - [x] Task 25: Jaspr renderer — emit inherited typography on the `<div>` (`font-size`, `color`, `line-height`, ...) so CSS inheritance matches `DefaultTextStyle`.
-- [ ] Task 26: Refactor the example's shared card to rely on inherited typography and document the cascade precedence in all three READMEs.
+- [x] Task 26: Refactor the example's shared card to rely on inherited typography and document the cascade precedence in all three READMEs.
 
 ### Phase 8: Interaction states & accessibility
 - [ ] Task 27: Add `BoxState` (`hover`, `focus`, `pressed`, `disabled`), `Box.stateStyles`, `Box.enabled` and `computedStyleFor(BoxState)`; `isInteractive` respects `enabled`.

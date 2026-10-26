@@ -50,11 +50,38 @@ like a tight infinite `SizedBox` in plain Flutter.
 | `fontSize`              | `TextStyle.fontSize`                                            |
 | `fontWeight`            | `TextStyle.fontWeight` (`normal` → `w400`, `medium` → `w500`, `semiBold` → `w600`, `bold` → `w700`) |
 | `color`                 | `TextStyle.color`                                               |
+| `lineHeight`            | `TextStyle.height` (both are a multiple of the font size)       |
+| `fontFamily`            | `TextStyle.fontFamily`                                          |
+| `letterSpacing`         | `TextStyle.letterSpacing`                                       |
 | `textAlign`             | `Text.textAlign`                                                |
 | `maxLines` / `overflow` | `Text.maxLines` / `Text.overflow` (`clip`, `ellipsis`)           |
 
 Typography tokens that are left unset are not passed to Flutter, so the ambient
 `DefaultTextStyle` keeps providing them.
+
+## Typography mapping
+
+A `Box.textStyle` (or `BoxStyle.textStyle`) becomes a `DefaultTextStyle` around
+the children of the box, merged with whatever the host application already
+provides. Text nodes below it only pass the tokens they set themselves, so the
+result is plain Flutter inheritance:
+
+```dart
+const card = Box(
+  textStyle: BoxTextStyle(fontSize: 16, color: BoxColor.black),
+  children: [TextNode('Inherits 16px'), TextNode('Still 16px', fontWeight: FontWeight.bold)],
+);
+```
+
+`TextField` is the one widget that ignores `DefaultTextStyle`, so a
+`TextInputNode` inside a box that sets typography takes its style from the
+ambient text style explicitly. A field without such a box keeps Material's input
+style, which is what a plain `TextField` does. The box records the resolved
+typography in a `UniboxTextStyleScope`, the inherited widget the field looks for.
+
+Precedence, from strongest to weakest: the tokens of the node, the tokens of its
+`style`, the typography of the closest enclosing box, the `DefaultTextStyle` of
+the host application, and finally the Flutter default.
 
 ## Image mapping
 

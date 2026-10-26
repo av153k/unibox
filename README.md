@@ -40,6 +40,22 @@ and `Link` all exist in `flutter/widgets.dart`.
 The flat parameter always overrides the matching token, so a shared style can
 be specialised at the call site without a wrapper type.
 
+**Typography is inherited, layout is not.** A box passes its `textStyle` down to
+its descendants, exactly like CSS font properties and Flutter's
+`DefaultTextStyle`. A text node only states the tokens that make it different.
+Nothing else is inherited: a box never pushes its padding, gap or alignment onto
+its children.
+
+A value is resolved in this order, and the first match wins:
+
+| Order | Source                                                    |
+| ----- | --------------------------------------------------------- |
+| 1     | the flat parameter of the node (`fontSize`, `padding`, …) |
+| 2     | the node's token (`BoxStyle`, `BoxTextStyle`)             |
+| 3     | the typography inherited from the closest ancestor box    |
+| 4     | the ambient style of the host (`DefaultTextStyle`, page CSS) |
+| 5     | the renderer default                                      |
+
 **Dimensions.** Numbers are logical pixels (`px` on the web). `double.infinity`
 means "fill the available space": `100%` in CSS, an `Expanded` or an
 infinite constraint in Flutter.

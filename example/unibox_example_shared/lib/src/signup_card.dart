@@ -33,6 +33,47 @@ abstract final class ExamplePalette {
   static const BoxColor successSurface = BoxColor.rgb(0xEC, 0xFD, 0xF5);
 }
 
+/// The typography of the example.
+///
+/// Typography is the one thing a box passes down to its children, so the card
+/// states it once per area and the text nodes only repeat a token they
+/// override. The rendered result is identical in Flutter and on the web: a
+/// `DefaultTextStyle` on one side, plain CSS inheritance on the other.
+abstract final class ExampleType {
+  /// The body text of the card.
+  static const BoxTextStyle body = BoxTextStyle(
+    fontSize: 14,
+    color: ExamplePalette.text,
+  );
+
+  /// Supporting text, such as hints and the status line.
+  static const BoxTextStyle muted = BoxTextStyle(
+    fontSize: 13,
+    color: ExamplePalette.muted,
+  );
+
+  /// The title of the card.
+  static const BoxTextStyle title = BoxTextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: ExamplePalette.text,
+  );
+
+  /// The label of the primary button.
+  static const BoxTextStyle button = BoxTextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.semiBold,
+    color: ExamplePalette.surface,
+  );
+
+  /// The link under the button.
+  static const BoxTextStyle link = BoxTextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.medium,
+    color: ExamplePalette.accent,
+  );
+}
+
 /// The values entered in the signup card.
 ///
 /// Plain data, so both hosts can keep it in whatever state container they
@@ -124,6 +165,7 @@ Box buildSignupCard({
     direction: Axis.vertical,
     gap: 16,
     width: 380,
+    textStyle: ExampleType.body,
     padding: const BoxSpacing.all(24),
     backgroundColor: ExamplePalette.surface,
     borderRadius: 16,
@@ -186,34 +228,28 @@ UINode _avatarChip() {
     borderRadius: 32,
     backgroundColor: ExamplePalette.surface,
     border: const BoxBorder(width: 4, color: ExamplePalette.accent),
-    children: <UINode>[
-      const TextNode(
-        'AL',
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: ExamplePalette.accent,
-      ),
-    ],
+    textStyle: const BoxTextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: ExamplePalette.accent,
+    ),
+    children: <UINode>[const TextNode('AL')],
   );
 }
 
 /// The title above the fields.
+///
+/// The heading sets the title typography and the subtitle overrides the one
+/// token it changes, which is the whole point of inheritance: no node has to
+/// repeat what its box already says.
 UINode _heading() {
   return const Box(
     direction: Axis.vertical,
     gap: 4,
+    textStyle: ExampleType.title,
     children: <UINode>[
-      TextNode(
-        'Join Unibox',
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
-        color: ExamplePalette.text,
-      ),
-      TextNode(
-        'One description, two renderers.',
-        fontSize: 14,
-        color: ExamplePalette.muted,
-      ),
+      TextNode('Join Unibox'),
+      TextNode('One description, two renderers.', style: ExampleType.muted),
     ],
   );
 }
@@ -252,7 +288,7 @@ UINode _newsletterRow(SignupFormState state, TapCallback onToggle) {
             ),
         ],
       ),
-      const TextNode('Release notes', fontSize: 14, color: ExamplePalette.text),
+      const TextNode('Release notes'),
     ],
   );
 }
@@ -279,27 +315,25 @@ UINode _footer(SignupFormState state, TapCallback onSubmit) {
         children: <UINode>[
           TextNode(
             'Create account',
-            fontSize: 14,
-            fontWeight: FontWeight.semiBold,
-            color: state.isComplete
-                ? ExamplePalette.surface
-                : ExamplePalette.muted,
+            style: ExampleType.button.merge(
+              BoxTextStyle(
+                color: state.isComplete
+                    ? ExamplePalette.surface
+                    : ExamplePalette.muted,
+              ),
+            ),
           ),
         ],
       ),
       const Box(
         direction: Axis.horizontal,
         mainAlign: MainAlign.center,
+        textStyle: ExampleType.link,
         children: <UINode>[
           LinkNode(
             'https://unibox.dev',
             newTab: true,
-            child: TextNode(
-              'Read the docs',
-              fontSize: 14,
-              fontWeight: FontWeight.medium,
-              color: ExamplePalette.accent,
-            ),
+            child: TextNode('Read the docs'),
           ),
         ],
       ),
@@ -314,12 +348,14 @@ UINode? _status(SignupFormState state) {
       padding: const BoxSpacing.all(12),
       backgroundColor: ExamplePalette.successSurface,
       borderRadius: 10,
+      textStyle: const BoxTextStyle(
+        fontSize: 13,
+        color: ExamplePalette.success,
+      ),
       children: <UINode>[
         TextNode(
           'Thanks, ${state.name.trim()}! '
           'We will write to ${state.email.trim()}.',
-          fontSize: 13,
-          color: ExamplePalette.success,
         ),
       ],
     );
@@ -331,7 +367,6 @@ UINode? _status(SignupFormState state) {
     state.isComplete
         ? 'Looks good - press Create account.'
         : 'Add a name and an email address.',
-    fontSize: 13,
-    color: ExamplePalette.muted,
+    style: ExampleType.muted,
   );
 }

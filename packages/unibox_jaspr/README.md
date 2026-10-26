@@ -81,14 +81,17 @@ mirroring Flutter.
 A `TextNode` becomes a `<span>`, so it flows inline like Flutter's `Text` does
 inside a `Row`.
 
-| Unibox       | Jaspr / CSS                                      |
-| ------------ | ------------------------------------------------ |
-| `fontSize`   | `font-size` in `px`                              |
-| `fontWeight` | `font-weight` (`normal` → `400`, `bold` → `700`) |
-| `color`      | `color`                                          |
-| `textAlign`  | `text-align`                                     |
-| `maxLines`   | `-webkit-line-clamp` box                         |
-| `overflow`   | `text-overflow`                                  |
+| Unibox          | Jaspr / CSS                                      |
+| --------------- | ------------------------------------------------ |
+| `fontSize`      | `font-size` in `px`                              |
+| `fontWeight`    | `font-weight` (`normal` → `400`, `bold` → `700`) |
+| `color`         | `color`                                          |
+| `lineHeight`    | unitless `line-height`                           |
+| `fontFamily`    | `font-family`                                    |
+| `letterSpacing` | `letter-spacing` in `px`                         |
+| `textAlign`     | `text-align`                                     |
+| `maxLines`      | `-webkit-line-clamp` box                         |
+| `overflow`      | `text-overflow`                                  |
 
 Typography that the node leaves unset emits nothing, so the text inherits the
 font family, size, weight and color of the page — the same contract
@@ -107,6 +110,34 @@ overflow: hidden;
 An `ellipsis` without `maxLines` truncates the single line instead
 (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis`), while `clip`
 only hides the overflow.
+
+## Typography mapping
+
+A `Box.textStyle` (or `BoxStyle.textStyle`) is emitted on the `<div>` as the font
+properties CSS inherits by default, so every descendant picks it up without
+repeating it:
+
+| Unibox          | Jaspr / CSS                                      |
+| --------------- | ------------------------------------------------ |
+| `fontSize`      | `font-size` in `px`                              |
+| `fontWeight`    | `font-weight`                                    |
+| `color`         | `color`                                          |
+| `lineHeight`    | unitless `line-height`, so descendants scale     |
+| `fontFamily`    | `font-family`                                    |
+| `letterSpacing` | `letter-spacing` in `px`                         |
+
+The result matches the `DefaultTextStyle` the Flutter renderer installs, so the
+same tree produces the same typography on both targets. A box without a
+`textStyle` emits no font declaration at all and keeps inheriting from the page,
+which is what `DefaultTextStyle` does in a Flutter application.
+
+Text fields are replaced elements and do not inherit fonts on their own, so an
+`<input>` and a `<textarea>` always emit `font: inherit`. That is the CSS
+equivalent of the Flutter renderer letting a field adopt the ambient text style.
+
+Precedence, from strongest to weakest: the tokens of the node, the tokens of its
+`style`, the typography of the closest enclosing box, the page CSS, and finally
+the browser default.
 
 ## Image mapping
 
