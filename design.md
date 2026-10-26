@@ -121,6 +121,26 @@ never inherited (CSS does not inherit them either).
   renderer, so the two can only ever agree on it.
 - A token that cannot take effect is either honoured or reported by
   `validateTree`; silently accepting it is not an option.
+- Platform chrome belongs to the tree. A node never keeps a decoration its
+  platform adds by itself — no Material underline under a field, no user agent
+  border around an input, no user agent underline under a link — because the same
+  node would then look different on the two targets. Whatever a field or a link
+  should look like is expressed as a box around it.
+- A state rule may only contribute the tokens of its state. The browser layers
+  `:hover` over the resting rule exactly like the Flutter renderer merges a
+  state style, so a state rule that restated the layout would reset it.
+- Parity is *tested*, not assumed: `example/` renders one card on both targets
+  and compares the applied presentation of every box — layout, spacing, paint —
+  against a single fixture. Each suite extracts the facts from its own output,
+  the Flutter one from the widget tree, the web one from the emitted CSS, so the
+  tests fail when a renderer drifts, not only when the fixture is updated.
+- The surface a tree is drawn on is host business: a `100%` box needs a root with
+  a height, and a font needs a host that has one. An application declares both in
+  its own idiom (`MaterialApp`, a Jaspr `Document`) and the renderer stays out of
+  it.
+- Approximate is allowed where the platforms genuinely differ: font face, line
+  breaking, shadow blur, placeholder and focus colours, hit testing. Similar, not
+  identical.
 
 ### 5.5 Interaction
 - A box reacts to tap, long press, hover, focus and press. These five states

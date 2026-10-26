@@ -106,7 +106,10 @@ scope.
 [`example/`](example/README.md) contains a signup card described once and
 rendered by both targets: `unibox_example_flutter` hosts it in a
 `StatefulWidget`, `unibox_example_jaspr` in a `StatefulComponent`, and
-`unibox_example_shared` holds the node tree and the form state they share.
+`unibox_example_shared` holds the node tree and the form state they share. The
+two apps are asserted to *look* the same: both compare the applied presentation
+of every box, read back from their own rendered output, against one fixture in
+`unibox_example_shared`.
 
 ```shell
 (cd example/unibox_example_shared && dart test)

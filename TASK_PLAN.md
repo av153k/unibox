@@ -65,9 +65,27 @@
 - [x] Task 42: Final workspace verification (format check, `dart analyze`, all six suites, `dart doc`), README refresh and `TASK_PLAN.md` completion.
 - [x] Task 43: Give an unset `direction` one meaning: `BoxStyle.resolvedDirection` resolves it to `Axis.vertical` and both renderers derive the flex layout from it, so `gap`, `mainAlign`, `crossAlign` and a child's `flex` apply to every box instead of silently doing nothing, and a direction-less box stops stacking in Flutter while flowing inline on the web.
 
+### Phase 12: The two example renderings look the same
+- [x] Task 44: Flutter renderer — render a text input without Material's chrome (`InputDecoration.collapsed`), so the field is as tall as its line box and the surrounding box decides how it looks, and export the widget each node renders to.
+- [x] Task 45: Jaspr renderer — strip the browser form chrome from `<input>`/`<textarea>` (`border: none`, no padding, no background, inherited colour) and the UA underline from `<a>`, so a field and a link look like their Flutter counterparts.
+- [x] Task 46: Example shared — one line height on the card typography and the two fields wrapped in a shared `Box`, so both targets draw the same bordered field; the font family stays a host decision, because a CSS font stack is not a Flutter font family.
+- [x] Task 47: Jaspr host — render the example through a `Document` that gives the page's `100%` box a height to resolve against (`html, body { height: 100%; margin: 0 }`), and regenerate `build/index.html`.
+- [x] Task 48: Example shared — a `BoxFact` fixture (`CardParity.boxes`) describing the applied presentation of every box of the card in document order.
+- [x] Task 49: Both example suites — extract the box facts from the rendered output (Flutter widget tree, Jaspr inline CSS) and assert them against the one fixture, so the two renderings cannot drift apart.
+- [x] Task 50: Both example suites — assert that the page fills the host surface (measured rect in Flutter, document rules on the web) and that fields and links carry no platform chrome.
+- [x] Task 51: Docs — record how visual parity is pinned (fixture + the approximate parts that stay host specific) in the package and example READMEs, the CHANGELOGs and `design.md`.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
+- **Font family:** a `BoxTextStyle.fontFamily` names one family, the way Flutter
+  and CSS both read it; a comma separated *stack* is a CSS construct with no
+  Flutter counterpart, so it belongs to the host (`MaterialApp` theme on one
+  side, a document rule on the other) and not to the tree.
+- **Platform chrome:** neither renderer keeps the decoration its platform adds to
+  a control (Material's field underline, the browser's input border and link
+  underline). A control looks the way the tree says it looks, which is what makes
+  the same node render the same on both targets.
 - **Publishing:** publish ready but unpublished. Every package carries a
   `CHANGELOG.md`, a `LICENSE` and the repository metadata, while `publish_to:
   none` keeps `dart pub publish` from leaving the workspace by accident. Cutting
