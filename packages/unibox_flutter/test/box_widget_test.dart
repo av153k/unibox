@@ -8,11 +8,16 @@ import 'support/harness.dart';
 
 void main() {
   group('Box layout', () {
-    testWidgets('renders an empty box without a flex parent', (tester) async {
+    testWidgets('renders a flex container for an empty box', (tester) async {
       await pumpNode(tester, const core.Box());
 
-      expect(inNode(find.byType(Row)), findsNothing);
-      expect(inNode(find.byType(Column)), findsNothing);
+      final Flex flex = rootFlex(tester);
+
+      // Nothing is laid out, but the box is still a flex container: the web
+      // renderer emits one for every box, and a box that skipped it here would
+      // describe the same node differently on the two targets.
+      expect(flex.children, isEmpty);
+      expect(flex.direction, Axis.vertical);
       expect(tester.getSize(find.byKey(nodeKey)), Size.zero);
     });
 
@@ -25,13 +30,13 @@ void main() {
         ),
       );
 
-      final Row row = tester.widget<Row>(find.byType(Row));
+      final Flex row = rootFlex(tester);
 
+      expect(row.direction, Axis.horizontal);
       expect(row.children, hasLength(2));
       expect(row.mainAxisAlignment, MainAxisAlignment.start);
       expect(row.crossAxisAlignment, CrossAxisAlignment.start);
       expect(row.mainAxisSize, MainAxisSize.min);
-      expect(inNode(find.byType(Column)), findsNothing);
     });
 
     testWidgets('maps a vertical direction to a Column', (tester) async {
@@ -43,10 +48,10 @@ void main() {
         ),
       );
 
-      final Column column = tester.widget<Column>(find.byType(Column));
+      final Flex column = rootFlex(tester);
 
+      expect(column.direction, Axis.vertical);
       expect(column.children, hasLength(2));
-      expect(inNode(find.byType(Row)), findsNothing);
     });
 
     testWidgets('lays children out in a Column without a direction', (
@@ -61,7 +66,7 @@ void main() {
         ),
       );
 
-      final Column column = tester.widget<Column>(find.byType(Column));
+      final Flex column = rootFlex(tester);
 
       expect(column.children, hasLength(3));
       expect((column.children[1] as SizedBox).height, 4);
@@ -95,7 +100,7 @@ void main() {
         ),
       );
 
-      final Row row = tester.widget<Row>(find.byType(Row));
+      final Flex row = rootFlex(tester);
 
       expect(row.children, hasLength(5));
       expect((row.children[1] as SizedBox).width, 8);
@@ -115,7 +120,7 @@ void main() {
         ),
       );
 
-      final Column column = tester.widget<Column>(find.byType(Column));
+      final Flex column = rootFlex(tester);
 
       expect(column.children, hasLength(3));
       expect((column.children[1] as SizedBox).height, 4);
@@ -133,7 +138,7 @@ void main() {
         ),
       );
 
-      final Row row = tester.widget<Row>(find.byType(Row));
+      final Flex row = rootFlex(tester);
 
       expect(row.mainAxisAlignment, MainAxisAlignment.spaceBetween);
       expect(row.crossAxisAlignment, CrossAxisAlignment.center);

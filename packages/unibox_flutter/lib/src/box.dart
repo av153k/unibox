@@ -98,11 +98,12 @@ class _UniboxBoxState extends State<UniboxBox> {
   /// [core.BoxStyle.resolvedDirection]), so `gap`, `mainAlign` and `crossAlign`
   /// apply to every box instead of only to the ones that spelled the direction
   /// out.
+  ///
+  /// A box without children still renders its flex container. It lays out
+  /// nothing either way, but the web renderer marks every box as a flex
+  /// container, so leaving the empty one out would make the two trees describe
+  /// the same box differently.
   Widget _buildContent(core.Box box, core.BoxStyle style) {
-    if (box.children.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
     final core.Axis direction = style.resolvedDirection;
     final double? gap = style.gap;
     final List<Widget> children = <Widget>[];

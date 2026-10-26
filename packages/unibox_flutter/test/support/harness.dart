@@ -47,6 +47,18 @@ Future<void> pumpMaterialNode(WidgetTester tester, core.UINode node) async {
 Finder inNode(Finder matching) =>
     find.descendant(of: find.byKey(nodeKey), matching: matching);
 
+/// The flex container the rendered root box built for its own children.
+///
+/// Every box is a flex container, empty ones included, so a tree of boxes holds
+/// one flex per box. The first one below the node key is the one the root box
+/// created, which is the layout a test about `direction`, `gap` or alignment
+/// means.
+Flex rootFlex(WidgetTester tester) {
+  return tester.widget<Flex>(
+    inNode(find.byWidgetPredicate((Widget widget) => widget is Flex)).first,
+  );
+}
+
 /// The decoration painted by the rendered root node, if any.
 BoxDecoration? decorationOf(WidgetTester tester) {
   final Finder finder = inNode(find.byType(DecoratedBox));
