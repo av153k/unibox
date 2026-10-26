@@ -66,6 +66,30 @@ TextOverflow toTextOverflow(core.TextOverflow overflow) {
   };
 }
 
+/// Converts the typography of a box or a text node into a Flutter [TextStyle].
+///
+/// Only the tokens that are set end up in the result, so Flutter keeps
+/// inheriting every other token from the enclosing `DefaultTextStyle` — which is
+/// exactly how the web renderer lets CSS inherit. Returns `null` when [style]
+/// sets no token.
+TextStyle? toTextStyle(core.BoxTextStyle style) {
+  if (style.isEmpty) {
+    return null;
+  }
+
+  final core.FontWeight? weight = style.fontWeight;
+  final core.BoxColor? color = style.color;
+
+  return TextStyle(
+    fontSize: style.fontSize,
+    fontWeight: weight == null ? null : toFontWeight(weight),
+    color: color == null ? null : toColor(color),
+    height: style.lineHeight,
+    fontFamily: style.fontFamily,
+    letterSpacing: style.letterSpacing,
+  );
+}
+
 /// Converts a Unibox [core.BoxShadow] to a Flutter [BoxShadow].
 BoxShadow toBoxShadow(core.BoxShadow shadow) {
   return BoxShadow(

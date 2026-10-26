@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'render.dart';
+import 'text_style_scope.dart';
 import 'values.dart';
 
 /// Renders a [core.Box] as a Flutter widget tree.
@@ -31,6 +32,12 @@ class _UniboxBoxState extends State<UniboxBox> {
         : box.computedStyle;
 
     Widget content = _buildContent(box, style);
+
+    final core.BoxTextStyle textStyle =
+        style.textStyle ?? const core.BoxTextStyle();
+    if (!textStyle.isEmpty) {
+      content = _inheritTypography(context, content, textStyle);
+    }
 
     if (style.overflow == core.Overflow.scroll) {
       final core.Axis axis = style.direction ?? core.Axis.vertical;
@@ -63,6 +70,26 @@ class _UniboxBoxState extends State<UniboxBox> {
     }
 
     return content;
+  }
+
+  /// Passes the typography of the box down to its descendants.
+  ///
+  /// The `DefaultTextStyle` makes Flutter's own widgets inherit the tokens, and
+  /// the scope records the resolved typography for renderers that have to opt
+  /// in, such as text fields. Only tokens the box sets are laid over the ambient
+  /// style, so everything else keeps being inherited from the host application.
+  Widget _inheritTypography(
+    BuildContext context,
+    Widget child,
+    core.BoxTextStyle textStyle,
+  ) {
+    final core.BoxTextStyle inherited = UniboxTextStyleScope.of(context)
+        .merge(textStyle);
+
+    return DefaultTextStyle.merge(
+      style: toTextStyle(textStyle),
+      child: UniboxTextStyleScope(style: inherited, child: child),
+    );
   }
 
   /// Lays out the children, inserting `gap` separators between them.

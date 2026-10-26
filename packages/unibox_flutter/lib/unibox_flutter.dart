@@ -17,3 +17,4 @@ library;
 
 export 'src/link_node.dart' show LinkOpener, UniboxLinkScope;
 export 'src/render.dart';
+export 'src/text_style_scope.dart' show UniboxTextStyleScope;
