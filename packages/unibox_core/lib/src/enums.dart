@@ -63,6 +63,28 @@ enum BoxState {
   disabled,
 }
 
+/// The kind of value a single line text input expects.
+///
+/// The type drives the on-screen keyboard of a touch device and the validation
+/// hints of a browser, so typing an address on a phone offers the right keys
+/// without any host code.
+enum InputType {
+  /// Free form text, the default.
+  text,
+
+  /// An email address.
+  email,
+
+  /// A number.
+  number,
+
+  /// A telephone number.
+  phone,
+
+  /// A url.
+  url,
+}
+
 /// How content that exceeds the bounds of a box is treated.
 enum Overflow {
   /// Content may paint outside of the box.

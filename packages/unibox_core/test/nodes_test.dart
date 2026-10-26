@@ -181,38 +181,58 @@ void main() {
 
       expect(node.value, isNull);
       expect(node.placeholder, isNull);
+      expect(node.inputType, InputType.text);
       expect(node.obscureText, isFalse);
       expect(node.multiline, isFalse);
       expect(node.maxLines, isNull);
+      expect(node.enabled, isTrue);
+      expect(node.readOnly, isFalse);
+      expect(node.autofocus, isFalse);
+      expect(node.semanticsLabel, isNull);
       expect(node.onChanged, isNull);
       expect(node.onSubmitted, isNull);
+      expect(node.onFocusChanged, isNull);
       expect(node.children, isEmpty);
     });
 
     test('stores input configuration and handlers', () {
       final changed = <String>[];
       final submitted = <String>[];
+      final focuses = <bool>[];
       final node = TextInputNode(
         value: 'secret',
         placeholder: 'Password',
+        inputType: InputType.email,
         obscureText: true,
         multiline: true,
         maxLines: 4,
+        enabled: false,
+        readOnly: true,
+        autofocus: true,
+        semanticsLabel: 'Email address',
         onChanged: changed.add,
         onSubmitted: submitted.add,
+        onFocusChanged: focuses.add,
       );
 
       expect(node.value, 'secret');
       expect(node.placeholder, 'Password');
+      expect(node.inputType, InputType.email);
       expect(node.obscureText, isTrue);
       expect(node.multiline, isTrue);
       expect(node.maxLines, 4);
+      expect(node.enabled, isFalse);
+      expect(node.readOnly, isTrue);
+      expect(node.autofocus, isTrue);
+      expect(node.semanticsLabel, 'Email address');
 
       node.onChanged?.call('a');
       node.onSubmitted?.call('a');
+      node.onFocusChanged?.call(true);
 
       expect(changed, ['a']);
       expect(submitted, ['a']);
+      expect(focuses, [true]);
     });
   });
 

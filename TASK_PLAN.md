@@ -49,7 +49,7 @@
 - [x] Task 31: Express the example's disabled submit button with `enabled`, `stateStyles` and `semantics`, replacing the hand rolled tint and the nulled `hoverStyle`, and update the README mapping tables.
 
 ### Phase 9: Text input parity
-- [ ] Task 32: Core — `InputType` enum and `TextInputNode.inputType`, `enabled`, `readOnly`, `autofocus`, `onFocusChanged` and `semanticsLabel`.
+- [x] Task 32: Core — `InputType` enum and `TextInputNode.inputType`, `enabled`, `readOnly`, `autofocus`, `onFocusChanged` and `semanticsLabel`.
 - [ ] Task 33: Flutter renderer — `keyboardType`, `autofillHints`, `enabled`, `readOnly`, `autofocus`, focus listener and `Semantics` label.
 - [ ] Task 34: Jaspr renderer — `type`, `disabled`, `readonly`, `autofocus`, `aria-label` and `focus`/`blur` listeners.
 

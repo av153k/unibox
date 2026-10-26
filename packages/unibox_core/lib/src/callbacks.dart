@@ -12,3 +12,6 @@ typedef TextChangedCallback = void Function(String text);
 
 /// Called when the text of an input node is submitted.
 typedef TextSubmittedCallback = void Function(String text);
+
+/// Called when a focusable node gains (`true`) or loses (`false`) focus.
+typedef FocusChangedCallback = void Function(bool isFocused);
