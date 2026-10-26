@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 import 'package:unibox_flutter/unibox_flutter.dart';
@@ -25,6 +25,20 @@ Future<void> pumpNode(
     Directionality(
       textDirection: TextDirection.ltr,
       child: Center(child: wrap == null ? rendered : wrap(rendered)),
+    ),
+  );
+}
+
+/// Renders [node] inside a minimal Material app, for widgets that need a
+/// [Material] ancestor, such as text fields.
+Future<void> pumpMaterialNode(WidgetTester tester, core.UINode node) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: KeyedSubtree(key: nodeKey, child: renderFlutter(node)),
+        ),
+      ),
     ),
   );
 }

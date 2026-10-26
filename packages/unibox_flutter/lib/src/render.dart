@@ -5,6 +5,7 @@ import 'box.dart';
 import 'image_node.dart';
 import 'link_node.dart';
 import 'stack_node.dart';
+import 'text_input_node.dart';
 import 'text_node.dart';
 
 /// Renders [node] as a Flutter [Widget].
@@ -25,6 +26,7 @@ Widget renderFlutter(core.UINode node) {
     final core.LinkNode link => UniboxLink(node: link),
     final core.StackNode stack => UniboxStack(node: stack),
     final core.PositionedNode positioned => renderFlutter(positioned.child),
+    final core.TextInputNode input => UniboxTextInput(node: input),
     _ => throw UnsupportedError('No Flutter renderer for ${node.runtimeType}.'),
   };
 }

@@ -104,3 +104,19 @@ link. Without a scope, tapping a link only calls its own `onTap`.
 Stacks behave like CSS `overflow: visible` and do not clip their content. A
 `PositionedNode` rendered outside a `StackNode` renders its child without
 applying the offsets, because offsets are relative to the enclosing stack.
+
+## Text input mapping
+
+| Unibox                      | Flutter                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `value`                     | `TextEditingController` text, kept in sync           |
+| `placeholder`               | `InputDecoration.hintText`                           |
+| `obscureText`               | `TextField.obscureText`                              |
+| `multiline`                 | `minLines` / `maxLines` and `TextInputType.multiline` |
+| `maxLines`                  | `TextField.maxLines` of a multiline field            |
+| `onChanged` / `onSubmitted` | `TextField.onChanged` / `TextField.onSubmitted`       |
+
+The renderer builds on Material's `TextField`, so it needs a `Material`
+ancestor such as `MaterialApp`. With `value: null` the field keeps whatever the
+user typed; as soon as the owner passes a value the controller follows it,
+replacing the text and moving the caret to the end.
