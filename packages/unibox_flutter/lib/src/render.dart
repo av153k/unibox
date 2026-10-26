@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'box.dart';
+import 'embed_node.dart';
 import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
@@ -62,6 +63,15 @@ Widget renderNode(core.UINode node) {
     final core.TextInputNode input => UniboxTextInput(
       node: input,
       key: toFlutterKey(input.key),
+    ),
+    final WidgetNode embed => KeyedSubtree(
+      key: toFlutterKey(embed.key),
+      child: embed.widget,
+    ),
+    final core.EmbedNode embed => throw UnsupportedError(
+      'No Flutter renderer for ${embed.runtimeType}: it carries a '
+      '${embed.payload.runtimeType}, and only a WidgetNode can be rendered by '
+      'this package.',
     ),
     _ => throw UnsupportedError('No Flutter renderer for ${node.runtimeType}.'),
   };
