@@ -32,12 +32,15 @@ void main() {
 
     for (final file in dartFiles) {
       final source = file.readAsStringSync();
-      final uris = _directivePattern.allMatches(source).map((match) => match.group(1)!);
+      final uris = _directivePattern
+          .allMatches(source)
+          .map((match) => match.group(1)!);
 
       for (final uri in uris) {
         final isRelative = !uri.contains(':') && !uri.startsWith('package:');
         expect(
-          isRelative || (uri.startsWith('dart:') && !_forbiddenLibraries.contains(uri)),
+          isRelative ||
+              (uri.startsWith('dart:') && !_forbiddenLibraries.contains(uri)),
           isTrue,
           reason: '${file.path} must not use "$uri".',
         );

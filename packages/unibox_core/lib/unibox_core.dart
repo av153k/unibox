@@ -5,7 +5,16 @@
 /// tools, servers and both UI targets alike.
 ///
 /// The public API is composed of:
-/// * style tokens ([BoxColor], `BoxSpacing`, `BoxStyle`, ...),
-/// * layout enums (`Axis`, `MainAlign`, `CrossAlign`, ...),
+/// * style tokens ([BoxColor], [BoxSpacing], [BoxStyle], [BoxBorder],
+///   [BoxShadow]),
+/// * layout enums ([Axis], [MainAlign], [CrossAlign], [Overflow], [ImageFit],
+///   [FontWeight], [TextAlign], [TextOverflow]),
 /// * the immutable node tree rooted in `UINode`.
 library;
+
+export 'src/enums.dart';
+export 'src/tokens/box_border.dart';
+export 'src/tokens/box_color.dart';
+export 'src/tokens/box_shadow.dart';
+export 'src/tokens/box_spacing.dart';
+export 'src/tokens/box_style.dart';
