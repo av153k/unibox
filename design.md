@@ -72,3 +72,62 @@ All nodes extend `abstract class UINode`.
 - `StackNode` renders `<div style="position: relative">`.
 - `PositionedNode` renders `<div style="position: absolute">`.
 - `TextInputNode` renders `<input>` or `<textarea>`.
+
+---
+
+## 5. API Conventions
+
+These rules are part of the public contract: a change that violates them is a
+breaking change even when it compiles.
+
+### 5.1 Naming
+- Nodes live in `unibox_core` and extend `UINode`.
+- A node carries the `Node` suffix **only** when the bare name collides with a
+  Flutter widget (`Text`, `Image`, `Stack`, `Positioned`, `Link`). `Box` has no
+  Flutter counterpart and stays unsuffixed.
+- Tokens are prefixed with `Box` (`BoxColor`, `BoxSpacing`, `BoxBorder`,
+  `BoxShadow`, `BoxStyle`), enums are unprefixed (`Axis`, `MainAlign`, ...).
+- Renderer side classes are prefixed with `Unibox` (`UniboxBox`, `UniboxText`)
+  and are internal: consumers see `renderFlutter`/`renderJaspr` and the
+  `toWidget`/`toComponent` extensions.
+
+### 5.2 Precedence
+1. Flat node parameters (`gap`, `padding`, `fontSize`, ...).
+2. `style` tokens (`BoxStyle`, `BoxTextStyle`).
+3. Inherited typography from the closest ancestor box.
+4. The host ambient style (Flutter `DefaultTextStyle`, page CSS).
+5. Renderer defaults.
+
+`computedStyle` exposes levels 1 and 2, so both renderers resolve the same
+values. Level 3 is the only inherited level: layout, spacing and sizing are
+never inherited (CSS does not inherit them either).
+
+### 5.3 Dimensions
+- `double` values are logical pixels, which the web renderer emits as `px`.
+- `double.infinity` fills the available space: `100%` on the web, `Expanded`
+  inside a flex parent and an infinite `BoxConstraints` elsewhere in Flutter.
+- Unbounded parents plus an infinite dimension is a layout error in both
+  targets, exactly like combining `double.infinity` with an unbounded
+  `SizedBox` in plain Flutter.
+
+### 5.4 Interaction
+- A box reacts to tap, long press, hover, focus and press. These five states
+  exist on pointer, keyboard and touch input alike, so no state is web-only or
+  Flutter-only.
+- `enabled: false` suppresses callbacks, keeps the node in the accessibility
+  tree as disabled, and never changes layout.
+- Styling a state uses `stateStyles`, never a per-platform mechanism.
+- Dragging, scrolling gestures and pointer move tracking are out of scope.
+
+### 5.5 Non-goals
+- No CSS cascade: no selectors, no specificity, no `inherit` keyword, no
+  `!important`. Typography is the single inherited axis.
+- No style sheet abstraction with class names; shared looks are expressed as
+  `const BoxStyle` values.
+- No widget/component wrapper API: renderers only translate nodes.
+
+### 5.6 Compatibility
+- Additions (new optional parameters, new nodes, new tokens) are minor.
+- Renames and removals are breaking: keep the old name as a deprecated
+  forwarding constructor or getter for at least one minor release.
+- Every published change is listed in the package `CHANGELOG.md`.

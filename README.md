@@ -28,6 +28,28 @@ final card = Box(
 Dependencies flow in one direction only: both renderers depend on
 `unibox_core`, and `unibox_core` never depends on a renderer.
 
+## Design conventions
+
+**Naming.** `Box` is the only node without a `Node` suffix. A node only carries
+the suffix when its bare name would collide with a Flutter widget that
+consumers import next to this package: `Text`, `Image`, `Stack`, `Positioned`
+and `Link` all exist in `flutter/widgets.dart`.
+
+**Flat parameters win over tokens.** Every `Box` accepts flat parameters
+(`gap`, `padding`, `backgroundColor`, ...) and an optional `style: BoxStyle`.
+The flat parameter always overrides the matching token, so a shared style can
+be specialised at the call site without a wrapper type.
+
+**Dimensions.** Numbers are logical pixels (`px` on the web). `double.infinity`
+means "fill the available space": `100%` in CSS, an `Expanded` or an
+infinite constraint in Flutter.
+
+**Non-goals.** Unibox is not a CSS engine. There are no selectors, no
+specificity and no `!important`; every node owns its own layout and visual
+tokens. Interaction is limited to states a pointer, a keyboard and a touch
+screen all have: tap, long press, hover, focus and press. Dragging is out of
+scope.
+
 ## Examples
 
 [`example/`](example/README.md) contains a signup card described once and

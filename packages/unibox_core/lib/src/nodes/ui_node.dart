@@ -5,6 +5,15 @@
 ///
 /// Custom nodes may extend this class, renderers will report nodes they do not
 /// support.
+///
+/// ## Naming
+///
+/// A node only carries the `Node` suffix when its bare name would collide with
+/// a Flutter widget that consumers import next to this package. `Text`, `Image`,
+/// `Stack`, `Positioned` and `Link` all exist in `flutter/widgets.dart`, so
+/// those nodes are named `TextNode`, `ImageNode`, `StackNode`,
+/// `PositionedNode` and `LinkNode`. `Box` has no Flutter counterpart and
+/// stays unsuffixed.
 abstract class UINode {
   /// Creates a node.
   const UINode();
