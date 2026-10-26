@@ -76,6 +76,38 @@ JavaScript for it. A tappable box also gets `cursor: pointer`. Long presses map
 to pointer listeners with a 500 ms threshold and suppress the follow-up `click`,
 mirroring Flutter.
 
+## Text mapping
+
+A `TextNode` becomes a `<span>`, so it flows inline like Flutter's `Text` does
+inside a `Row`.
+
+| Unibox       | Jaspr / CSS                                      |
+| ------------ | ------------------------------------------------ |
+| `fontSize`   | `font-size` in `px`                              |
+| `fontWeight` | `font-weight` (`normal` → `400`, `bold` → `700`) |
+| `color`      | `color`                                          |
+| `textAlign`  | `text-align`                                     |
+| `maxLines`   | `-webkit-line-clamp` box                         |
+| `overflow`   | `text-overflow`                                  |
+
+Typography that the node leaves unset emits nothing, so the text inherits the
+font family, size, weight and color of the page — the same contract
+`DefaultTextStyle` provides in Flutter.
+
+`maxLines` needs the prefixed box layout, since that is the only portable way to
+truncate after N lines:
+
+```css
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 2;
+overflow: hidden;
+```
+
+An `ellipsis` without `maxLines` truncates the single line instead
+(`white-space: nowrap; overflow: hidden; text-overflow: ellipsis`), while `clip`
+only hides the overflow.
+
 ## Testing
 
 ```sh

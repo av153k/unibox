@@ -119,6 +119,79 @@ BoxShadow toCssBoxShadow(core.BoxShadow shadow) {
   );
 }
 
+/// Converts a Unibox [core.FontWeight] to [FontWeight].
+FontWeight toCssFontWeight(core.FontWeight weight) {
+  return switch (weight) {
+    core.FontWeight.normal => FontWeight.w400,
+    core.FontWeight.medium => FontWeight.w500,
+    core.FontWeight.semiBold => FontWeight.w600,
+    core.FontWeight.bold => FontWeight.w700,
+  };
+}
+
+/// Converts a Unibox [core.TextAlign] to [TextAlign].
+TextAlign toCssTextAlign(core.TextAlign align) {
+  return switch (align) {
+    core.TextAlign.left => TextAlign.left,
+    core.TextAlign.center => TextAlign.center,
+    core.TextAlign.right => TextAlign.right,
+    core.TextAlign.justify => TextAlign.justify,
+  };
+}
+
+/// Builds the CSS of a text node.
+///
+/// Typography tokens that are unset are omitted, so the text inherits its
+/// font size, weight and color from the surrounding box, just like a Flutter
+/// `Text` inherits from `DefaultTextStyle`.
+Styles toTextStyles(core.TextNode node) {
+  final core.BoxColor? color = node.color;
+  final core.TextAlign? textAlign = node.textAlign;
+  final core.FontWeight? fontWeight = node.fontWeight;
+  final double? fontSize = node.fontSize;
+
+  return Styles(
+    color: color == null ? null : toCssColor(color),
+    textAlign: textAlign == null ? null : toCssTextAlign(textAlign),
+    fontSize: fontSize == null ? null : Unit.pixels(fontSize),
+    fontWeight: fontWeight == null ? null : toCssFontWeight(fontWeight),
+    raw: _truncationStyles(node.maxLines, node.overflow),
+  );
+}
+
+/// Builds the CSS that truncates text after [maxLines].
+///
+/// Clamping to a number of lines needs the prefixed `-webkit-box` layout, which
+/// the typed properties do not expose, so the declarations are written raw. A
+/// positive [maxLines] clamps the block, otherwise an ellipsis truncates the
+/// single line. `TextOverflow.clip` suppresses the ellipsis in both cases.
+Map<String, String>? _truncationStyles(
+  int? maxLines,
+  core.TextOverflow? overflow,
+) {
+  if (maxLines != null) {
+    return <String, String>{
+      'display': '-webkit-box',
+      '-webkit-box-orient': 'vertical',
+      '-webkit-line-clamp': '$maxLines',
+      'overflow': 'hidden',
+      if (overflow == core.TextOverflow.clip) 'text-overflow': 'clip',
+    };
+  }
+
+  if (overflow == null) {
+    return null;
+  }
+
+  return <String, String>{
+    'overflow': 'hidden',
+    'text-overflow': overflow == core.TextOverflow.ellipsis
+        ? 'ellipsis'
+        : 'clip',
+    if (overflow == core.TextOverflow.ellipsis) 'white-space': 'nowrap',
+  };
+}
+
 /// Builds the CSS of a box from its resolved [core.BoxStyle].
 ///
 /// Unset token values are omitted so that browser defaults (and inherited
