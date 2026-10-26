@@ -1,7 +1,15 @@
 name: unibox_core
-description: Platform agnostic Unibox AST, style tokens and layout types.
+description: Platform agnostic AST, style tokens and layout types shared by every Unibox renderer.
 publish_to: none
 version: 0.1.0
+repository: https://github.com/cedvdb/unibox
+homepage: https://github.com/cedvdb/unibox
+issue_tracker: https://github.com/cedvdb/unibox/issues
+topics:
+  - layout
+  - ui
+  - cross-platform
+  - design-system
 resolution: workspace
 
 environment:

@@ -100,3 +100,9 @@ dart analyze
 
 The workspace targets Dart `^3.13.0`. Jaspr is pinned to the `0.24` line
 (`^0.24.0-beta.0`, the published prerelease of that line).
+
+## License
+
+MIT, see [LICENSE](LICENSE). Every package carries a copy so it can be published
+on its own; `publish_to: none` keeps the workspace out of `pub.dev` until a
+release is cut deliberately.

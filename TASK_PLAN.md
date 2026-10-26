@@ -59,7 +59,7 @@
 - [x] Task 37: Jaspr — `ComponentNode(Component)` accepted by `renderJaspr` with the same contract.
 
 ### Phase 11: Public readiness
-- [ ] Task 38: Add the MIT `LICENSE`, per package `CHANGELOG.md` files and the `repository`, `homepage`, `issue_tracker` and `topics` pubspec metadata while keeping `publish_to: none`.
+- [x] Task 38: Add the MIT `LICENSE`, per package `CHANGELOG.md` files and the `repository`, `homepage`, `issue_tracker` and `topics` pubspec metadata while keeping `publish_to: none`.
 - [ ] Task 39: Audit `dart doc` for all three packages, fix unresolved references and undocumented public members.
 - [ ] Task 40: Add a cross target parity fixture: one table of expected declarations in the example shared package, asserted by both renderer test suites.
 - [ ] Task 41: Add a GitHub Actions CI workflow (format check, `dart analyze` and all three test suites).

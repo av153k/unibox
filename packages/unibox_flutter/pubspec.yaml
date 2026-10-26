@@ -1,7 +1,15 @@
 name: unibox_flutter
-description: Flutter renderer for Unibox layout primitives.
+description: Renders Unibox layout primitives as Flutter widgets, with inherited typography, interaction states and semantics.
 publish_to: none
 version: 0.1.0
+repository: https://github.com/cedvdb/unibox
+homepage: https://github.com/cedvdb/unibox
+issue_tracker: https://github.com/cedvdb/unibox/issues
+topics:
+  - layout
+  - ui
+  - widget
+  - cross-platform
 resolution: workspace
 
 environment:
