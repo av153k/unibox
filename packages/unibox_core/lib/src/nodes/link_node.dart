@@ -9,6 +9,7 @@ class LinkNode extends UINode {
   /// Creates a link node.
   const LinkNode(
     this.url, {
+    super.key,
     required this.child,
     this.newTab = false,
     this.onTap,

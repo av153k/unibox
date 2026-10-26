@@ -7,6 +7,7 @@ import 'ui_node.dart';
 class PositionedNode extends UINode {
   /// Creates a positioned node.
   const PositionedNode({
+    super.key,
     this.top,
     this.right,
     this.bottom,

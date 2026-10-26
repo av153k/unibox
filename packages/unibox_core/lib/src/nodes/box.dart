@@ -34,6 +34,7 @@ import 'ui_node.dart';
 class Box extends UINode {
   /// Creates a box.
   const Box({
+    super.key,
     this.children = const <UINode>[],
     this.direction,
     this.mainAlign,

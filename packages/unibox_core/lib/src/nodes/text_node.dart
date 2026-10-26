@@ -7,6 +7,7 @@ class TextNode extends UINode {
   /// Creates a text node.
   const TextNode(
     this.text, {
+    super.key,
     this.fontSize,
     this.fontWeight,
     this.color,

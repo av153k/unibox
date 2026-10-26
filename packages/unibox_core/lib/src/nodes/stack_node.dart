@@ -5,7 +5,12 @@ import 'ui_node.dart';
 /// Use [PositionedNode] children to place them at exact offsets.
 class StackNode extends UINode {
   /// Creates a stack node.
-  const StackNode({this.children = const <UINode>[], this.width, this.height});
+  const StackNode({
+    super.key,
+    this.children = const <UINode>[],
+    this.width,
+    this.height,
+  });
 
   /// The layered children, painted in order (last on top).
   @override

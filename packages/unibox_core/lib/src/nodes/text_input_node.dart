@@ -5,6 +5,7 @@ import 'ui_node.dart';
 class TextInputNode extends UINode {
   /// Creates a text input node.
   const TextInputNode({
+    super.key,
     this.value,
     this.placeholder,
     this.obscureText = false,

@@ -6,6 +6,7 @@ class ImageNode extends UINode {
   /// Creates an image node.
   const ImageNode(
     this.src, {
+    super.key,
     this.alt = '',
     this.width,
     this.height,

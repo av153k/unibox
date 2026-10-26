@@ -199,6 +199,41 @@ void main() {
       expect(nodes.map((node) => node.runtimeType).toSet(), hasLength(7));
     });
 
+    test('is unkeyed by default', () {
+      expect(const Box().key, isNull);
+      expect(const TextNode('text').key, isNull);
+      expect(const ImageNode('image.png').key, isNull);
+      expect(
+        const LinkNode('https://unibox.dev', child: TextNode('link')).key,
+        isNull,
+      );
+      expect(const StackNode().key, isNull);
+      expect(const PositionedNode(child: TextNode('x')).key, isNull);
+      expect(const TextInputNode().key, isNull);
+    });
+
+    test('carries a key on every node type', () {
+      const List<UINode> nodes = <UINode>[
+        Box(key: 'box'),
+        TextNode('text', key: 'text'),
+        ImageNode('image.png', key: 'image'),
+        LinkNode('https://unibox.dev', child: TextNode('link'), key: 'link'),
+        StackNode(key: 'stack'),
+        PositionedNode(child: TextNode('x'), key: 'positioned'),
+        TextInputNode(key: 'input'),
+      ];
+
+      expect(nodes.map((UINode node) => node.key), <String>[
+        'box',
+        'text',
+        'image',
+        'link',
+        'stack',
+        'positioned',
+        'input',
+      ]);
+    });
+
     test('leaf nodes have no children', () {
       expect(const TextNode('text').children, isEmpty);
       expect(const ImageNode('image.png').children, isEmpty);

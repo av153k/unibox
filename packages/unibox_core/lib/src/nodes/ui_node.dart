@@ -16,7 +16,19 @@
 /// stays unsuffixed.
 abstract class UINode {
   /// Creates a node.
-  const UINode();
+  const UINode({this.key});
+
+  /// The identity of this node among its siblings.
+  ///
+  /// Renderers use it to keep state attached to the node it belongs to when a
+  /// list is reordered or filtered. Without a key, a child inherits the state of
+  /// whatever node previously occupied its position, which is why a reordered
+  /// `TextInputNode` can show the text typed into a different row.
+  ///
+  /// Keys must be unique among the children of one parent and stable across
+  /// rebuilds: the id of the model the node describes is the usual choice.
+  /// Flutter renders it as a `ValueKey`, Jaspr as a component `ValueKey`.
+  final Object? key;
 
   /// The direct child nodes of this node in paint order.
   ///

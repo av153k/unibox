@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
+import 'keys.dart';
 import 'render.dart';
 
 /// Renders a [core.StackNode] as a Flutter [Stack].
@@ -48,6 +49,7 @@ class UniboxStack extends StatelessWidget {
     }
 
     return Positioned(
+      key: toFlutterKey(node.key),
       top: node.top,
       right: node.right,
       bottom: node.bottom,

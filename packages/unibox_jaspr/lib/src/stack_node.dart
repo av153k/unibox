@@ -2,6 +2,7 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
+import 'keys.dart';
 import 'render.dart';
 import 'values.dart';
 
@@ -23,12 +24,9 @@ class UniboxStack extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return div(
-      <Component>[
-        for (final core.UINode child in node.children) _stackChild(child),
-      ],
-      styles: toStackStyles(node),
-    );
+    return div(<Component>[
+      for (final core.UINode child in node.children) _stackChild(child),
+    ], styles: toStackStyles(node));
   }
 }
 
@@ -60,7 +58,12 @@ class UniboxPositioned extends StatelessComponent {
 /// Renders [node] as a child of a stack.
 Component _stackChild(core.UINode node) {
   if (node is core.PositionedNode) {
-    return UniboxPositioned(node: node);
+    return UniboxPositioned(node: node, key: toJasprKey(node.key));
   }
-  return div(<Component>[renderJaspr(node)], styles: toStackChildStyles());
+
+  return div(
+    <Component>[renderJaspr(node)],
+    key: toJasprKey(node.key),
+    styles: toStackChildStyles(),
+  );
 }
