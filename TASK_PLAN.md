@@ -27,10 +27,9 @@
 
 ### Phase 5: Public API conventions
 - [x] Task 18: Document the naming rule, the typography-only inheritance rule, the flat-over-style precedence and the non-goals (no CSS selectors/cascade, no drag & drop) in `design.md`, the root `README.md` and the `UINode` docstring.
-- [x] Task 19: Add `Object? key` to `UINode` and every node constructor; map it to a `ValueKey` in Flutter and to the component key in Jaspr, with tests proving two reordered `TextInputNode`s keep their own text.
 
 ### Phase 6: Tree correctness (no API break)
-- [ ] Task 19: Add `Object? key` to `UINode` and every node constructor; map it to a `ValueKey` in Flutter and to the component key in Jaspr, with tests proving two reordered `TextInputNode`s keep their own text.
+- [x] Task 19: Add `Object? key` to `UINode` and every node constructor; map it to a `ValueKey` in Flutter and to the component key in Jaspr, with tests proving two reordered `TextInputNode`s keep their own text.
 - [x] Task 20: Add pure Dart `validateTree(UINode)` (`PositionedNode` outside `StackNode`, nested `LinkNode`, `overflow: scroll` with `mainAlign`, empty `TextNode`) exported from core and asserted by both renderers in debug builds.
 - [x] Task 21: Assert in the Flutter link renderer that a link without an `UniboxLinkScope` and without `onTap` is a host configuration error, and update the existing link tests.
 
@@ -63,4 +62,32 @@
 - [x] Task 39: Audit `dart doc` for all three packages, fix unresolved references and undocumented public members.
 - [x] Task 40: Add a cross target parity fixture: one table of expected declarations in the example shared package, asserted by both renderer test suites.
 - [x] Task 41: Add a GitHub Actions CI workflow (format check, `dart analyze` and all three test suites).
-- [ ] Task 42: Final workspace verification (`dart analyze`, all six suites, `dart run bin/build.dart`), README refresh and `TASK_PLAN.md` completion commit.
+- [x] Task 42: Final workspace verification (format check, `dart analyze`, all six suites, `dart doc`), README refresh and `TASK_PLAN.md` completion.
+
+## Decisions
+
+- **License:** MIT, at the root and in every package.
+- **Publishing:** publish ready but unpublished. Every package carries a
+  `CHANGELOG.md`, a `LICENSE` and the repository metadata, while `publish_to:
+  none` keeps `dart pub publish` from leaving the workspace by accident. Cutting
+  a release means removing that one line per package.
+
+## Deferred
+
+Deliberately out of scope for this pass, with the reason they were left:
+
+- `Box.onScroll` and scroll position: needs a shared scroll model that neither
+  `SingleChildScrollView` nor the browser state exposes the same way.
+- `ImageNode.onError` / `onLoad`: callbacks that only make sense per target, and
+  an embed covers them today.
+- `Box.opacity`: a compositing hint rather than a layout token; it belongs with a
+  future visual effects group.
+- `onDoubleTap` / `onSecondaryTap`: not part of the pointer, keyboard and touch
+  intersection the state model is built on.
+- Generating `BoxStyle` code: 18 fields is still hand manageable; revisit above
+  25.
+- `UniboxTheme`: typography inheritance covers today's needs, and a theme layer
+  needs a decision about token overrides first.
+- Wiring the Jaspr client build into the workspace: the example only needs server
+  rendering today.
+

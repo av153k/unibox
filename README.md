@@ -4,18 +4,49 @@ Unibox provides pure Dart layout primitives that compile natively to **Flutter
 widgets** and **Jaspr (HTML/CSS) components** from a single description.
 
 ```dart
-final card = Box(
+const card = Box(
   direction: Axis.vertical,
   gap: 8,
   padding: BoxSpacing.all(16),
   backgroundColor: BoxColor.white,
   borderRadius: 12,
-  children: const [
-    TextNode('Hello', fontSize: 20, fontWeight: FontWeight.bold),
+  textStyle: BoxTextStyle(fontSize: 16, color: BoxColor.black),
+  children: <UINode>[
+    TextNode('Hello', fontWeight: FontWeight.bold),
     TextNode('Rendered by Flutter and by Jaspr.'),
   ],
 );
+
+const button = Box(
+  onTap: submit,
+  enabled: canSubmit,
+  padding: BoxSpacing.symmetric(horizontal: 18, vertical: 12),
+  backgroundColor: BoxColor.rgb(0x2D, 0x6C, 0xF3),
+  stateStyles: <BoxState, BoxStyle>{
+    BoxState.hover: BoxStyle(backgroundColor: BoxColor.rgb(0x1D, 0x4E, 0xD8)),
+    BoxState.disabled: BoxStyle(backgroundColor: BoxColor.transparent),
+  },
+  semantics: BoxSemantics(role: BoxRole.button, label: 'Create account'),
+  children: <UINode>[TextNode('Create account')],
+);
 ```
+
+What both renderers agree on:
+
+- **One tree, two targets.** The same nodes become widgets and HTML/CSS, with
+  the same layout, spacing and typography.
+- **Typography is inherited.** A box states its font tokens once and its texts
+  only say what makes them different, like CSS and `DefaultTextStyle` do.
+- **Interaction states in the model.** Hover, focus, press and disabled are
+  `BoxState` entries, rendered as `MouseRegion`/`Focus` and as `:hover`,
+  `:focus-visible`, `:active` and `[aria-disabled]`.
+- **Accessibility is not an afterthought.** `BoxSemantics` turns a hand drawn
+  control into a real button or checkbox, with a keyboard entry point and a
+  screen reader name.
+- **Fields describe themselves.** `TextInputNode` carries its input type, its
+  enabled, read only and autofocus flags and its label.
+- **Mistakes fail loudly.** `validateTree` reports trees no renderer can honour,
+  and an embed that belongs to another target throws instead of vanishing.
 
 ## Packages
 

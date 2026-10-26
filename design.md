@@ -117,6 +117,8 @@ never inherited (CSS does not inherit them either).
 - `enabled: false` suppresses callbacks, keeps the node in the accessibility
   tree as disabled, and never changes layout.
 - Styling a state uses `stateStyles`, never a per-platform mechanism.
+- Keyboard focus is opt-in: a box joins the tab order only when its
+  `BoxSemantics.role` is one the user can act on. A plain container never does.
 - Dragging, scrolling gestures and pointer move tracking are out of scope.
 
 ### 5.5 Non-goals
@@ -124,7 +126,9 @@ never inherited (CSS does not inherit them either).
   `!important`. Typography is the single inherited axis.
 - No style sheet abstraction with class names; shared looks are expressed as
   `const BoxStyle` values.
-- No widget/component wrapper API: renderers only translate nodes.
+- No widget/component wrapper API: renderers only translate nodes. `EmbedNode`
+  is the single, explicit exception: host content enters the tree as an opaque
+  payload that only its own renderer accepts, and any other renderer throws.
 
 ### 5.6 Compatibility
 - Additions (new optional parameters, new nodes, new tokens) are minor.
