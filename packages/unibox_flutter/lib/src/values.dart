@@ -76,6 +76,27 @@ BoxShadow toBoxShadow(core.BoxShadow shadow) {
   );
 }
 
+/// Converts a Unibox [core.ImageFit] to a Flutter [BoxFit].
+BoxFit toBoxFit(core.ImageFit fit) {
+  return switch (fit) {
+    core.ImageFit.cover => BoxFit.cover,
+    core.ImageFit.contain => BoxFit.contain,
+    core.ImageFit.fill => BoxFit.fill,
+  };
+}
+
+/// Resolves the [ImageProvider] for an image [src].
+///
+/// Absolute `http`/`https` URLs are fetched from the network, every other
+/// value is treated as an asset path.
+ImageProvider<Object> toImageProvider(String src) {
+  final String? scheme = Uri.tryParse(src)?.scheme;
+  if (scheme == 'http' || scheme == 'https') {
+    return NetworkImage(src);
+  }
+  return AssetImage(src);
+}
+
 /// Builds the [BoxDecoration] painted behind a box for [style].
 ///
 /// Returns `null` when the style paints nothing, so that no extra layer is

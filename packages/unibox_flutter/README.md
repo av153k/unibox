@@ -55,3 +55,17 @@ like a tight infinite `SizedBox` in plain Flutter.
 
 Typography tokens that are left unset are not passed to Flutter, so the ambient
 `DefaultTextStyle` keeps providing them.
+
+## Image mapping
+
+| Unibox                        | Flutter                                             |
+| ----------------------------- | --------------------------------------------------- |
+| `src` with an `http(s)` URL   | `Image(image: NetworkImage(src))`                   |
+| any other `src`               | `Image(image: AssetImage(src))`                     |
+| `width` / `height`            | `Image.width` / `Image.height`                      |
+| `fit`                         | `BoxFit` (`cover`, `contain`, `fill`)               |
+| `alt`                         | `Image.semanticLabel` (omitted when empty)          |
+| `borderRadius`                | `ClipRRect`                                          |
+
+A source that fails to load renders an empty box with the declared dimensions
+instead of throwing, so a broken image never breaks the layout.
