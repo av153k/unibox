@@ -58,6 +58,8 @@ class Box extends UINode {
     this.textStyle,
     this.style,
     this.hoverStyle,
+    this.stateStyles,
+    this.enabled = true,
     this.onTap,
     this.onLongPress,
     this.onHover,
@@ -145,7 +147,24 @@ class Box extends UINode {
   final BoxStyle? style;
 
   /// Tokens applied while the box is hovered, overriding the base style.
+  ///
+  /// Sugar for `stateStyles: {BoxState.hover: hoverStyle}`. An entry in
+  /// [stateStyles] wins over this one.
   final BoxStyle? hoverStyle;
+
+  /// Tokens applied while the box is in a given state.
+  ///
+  /// Every state overlays the resting style, so a state only has to name the
+  /// tokens that change. [BoxState.disabled] wins over all other states, because
+  /// a disabled box cannot be hovered, focused or pressed in the first place.
+  final Map<BoxState, BoxStyle>? stateStyles;
+
+  /// Whether the box reacts to input.
+  ///
+  /// A disabled box drops every callback and is reported as disabled to assistive
+  /// technologies, but keeps its layout and still renders its
+  /// [BoxState.disabled] style. Disabling a box therefore never moves anything.
+  final bool enabled;
 
   // Actions.
 
@@ -187,14 +206,39 @@ class Box extends UINode {
   /// overrides the matching token.
   BoxStyle get computedStyle => (style ?? const BoxStyle()).merge(_flatStyle);
 
+  /// The tokens that apply in [state], or `null` when the state adds nothing.
+  BoxStyle? stateStyle(BoxState state) {
+    final BoxStyle? fromMap = stateStyles?[state];
+
+    if (state == BoxState.hover && hoverStyle != null) {
+      return fromMap == null ? hoverStyle : hoverStyle!.merge(fromMap);
+    }
+
+    return fromMap;
+  }
+
+  /// The resolved style of this box for [state].
+  ///
+  /// The resting style is the base and the tokens of the state are laid over
+  /// it. [BoxState.disabled] always wins: a disabled box cannot be hovered,
+  /// focused or pressed, and asking for the disabled style while the box is
+  /// enabled still returns it, so both renderers can describe one state
+  /// independently of who set [enabled].
+  BoxStyle computedStyleFor(BoxState state) {
+    final BoxStyle resting = computedStyle;
+
+    if (!enabled || state == BoxState.disabled) {
+      return resting.merge(stateStyle(BoxState.disabled));
+    }
+
+    return resting.merge(stateStyle(state));
+  }
+
   /// The resolved style of this box while it is hovered.
   ///
-  /// Equal to [computedStyle] when no [hoverStyle] is set, otherwise the
+  /// Equal to [computedStyle] when no hover tokens are set, otherwise the
   /// hovered tokens take precedence over the resting ones.
-  BoxStyle get computedHoverStyle {
-    final restingStyle = computedStyle;
-    return hoverStyle == null ? restingStyle : restingStyle.merge(hoverStyle);
-  }
+  BoxStyle get computedHoverStyle => computedStyleFor(BoxState.hover);
 
   /// The typography of this box, or an empty style when none is set.
   ///
@@ -203,8 +247,11 @@ class Box extends UINode {
       computedStyle.textStyle ?? const BoxTextStyle();
 
   /// Whether this box defines a distinct hovered appearance.
-  bool get hasHoverStyle => hoverStyle != null;
+  bool get hasHoverStyle => stateStyle(BoxState.hover) != null;
 
-  /// Whether this box has an interaction handler.
-  bool get isInteractive => onTap != null || onLongPress != null;
+  /// Whether this box has an interaction handler it can run.
+  ///
+  /// A disabled box reports `false` even when it has callbacks, so renderers
+  /// serve no pointer cursor, no hover and no press for it.
+  bool get isInteractive => enabled && (onTap != null || onLongPress != null);
 }

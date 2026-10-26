@@ -42,7 +42,7 @@
 - [x] Task 26: Refactor the example's shared card to rely on inherited typography and document the cascade precedence in all three READMEs.
 
 ### Phase 8: Interaction states & accessibility
-- [ ] Task 27: Add `BoxState` (`hover`, `focus`, `pressed`, `disabled`), `Box.stateStyles`, `Box.enabled` and `computedStyleFor(BoxState)`; `isInteractive` respects `enabled`.
+- [x] Task 27: Add `BoxState` (`hover`, `focus`, `pressed`, `disabled`), `Box.stateStyles`, `Box.enabled` and `computedStyleFor(BoxState)`; `isInteractive` respects `enabled`.
 - [ ] Task 28: Add `BoxRole` and `BoxSemantics` tokens (`role`, `label`, `checked`) to core with equality and tests.
 - [ ] Task 29: Flutter renderer — `Focus` and keyboard activation (Enter/Space), pressed tracking, `Semantics` role/label/enabled, and no hover or pointer cursor when disabled.
 - [ ] Task 30: Jaspr renderer — one scoped class with `:hover` (inside `@media (hover: hover)`), `:focus-visible`, `:active` and `[aria-disabled="true"]` rules plus `role`, `aria-label`, `tabindex` and `keydown`.

@@ -154,6 +154,104 @@ void main() {
       expect(const Box(onLongPress: _noop).isInteractive, isTrue);
       expect(const Box().isInteractive, isFalse);
     });
+
+    test('is enabled by default', () {
+      expect(const Box().enabled, isTrue);
+    });
+
+    test('styles every interaction state', () {
+      const box = Box(
+        backgroundColor: BoxColor.white,
+        hoverStyle: BoxStyle(backgroundColor: BoxColor.black),
+        stateStyles: <BoxState, BoxStyle>{
+          BoxState.focus: BoxStyle(borderRadius: 4),
+          BoxState.pressed: BoxStyle(borderRadius: 8),
+          BoxState.disabled: BoxStyle(backgroundColor: BoxColor.transparent),
+        },
+      );
+
+      expect(
+        box.computedStyleFor(BoxState.hover).backgroundColor,
+        BoxColor.black,
+      );
+      expect(box.computedStyleFor(BoxState.focus).borderRadius, 4);
+      expect(
+        box.computedStyleFor(BoxState.focus).backgroundColor,
+        BoxColor.white,
+      );
+      expect(box.computedStyleFor(BoxState.pressed).borderRadius, 8);
+      expect(
+        box.computedStyleFor(BoxState.disabled).backgroundColor,
+        BoxColor.transparent,
+      );
+    });
+
+    test('returns the resting style for a state without tokens', () {
+      const box = Box(backgroundColor: BoxColor.white);
+
+      expect(box.computedStyleFor(BoxState.focus), box.computedStyle);
+      expect(box.computedStyleFor(BoxState.pressed), box.computedStyle);
+      expect(box.stateStyle(BoxState.focus), isNull);
+    });
+
+    test('treats hoverStyle as the hover state', () {
+      const box = Box(hoverStyle: BoxStyle(backgroundColor: BoxColor.black));
+
+      expect(box.hasHoverStyle, isTrue);
+      expect(box.stateStyle(BoxState.hover), box.hoverStyle);
+      expect(const Box().hasHoverStyle, isFalse);
+      expect(
+        const Box(
+          stateStyles: <BoxState, BoxStyle>{
+            BoxState.focus: BoxStyle(borderRadius: 2),
+          },
+        ).hasHoverStyle,
+        isFalse,
+      );
+    });
+
+    test('lets a state style win over hoverStyle', () {
+      const box = Box(
+        hoverStyle: BoxStyle(backgroundColor: BoxColor.black),
+        stateStyles: <BoxState, BoxStyle>{
+          BoxState.hover: BoxStyle(backgroundColor: BoxColor.white),
+        },
+      );
+
+      expect(
+        box.computedStyleFor(BoxState.hover).backgroundColor,
+        BoxColor.white,
+      );
+    });
+
+    test('lets the disabled state win over every other state', () {
+      const box = Box(
+        enabled: false,
+        backgroundColor: BoxColor.white,
+        stateStyles: <BoxState, BoxStyle>{
+          BoxState.hover: BoxStyle(backgroundColor: BoxColor.black),
+          BoxState.disabled: BoxStyle(backgroundColor: BoxColor.transparent),
+        },
+      );
+
+      expect(
+        box.computedStyleFor(BoxState.hover).backgroundColor,
+        BoxColor.transparent,
+      );
+      expect(
+        box.computedStyleFor(BoxState.pressed).backgroundColor,
+        BoxColor.transparent,
+      );
+    });
+
+    test('drops interactions while disabled', () {
+      expect(const Box(onTap: _noop, enabled: false).isInteractive, isFalse);
+      expect(
+        const Box(onLongPress: _noop, enabled: false).isInteractive,
+        isFalse,
+      );
+      expect(const Box(enabled: false).isInteractive, isFalse);
+    });
   });
 }
 

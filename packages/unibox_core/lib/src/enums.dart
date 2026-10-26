@@ -43,6 +43,26 @@ enum CrossAlign {
   stretch,
 }
 
+/// A state a box can be styled for.
+///
+/// Only states that a pointer, a keyboard and a touch screen all have are part
+/// of the model, so every target can express them: `:hover`, `:focus-visible`
+/// and `:active` on the web, the same three on Flutter, plus a disabled control
+/// on both.
+enum BoxState {
+  /// The pointer is over the box.
+  hover,
+
+  /// The box has keyboard focus.
+  focus,
+
+  /// The box is being activated, by a pointer held down or a key held down.
+  pressed,
+
+  /// The box does not react to input, see `Box.enabled`.
+  disabled,
+}
+
 /// How content that exceeds the bounds of a box is treated.
 enum Overflow {
   /// Content may paint outside of the box.
