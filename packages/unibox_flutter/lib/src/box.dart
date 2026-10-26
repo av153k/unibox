@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
@@ -23,13 +24,13 @@ class UniboxBox extends StatefulWidget {
 
 class _UniboxBoxState extends State<UniboxBox> {
   bool _hovered = false;
+  bool _focused = false;
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
     final core.Box box = widget.box;
-    final core.BoxStyle style = _hovered
-        ? box.computedHoverStyle
-        : box.computedStyle;
+    final core.BoxStyle style = _resolvedStyle(box);
 
     Widget content = _buildContent(box, style);
 
@@ -192,31 +193,150 @@ class _UniboxBoxState extends State<UniboxBox> {
     return result;
   }
 
-  /// Wraps [content] with the tap, long press and hover handlers of [box].
+  /// Wraps [content] with the tap, keyboard, hover and semantics layers of [box].
+  ///
+  /// A disabled box keeps the same widget shape but serves no handler, no
+  /// pointer cursor and no focus, so disabling never moves anything and only
+  /// removes what the user can do.
   Widget _applyInteractions(Widget content, core.Box box) {
-    final bool hovers = box.onHover != null || box.hasHoverStyle;
-
-    if (!box.isInteractive && !hovers) {
-      return content;
-    }
+    final bool interactive = box.isInteractive;
+    final bool focusable = box.isFocusable && box.enabled;
+    final bool tracksState =
+        box.enabled &&
+        (box.onHover != null ||
+            box.stateStyle(core.BoxState.hover) != null ||
+            box.stateStyle(core.BoxState.focus) != null ||
+            box.stateStyle(core.BoxState.pressed) != null);
 
     Widget result = content;
 
-    if (box.isInteractive) {
+    if (box.onTap != null || box.onLongPress != null) {
       result = GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: box.onTap,
-        onLongPress: box.onLongPress,
+        onTap: interactive ? box.onTap : null,
+        onLongPress: interactive ? box.onLongPress : null,
+        onTapDown: interactive ? (TapDownDetails _) => _setPressed(true) : null,
+        onTapUp: interactive ? (TapUpDetails _) => _setPressed(false) : null,
+        onTapCancel: interactive ? () => _setPressed(false) : null,
         child: result,
       );
     }
 
-    return MouseRegion(
-      cursor: box.isInteractive ? SystemMouseCursors.click : MouseCursor.defer,
-      onEnter: (PointerEnterEvent event) => _setHovered(true),
-      onExit: (PointerExitEvent event) => _setHovered(false),
-      child: result,
+    if (focusable) {
+      result = Focus(
+        onFocusChange: _setFocused,
+        onKeyEvent: _handleKeyEvent,
+        child: result,
+      );
+    }
+
+    if (interactive || tracksState) {
+      result = MouseRegion(
+        cursor: interactive ? SystemMouseCursors.click : MouseCursor.defer,
+        onEnter: tracksState
+            ? (PointerEnterEvent event) => _setHovered(true)
+            : null,
+        onExit: tracksState
+            ? (PointerExitEvent event) => _setHovered(false)
+            : null,
+        child: result,
+      );
+    }
+
+    return _describeToSemantics(result, box);
+  }
+
+  /// Activates the box from the keyboard.
+  ///
+  /// Enter and Space are what a button does everywhere: Enter fires on the way
+  /// down, Space on the way up, and both show the pressed state in between.
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    final core.Box box = widget.box;
+    final LogicalKeyboardKey key = event.logicalKey;
+    final bool isActivationKey =
+        key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space;
+
+    if (!isActivationKey || !box.isInteractive) {
+      return KeyEventResult.ignored;
+    }
+
+    if (event is KeyDownEvent) {
+      _setPressed(true);
+      if (key == LogicalKeyboardKey.enter) {
+        box.onTap?.call();
+      }
+      return KeyEventResult.handled;
+    }
+
+    if (event is KeyUpEvent) {
+      _setPressed(false);
+      if (key == LogicalKeyboardKey.space) {
+        box.onTap?.call();
+      }
+    }
+
+    return KeyEventResult.handled;
+  }
+
+  /// Describes [content] to assistive technologies.
+  ///
+  /// A plain enabled container is left untouched: an extra `Semantics` node on
+  /// every box would only make the tree harder to read. A box with a description
+  /// or a disabled state gets one, and so does a focusable box, which needs the
+  /// focused flag to be announced.
+  Widget _describeToSemantics(Widget content, core.Box box) {
+    final core.BoxSemantics? semantics = box.semantics;
+    final bool focusable = box.isFocusable && box.enabled;
+
+    if (semantics == null && box.enabled) {
+      return content;
+    }
+
+    final core.BoxRole role = semantics?.role ?? core.BoxRole.none;
+    final bool? checked = semantics?.checked;
+    final String? label = semantics?.label;
+
+    return Semantics(
+      container: semantics != null,
+      // A label replaces the contents, so the accessible name cannot drift
+      // away from what the screen reader reads.
+      excludeSemantics: label != null,
+      button: role == core.BoxRole.button,
+      link: role == core.BoxRole.link,
+      header: role == core.BoxRole.heading,
+      checked: role == core.BoxRole.checkbox ? checked : null,
+      toggled: role == core.BoxRole.switch_ ? checked : null,
+      label: label,
+      enabled: box.enabled,
+      focusable: focusable,
+      focused: focusable ? _focused : null,
+      child: content,
     );
+  }
+
+  /// The style of [box] for the states it is in right now.
+  ///
+  /// States stack the way CSS pseudo classes do: the hovered tokens are laid
+  /// over the resting style, then the focus and the press tokens, so a pressed
+  /// hovered box keeps both.
+  core.BoxStyle _resolvedStyle(core.Box box) {
+    if (!box.enabled) {
+      return box.computedStyleFor(core.BoxState.disabled);
+    }
+
+    core.BoxStyle style = box.computedStyle;
+
+    if (_hovered) {
+      style = style.merge(box.stateStyle(core.BoxState.hover));
+    }
+    if (_focused) {
+      style = style.merge(box.stateStyle(core.BoxState.focus));
+    }
+    if (_pressed) {
+      style = style.merge(box.stateStyle(core.BoxState.pressed));
+    }
+
+    return style;
   }
 
   void _setHovered(bool hovered) {
@@ -229,5 +349,25 @@ class _UniboxBoxState extends State<UniboxBox> {
     });
 
     widget.box.onHover?.call(hovered);
+  }
+
+  void _setFocused(bool focused) {
+    if (_focused == focused) {
+      return;
+    }
+
+    setState(() {
+      _focused = focused;
+    });
+  }
+
+  void _setPressed(bool pressed) {
+    if (_pressed == pressed) {
+      return;
+    }
+
+    setState(() {
+      _pressed = pressed;
+    });
   }
 }
