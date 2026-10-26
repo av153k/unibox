@@ -4,29 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 import 'package:unibox_flutter/unibox_flutter.dart';
 
-const Key nodeKey = ValueKey<String>('unibox-node');
-
-Future<void> pumpNode(WidgetTester tester, core.UINode node) async {
-  await tester.pumpWidget(
-    Directionality(
-      textDirection: TextDirection.ltr,
-      child: Center(
-        child: KeyedSubtree(key: nodeKey, child: renderFlutter(node)),
-      ),
-    ),
-  );
-}
-
-Finder inNode(Finder matching) =>
-    find.descendant(of: find.byKey(nodeKey), matching: matching);
-
-BoxDecoration? decorationOf(WidgetTester tester) {
-  final Finder finder = inNode(find.byType(DecoratedBox));
-  if (finder.evaluate().isEmpty) {
-    return null;
-  }
-  return tester.widget<DecoratedBox>(finder.first).decoration as BoxDecoration;
-}
+import 'support/harness.dart';
 
 void main() {
   group('Box layout', () {
@@ -478,10 +456,12 @@ void main() {
     });
 
     test('throws for nodes without a Flutter renderer', () {
-      expect(
-        () => renderFlutter(const core.TextNode('nope')),
-        throwsUnsupportedError,
-      );
+      expect(() => renderFlutter(const _UnknownNode()), throwsUnsupportedError);
     });
   });
+}
+
+/// A node type no renderer knows about.
+class _UnknownNode extends core.UINode {
+  const _UnknownNode();
 }

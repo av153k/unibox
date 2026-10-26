@@ -42,3 +42,16 @@ flex parent the expanding child is wrapped in an `Expanded` (using `flex`, or
 `1` when unspecified), elsewhere it is a `SizedBox` that fills the bounded
 parent. An infinite dimension in an unbounded parent is a layout error, exactly
 like a tight infinite `SizedBox` in plain Flutter.
+
+## Text mapping
+
+| Unibox                  | Flutter                                                        |
+| ----------------------- | -------------------------------------------------------------- |
+| `fontSize`              | `TextStyle.fontSize`                                            |
+| `fontWeight`            | `TextStyle.fontWeight` (`normal` → `w400`, `medium` → `w500`, `semiBold` → `w600`, `bold` → `w700`) |
+| `color`                 | `TextStyle.color`                                               |
+| `textAlign`             | `Text.textAlign`                                                |
+| `maxLines` / `overflow` | `Text.maxLines` / `Text.overflow` (`clip`, `ellipsis`)           |
+
+Typography tokens that are left unset are not passed to Flutter, so the ambient
+`DefaultTextStyle` keeps providing them.

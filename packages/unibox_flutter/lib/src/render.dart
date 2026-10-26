@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'box.dart';
+import 'text_node.dart';
 
 /// Renders [node] as a Flutter [Widget].
 ///
@@ -13,6 +14,7 @@ import 'box.dart';
 Widget renderFlutter(core.UINode node) {
   return switch (node) {
     final core.Box box => UniboxBox(box: box),
+    final core.TextNode text => UniboxText(node: text),
     _ => throw UnsupportedError('No Flutter renderer for ${node.runtimeType}.'),
   };
 }

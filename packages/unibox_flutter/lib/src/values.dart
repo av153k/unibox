@@ -38,6 +38,34 @@ CrossAxisAlignment toCrossAxisAlignment(core.CrossAlign align) {
   };
 }
 
+/// Converts a Unibox [core.FontWeight] to a Flutter [FontWeight].
+FontWeight toFontWeight(core.FontWeight weight) {
+  return switch (weight) {
+    core.FontWeight.normal => FontWeight.w400,
+    core.FontWeight.medium => FontWeight.w500,
+    core.FontWeight.semiBold => FontWeight.w600,
+    core.FontWeight.bold => FontWeight.w700,
+  };
+}
+
+/// Converts a Unibox [core.TextAlign] to a Flutter [TextAlign].
+TextAlign toTextAlign(core.TextAlign align) {
+  return switch (align) {
+    core.TextAlign.left => TextAlign.left,
+    core.TextAlign.center => TextAlign.center,
+    core.TextAlign.right => TextAlign.right,
+    core.TextAlign.justify => TextAlign.justify,
+  };
+}
+
+/// Converts a Unibox [core.TextOverflow] to a Flutter [TextOverflow].
+TextOverflow toTextOverflow(core.TextOverflow overflow) {
+  return switch (overflow) {
+    core.TextOverflow.clip => TextOverflow.clip,
+    core.TextOverflow.ellipsis => TextOverflow.ellipsis,
+  };
+}
+
 /// Converts a Unibox [core.BoxShadow] to a Flutter [BoxShadow].
 BoxShadow toBoxShadow(core.BoxShadow shadow) {
   return BoxShadow(
