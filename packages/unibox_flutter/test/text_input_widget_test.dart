@@ -20,6 +20,24 @@ void main() {
       expect(currentText(tester), isEmpty);
     });
 
+    testWidgets('renders the field without Material chrome', (tester) async {
+      // The node says what a field is for, never how it looks, so the field must
+      // not draw an underline, a fill or a padding of its own: the box around a
+      // field decides that, which is what the plain `<input>` of the web renderer
+      // does as well.
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(placeholder: 'Your name'),
+      );
+
+      final InputDecoration decoration = renderedField(tester).decoration!;
+
+      expect(decoration, InputDecoration.collapsed(hintText: 'Your name'));
+      expect(decoration.isCollapsed, isTrue);
+      expect(decoration.contentPadding, EdgeInsets.zero);
+      expect(decoration.filled, isFalse);
+    });
+
     testWidgets('shows the controlled value', (tester) async {
       await pumpMaterialNode(tester, const core.TextInputNode(value: 'hello'));
 

@@ -19,6 +19,11 @@ Widget widget = renderFlutter(card);
 Widget widget = card.toWidget();
 ```
 
+Every node type also exports the widget it renders to — `UniboxBox`,
+`UniboxText`, `UniboxTextInput`, `UniboxLink`, `UniboxImage`, `UniboxStack` — so
+a host or a test can address a rendered node without depending on its position
+in the tree.
+
 ## Box mapping
 
 | Unibox                              | Flutter                                            |
@@ -179,7 +184,7 @@ applying the offsets, because offsets are relative to the enclosing stack.
 | Unibox                      | Flutter                                              |
 | --------------------------- | ---------------------------------------------------- |
 | `value`                     | `TextEditingController` text, kept in sync           |
-| `placeholder`               | `InputDecoration.hintText`                           |
+| `placeholder`               | `InputDecoration.collapsed(hintText: …)`              |
 | `obscureText`               | `TextField.obscureText`                              |
 | `multiline`                 | `minLines` / `maxLines` and `TextInputType.multiline` |
 | `maxLines`                  | `TextField.maxLines` of a multiline field            |
@@ -189,3 +194,11 @@ The renderer builds on Material's `TextField`, so it needs a `Material`
 ancestor such as `MaterialApp`. With `value: null` the field keeps whatever the
 user typed; as soon as the owner passes a value the controller follows it,
 replacing the text and moving the caret to the end.
+
+The field itself carries no decoration: no underline, no fill, no content padding
+and no 48 pixel minimum height, so it occupies exactly its line box. That is what
+a plain `<input>` does on the web, and it is what lets one node tree look the
+same on both targets — a box that wants a field to look like a field draws the
+border, the background and the padding around it. The field does adopt the
+typography of its box, line height included, through `UniboxTextStyleScope`; that
+is what sizes it.

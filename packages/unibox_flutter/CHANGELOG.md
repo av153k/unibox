@@ -16,6 +16,15 @@ The first release of the Flutter renderer.
   enabled flag.
 - `TextInputNode` maps to a `TextField` with the keyboard, the autofill hints
   and the enabled, read only and autofocus flags of the node.
+- A field renders without Material's decoration: no underline, no content
+  padding and no 48 pixel minimum height, so it occupies exactly its line box.
+  That is what a plain `<input>` does on the web, and it lets the box around a
+  field be the only thing that draws one.
+- A box renders its flex container even when it has no children, so an empty box
+  describes the same shape here as the flex container the web renderer emits.
+- `UniboxBox`, `UniboxText`, `UniboxTextInput`, `UniboxLink`, `UniboxImage` and
+  `UniboxStack` are exported, so a host or a test can address a rendered node
+  without depending on its position in the tree.
 - `WidgetNode` embeds any Flutter widget.
 - Links follow their url through `UniboxLinkScope`; a link that can neither open
   nor call back is reported as a host configuration error in debug builds.

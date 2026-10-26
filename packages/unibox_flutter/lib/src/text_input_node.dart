@@ -11,9 +11,14 @@ import 'text_style_scope.dart';
 /// values typed by the user are reported through
 /// [core.TextInputNode.onChanged].
 ///
-/// The node also drives the platform behaviour of the field: [inputType] picks
-/// the keyboard and the autofill hints, and the enabled, read only and autofocus
-/// flags are passed straight through.
+/// The node also drives the platform behaviour of the field:
+/// [core.TextInputNode.inputType] picks the keyboard and the autofill hints, and
+/// the enabled, read only and autofocus flags are passed straight through.
+///
+/// The field carries no decoration of its own — no underline, no fill, no
+/// padding — so it looks like the `<input>` the web renderer emits: a box that
+/// wants a field to look like a field draws the border and the padding around
+/// it, which is what keeps the two targets showing the same form.
 class UniboxTextInput extends StatefulWidget {
   /// Creates a renderer for [node].
   const UniboxTextInput({required this.node, super.key});
@@ -81,7 +86,12 @@ class _UniboxTextInputState extends State<UniboxTextInput> {
       minLines: multiline ? 1 : null,
       onChanged: node.onChanged,
       onSubmitted: node.onSubmitted,
-      decoration: InputDecoration(hintText: node.placeholder),
+      // A collapsed decoration drops everything Material puts around a field:
+      // the underline, the content padding and the 48 pixel minimum height. The
+      // field then occupies exactly its line box, which is what a plain
+      // `<input>` does on the web, and the enclosing box decides how a field
+      // looks on both targets instead of each platform styling it its own way.
+      decoration: InputDecoration.collapsed(hintText: node.placeholder),
     );
 
     if (semanticsLabel == null) {
