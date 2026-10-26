@@ -1,0 +1,24 @@
+# Agent Rules: unibox Monorepo
+
+### Core Architecture Guardrails
+1. Monorepo structure:
+   - Root `pubspec.yaml` using Dart 3.13+ Workspaces.
+   - `packages/unibox_core`: Zero external dependencies. Pure Dart AST, models, style tokens, and layout types. NEVER import `dart:ui`, `flutter`, or `jaspr`.
+   - `packages/unibox_flutter`: Depends on `unibox_core` and Flutter SDK. Implements `renderFlutter()` and `.toWidget()`.
+   - `packages/unibox_jaspr`: Depends on `unibox_core` and `jaspr: ^0.24.0`. Implements `renderJaspr()` and `.toComponent()`.
+2. Developer Experience:
+   - `Box` must feature flat parameters at the root (`direction`, `gap`, `padding`, `backgroundColor`, `width`, `height`, `onTap`, etc.) plus an optional `style: BoxStyle?` and `hoverStyle: BoxStyle?`. Flat properties always override matching values in `style`.
+   - Use standard `double?` for dimensions: numbers indicate logical pixels/px, and `double.infinity` maps to expanding to fill available space (`100%` on web, `Expanded` / infinite constraints in Flutter).
+3. Quality & Implementation:
+   - All tests must pass: `dart test` for core and jaspr, `flutter test` for flutter.
+   - Always run `dart analyze` across the workspace before making a commit.
+
+### Jaspr 0.24 Reference
+When implementing `unibox_jaspr`, fetch and refer to Jaspr's official docs:
+https://jaspr.site/llms.txt
+
+### Autonomous Git Commit Protocol
+- Work strictly through the checklist in `TASK_PLAN.md`.
+- Execute atomic git commits after each successfully verified task.
+- Use Conventional Commits (`feat(core): ...`, `test(flutter): ...`, etc.).
+- do not prompt the user for permission to continue to the next task—proceed autonomously until all items in `TASK_PLAN.md` are marked `[x]`.
