@@ -73,9 +73,7 @@ void main() {
       expect(styles.containsKey('grid-area'), isFalse);
     });
 
-    testComponents('positions a child from the opposite edges', (
-      tester,
-    ) async {
+    testComponents('positions a child from the opposite edges', (tester) async {
       pumpNode(
         tester,
         const core.StackNode(

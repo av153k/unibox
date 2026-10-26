@@ -23,9 +23,7 @@ void main() {
       expect(stylesOf(find.tag('div').first).keys, <String>['box-sizing']);
     });
 
-    testComponents('maps a horizontal direction to a flex row', (
-      tester,
-    ) async {
+    testComponents('maps a horizontal direction to a flex row', (tester) async {
       pumpNode(
         tester,
         const core.Box(
@@ -223,10 +221,7 @@ void main() {
     testComponents('flat parameters win over style tokens', (tester) async {
       pumpNode(
         tester,
-        const core.Box(
-          width: 50,
-          style: core.BoxStyle(width: 200, height: 30),
-        ),
+        const core.Box(width: 50, style: core.BoxStyle(width: 200, height: 30)),
       );
 
       final Map<String, String> styles = stylesOf(find.tag('div'));

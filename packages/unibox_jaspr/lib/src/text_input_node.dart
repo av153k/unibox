@@ -11,6 +11,11 @@ import 'values.dart';
 /// `<input type="password">`, and a multiline one becomes a `<textarea>` whose
 /// `rows` start at [core.TextInputNode.maxLines].
 ///
+/// The node also drives the browser behaviour of the field: [core.InputType]
+/// becomes the `type` attribute, which gives a touch device the right keyboard
+/// and the browser its validation hints, and the enabled, read only and autofocus
+/// flags become the matching attributes.
+///
 /// A [core.TextInputNode.value] is written into the field, which makes the field
 /// controlled: rendering the node again with a new value replaces what the user
 /// typed. Without a value the field keeps its own content and only reports
@@ -30,6 +35,7 @@ class UniboxTextInput extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final String? placeholder = node.placeholder;
+    final Map<String, EventCallback>? listeners = _events();
 
     if (node.multiline) {
       final String? value = node.value;
@@ -38,22 +44,66 @@ class UniboxTextInput extends StatelessComponent {
         <Component>[if (value != null) Component.text(value)],
         placeholder: placeholder,
         rows: node.maxLines,
+        disabled: !node.enabled,
+        readonly: node.readOnly,
+        autofocus: node.autofocus,
+        attributes: _attributes(),
         styles: toTextInputStyles(),
-        events: _events(),
+        events: listeners,
       );
     }
 
     return input(
-      type: node.obscureText ? InputType.password : InputType.text,
+      type: _inputType(node),
       value: node.value,
+      disabled: !node.enabled,
+      attributes: _attributes(includeBooleanFlags: true),
       styles: toTextInputStyles(),
-      // The input component has no `placeholder` parameter, so it is passed
-      // through the attribute escape hatch instead.
-      attributes: placeholder == null
-          ? null
-          : <String, String>{'placeholder': placeholder},
-      events: _events(),
+      events: listeners,
     );
+  }
+
+  /// The attributes the field needs beyond the typed parameters.
+  ///
+  /// The `autocomplete` hint has no equivalent on the node type and the input
+  /// component has no `aria-label`, so they are passed through the attribute
+  /// escape hatch. The read only and autofocus flags are only added for an
+  /// `<input>`, since a `<textarea>` has typed parameters for both.
+  Map<String, String>? _attributes({bool includeBooleanFlags = false}) {
+    final Map<String, String> attributes = <String, String>{};
+    final String? placeholder = node.placeholder;
+    final String? label = node.semanticsLabel;
+    final Map<String, String>? autofill = _autofillAttributes();
+
+    if (placeholder != null) {
+      attributes['placeholder'] = placeholder;
+    }
+    if (label != null) {
+      attributes['aria-label'] = label;
+    }
+    if (includeBooleanFlags && node.readOnly) {
+      attributes['readonly'] = '';
+    }
+    if (includeBooleanFlags && node.autofocus) {
+      attributes['autofocus'] = '';
+    }
+    if (autofill != null) {
+      attributes.addAll(autofill);
+    }
+
+    return attributes.isEmpty ? null : attributes;
+  }
+
+  /// The `autocomplete` hint of the field, which is what lets a password manager
+  /// offer the right entry. The typed parameters do not cover it.
+  Map<String, String>? _autofillAttributes() {
+    return switch (node.inputType) {
+      core.InputType.text => null,
+      core.InputType.email => <String, String>{'autocomplete': 'email'},
+      core.InputType.number => null,
+      core.InputType.phone => <String, String>{'autocomplete': 'tel'},
+      core.InputType.url => <String, String>{'autocomplete': 'url'},
+    };
   }
 
   /// The listeners of the field, or `null` when the node reacts to nothing.
@@ -63,8 +113,9 @@ class UniboxTextInput extends StatelessComponent {
   Map<String, EventCallback>? _events() {
     final core.TextChangedCallback? onChanged = node.onChanged;
     final core.TextSubmittedCallback? onSubmitted = node.onSubmitted;
+    final core.FocusChangedCallback? onFocusChanged = node.onFocusChanged;
 
-    if (onChanged == null && onSubmitted == null) {
+    if (onChanged == null && onSubmitted == null && onFocusChanged == null) {
       return null;
     }
 
@@ -78,8 +129,30 @@ class UniboxTextInput extends StatelessComponent {
             onSubmitted(_fieldValue(event));
           }
         },
+      if (onFocusChanged != null) ...<String, EventCallback>{
+        'focus': (event) => onFocusChanged(true),
+        'blur': (event) => onFocusChanged(false),
+      },
     };
   }
+}
+
+/// The `type` of the `<input>` for [node].
+///
+/// An obscured field is a password field whatever else it says, and a text area
+/// has no type of its own.
+InputType _inputType(core.TextInputNode node) {
+  if (node.obscureText) {
+    return InputType.password;
+  }
+
+  return switch (node.inputType) {
+    core.InputType.text => InputType.text,
+    core.InputType.email => InputType.email,
+    core.InputType.number => InputType.number,
+    core.InputType.phone => InputType.tel,
+    core.InputType.url => InputType.url,
+  };
 }
 
 /// Whether [event] is the key press that submits a field.

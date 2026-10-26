@@ -128,10 +128,7 @@ void main() {
         const core.Box(
           direction: core.Axis.horizontal,
           gap: 8,
-          children: [
-            core.TextNode('First'),
-            core.TextNode('Second'),
-          ],
+          children: [core.TextNode('First'), core.TextNode('Second')],
         ),
       );
 

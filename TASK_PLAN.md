@@ -51,7 +51,7 @@
 ### Phase 9: Text input parity
 - [x] Task 32: Core — `InputType` enum and `TextInputNode.inputType`, `enabled`, `readOnly`, `autofocus`, `onFocusChanged` and `semanticsLabel`.
 - [x] Task 33: Flutter renderer — `keyboardType`, `autofillHints`, `enabled`, `readOnly`, `autofocus`, focus listener and `Semantics` label.
-- [ ] Task 34: Jaspr renderer — `type`, `disabled`, `readonly`, `autofocus`, `aria-label` and `focus`/`blur` listeners.
+- [x] Task 34: Jaspr renderer — `type`, `disabled`, `readonly`, `autofocus`, `aria-label` and `focus`/`blur` listeners.
 
 ### Phase 10: Host embeds
 - [ ] Task 35: Core — `abstract class EmbedNode extends UINode` with an `Object get payload`, documented as the escape hatch for host specific content.

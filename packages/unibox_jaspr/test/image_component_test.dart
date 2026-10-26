@@ -15,9 +15,7 @@ void main() {
         'src': 'https://example.com/a.png',
         'alt': '',
       });
-      expect(stylesOf(find.tag('img')), <String, String>{
-        'display': 'block',
-      });
+      expect(stylesOf(find.tag('img')), <String, String>{'display': 'block'});
     });
 
     testComponents('sets the alt text', (tester) async {
@@ -53,10 +51,7 @@ void main() {
       };
 
       for (final MapEntry<core.ImageFit, String> entry in fits.entries) {
-        pumpNode(
-          tester,
-          core.ImageNode('assets/logo.png', fit: entry.key),
-        );
+        pumpNode(tester, core.ImageNode('assets/logo.png', fit: entry.key));
 
         expect(stylesOf(find.tag('img'))['object-fit'], entry.value);
       }
