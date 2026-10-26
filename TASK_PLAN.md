@@ -54,7 +54,7 @@
 - [x] Task 34: Jaspr renderer — `type`, `disabled`, `readonly`, `autofocus`, `aria-label` and `focus`/`blur` listeners.
 
 ### Phase 10: Host embeds
-- [ ] Task 35: Core — `abstract class EmbedNode extends UINode` with an `Object get payload`, documented as the escape hatch for host specific content.
+- [x] Task 35: Core — `abstract class EmbedNode extends UINode` with an `Object get payload`, documented as the escape hatch for host specific content.
 - [ ] Task 36: Flutter — `WidgetNode(Widget)` accepted by `renderFlutter`, with an `UnsupportedError` for foreign payloads.
 - [ ] Task 37: Jaspr — `ComponentNode(Component)` accepted by `renderJaspr` with the same contract.
 

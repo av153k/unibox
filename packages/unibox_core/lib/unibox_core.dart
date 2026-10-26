@@ -18,6 +18,7 @@ library;
 export 'src/callbacks.dart';
 export 'src/enums.dart';
 export 'src/nodes/box.dart';
+export 'src/nodes/embed_node.dart';
 export 'src/nodes/image_node.dart';
 export 'src/nodes/link_node.dart';
 export 'src/nodes/positioned_node.dart';

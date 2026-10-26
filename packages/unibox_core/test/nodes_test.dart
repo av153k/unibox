@@ -304,4 +304,25 @@ void main() {
       expect(const StackNode(children: [child]).children, [child]);
     });
   });
+
+  group('EmbedNode', () {
+    test('carries the payload of its subclass', () {
+      const node = _FakeEmbed('payload', key: 'embed');
+
+      expect(node.payload, 'payload');
+      expect(node.key, 'embed');
+      expect(node.children, isEmpty);
+      expect(node, isA<UINode>());
+    });
+  });
+}
+
+/// A minimal embed, standing in for a host specific node.
+final class _FakeEmbed extends EmbedNode {
+  const _FakeEmbed(this.value, {super.key});
+
+  final String value;
+
+  @override
+  Object get payload => value;
 }
