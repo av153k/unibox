@@ -101,6 +101,10 @@ dart analyze
 The workspace targets Dart `^3.13.0`. Jaspr is pinned to the `0.24` line
 (`^0.24.0-beta.0`, the published prerelease of that line).
 
+Continuous integration runs the same commands on every push and pull request:
+the format check, `dart analyze`, the six test suites and `dart doc` for each
+package (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+
 ## License
 
 MIT, see [LICENSE](LICENSE). Every package carries a copy so it can be published

@@ -62,5 +62,5 @@
 - [x] Task 38: Add the MIT `LICENSE`, per package `CHANGELOG.md` files and the `repository`, `homepage`, `issue_tracker` and `topics` pubspec metadata while keeping `publish_to: none`.
 - [x] Task 39: Audit `dart doc` for all three packages, fix unresolved references and undocumented public members.
 - [x] Task 40: Add a cross target parity fixture: one table of expected declarations in the example shared package, asserted by both renderer test suites.
-- [ ] Task 41: Add a GitHub Actions CI workflow (format check, `dart analyze` and all three test suites).
+- [x] Task 41: Add a GitHub Actions CI workflow (format check, `dart analyze` and all three test suites).
 - [ ] Task 42: Final workspace verification (`dart analyze`, all six suites, `dart run bin/build.dart`), README refresh and `TASK_PLAN.md` completion commit.

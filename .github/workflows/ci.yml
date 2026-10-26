@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The version the workspace is developed against; `environment.sdk` is ^3.13.0,
+  # which this Flutter line ships.
+  FLUTTER_VERSION: 3.47.5
+
+jobs:
+  analyze:
+    name: Format and analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Resolve the workspace
+        run: flutter pub get
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Analyze every package
+        run: dart analyze
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Resolve the workspace
+        run: flutter pub get
+      - name: unibox_core
+        working-directory: packages/unibox_core
+        run: dart test
+      - name: unibox_jaspr
+        working-directory: packages/unibox_jaspr
+        run: dart test
+      - name: unibox_flutter
+        working-directory: packages/unibox_flutter
+        run: flutter test
+      - name: example shared tree
+        working-directory: example/unibox_example_shared
+        run: dart test
+      - name: example Jaspr host
+        working-directory: example/unibox_example_jaspr
+        run: dart test
+      - name: example Flutter host
+        working-directory: example/unibox_example_flutter
+        run: flutter test
+
+  docs:
+    name: API docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Resolve the workspace
+        run: flutter pub get
+      - name: Build the docs of every package
+        run: |
+          while read -r package; do
+            log="$RUNNER_TEMP/$package.log"
+            if ! (cd "packages/$package" && dart doc --output "$RUNNER_TEMP/docs/$package") >"$log" 2>&1; then
+              cat "$log"
+              exit 1
+            fi
+            cat "$log"
+            if grep -q 'warning:' "$log"; then
+              echo "dartdoc reported warnings in $package"
+              exit 1
+            fi
+          done <<'PACKAGES'
+          unibox_core
+          unibox_flutter
+          unibox_jaspr
+          PACKAGES
