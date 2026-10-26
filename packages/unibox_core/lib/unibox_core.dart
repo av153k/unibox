@@ -27,6 +27,7 @@ export 'src/nodes/text_node.dart';
 export 'src/nodes/ui_node.dart';
 export 'src/tokens/box_border.dart';
 export 'src/tokens/box_color.dart';
+export 'src/tokens/box_semantics.dart';
 export 'src/tokens/box_shadow.dart';
 export 'src/tokens/box_spacing.dart';
 export 'src/tokens/box_style.dart';

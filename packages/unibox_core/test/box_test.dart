@@ -252,6 +252,19 @@ void main() {
       );
       expect(const Box(enabled: false).isInteractive, isFalse);
     });
+    test('is focusable only with a role the user can act on', () {
+      expect(const Box().isFocusable, isFalse);
+      expect(
+        const Box(semantics: BoxSemantics(role: BoxRole.heading)).isFocusable,
+        isFalse,
+      );
+      expect(
+        const Box(
+          semantics: BoxSemantics(role: BoxRole.button, label: 'Submit'),
+        ).isFocusable,
+        isTrue,
+      );
+    });
   });
 }
 

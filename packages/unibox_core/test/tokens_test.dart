@@ -312,4 +312,61 @@ void main() {
       expect(style.toString(), contains('fontFamily: Inter'));
     });
   });
+
+  group('BoxSemantics', () {
+    test('describes a plain container by default', () {
+      const semantics = BoxSemantics();
+
+      expect(semantics.role, BoxRole.none);
+      expect(semantics.label, isNull);
+      expect(semantics.checked, isNull);
+      expect(semantics.isFocusable, isFalse);
+    });
+
+    test('states what a screen reader announces', () {
+      const semantics = BoxSemantics(
+        role: BoxRole.checkbox,
+        label: 'Release notes',
+        checked: true,
+      );
+
+      expect(semantics.role, BoxRole.checkbox);
+      expect(semantics.label, 'Release notes');
+      expect(semantics.checked, isTrue);
+      expect(semantics.isFocusable, isTrue);
+    });
+
+    test('makes only the roles the user can act on focusable', () {
+      expect(BoxRole.none.isInteractive, isFalse);
+      expect(BoxRole.heading.isInteractive, isFalse);
+      expect(BoxRole.button.isInteractive, isTrue);
+      expect(BoxRole.checkbox.isInteractive, isTrue);
+      expect(BoxRole.switch_.isInteractive, isTrue);
+      expect(BoxRole.link.isInteractive, isTrue);
+    });
+
+    test('copyWith replaces only the given fields', () {
+      const semantics = BoxSemantics(role: BoxRole.button, label: 'Submit');
+
+      final copy = semantics.copyWith(role: BoxRole.link);
+
+      expect(copy.role, BoxRole.link);
+      expect(copy.label, 'Submit');
+      expect(copy, isNot(semantics));
+    });
+
+    test('implements value equality', () {
+      const semantics = BoxSemantics(
+        role: BoxRole.switch_,
+        label: 'Newsletter',
+        checked: false,
+      );
+
+      expect(semantics, semantics.copyWith());
+      expect(semantics.hashCode, semantics.copyWith().hashCode);
+      expect(semantics, isNot(semantics.copyWith(checked: true)));
+      expect(semantics.toString(), contains('role: BoxRole.switch_'));
+      expect(semantics.toString(), contains('checked: false'));
+    });
+  });
 }

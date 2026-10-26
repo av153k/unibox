@@ -2,6 +2,7 @@ import '../callbacks.dart';
 import '../enums.dart';
 import '../tokens/box_border.dart';
 import '../tokens/box_color.dart';
+import '../tokens/box_semantics.dart';
 import '../tokens/box_shadow.dart';
 import '../tokens/box_spacing.dart';
 import '../tokens/box_style.dart';
@@ -60,6 +61,7 @@ class Box extends UINode {
     this.hoverStyle,
     this.stateStyles,
     this.enabled = true,
+    this.semantics,
     this.onTap,
     this.onLongPress,
     this.onHover,
@@ -166,6 +168,15 @@ class Box extends UINode {
   /// [BoxState.disabled] style. Disabling a box therefore never moves anything.
   final bool enabled;
 
+  // Accessibility.
+
+  /// What this box means to assistive technologies.
+  ///
+  /// A box without semantics is a plain container. A role the user can act on
+  /// makes the box keyboard focusable, which is the opt in for keyboard
+  /// interaction: a box without a role stays out of the tab order.
+  final BoxSemantics? semantics;
+
   // Actions.
 
   /// Called when the box is tapped.
@@ -248,6 +259,9 @@ class Box extends UINode {
 
   /// Whether this box defines a distinct hovered appearance.
   bool get hasHoverStyle => stateStyle(BoxState.hover) != null;
+
+  /// Whether the box can be reached with the keyboard.
+  bool get isFocusable => semantics?.isFocusable ?? false;
 
   /// Whether this box has an interaction handler it can run.
   ///
