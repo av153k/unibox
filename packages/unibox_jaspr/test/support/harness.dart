@@ -39,6 +39,11 @@ Map<String, String> stylesOf(Finder finder) {
 /// The `class` attribute of the element matched by [finder].
 String? classesOf(Finder finder) => elementOf(finder).classes;
 
+/// The HTML attributes of the element matched by [finder].
+Map<String, String> attributesOf(Finder finder) {
+  return elementOf(finder).attributes ?? const <String, String>{};
+}
+
 /// The raw CSS rendered by the `<style>` element matched by [finder].
 String cssOf(Finder finder) {
   return elementOf(finder).children

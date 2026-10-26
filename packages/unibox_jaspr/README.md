@@ -108,6 +108,26 @@ An `ellipsis` without `maxLines` truncates the single line instead
 (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis`), while `clip`
 only hides the overflow.
 
+## Image mapping
+
+An `ImageNode` becomes an `<img>` carrying its `src` and `alt` attributes, so
+browsers can cache, lazy-load and describe the picture like any other image on
+the page.
+
+| Unibox           | Jaspr / CSS                                   |
+| ---------------- | --------------------------------------------- |
+| `src`, `alt`     | `src` and `alt` attributes                    |
+| `width`/`height` | `width`/`height` (`double.infinity` → `100%`) |
+| `fit`            | `object-fit` (`cover`, `contain`, `fill`)     |
+| `borderRadius`   | `border-radius`                               |
+
+Images render as `display: block`, matching the leaf box they are in Flutter: no
+line box, and therefore no baseline gap beneath the picture.
+
+A single dimension keeps the natural aspect ratio, just like an `Image` that
+only constrains one side. Relative sources need no rewriting: the browser
+resolves them against the page while the Flutter renderer loads them as assets.
+
 ## Testing
 
 ```sh

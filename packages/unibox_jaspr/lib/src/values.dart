@@ -192,6 +192,37 @@ Map<String, String>? _truncationStyles(
   };
 }
 
+/// Converts a Unibox [core.ImageFit] to the CSS `object-fit` keyword.
+String toCssObjectFit(core.ImageFit fit) {
+  return switch (fit) {
+    core.ImageFit.cover => 'cover',
+    core.ImageFit.contain => 'contain',
+    core.ImageFit.fill => 'fill',
+  };
+}
+
+/// Builds the CSS of an image node.
+///
+/// The image is rendered as a block so it behaves like the leaf box it is in
+/// Flutter: no baseline gap under the picture and no line box contribution.
+/// `object-fit` is written raw, since the typed properties do not expose it.
+Styles toImageStyles(core.ImageNode node) {
+  final core.ImageFit? fit = node.fit;
+  final double? borderRadius = node.borderRadius;
+
+  return Styles(
+    display: Display.block,
+    width: toCssUnit(node.width),
+    height: toCssUnit(node.height),
+    radius: borderRadius == null
+        ? null
+        : BorderRadius.circular(Unit.pixels(borderRadius)),
+    raw: fit == null
+        ? null
+        : <String, String>{'object-fit': toCssObjectFit(fit)},
+  );
+}
+
 /// Builds the CSS of a box from its resolved [core.BoxStyle].
 ///
 /// Unset token values are omitted so that browser defaults (and inherited
