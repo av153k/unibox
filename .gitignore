@@ -1,0 +1,18 @@
+# Dart / Flutter tooling
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Coverage and generated docs
+coverage/
+doc/api/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store

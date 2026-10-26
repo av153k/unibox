@@ -1,0 +1,19 @@
+name: unibox_flutter
+description: Flutter renderer for Unibox layout primitives.
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.35.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  unibox_core: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.1.0
