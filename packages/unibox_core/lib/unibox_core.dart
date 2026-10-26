@@ -9,10 +9,21 @@
 ///   [BoxShadow]),
 /// * layout enums ([Axis], [MainAlign], [CrossAlign], [Overflow], [ImageFit],
 ///   [FontWeight], [TextAlign], [TextOverflow]),
-/// * the immutable node tree rooted in `UINode`.
+/// * the immutable node tree rooted in [UINode]: [Box], [TextNode],
+///   [ImageNode], [LinkNode], [StackNode], [PositionedNode] and
+///   [TextInputNode].
 library;
 
+export 'src/callbacks.dart';
 export 'src/enums.dart';
+export 'src/nodes/box.dart';
+export 'src/nodes/image_node.dart';
+export 'src/nodes/link_node.dart';
+export 'src/nodes/positioned_node.dart';
+export 'src/nodes/stack_node.dart';
+export 'src/nodes/text_input_node.dart';
+export 'src/nodes/text_node.dart';
+export 'src/nodes/ui_node.dart';
 export 'src/tokens/box_border.dart';
 export 'src/tokens/box_color.dart';
 export 'src/tokens/box_shadow.dart';
