@@ -396,6 +396,19 @@ MaterialBottomSheet(
 Material's modal entrance and exit transitions are not here, and the sheet's four
 corners are rounded because the model has one radius per box.
 
+## Fidelity
+
+What the components state against the Material 3 specification: a card in its three
+variants (`MaterialCard.elevated`, `.filled`, `.outlined`); a list tile with the 8
+pixel vertical padding and the palette's title, supporting text and state layers; a
+text field at least 56 pixels tall with a 2 pixel focused outline, a primary focused
+label, an `onSurface` hover outline and 38% opacity when disabled; a dialog whose
+content is `bodyMedium` in `onSurfaceVariant` over `labelLarge` actions in `primary`;
+and a bottom sheet that fills the width up to 640 pixels, with a drag handle and a
+shadow that rises. Still approximate: the sheet rounds all four corners, the handle
+is not draggable, shadows are one layer where Material has two, and every ripple is a
+tint.
+
 ## Line heights
 
 A `BoxTextStyle.lineHeight` is a multiple of the font size, because that is the
@@ -446,7 +459,7 @@ value the model could carry:
 | the caret, the selection and the focus ring | the platform draws them for the input node |
 | modal entrance and exit transitions | the same missing timeline |
 | `ColorScheme`, CSS custom properties, dynamic colour | the two wirings an application owns, described in Task 96 of `TASK_PLAN.md` |
-| Material's three card variants, chips, menus, navigation | not built; each is a component, not a decision |
+| chips, menus, navigation | not built; each is a component, not a decision |
 
 ## License
 

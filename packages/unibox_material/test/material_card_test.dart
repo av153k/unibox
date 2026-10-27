@@ -11,7 +11,7 @@ void main() {
 
       expect(card, isA<Box>());
       expect(card.padding, const BoxSpacing.all(16));
-      expect(card.backgroundColor, BoxColors.white);
+      expect(card.backgroundColor, MaterialPalette.light.surfaceContainerLow);
       expect(card.borderRadius, 12);
       expect(card.shadow, MaterialCard.elevatedShadow);
       expect(card.border, isNull);
@@ -89,6 +89,40 @@ void main() {
       expect(issues, hasLength(1));
       expect(issues.single.node, isA<PositionedNode>());
       expect(issues.single.severity, TreeIssueSeverity.warning);
+    });
+  });
+
+  group('MaterialCard variants', () {
+    final palette = MaterialPalette.dark;
+
+    test('elevated is the tonal surface with the level one shadow', () {
+      final card = MaterialCard.elevated(palette: palette);
+
+      expect(card.backgroundColor, palette.surfaceContainerLow);
+      expect(card.shadow, MaterialCard.elevatedShadow);
+      expect(card.border, isNull);
+    });
+
+    test('filled is the highest tone and casts no shadow', () {
+      final card = MaterialCard.filled(palette: palette);
+
+      expect(card.backgroundColor, palette.surfaceContainerHighest);
+      expect(card.shadow, isNull);
+    });
+
+    test('outlined is the surface with an outline variant border', () {
+      final card = MaterialCard.outlined(palette: palette);
+
+      expect(card.backgroundColor, palette.surface);
+      expect(card.shadow, isNull);
+      expect(card.border?.color, palette.outlineVariant);
+      expect(card.borderRadius, 12);
+    });
+
+    test('types the text in the on-surface colour of the palette', () {
+      final card = MaterialCard.filled(palette: palette);
+
+      expect(card.textStyle?.color, palette.onSurface);
     });
   });
 }

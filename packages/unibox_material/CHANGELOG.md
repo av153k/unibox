@@ -6,6 +6,11 @@ The first release: Material 3 as a package of values, plus the components built
 from them. Every value here is a plain token of `unibox_core`, so neither renderer
 has to know this package exists.
 
+- Fidelity pass against Material 3: `MaterialCard.elevated`/`.filled`/`.outlined` on the
+  palette; list tile with 8 pixel vertical padding and palette colours; text field with
+  a 56 pixel minimum height, 2 pixel focused outline, primary focused label, hover
+  outline and disabled opacity; dialog content in `onSurfaceVariant` and `primary`
+  `labelLarge` actions; a full-width bottom sheet with a drag handle and a rising shadow.
 - `MaterialTypography`: the fifteen roles of the Material 3 type scale as `const`
   `BoxTextStyle` values, with `MaterialTypeRole` to name one in a table or a test and
   `MaterialTypography.of` to look one up.

@@ -1,5 +1,6 @@
 import 'package:unibox_core/unibox_core.dart';
 
+import 'material_palette.dart';
 import 'material_typography.dart';
 
 /// A Material 3 list tile: a row with an optional leading node, a title and a
@@ -61,12 +62,13 @@ final class MaterialListTile extends Box {
     BoxSemantics? semantics,
     BoxColor? color,
     double? width,
+    MaterialPalette palette = MaterialPalette.light,
     BoxSpacing padding = _padding,
     double gap = _gap,
-    BoxTextStyle titleStyle = MaterialTypography.bodyLarge,
-    BoxTextStyle subtitleStyle = subtitleTextStyle,
-    BoxStyle hoverStyle = _hoverTint,
-    Map<BoxState, BoxStyle> stateStyles = _stateTints,
+    BoxTextStyle? titleStyle,
+    BoxTextStyle? subtitleStyle,
+    BoxStyle? hoverStyle,
+    Map<BoxState, BoxStyle>? stateStyles,
     double? minHeight,
   }) : super(
          direction: Axis.horizontal,
@@ -79,19 +81,38 @@ final class MaterialListTile extends Box {
              minHeight ?? _minHeightFor(dense, hasSubtitle: subtitle != null),
          onTap: onTap,
          semantics: semantics ?? _roleFor(onTap),
-         hoverStyle: hoverStyle,
-         stateStyles: stateStyles,
+         hoverStyle:
+             hoverStyle ?? BoxStyle(backgroundColor: palette.hoverLayer),
+         stateStyles:
+             stateStyles ??
+             <BoxState, BoxStyle>{
+               BoxState.focus: BoxStyle(backgroundColor: palette.focusLayer),
+               BoxState.pressed: BoxStyle(
+                 backgroundColor: palette.pressedLayer,
+               ),
+             },
          children: <UINode>[
            ?leading,
            Box(
              direction: Axis.vertical,
              flex: 1,
              gap: _textGap,
-             textStyle: titleStyle,
+             textStyle:
+                 titleStyle ??
+                 MaterialTypography.bodyLarge.merge(
+                   BoxTextStyle(color: palette.onSurface),
+                 ),
              children: <UINode>[
                title,
                if (subtitle != null)
-                 Box(textStyle: subtitleStyle, children: <UINode>[subtitle]),
+                 Box(
+                   textStyle:
+                       subtitleStyle ??
+                       MaterialTypography.bodyMedium.merge(
+                         BoxTextStyle(color: palette.onSurfaceVariant),
+                       ),
+                   children: <UINode>[subtitle],
+                 ),
              ],
            ),
            ?trailing,
@@ -139,7 +160,10 @@ final class MaterialListTile extends Box {
   );
 
   /// The padding Material puts around a tile.
-  static const BoxSpacing _padding = BoxSpacing.symmetric(horizontal: 16);
+  static const BoxSpacing _padding = BoxSpacing.symmetric(
+    horizontal: 16,
+    vertical: 8,
+  );
 
   /// The space Material keeps between the leading node, the text and the
   /// trailing node.
@@ -147,17 +171,6 @@ final class MaterialListTile extends Box {
 
   /// The space between the title and the subtitle.
   static const double _textGap = 2;
-
-  /// The tint of a hovered tile: `onSurface` at the 8% Material paints a state
-  /// layer with, spelled as translucent black because the model has no scheme.
-  static const BoxStyle _hoverTint = BoxStyle(
-    backgroundColor: BoxColor(0x14000000),
-  );
-
-  /// The tint of a pressed tile, at the same colour and Material's 12%.
-  static const Map<BoxState, BoxStyle> _stateTints = <BoxState, BoxStyle>{
-    BoxState.pressed: BoxStyle(backgroundColor: BoxColor(0x1A000000)),
-  };
 
   /// The minimum height Material gives a one line tile, a two line tile, and
   /// their dense variants.

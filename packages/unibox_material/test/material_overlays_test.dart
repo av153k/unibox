@@ -33,7 +33,10 @@ void main() {
 
       expect(children, hasLength(3));
       expect((children[0] as TextNode).text, 'Delete listing?');
-      expect((children[1] as TextNode).text, 'The photos go too.');
+      expect(
+        ((children[1] as Box).children.single as TextNode).text,
+        'The photos go too.',
+      );
       expect((children[2] as Box).children, hasLength(2));
     });
 
@@ -87,7 +90,8 @@ void main() {
         MaterialPalette.light.surfaceContainerLow,
       );
       expect(surface.maxWidth, 640);
-      expect(surface.shadow, MaterialDialog.elevation);
+      expect(surface.width, double.infinity);
+      expect(surface.shadow!.offsetY, lessThan(0));
     });
 
     test('holds a title, the content and the actions, in that order', () {
@@ -98,10 +102,14 @@ void main() {
       );
       final children = _surfaceOf(sheet).children;
 
-      expect(children, hasLength(3));
-      expect((children[0] as TextNode).text, 'Filters');
-      expect((children[1] as TextNode).text, 'Two nights');
-      expect((children[2] as Box).mainAlign, MainAlign.end);
+      // The drag handle comes first, then the title, the content, the actions.
+      expect(children, hasLength(4));
+      expect((children[1] as TextNode).text, 'Filters');
+      expect(
+        ((children[2] as Box).children.single as TextNode).text,
+        'Two nights',
+      );
+      expect((children[3] as Box).mainAlign, MainAlign.end);
     });
   });
 }

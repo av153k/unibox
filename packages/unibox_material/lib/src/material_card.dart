@@ -1,5 +1,6 @@
 import 'package:unibox_core/unibox_core.dart';
 
+import 'material_palette.dart';
 import 'material_typography.dart';
 
 /// A Material 3 card: a surface with the padding, shape, elevation and body
@@ -28,9 +29,11 @@ import 'material_typography.dart';
 /// `color: palette.surfaceContainerLow`, `border: BoxBorder(color:
 /// palette.outlineVariant)` — from a `MaterialPalette`.
 ///
-/// It is not the three official variants either (`elevated`, `filled`,
-/// `outlined`), because two of them are tonal and a tone needs that scheme. And
-/// it is not a ripple: a press is [stateStyles], the same as on any other
+/// The three official variants are named constructors that take a
+/// [MaterialPalette]: [MaterialCard.elevated] (`surfaceContainerLow` and the level
+/// one shadow), [MaterialCard.filled] (`surfaceContainerHighest`) and
+/// [MaterialCard.outlined] (`surface` and a 1 pixel `outlineVariant` border). It is
+/// not a ripple: a press is [stateStyles], the same as on any other
 /// control.
 ///
 /// **The escape hatch is a [Box].** The card states its surface, the layout of
@@ -66,7 +69,7 @@ final class MaterialCard extends Box {
     super.shadow = elevatedShadow,
     super.border,
     BoxSpacing padding = const BoxSpacing.all(16),
-    BoxColor color = BoxColors.white,
+    BoxColor color = _elevatedSurface,
     double borderRadius = 12,
     BoxTextStyle textStyle = MaterialTypography.bodyMedium,
   }) : super(
@@ -75,6 +78,100 @@ final class MaterialCard extends Box {
          borderRadius: borderRadius,
          textStyle: textStyle,
        );
+
+  /// A filled card: `surfaceContainerHighest`, no shadow, 12 pixel radius.
+  MaterialCard.filled({
+    Object? key,
+    List<UINode> children = const <UINode>[],
+    MaterialPalette palette = MaterialPalette.light,
+    BoxSpacing padding = const BoxSpacing.all(16),
+    TapCallback? onTap,
+    double? width,
+    double? height,
+    BoxSpacing? margin,
+    Axis? direction,
+    double? gap,
+  }) : this(
+         key: key,
+         children: children,
+         color: palette.surfaceContainerHighest,
+         shadow: null,
+         padding: padding,
+         onTap: onTap,
+         width: width,
+         height: height,
+         margin: margin,
+         direction: direction,
+         gap: gap,
+         textStyle: _bodyOn(palette),
+       );
+
+  /// An outlined card: `surface` with a 1 pixel `outlineVariant` border, no
+  /// shadow, 12 pixel radius.
+  MaterialCard.outlined({
+    Object? key,
+    List<UINode> children = const <UINode>[],
+    MaterialPalette palette = MaterialPalette.light,
+    BoxSpacing padding = const BoxSpacing.all(16),
+    TapCallback? onTap,
+    double? width,
+    double? height,
+    BoxSpacing? margin,
+    Axis? direction,
+    double? gap,
+  }) : this(
+         key: key,
+         children: children,
+         color: palette.surface,
+         shadow: null,
+         border: BoxBorder(color: palette.outlineVariant),
+         padding: padding,
+         onTap: onTap,
+         width: width,
+         height: height,
+         margin: margin,
+         direction: direction,
+         gap: gap,
+         textStyle: _bodyOn(palette),
+       );
+
+  /// An elevated card in [palette]: `surfaceContainerLow` with the level one
+  /// shadow, the look the default constructor states for the light scheme.
+  MaterialCard.elevated({
+    Object? key,
+    List<UINode> children = const <UINode>[],
+    MaterialPalette palette = MaterialPalette.light,
+    BoxSpacing padding = const BoxSpacing.all(16),
+    TapCallback? onTap,
+    double? width,
+    double? height,
+    BoxSpacing? margin,
+    Axis? direction,
+    double? gap,
+  }) : this(
+         key: key,
+         children: children,
+         color: palette.surfaceContainerLow,
+         padding: padding,
+         onTap: onTap,
+         width: width,
+         height: height,
+         margin: margin,
+         direction: direction,
+         gap: gap,
+         textStyle: _bodyOn(palette),
+       );
+
+  static BoxTextStyle _bodyOn(MaterialPalette palette) => MaterialTypography
+      .bodyMedium
+      .merge(BoxTextStyle(color: palette.onSurface));
+
+  /// `surfaceContainerLow` of the baseline light scheme: the elevated surface.
+  ///
+  /// It is a literal because a default parameter has to be a constant expression,
+  /// and a field of a const object is not one. The test beside the card pins it to
+  /// the palette role it names, so the two cannot drift apart.
+  static const BoxColor _elevatedSurface = BoxColor(0xFFF7F2FA);
 
   /// The drop shadow of elevation level one, the level Material gives a resting
   /// card.

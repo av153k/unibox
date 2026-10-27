@@ -53,13 +53,22 @@ final class MaterialTextField extends Box {
          gap: 6,
          children: <UINode>[
            if (label != null)
-             TextNode(label, style: _labelStyle(palette, invalid: invalid)),
+             TextNode(
+               label,
+               style: _labelStyle(palette, invalid: invalid, focused: focused),
+             ),
            Box(
              textStyle: _valueStyle(palette),
              borderRadius: borderRadius,
+             minHeight: 56,
+             opacity: enabled ? null : 0.38,
              border: BoxBorder(
+               width: focused ? 2 : 1,
                color: _borderColor(palette, focused: focused, invalid: invalid),
              ),
+             hoverStyle: enabled && !focused && !invalid
+                 ? BoxStyle(border: BoxBorder(color: palette.onSurface))
+                 : null,
              padding: const BoxSpacing.symmetric(horizontal: 16, vertical: 14),
              children: <UINode>[
                TextInputNode(
@@ -99,8 +108,15 @@ final class MaterialTextField extends Box {
   static BoxTextStyle _labelStyle(
     MaterialPalette palette, {
     required bool invalid,
+    bool focused = false,
   }) => MaterialTypography.bodySmall.merge(
-    BoxTextStyle(color: invalid ? palette.error : palette.onSurfaceVariant),
+    BoxTextStyle(
+      color: invalid
+          ? palette.error
+          : focused
+          ? palette.primary
+          : palette.onSurfaceVariant,
+    ),
   );
 
   /// The text the user types: the body role, in the on-surface colour.

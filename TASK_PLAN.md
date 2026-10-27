@@ -160,6 +160,9 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [x] Task 114: Example — the rest of the host is gone: the listings page lost its map panel, so no host measures the window, `WideOnly` and `ExampleLayout` are deleted, and the Flutter host is a surface, a link scope and one `FlutterStateful`. The Jaspr host keeps the component in `lib/main.dart` and the page it is served in (`lib/document.dart`), so the file a reader copies holds the host and nothing else.
 - [x] Task 115: `ImageNode` — the four fields only a browser reads: `srcSet` (a width to URL map, resolved to the `srcset` attribute narrowest first so the order is the model's), `sizes`, `loading` and `fetchPriority`, with `validateTree` reporting a candidate of no positive width and a `sizes` that names nothing. The web renderer writes all four as attributes and adds a finite `width`/`height` as element attributes so the browser reserves the box before the fetch; the Flutter renderer loads `src` and the gap is recorded in its README, because a `ResizeImage` would need the laid-out width a rendering does not have.
 
+### Phase 24: Material fidelity
+- [x] Task 115: Audit the Material components against the Material 3 specification and fix the gaps: card variants on the palette, list tile padding and palette colours, text field minimum height, focused outline, hover and disabled states, dialog content and action colours, a full-width bottom sheet with a drag handle and an upward shadow.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
@@ -277,4 +280,19 @@ Deliberately out of scope for this pass, with the reason they were left:
 - Wiring the Jaspr client build into the workspace: the example renders on the
   server and writes one file per page, so the only thing missing without a client
   bundle is the click that switches pages (the media query needs no JavaScript).
-
+- Material icons. A glyph of an icon font in a square `Box` is the obvious component, and it
+  was written for the overlays PR: it needs no node, recolours and scales like text, and
+  the font is a host asset. It is held back because a *ligature* cannot be tree-shaken:
+  `--tree-shake-icons` reads const `IconData` constants out of the kernel and a
+  `TextStyle(fontFamily:)` around a string is invisible to it, so the whole font ships.
+  The code-point form can be shaken when the application references a const `IconData`
+  for each glyph (its `codePoint` and `fontFamily`), which is a recipe the docs would
+  have to teach; **discarded** until it does.
+- A circular progress indicator. A ring needs an arc, and the model has no gradient, no
+  per-side border and no clipping that punches a hole, so it cannot be composed from
+  boxes; indeterminate, it also needs an animation the model does not have. A node is
+  therefore the only way to describe one, and it was written for the overlays PR with
+  Material's defaults in core, no conformance case and a debug `assert` for the range.
+  **Discarded** until it carries no design-system numbers, `validateTree` bounds the
+  value and `unibox_testing` pins the determinate ring; a linear bar needs none of this
+  and is already expressible with two boxes and `flex`.
