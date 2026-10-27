@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- A box with a transition animates its decoration with a
+  `TweenAnimationBuilder<Decoration>` from the look it painted last to the look the
+  new state asks for; the five `BoxCurve` values map onto `Curves.linear`,
+  `Curves.ease`, `Curves.easeIn`, `Curves.easeOut` and `Curves.easeInOut`.
 - An embed is dispatched by payload type instead of by node class: a `Widget` is
   drawn as it is and a `WidgetEmbedBuilder` receives the rendered child, so a node
   class from outside this package renders here. Two drawable payloads, none, and a

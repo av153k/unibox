@@ -65,6 +65,15 @@ abstract final class ExamplePalette {
 /// override. The result is identical in Flutter and on the web: a
 /// `DefaultTextStyle` on one side, plain CSS inheritance on the other.
 abstract final class ExampleType {
+  /// How a hover or a press changes the look of a control.
+  ///
+  /// One duration for the whole example, so a nav item, a card and a button all
+  /// settle at the same speed: fast enough to feel like feedback rather than an
+  /// animation.
+  static const BoxTransition transition = BoxTransition(
+    duration: Duration(milliseconds: 150),
+  );
+
   /// The line height of the example, as a multiple of the font size.
   ///
   /// The unitless form is the only one that means the same thing in CSS and in

@@ -36,6 +36,8 @@ BoxAppearance appearanceOf(WidgetTester tester) {
   final SizedBox? sized = _sizedBoxBefore(parts, contentIndex);
   final BoxDecoration? decoration = _decorationBefore(parts, contentIndex);
   final List<EdgeInsets> paddings = _paddingsBefore(parts, contentIndex);
+  final ({Duration duration, core.BoxCurve curve})? transition =
+      _transitionBefore(parts, contentIndex);
 
   final BorderRadius? radius = decoration?.borderRadius as BorderRadius?;
   final Border? border = decoration?.border as Border?;
@@ -61,6 +63,8 @@ BoxAppearance appearanceOf(WidgetTester tester) {
     borderRadius: radius?.topLeft.x,
     borderWidth: side?.width,
     borderColor: side == null ? null : core.BoxColor(side.color.toARGB32()),
+    transitionDuration: transition?.duration,
+    transitionCurve: transition?.curve,
   );
 }
 
@@ -200,6 +204,38 @@ bool _isNodeRenderer(Widget widget) {
       widget is UniboxLink ||
       widget is UniboxImage ||
       widget is UniboxStack;
+}
+
+/// The transition the renderer applied to this node, if it applied one.
+///
+/// A box that eases its look hands the decoration to a `TweenAnimationBuilder`,
+/// which is what makes the duration and the curve readable from the widget tree.
+({Duration duration, core.BoxCurve curve})? _transitionBefore(
+  List<Element> parts,
+  int end,
+) {
+  for (var index = 0; index < end; index++) {
+    final Widget widget = parts[index].widget;
+    if (widget is TweenAnimationBuilder<Decoration>) {
+      return (duration: widget.duration, curve: _curveOf(widget.curve));
+    }
+  }
+  return null;
+}
+
+/// The core curve of a Flutter [Curve].
+///
+/// The five curves are the ones the model shares with CSS, so a curve outside
+/// them is a renderer that invented an easing the other target cannot express.
+core.BoxCurve _curveOf(Curve curve) {
+  return switch (curve) {
+    Curves.linear => core.BoxCurve.linear,
+    Curves.ease => core.BoxCurve.ease,
+    Curves.easeIn => core.BoxCurve.easeIn,
+    Curves.easeOut => core.BoxCurve.easeOut,
+    Curves.easeInOut => core.BoxCurve.easeInOut,
+    _ => throw StateError('The model has no curve for $curve.'),
+  };
 }
 
 /// The box the renderer sized this node with, if the node declares a size.

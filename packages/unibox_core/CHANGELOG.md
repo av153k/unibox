@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `BoxTransition` (a duration and a `BoxCurve`) and `BoxStyle.transition`, so the
+  change from a resting look to a state look can be eased. It covers the paint
+  tokens — background, border colour, radius, shadow — and never layout, and the
+  five curves are the ones CSS and Flutter share the control points of.
+- `BoxCurve` (`linear`, `ease`, `easeIn`, `easeOut`, `easeInOut`).
+- `validateTree` reports a transition that changes nothing and one declared on a
+  state style instead of the resting one.
 - `EmbedNode` carries `implementations` instead of a single `payload`: one opaque
   object per renderer that can draw the node, of which a renderer takes the first
   whose type it understands. The model still names no platform, so a renderer can

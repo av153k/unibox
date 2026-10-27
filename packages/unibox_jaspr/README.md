@@ -393,6 +393,21 @@ Two things are worth knowing before relying on this for search:
 A sitemap is the third thing the renderer cannot write: it needs the url the pages
 are served from, which only the deployment knows.
 
+## Motion
+
+A box with a `BoxTransition` writes a `transition` shorthand over the paint
+properties it animates — `background-color`, `border-color`, `border-radius` and
+`box-shadow` — with the curve spelled the CSS way (`linear`, `ease`, `ease-in`,
+`ease-out`, `ease-in-out`, the five whose control points Flutter shares). The
+browser interpolates whenever a `:hover`, `:focus-visible`, `:active` or
+`[aria-disabled]` rule changes one of them, so nothing has to be scripted and a
+static export animates without JavaScript.
+
+The shorthand only goes on the resting rule. A state rule restating the duration
+would repeat a token the change owns, which is the same rule the flex layout
+follows; layout never animates, and neither does the border width, because CSS
+animates that as a layout change.
+
 ## Your own component
 
 A component of your own is a function returning a node tree, or — when it needs

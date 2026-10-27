@@ -257,6 +257,13 @@ never inherited (CSS does not inherit them either).
 - What stays host work: navigation between documents (a `LinkNode` or the host's
   router), `aria-current`, figure captions, tables, and anything that describes the
   *document* rather than the tree (see 5.6).
+- Motion is a token before it is an embed. `BoxTransition` states a duration and a
+  curve, and the curve is one of the five CSS and Flutter define with the same
+  control points, so a hover fade is interpolated identically on both targets. It
+  covers the paint and never the layout: a transition that moved things would make
+  the two targets agree on the duration and disagree on the result. Anything that
+  moves, ripples from a pointer position or runs a timeline of its own is not a
+  transition, and that is what the next bullet is for.
 - The escape hatch is `EmbedNode`, and it is the one place the model admits that
   two implementations may differ: a node carries opaque objects, one per renderer
   that can draw it, and each renderer takes the first one whose type it

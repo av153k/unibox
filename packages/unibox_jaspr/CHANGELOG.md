@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- A box with a transition writes a `transition` shorthand over the paint
+  properties it animates, on the resting rule only, so a browser interpolates the
+  change of a state rule without any script.
 - An embed is dispatched by payload type instead of by node class: a `Component` is
   rendered as it is and a `ComponentEmbedBuilder` receives the rendered child, so a
   node class from outside this package renders here. Two drawable payloads, none,

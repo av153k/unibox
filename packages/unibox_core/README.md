@@ -55,6 +55,30 @@ What is left to the host, because only the host can answer it: the font family (
 font file is an asset), the colour of a placeholder, a caret or a selection, the
 look of a scrollbar, and the rendering of the glyphs themselves.
 
+## Motion
+
+`BoxTransition` is how one look becomes another: a duration and one of the five
+curves CSS and Flutter share the control points of (`linear`, `ease`, `easeIn`,
+`easeOut`, `easeInOut`). The resting style declares it, a `BoxState` style names
+the tokens that change, and the change eases.
+
+What it covers is the paint — background, border colour, corner radius and shadow —
+and nothing else. Layout never animates, because a transition on a width or a gap
+would move everything around the box on one target and not the other; the border
+width is out for the same reason, since CSS animates it as a layout change while
+Flutter animates it as paint.
+
+```dart
+const Box(
+  backgroundColor: BoxColor.white,
+  transition: BoxTransition(duration: Duration(milliseconds: 150)),
+  hoverStyle: BoxStyle(backgroundColor: BoxColor.grey),
+)
+```
+
+`validateTree` reports a transition that changes nothing and one declared on a
+state style instead of the resting one, where no renderer would apply it.
+
 ## Structure and semantics
 
 A node says what it is as well as how it looks, and none of it changes a pixel:

@@ -127,6 +127,7 @@ UINode _navigationItem(
     stateStyles: const <BoxState, BoxStyle>{
       BoxState.hover: BoxStyle(backgroundColor: ExamplePalette.accentSurface),
     },
+    transition: ExampleType.transition,
     children: <UINode>[TextNode(page.label)],
   );
 }

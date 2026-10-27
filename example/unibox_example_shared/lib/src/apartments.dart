@@ -222,6 +222,7 @@ UINode _listing(Apartment apartment) {
     stateStyles: const <BoxState, BoxStyle>{
       BoxState.hover: BoxStyle(border: BoxBorder(color: ExamplePalette.accent)),
     },
+    transition: ExampleType.transition,
     children: <UINode>[
       Box(
         width: 88,

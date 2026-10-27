@@ -233,6 +233,22 @@ border, the background and the padding around it. The field does adopt the
 typography of its box, line height included, through `UniboxTextStyleScope`; that
 is what sizes it.
 
+## Motion
+
+A box with a `BoxTransition` eases the change of its paint tokens — background,
+border colour, corner radius and shadow — between the resting style and a state
+style. The `DecoratedBox` becomes a `TweenAnimationBuilder<Decoration>`, which
+tweens from the decoration it painted last to the one the new state asks for; that
+is exactly the set `BoxDecoration.lerp` covers, and `BoxCurve` maps one to one
+onto `Curves.linear`, `Curves.ease`, `Curves.easeIn`, `Curves.easeOut` and
+`Curves.easeInOut` — the five curves whose control points CSS shares, so both
+targets ease the same way.
+
+Layout never animates, and neither does the border width: the implicit animation
+is of the decoration, and a state that moves the box changes the widget tree
+instead, which is what both targets do when a layout change has to be animated by
+the host.
+
 ## Your own component
 
 A component of your own is a function returning a node tree, or — when it needs

@@ -33,6 +33,8 @@ BoxAppearance appearanceOf() {
     borderRadius: _pixelsOrNull(styles['border-radius']),
     borderWidth: parsed?.width,
     borderColor: parsed?.color,
+    transitionDuration: _transitionDurationOf(styles['transition']),
+    transitionCurve: _transitionCurveOf(styles['transition']),
   );
 }
 
@@ -212,6 +214,42 @@ core.TextOverflow? _textOverflowOrNull(String? value, {required bool clamped}) {
     null => clamped ? core.TextOverflow.ellipsis : null,
     _ => throw FormatException('Not a text-overflow: $value'),
   };
+}
+
+/// The duration of a `transition` shorthand, from the first property it names.
+///
+/// Every property in the list carries the same duration and curve, so the first
+/// one says what the whole transition does.
+Duration? _transitionDurationOf(String? value) {
+  final List<String>? parts = _transitionParts(value);
+  if (parts == null) {
+    return null;
+  }
+  return Duration(milliseconds: int.parse(parts[1].replaceAll('ms', '')));
+}
+
+/// The curve of a `transition` shorthand, read the same way.
+core.BoxCurve? _transitionCurveOf(String? value) {
+  final List<String>? parts = _transitionParts(value);
+  if (parts == null) {
+    return null;
+  }
+  return switch (parts[2]) {
+    'linear' => core.BoxCurve.linear,
+    'ease' => core.BoxCurve.ease,
+    'ease-in' => core.BoxCurve.easeIn,
+    'ease-out' => core.BoxCurve.easeOut,
+    'ease-in-out' => core.BoxCurve.easeInOut,
+    final String other => throw FormatException('Not a curve: $other'),
+  };
+}
+
+/// The `property duration curve` triplet of a `transition` shorthand.
+List<String>? _transitionParts(String? value) {
+  if (value == null) {
+    return null;
+  }
+  return value.split(',').first.trim().split(' ');
 }
 
 /// The number of pixels in [value], which CSS may write with a unit.
