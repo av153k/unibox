@@ -35,6 +35,8 @@ BoxAppearance appearanceOf() {
     borderColor: parsed?.color,
     transitionDuration: _transitionDurationOf(styles['transition']),
     transitionCurve: _transitionCurveOf(styles['transition']),
+    opacity: _doubleOrNull(styles['opacity']),
+    transform: _transformOf(styles['transform']),
   );
 }
 
@@ -215,6 +217,42 @@ core.TextOverflow? _textOverflowOrNull(String? value, {required bool clamped}) {
     _ => throw FormatException('Not a text-overflow: $value'),
   };
 }
+
+/// The transform a `transform` declaration names, in the model's parts.
+///
+/// The renderer writes `translate(x, y) rotate(deg) scale(s)` in that order; a
+/// declaration that does not match is not something this target can compare, so it
+/// fails here instead of being read as "no transform".
+core.BoxTransform? _transformOf(String? value) {
+  if (value == null) {
+    return null;
+  }
+
+  final RegExpMatch? match = _transformPattern.firstMatch(value);
+  if (match == null) {
+    throw FormatException('Not a transform of the model: $value');
+  }
+
+  final core.BoxTransform transform = core.BoxTransform(
+    offsetX: _pixels(match.group(1)!),
+    offsetY: _pixels(match.group(2)!),
+    rotation: double.parse(match.group(3)!),
+    scale: double.parse(match.group(4)!),
+  );
+
+  // An identity transform and no transform paint the same box.
+  return transform.isIdentity ? null : transform;
+}
+
+/// The four numbers of the transform the renderer writes, in its order.
+final RegExp _transformPattern = RegExp(
+  r'translate\((-?[\d.]+)px, (-?[\d.]+)px\) '
+  r'rotate\((-?[\d.]+)deg\) scale\((-?[\d.]+)\)',
+);
+
+/// The number [value] names, or `null` when there is no value.
+double? _doubleOrNull(String? value) =>
+    value == null ? null : double.parse(value);
 
 /// The duration of a `transition` shorthand, from the first property it names.
 ///

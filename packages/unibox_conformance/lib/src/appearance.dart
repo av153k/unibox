@@ -41,6 +41,8 @@ final class BoxAppearance {
     this.borderColor,
     this.transitionDuration,
     this.transitionCurve,
+    this.opacity,
+    this.transform,
   });
 
   /// The axis the children of the box are laid out on.
@@ -95,6 +97,18 @@ final class BoxAppearance {
   /// The easing applied over [transitionDuration].
   final core.BoxCurve? transitionCurve;
 
+  /// How opaque the box is, or `null` when it is solid.
+  ///
+  /// Like the transform, this is a paint of the box and not a layout token: a
+  /// faded box keeps the room it was given.
+  final double? opacity;
+
+  /// How the box is moved, turned or scaled, or `null` when it is untransformed.
+  ///
+  /// An identity transform is compared as `null`: no transform and a transform
+  /// that does nothing paint the same box.
+  final core.BoxTransform? transform;
+
   /// Whether [borderWidth] draws a line at all.
   bool get _hasBorder => (borderWidth ?? 0) > 0;
 
@@ -138,6 +152,8 @@ final class BoxAppearance {
       expected.transitionDuration,
     );
     compare('transitionCurve', transitionCurve, expected.transitionCurve);
+    compare('opacity', opacity, expected.opacity);
+    compare('transform', transform, expected.transform);
     compare(
       'borderColor',
       _hasBorder ? borderColor : null,
@@ -167,6 +183,8 @@ final class BoxAppearance {
     _hasBorder ? borderColor : null,
     transitionDuration,
     transitionCurve,
+    opacity,
+    transform,
   );
 
   @override
@@ -185,7 +203,9 @@ final class BoxAppearance {
         'borderWidth: $borderWidth, '
         'borderColor: $borderColor, '
         'transitionDuration: $transitionDuration, '
-        'transitionCurve: $transitionCurve'
+        'transitionCurve: $transitionCurve, '
+        'opacity: $opacity, '
+        'transform: $transform'
         ')';
   }
 }

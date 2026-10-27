@@ -74,6 +74,11 @@ void main() {
             expected: null,
           ),
           'transitionCurve': (actual: core.BoxCurve.easeIn, expected: null),
+          'opacity': (actual: 0.75, expected: null),
+          'transform': (
+            actual: const core.BoxTransform(scale: 1.25),
+            expected: null,
+          ),
         },
       );
     });

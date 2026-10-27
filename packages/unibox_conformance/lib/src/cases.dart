@@ -152,6 +152,31 @@ const List<BoxCase> boxCases = <BoxCase>[
     ),
   ),
   BoxCase(
+    description: 'fades the box without giving up its room',
+    box: core.Box(opacity: 0.4, children: _children),
+    expected: BoxAppearance(opacity: 0.4),
+  ),
+  BoxCase(
+    description: 'moves, turns and scales the box about its centre',
+    box: core.Box(
+      transform: core.BoxTransform(
+        scale: 1.5,
+        rotation: 15,
+        offsetX: 6,
+        offsetY: -8,
+      ),
+      children: _children,
+    ),
+    expected: BoxAppearance(
+      transform: core.BoxTransform(
+        scale: 1.5,
+        rotation: 15,
+        offsetX: 6,
+        offsetY: -8,
+      ),
+    ),
+  ),
+  BoxCase(
     description: 'presents every token at once',
     box: core.Box(
       direction: core.Axis.horizontal,
@@ -169,6 +194,8 @@ const List<BoxCase> boxCases = <BoxCase>[
         duration: Duration(milliseconds: 120),
         curve: core.BoxCurve.easeIn,
       ),
+      opacity: 0.75,
+      transform: core.BoxTransform(scale: 1.25),
       children: _children,
     ),
     expected: BoxAppearance(
@@ -186,6 +213,8 @@ const List<BoxCase> boxCases = <BoxCase>[
       borderColor: _line,
       transitionDuration: Duration(milliseconds: 120),
       transitionCurve: core.BoxCurve.easeIn,
+      opacity: 0.75,
+      transform: core.BoxTransform(scale: 1.25),
     ),
   ),
 ];

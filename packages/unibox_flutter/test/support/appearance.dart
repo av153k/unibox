@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unibox_conformance/unibox_conformance.dart';
@@ -38,6 +40,8 @@ BoxAppearance appearanceOf(WidgetTester tester) {
   final List<EdgeInsets> paddings = _paddingsBefore(parts, contentIndex);
   final ({Duration duration, core.BoxCurve curve})? transition =
       _transitionBefore(parts, contentIndex);
+  final core.BoxTransform? transform = _transformBefore(parts, contentIndex);
+  final double? opacity = _opacityBefore(parts, contentIndex);
 
   final BorderRadius? radius = decoration?.borderRadius as BorderRadius?;
   final Border? border = decoration?.border as Border?;
@@ -65,6 +69,8 @@ BoxAppearance appearanceOf(WidgetTester tester) {
     borderColor: side == null ? null : core.BoxColor(side.color.toARGB32()),
     transitionDuration: transition?.duration,
     transitionCurve: transition?.curve,
+    opacity: opacity,
+    transform: transform,
   );
 }
 
@@ -236,6 +242,61 @@ core.BoxCurve _curveOf(Curve curve) {
     Curves.easeInOut => core.BoxCurve.easeInOut,
     _ => throw StateError('The model has no curve for $curve.'),
   };
+}
+
+/// The transform the renderer painted the node with, if it painted one.
+///
+/// The renderer composes translate, rotate and scale into one matrix about the
+/// centre, so the parts can be read back out of it: the translation is the last
+/// column, the scale the length of the first basis vector and the rotation the
+/// angle between that vector and the x axis. An identity matrix is reported as no
+/// transform, because the two paint the same box.
+core.BoxTransform? _transformBefore(List<Element> parts, int end) {
+  for (var index = 0; index < end; index++) {
+    final Widget widget = parts[index].widget;
+    if (widget is Transform) {
+      final Matrix4 matrix = widget.transform;
+      final double scale = math.sqrt(
+        matrix.entry(0, 0) * matrix.entry(0, 0) +
+            matrix.entry(1, 0) * matrix.entry(1, 0),
+      );
+      final core.BoxTransform transform = core.BoxTransform(
+        scale: _rounded(scale),
+        rotation: _rounded(
+          math.atan2(matrix.entry(1, 0), matrix.entry(0, 0)) * 180 / math.pi,
+        ),
+        offsetX: _rounded(matrix.entry(0, 3)),
+        offsetY: _rounded(matrix.entry(1, 3)),
+      );
+      return transform.isIdentity ? null : transform;
+    }
+  }
+  return null;
+}
+
+/// Rounds a number that was read out of a matrix.
+///
+/// Turning a rotation back into degrees means trigonometry, which answers
+/// `14.999999999999998` where the model said `15`. Comparing them exactly
+/// would report a difference nobody can see.
+double _rounded(double value) => double.parse(value.toStringAsFixed(6));
+
+/// The opacity the renderer painted the node with, if it painted one.
+///
+/// A box that can change its look uses `AnimatedOpacity`, a static one `Opacity`;
+/// both state the same number.
+
+double? _opacityBefore(List<Element> parts, int end) {
+  for (var index = 0; index < end; index++) {
+    final Widget widget = parts[index].widget;
+    if (widget is AnimatedOpacity) {
+      return widget.opacity;
+    }
+    if (widget is Opacity) {
+      return widget.opacity;
+    }
+  }
+  return null;
 }
 
 /// The box the renderer sized this node with, if the node declares a size.
