@@ -82,3 +82,19 @@ Map<String, String> attributesOf(Finder finder) {
 /// The registered events of the element matched by [finder].
 Set<String> eventsOf(Finder finder) =>
     elementOf(finder).events?.keys.toSet() ?? const <String>{};
+
+/// The raw CSS rendered by the `<style>` element matched by [finder].
+String cssOf(Finder finder) => _cssText(elementOf(finder));
+
+/// Every style rule the rendered document carries, in document order.
+///
+/// The renderer emits one `<style>` element per box that needs a rule, so a test
+/// that asks "does the page carry this rule at all?" has to look at all of them
+/// instead of at the first one it finds.
+String allCss() => elementsOf(find.tag('style')).map(_cssText).join('\n');
+
+/// The text content of a rendered `<style>` element.
+String _cssText(TestRenderElement element) => element.children
+    .whereType<TestRenderText>()
+    .map((TestRenderText child) => child.text)
+    .join();

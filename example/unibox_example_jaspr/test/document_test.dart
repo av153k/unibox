@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:jaspr/server.dart';
 import 'package:jaspr_test/jaspr_test.dart';
 import 'package:unibox_example_jaspr/document.dart';
+import 'package:unibox_example_shared/unibox_example_shared.dart';
 
 void main() {
   setUpAll(Jaspr.initializeApp);
@@ -41,6 +42,21 @@ void main() {
     test('renders the shared card', () {
       expect(html, contains('Unibox example'));
       expect(html, contains('Join Unibox'));
+    });
+
+    test('writes the apartments page on request', () async {
+      // Navigation is state, so a static export cannot switch pages by itself:
+      // the second page is written next to the first one, and the breakpoint is
+      // the only thing that has to work without a client bundle.
+      final ResponseLike page = await renderComponent(
+        buildExampleDocument(page: ExamplePage.apartments),
+      );
+      final String apartments = utf8.decode(page.body);
+
+      expect(apartments, contains('Via Bellavista 12'));
+      expect(apartments, contains('overflow: auto'));
+      expect(apartments, contains('@media screen and (min-width: 900px)'));
+      expect(apartments, contains('display: none;'));
     });
   });
 }

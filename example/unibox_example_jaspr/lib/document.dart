@@ -1,17 +1,19 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
+import 'package:unibox_example_shared/unibox_example_shared.dart';
 
 import 'app.dart';
 
 /// The document the example is served as.
 ///
-/// The card centres itself in a page box that fills the viewport — `width` and
-/// `height: double.infinity` render as `100%` — so the root elements have to
+/// The page box centres itself in a surface that fills the viewport — `width`
+/// and `height: double.infinity` render as `100%` — so the root elements have to
 /// give that percentage something to resolve against. Without `height: 100%`
 /// the page box collapses to the height of its content, which is a state a
 /// Flutter host never gets into: a `Scaffold` body is as tall as the window, so
 /// the card ends up in the middle of the screen there and at the top of a short
-/// grey strip here.
+/// grey strip here. The same height is what the apartments page scrolls inside
+/// instead of growing the document.
 ///
 /// The default body margin is removed for the same reason. Flutter lays the page
 /// box out edge to edge, and the eight pixels a browser reserves around a body
@@ -21,7 +23,11 @@ import 'app.dart';
 /// Both rules describe the *host*, not the tree: they are the browser equivalent
 /// of the surface a Flutter application is given, which is why they live next to
 /// the app instead of in the renderer.
-Document buildExampleDocument() {
+///
+/// [page] is the page the export starts on. Navigation is state, so a static
+/// export cannot switch pages by itself; `bin/build.dart` writes one document
+/// per page so every layout can be opened on its own.
+Document buildExampleDocument({ExamplePage page = ExamplePage.signup}) {
   return Document(
     title: 'Unibox example',
     viewport: 'width=device-width, initial-scale=1',
@@ -47,6 +53,6 @@ Document buildExampleDocument() {
         ),
       ),
     ],
-    body: const UniboxExampleApp(),
+    body: UniboxExampleApp(initialPage: page),
   );
 }
