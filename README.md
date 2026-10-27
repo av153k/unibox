@@ -464,7 +464,7 @@ Box(
 | Part of `BoxSemantics` | What it becomes |
 | --- | --- |
 | `role` | `button`, `checkbox`, `switch`, `link` or `heading`: a `role` on the web, the matching flag in Flutter, and a keyboard entry point for the roles a user can act on. |
-| `element` | `div`, `main`, `nav`, `header`, `footer`, `aside`, `section`, `article`, `form`, `figure`, `ul`, `ol`, `li`: the element a box renders as on the web. |
+| `element` | `div`, `main`, `nav`, `header`, `footer`, `aside`, `section`, `article`, `form`, `figure`, `figcaption`, `ul`, `ol`, `li`: the element a box renders as on the web. |
 | `label` | The name announced instead of the contents. |
 | `checked`, `expanded`, `selected` | `aria-checked`, `aria-expanded`, `aria-selected`, and the same state in Flutter. |
 | `hidden` | `aria-hidden`: the box keeps its look but leaves the accessibility tree and the tab order. |

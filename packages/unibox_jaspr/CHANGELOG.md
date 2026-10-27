@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- A box with `BoxElement.figcaption` renders `<figcaption>`, with no role repeating
+  what the tag says.
 - A field writes `aria-required`, `aria-invalid` and `aria-description`, the last one
   carrying the text itself rather than pointing at an element by id.
 - A box with `BoxSemantics.current` writes `aria-current` with the kind of current

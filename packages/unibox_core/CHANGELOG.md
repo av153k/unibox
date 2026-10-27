@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `BoxElement.figcaption`: the caption of a `figure`, so a picture can be named
+  instead of holding a loose text node. `validateTree` reports a caption outside a
+  figure, the same rule a list item already has.
 - `TextInputNode.required`, `.invalid` and `.description`: what the form needs from a
   field, whether the value is wrong, and what the field expects — the three things
   that let a reader hear the problem at the field instead of in a status message.

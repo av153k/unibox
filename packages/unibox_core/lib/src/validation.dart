@@ -62,8 +62,8 @@ class TreeIssue {
 ///   navigates twice,
 /// * a box that scrolls along its main axis while distributing its children
 ///   with [Box.mainAlign], which pushes overflowing children out of reach,
-/// * a list item whose parent is not a list, which is invalid HTML and which no
-///   assistive technology can announce as a list,
+/// * a list item whose parent is not a list, and a caption whose parent is not a
+///   figure, both of which are invalid HTML and name nothing where they stand,
 /// * an embed that carries no implementation at all, which no renderer can draw
 ///   and which would otherwise vanish from the page,
 /// * a transition declared on a state style instead of the resting one, which no
@@ -128,6 +128,26 @@ void _validate(
               'children with mainAlign: ${mainAlign.name}. The children that '
               'overflow are pushed out of reach in CSS and out of the viewport '
               'in Flutter. Use MainAlign.start and let the children scroll.',
+        ),
+      );
+    }
+  }
+
+  if (node is Box && node.semantics?.element == BoxElement.figcaption) {
+    final BoxElement? parentElement = parent is Box
+        ? parent.semantics?.element
+        : null;
+
+    if (parentElement != BoxElement.figure) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A box with BoxElement.figcaption has to be a child of a box with '
+              'BoxElement.figure, but its parent is '
+              '${parent?.runtimeType ?? 'the root'}. A <figcaption> anywhere else '
+              'is invalid HTML and names nothing.',
         ),
       );
     }

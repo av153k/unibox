@@ -172,9 +172,15 @@ Box buildExampleMap() {
     backgroundColor: ExamplePalette.mapSurface,
     border: const BoxBorder(color: ExamplePalette.mapLine),
     textStyle: ExampleType.map,
-    // A picture with a label is a figure, not a plain panel.
+    // A picture with a label is a figure, and the label is its caption: a reader
+    // meets the panel as a figure named "Map" instead of a box of text.
     semantics: const BoxSemantics(element: BoxElement.figure),
-    children: <UINode>[const TextNode('Map')],
+    children: <UINode>[
+      Box(
+        semantics: const BoxSemantics(element: BoxElement.figcaption),
+        children: <UINode>[TextNode('Map')],
+      ),
+    ],
   );
 }
 

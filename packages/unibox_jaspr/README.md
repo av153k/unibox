@@ -125,6 +125,7 @@ carries — styles, classes, attributes and listeners — goes on that element, 
 | `section` | `<section>` | `region` |
 | `article`, `form`, `figure` | `<article>`, `<form>`, `<figure>` | `article`, `form`, `figure` |
 | `ul`, `ol`, `li` | `<ul>`, `<ol>`, `<li>` | `list`, `list`, `listitem` |
+| `figcaption` | `<figcaption>` | none: naming the figure is what the tag does |
 
 `role` is only written when the box asks for one its element does not imply: a
 `<nav>` carries no `role="navigation"` next to it, while a `<div>` with

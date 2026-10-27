@@ -218,6 +218,28 @@ void main() {
     });
   });
 
+  group('figures', () {
+    testComponents('renders a caption as its own element', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          semantics: core.BoxSemantics(element: core.BoxElement.figure),
+          children: <core.UINode>[
+            core.Box(
+              semantics: core.BoxSemantics(element: core.BoxElement.figcaption),
+              children: <core.UINode>[core.TextNode('The old town')],
+            ),
+          ],
+        ),
+      );
+
+      expect(find.tag('figure'), findsOneComponent);
+      expect(find.tag('figcaption'), findsOneComponent);
+      // No role repeats what the tag already says.
+      expect(attributesOf(find.tag('figcaption')).containsKey('role'), isFalse);
+    });
+  });
+
   group('accessibility state', () {
     testComponents('writes the state both platforms expose', (tester) async {
       pumpNode(

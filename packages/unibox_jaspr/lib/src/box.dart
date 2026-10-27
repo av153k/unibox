@@ -376,6 +376,8 @@ String? _impliedRole(core.BoxElement element) {
     core.BoxElement.figure => 'figure',
     core.BoxElement.ul || core.BoxElement.ol => 'list',
     core.BoxElement.li => 'listitem',
+    // A caption names the figure it belongs to; no role says that, the tag does.
+    core.BoxElement.figcaption => null,
     core.BoxElement.div => null,
   };
 }

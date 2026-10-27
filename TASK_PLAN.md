@@ -101,10 +101,9 @@
 ### Phase 16: What a real page still needs
 - [x] Task 68: A field can state what a form needs from it: `TextInputNode.required`, `.invalid` and `.description`, rendered as `aria-required`, `aria-invalid` and `aria-describedby` (plus `Semantics.isRequired` in Flutter), so a validation message can be attached to the field it belongs to instead of sitting in a status box.
 - [x] Task 69: A box can be the current page of a navigation: `BoxSemantics.current` (`page`, `step`, `location`), rendered as `aria-current` and announced as the selected item of a set in Flutter.
-- [ ] Task 70: Tabs and disclosure without ARIA guesswork: `BoxRole.tab` and `BoxRole.tablist` (or a `selected` plus a `role`) so a tab bar is a tab bar on both targets, the same way a list item already is.
-- [ ] Task 71: `BoxElement.figcaption` and a `caption` slot for a figure, so the map's label can be its caption instead of a text node inside the panel.
-- [ ] Task 72: A page that can be crawled between documents: a `LinkNode` that points at an exported file (`index.html`, `apartments.html`) instead of switching host state, so the static export has a real navigation path and the `role="link"` boxes can go.
-- [ ] Task 73: Tables, if and when a real page needs one: `BoxElement.table`, `.tr`, `.th`, `.td` with the same validation rule a list item already has.
+- [x] Task 71: Core — `BoxElement.figcaption`, the caption of a `figure`, with `validateTree` reporting a caption outside one, and the example naming its map with it.
+
+Tasks 70, 72 and 73 were **discarded**; `Deferred` records why.
 
 ### Phase 17: A component of the user's own, on both targets
 - [x] Task 74: Core — `EmbedNode` becomes plural and platform-agnostic: it carries `List<Object> implementations` (one per renderer that can draw it) and an optional `child` the implementations wrap, `children` exposes that child so validation reaches it, `payload` stays as a deprecated first-implementation getter, and `validateTree` reports an embed that carries no implementation at all.
@@ -126,7 +125,7 @@
 - [x] Task 86: Both renderers — apply the list in one place (they read `computedStyle`), with tests for the merge order and a conformance case.
 - [x] Task 89: Production pass — every package's pubspec metadata and description, `dart doc` clean for all four, the README node reference updated with the new tokens, CHANGELOG entries for everything unreleased, and a `RELEASE.md` checklist that states the one deliberate step (`publish_to: none` off, version bumped) as a decision for the maintainer rather than something CI does.
 
-Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it — were moved to **Deferred**: an embed already covers a ripple, and the portable part of the idea (per-look timing, opacity, transform, a rounded clip) is in this phase.
+Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it — were **discarded**; `Deferred` says why.
 
 ## Decisions
 
@@ -172,6 +171,26 @@ Deliberately out of scope for this pass, with the reason they were left:
   which is a state model decision, not a token.
 - `ImageNode.onError` / `onLoad`: callbacks that only make sense per target, and
   an embed covers them today.
+- A tab bar (`BoxRole.tab` / `BoxRole.tablist`). `role="tab"` promises behaviour, not
+  just a name: arrow keys between the tabs, a roving `tabindex` so the strip is one tab
+  stop, and a panel wired with `aria-controls`. A box activates with `Enter`/`Space`
+  and knows no arrow keys, on either target, so the role alone would make a reader
+  hear "tab" and find the arrows do nothing — worse than saying nothing. A strip built
+  from `BoxRole.button` plus `BoxSemantics.current` already says which item is the
+  active one, and that is valid ARIA. Doing it properly needs a roving-focus model in
+  both renderers first; **discarded** until a real tab bar asks for it.
+- Tables (`BoxElement.table`, `.tr`, `.th`, `.td`). Not a token but a second layout
+  engine: every box is a flex container — the web renderer writes `display: flex` on
+  every element — which breaks both the layout and the semantics of a real table that
+  needs column sizing, collapsing borders and header association. Flutter has the
+  roles (`SemanticsRole.table`, `.row`, `.cell`) but no layout for them. **Discarded**;
+  an embed covers the rare case until the model grows a second layout mode.
+- A crawlable path between the exported pages. `LinkNode` already renders a real
+  `<a href>`; what is missing is a decision in the *example*, not an API: real links
+  mean a full page load on the web, which is right for a static site and wrong for the
+  Flutter host's in-app navigation, and "in-app navigation with real urls" is a
+  router — an application concern each host answers differently. **Discarded** from
+  the library; the example README states the trade-off.
 - A triggered keyframe timeline (`BoxAnimation`: `press`/`hover`/`focus`/`autoplay`
   or a host `play` key, with stops per look, rendered as CSS `@keyframes` and a
   Flutter `TweenSequence`). The portable part of what it was for is already here:

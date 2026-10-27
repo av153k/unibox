@@ -108,7 +108,12 @@ enum BoxElement {
 
   /// One item of a [ul] or an [ol]; anywhere else it is invalid HTML and
   /// `validateTree` reports it.
-  li;
+  li,
+
+  /// The caption of a [figure]: the line that describes it, which a screen reader
+  /// reads out as the figure's name. Anywhere outside a figure it is invalid HTML
+  /// and `validateTree` reports it.
+  figcaption;
 
   /// Whether the element is a landmark of the page.
   ///

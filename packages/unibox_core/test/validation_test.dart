@@ -166,6 +166,37 @@ void main() {
       expect(validateTree(tree).single.message, contains('eases as one'));
     });
 
+    test('accepts a caption inside a figure', () {
+      const Box tree = Box(
+        semantics: BoxSemantics(element: BoxElement.figure),
+        children: <UINode>[
+          Box(
+            semantics: BoxSemantics(element: BoxElement.figcaption),
+            children: <UINode>[TextNode('The old town')],
+          ),
+        ],
+      );
+
+      expect(validateTree(tree), isEmpty);
+    });
+
+    test('reports a caption outside a figure', () {
+      const Box tree = Box(
+        children: <UINode>[
+          Box(
+            semantics: BoxSemantics(element: BoxElement.figcaption),
+            children: <UINode>[TextNode('The old town')],
+          ),
+        ],
+      );
+
+      final TreeIssue issue = validateTree(tree).single;
+
+      expect(issue.severity, TreeIssueSeverity.error);
+      expect(issue.message, contains('BoxElement.figure'));
+      expect(issue.message, contains('invalid HTML'));
+    });
+
     test('reports an embed without an implementation', () {
       const Box tree = Box(children: <UINode>[_EmptyEmbed()]);
 
