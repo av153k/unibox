@@ -560,7 +560,10 @@ Where to read more:
 
 - [design.md](design.md) — why the model looks like this: the rules behind the
   defaults, the naming, the non-goals, and what was deliberately left out.
-- [TASK_PLAN.md](TASK_PLAN.md) — what is done and what is next.
+- [TASK_PLAN.md](TASK_PLAN.md) — what is done, what is next, and what was deliberately
+  left out.
+- [RELEASE.md](RELEASE.md) — the checklist for cutting a release, including the one
+  step that is a human decision (`publish_to: none` off).
 - [example/README.md](example/README.md) — the two pages, how they are hosted, and
   what the static export contains.
 - The package READMEs hold the mapping tables, target by target:

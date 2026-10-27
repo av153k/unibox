@@ -124,9 +124,9 @@
 - [x] Task 84: Both renderers — honour the parts. Jaspr writes one `transition` entry per look, with `transition-delay`; Flutter groups the looks by timing and animates each group with its own `Interval` on a shared total, so a delay costs no controller and the paint stays one tween.
 - [x] Task 85: Core — `styles: List<BoxStyle>` on `Box`: the bags merge left to right, flat parameters win over all of them, and `style:` becomes sugar for a one-element list (deprecated). This is the composition half of the "class" idea without a name registry: no lookups, no specificity, `const` and checked.
 - [x] Task 86: Both renderers — apply the list in one place (they read `computedStyle`), with tests for the merge order and a conformance case.
-- [ ] Task 87: Core — `BoxAnimation` (a `BoxTrigger` of `press`, `hover`, `focus` or `autoplay`, or a host `play` key, plus stops per `BoxLook`), rendered as scoped `@keyframes` with `animation` on the web and a `TweenSequence` on an `AnimationController` in Flutter. `play` restarts the timeline when it changes; the trigger vocabulary stays the four states the renderer can observe, so nothing platform specific enters the model. Validation: no stops, no duration, a look named twice.
-- [ ] Task 88: Example — a centre-anchored ripple built out of boxes on the submit button (a centred circle that scales out and fades, clipped to the rounded box), on both hosts, with screenshots of each.
-- [ ] Task 89: Production pass — every package's pubspec metadata and description, `dart doc` clean for all four, the README node reference updated with the new tokens, CHANGELOG entries for everything unreleased, and a `RELEASE.md` checklist that states the one deliberate step (`publish_to: none` off, version bumped) as a decision for the maintainer rather than something CI does.
+- [x] Task 89: Production pass — every package's pubspec metadata and description, `dart doc` clean for all four, the README node reference updated with the new tokens, CHANGELOG entries for everything unreleased, and a `RELEASE.md` checklist that states the one deliberate step (`publish_to: none` off, version bumped) as a decision for the maintainer rather than something CI does.
+
+Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it — were moved to **Deferred**: an embed already covers a ripple, and the portable part of the idea (per-look timing, opacity, transform, a rounded clip) is in this phase.
 
 ## Decisions
 
@@ -172,8 +172,18 @@ Deliberately out of scope for this pass, with the reason they were left:
   which is a state model decision, not a token.
 - `ImageNode.onError` / `onLoad`: callbacks that only make sense per target, and
   an embed covers them today.
-- `Box.opacity`: a compositing hint rather than a layout token; it belongs with a
-  future visual effects group.
+- A triggered keyframe timeline (`BoxAnimation`: `press`/`hover`/`focus`/`autoplay`
+  or a host `play` key, with stops per look, rendered as CSS `@keyframes` and a
+  Flutter `TweenSequence`). The portable part of what it was for is already here:
+  `BoxTransition` eases any look on its own timeline, `transform` and `opacity`
+  paint without moving the box, and a rounded box clips to its radius — so a colour
+  can settle and a scale follow it. What is left is a timeline with several stops,
+  and a ripple is the only thing that asks for it: a ripple is intrinsically
+  platform specific (Material's ink layer against a CSS animation), which is exactly
+  what `EmbedNode` exists for — one node, both implementations, reviewed together.
+  Building an animation engine before the first release, for an effect an embed
+  already covers, would be the wrong order; revisit with a real screen that needs
+  it.
 - `onDoubleTap` / `onSecondaryTap`: not part of the pointer, keyboard and touch
   intersection the state model is built on.
 - Generating `BoxStyle` code: 18 fields is still hand manageable; revisit above
