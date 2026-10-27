@@ -47,6 +47,9 @@ jobs:
       - name: unibox_core
         working-directory: packages/unibox_core
         run: dart test
+      - name: unibox_conformance
+        working-directory: packages/unibox_conformance
+        run: dart test
       - name: unibox_jaspr
         working-directory: packages/unibox_jaspr
         run: dart test
@@ -90,6 +93,7 @@ jobs:
             fi
           done <<'PACKAGES'
           unibox_core
+          unibox_conformance
           unibox_flutter
           unibox_jaspr
           PACKAGES
