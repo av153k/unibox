@@ -53,10 +53,12 @@ exit. The web renderer draws a fixed layer with `role="dialog"` and
 104), so the static export is a snapshot of the layer rather than an interactive
 modal.
 
-That is what the two documents are: `build/index.html` is the listings, and
-`build/signup.html` is the same page with the dialog over it. A browser without
-the client bundle can only be shown one of the two — so the entry document is the
-one that can be read without dismissing anything, and the form is its own url.
+That is what the two documents are: `build/site/web/index.html` is the listings, and
+`build/site/web/signup/index.html` is the same page with the dialog over it, written
+by `dart run bin/build_site.dart` (`tool/site.sh` puts the Flutter build beside
+them). A browser without the client bundle can only be shown one of the two — so the
+entry document is the one that can be read without dismissing anything, and the form
+is its own url.
 
 ## The listings page
 
