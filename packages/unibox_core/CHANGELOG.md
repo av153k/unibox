@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- `BoxTextStyle.defaults` is the typography a text is typeset in when the tree
+  says nothing else: 16 logical pixels, normal weight, black, a line height of 1.5
+  and no letter spacing. Both renderers install it at the root of the tree they
+  render, so an undeclared text no longer inherits whichever default its host
+  happens to have. The font family stays unset, because a font file is an asset of
+  the application.
+
 ## 0.1.0
 
 The first release of the platform agnostic core.

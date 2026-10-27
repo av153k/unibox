@@ -29,6 +29,35 @@ final class BoxTextStyle {
     this.letterSpacing,
   });
 
+  /// The typography a text is typeset in when the tree says nothing else.
+  ///
+  /// Both renderers apply it to the root of the tree they render, so an
+  /// undeclared text looks the same on both targets instead of inheriting each
+  /// host's own idea of a default — which is not a detail the two share: Flutter
+  /// falls back to 14 logical pixels of black, a browser to 16 pixels of
+  /// `canvastext`, a colour that is not even fixed. A default that lives in the
+  /// host cannot be the default of a library whose point is that one tree looks
+  /// the same twice.
+  ///
+  /// The values are neutral rather than a design system: 16 pixels is the size a
+  /// browser gives a document, 1.5 is the line height Material gives its body
+  /// text, black is written down instead of inherited so that a dark theme cannot
+  /// change it behind the model's back, and the letter spacing is pinned to zero
+  /// so that a host theme cannot stretch the text by a fraction of a pixel per
+  /// character.
+  ///
+  /// [fontFamily] is the only token without a value, because a font file is an
+  /// asset of the application and not of the model. Unset means the platform's
+  /// UI font on both targets: the engine default in Flutter, the generic
+  /// `system-ui` family in CSS.
+  static const BoxTextStyle defaults = BoxTextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    color: BoxColor.black,
+    lineHeight: 1.5,
+    letterSpacing: 0,
+  );
+
   /// The font size in logical pixels, `px` on the web.
   final double? fontSize;
 

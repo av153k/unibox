@@ -19,6 +19,23 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `BoxStyle`        | a bundle of every layout and visual token                     |
 | `BoxTextStyle`    | a bundle of typography tokens                                 |
 
+## Default typography
+
+`BoxTextStyle.defaults` is the typography a text is typeset in when the tree says
+nothing else: 16 logical pixels, `FontWeight.normal`, black, a line height of 1.5
+and no letter spacing. Both renderers apply it to the root of the tree they
+render, so an undeclared text looks the same on both targets.
+
+It has to live here rather than in a host, because the two hosts do not agree:
+Flutter falls back to 14 logical pixels of black, a browser to 16 pixels of
+`canvastext` — a colour that flips in a dark theme — at a `normal` line height. A
+default that lives in the host is exactly the drift this package exists to
+prevent.
+
+The font family is the one token the default leaves unset, because a font file is
+an asset of the application and not of the model. Unset means the platform's UI
+font: the engine default in Flutter, the generic `system-ui` family in CSS.
+
 ## Inheritance
 
 `Box.textStyle` (or `BoxStyle.textStyle`) is inherited by the descendants of the
