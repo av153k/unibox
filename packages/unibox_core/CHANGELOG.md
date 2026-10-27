@@ -10,6 +10,8 @@
   that let a reader hear the problem at the field instead of in a status message.
 - `BoxSemantics.current` (`BoxCurrent.page`, `.step`, `.location`): the item of a set
   the reader is on, for a navigation.
+- The doc examples use a colour that exists: `BoxColor.rgb(…)` in place of
+  `BoxColor.grey`, which this package has never declared.
 - `BoxLook` and `BoxTransitionPart`: a transition can ease one part of a look before
   another. `BoxTransition.parts` overrides the base duration and curve per look,
   `timingOf` resolves one look, `totalDuration` is the longest `delay + duration` and

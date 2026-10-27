@@ -14,7 +14,7 @@ import 'box_color.dart';
 ///
 /// ```dart
 /// const body = BoxTextStyle(fontSize: 16, color: BoxColor.black);
-/// const muted = BoxTextStyle(color: BoxColor.grey);
+/// const muted = BoxTextStyle(color: BoxColor.rgb(0x6B, 0x72, 0x80));
 ///
 /// final caption = body.merge(muted);
 /// ```

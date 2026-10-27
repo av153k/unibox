@@ -35,6 +35,7 @@ guide is [`README.md`](README.md).
 | `example/unibox_example_shared/` | the two pages as pure Dart trees, the form state, the palette | the example content changes |
 | `example/unibox_example_flutter/`, `example/unibox_example_jaspr/` | hosts: state and surface, never layout | state, navigation or the surface changes |
 | `README.md`, `design.md`, package READMEs | the user guide, the reasoning, the per-target mapping tables | public API or behaviour changes |
+| `AI_INSTRUCTIONS.md` | the consumer-facing counterpart: rules and a translation table for an assistant writing application code | a parameter is renamed or a default changes |
 | `TASK_PLAN.md` | what was built, why, and what was deliberately deferred | rarely: record a decision, not a task |
 | `RELEASE.md` | the release checklist | never automatically; it is a human procedure |
 

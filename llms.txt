@@ -22,6 +22,12 @@ assumes you have read the README's node sections.
 - [design.md](design.md): why the model looks like this — defaults, precedence,
   dimensions, parity, interaction, non-goals, compatibility.
 
+## Building an app with Unibox
+
+- [AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md): the condensed model, a Flutter/CSS →
+  Unibox translation table, a complete component and a checklist, written to be
+  pasted into an assistant's context by someone writing application code.
+
 ## Packages
 
 - [unibox_core](packages/unibox_core/README.md): the model — nodes, tokens,

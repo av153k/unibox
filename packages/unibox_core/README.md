@@ -72,7 +72,7 @@ Flutter animates it as paint.
 const Box(
   backgroundColor: BoxColor.white,
   transition: BoxTransition(duration: Duration(milliseconds: 150)),
-  hoverStyle: BoxStyle(backgroundColor: BoxColor.grey),
+  hoverStyle: BoxStyle(backgroundColor: BoxColor.rgb(0xF3, 0xF4, 0xF6)),
 )
 ```
 

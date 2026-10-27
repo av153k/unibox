@@ -31,6 +31,7 @@ called. Those belong to the host — see [what the host owns](#what-the-host-own
 - [What the host owns](#what-the-host-owns)
 - [How the two renderers stay in step](#how-the-two-renderers-stay-in-step)
 - [Packages](#packages)
+- [Building with an AI assistant](#building-with-an-ai-assistant)
 
 ## Quick start
 
@@ -153,7 +154,7 @@ const cardBase = BoxStyle(
   backgroundColor: BoxColor.white,
   borderRadius: 12,
 );
-const cardBusy = BoxStyle(backgroundColor: BoxColor.grey);
+const cardBusy = BoxStyle(backgroundColor: BoxColor.rgb(0xF3, 0xF4, 0xF6));
 
 const row = Box(
   styles: <BoxStyle>[cardBase, cardBusy],
@@ -536,6 +537,27 @@ that also imports Flutter, or keep the tree in a package that imports no rendere
 the arrangement the example uses, and the one to copy. Node names carry a `Node`
 suffix (`TextNode`, `ImageNode`, `StackNode`) for the same reason: `Text`, `Image`
 and `Stack` are Flutter widgets.
+
+## Building with an AI assistant
+
+Unibox is not on pub.dev yet, so no model has been trained on it: an assistant asked
+for "a Unibox card" will write Flutter widgets and call them Unibox. Two files fix
+that. [`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md) is the short one — the model's rules,
+a translation table from the Flutter and CSS idioms an assistant already knows, and a
+complete component — and it is written to be pasted into the context:
+
+```text
+Read AI_INSTRUCTIONS.md and README.md from the Unibox repository before writing any
+code. Build <the component> as a Unibox node tree in a file that imports only
+package:unibox_core/unibox_core.dart. Do not use Flutter, Jaspr or HTML widgets.
+Return the tree, and separately the host code that owns its state.
+```
+
+This page is the second file: the parameter tables an assistant needs when the
+instruction file is not enough. The two are the ground truth, together with
+`packages/unibox_core/lib/src/` — a parameter that is in none of them does not exist,
+which is the single most useful thing to tell an assistant about a library it has
+never seen.
 
 ## Development
 

@@ -145,7 +145,7 @@ typedef BoxTransitionTiming = ({
 /// ```dart
 /// const Box(
 ///   stateStyles: <BoxState, BoxStyle>{
-///     BoxState.hover: BoxStyle(backgroundColor: BoxColor.grey),
+///     BoxState.hover: BoxStyle(backgroundColor: BoxColor.rgb(0xF3, 0xF4, 0xF6)),
 ///   },
 ///   transition: BoxTransition(duration: Duration(milliseconds: 150)),
 /// );
