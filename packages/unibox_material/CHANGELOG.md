@@ -9,6 +9,10 @@ has to know this package exists.
 - `MaterialTypography`: the fifteen roles of the Material 3 type scale as `const`
   `BoxTextStyle` values, with `MaterialTypeRole` to name one in a table or a test and
   `MaterialTypography.of` to look one up.
+- `MaterialPalette`: the Material 3 colour roles as `const` `BoxColor` values, with
+a baseline light and dark instance, and the three state layers Material derives from
+`onSurface`. The palette is a value a tree wears, not a theme that resolves at render
+time.
 - `MaterialCard`: a card as a node that extends `Box` — 16 of padding, a white
   surface, a 12 pixel radius, the shade of elevation level one and `bodyMedium` for
   the texts inside, every one of them a parameter.

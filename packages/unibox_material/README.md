@@ -182,6 +182,45 @@ Keep those four lines in the application that wants them. The package exports
 three names, and the day a preset needs a theme token it is a `BoxTextStyle`
 again.
 
+## The palette
+
+`MaterialPalette` is the colour half of the design system: the Material 3 roles as
+`const` `BoxColor` values, with a light and a dark instance.
+
+```dart
+const palette = MaterialPalette.light;
+
+MaterialCard(
+  color: palette.surfaceContainerLow,
+  border: BoxBorder(color: palette.outlineVariant),
+  textStyle: MaterialTypography.bodyMedium.merge(
+    BoxTextStyle(color: palette.onSurface),
+  ),
+  children: <UINode>[TextNode('Order summary')],
+);
+```
+
+| Role | What Material paints with it |
+| --- | --- |
+| `primary`, `onPrimary`, `primaryContainer`, `onPrimaryContainer` | an accent and the text on it |
+| `surface`, `onSurface`, `onSurfaceVariant` | the page, its text, and its lower emphasis text |
+| `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainerHighest` | the three surface tones a card, a sheet and a filled field sit at |
+| `outline`, `outlineVariant` | a line that frames a control, and one that only separates |
+| `error`, `onError` | what went wrong, and the text on it |
+| `scrim` | what covers the page behind a modal |
+| `hoverLayer`, `pressedLayer`, `draggedLayer` | 8%, 12% and 16% of `onSurface`, the state layers as translucent colours |
+
+The layers are derived rather than listed, because Material states them as an
+opacity over the on-surface colour: a translucent colour reads correctly over any
+surface tone, which is what a CSS state layer does.
+
+**How a colour reaches the page.** The application passes the palette to its tree
+builders *and* installs the same roles as its platform theme — `ColorScheme` on a
+`MaterialApp`, CSS custom properties on the web. Those two wirings belong to the
+application: this package depends on `unibox_core` alone and never imports Flutter,
+so it cannot install a theme even if it wanted to. A change of palette is a rebuild,
+like a change of state.
+
 ## The card
 
 `MaterialCard` is the other half of the package: a Material 3 surface with

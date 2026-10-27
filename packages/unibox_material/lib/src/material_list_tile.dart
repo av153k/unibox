@@ -119,8 +119,9 @@ final class MaterialListTile extends Box {
   /// The muted colour Material draws a subtitle in: `onSurfaceVariant` of the
   /// baseline light scheme.
   ///
-  /// It is a constant because the model has no colour scheme yet; once a palette
-  /// carries the role, this becomes the value the palette hands over.
+  /// It is the same value [MaterialPalette.light] states for `onSurfaceVariant`,
+  /// written out so a tile needs no palette to look like Material; a themed
+  /// application passes `subtitleStyle` with the role it wants instead.
   static const BoxColor subtitleColor = BoxColor(0xFF49454F);
 
   /// The typography of a subtitle: `bodyMedium` in [subtitleColor].

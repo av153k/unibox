@@ -32,5 +32,6 @@ library;
 
 export 'src/material_card.dart';
 export 'src/material_list_tile.dart';
+export 'src/material_palette.dart';
 export 'src/material_type_role.dart';
 export 'src/material_typography.dart';

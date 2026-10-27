@@ -23,8 +23,11 @@ import 'material_typography.dart';
 /// renderer suites pin.
 ///
 /// **What it is not.** It is not a colour scheme: Material picks a card's surface
-/// from `surfaceContainerLow`, and the model has no scheme yet, so the surface is
-/// [BoxColors.white] and a dark theme passes `color`, [border] and [textStyle].
+/// from `surfaceContainerLow`, so the default is the baseline light value written
+/// out, and a themed application passes the roles it wants —
+/// `color: palette.surfaceContainerLow`, `border: BoxBorder(color:
+/// palette.outlineVariant)` — from a `MaterialPalette`.
+///
 /// It is not the three official variants either (`elevated`, `filled`,
 /// `outlined`), because two of them are tonal and a tone needs that scheme. And
 /// it is not a ripple: a press is [stateStyles], the same as on any other
