@@ -1,0 +1,24 @@
+name: unibox_state
+description: Pure Dart state stores for Unibox nodes, built on package:listen so one state runs in Flutter, on a server and in a browser.
+publish_to: none
+version: 0.1.0
+repository: https://github.com/cedvdb/unibox
+homepage: https://github.com/cedvdb/unibox
+issue_tracker: https://github.com/cedvdb/unibox/issues
+topics:
+  - state-management
+  - ui
+  - cross-platform
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  listen: ^1.0.1
+  meta: ^1.11.0
+  unibox_core: ^0.1.0
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.25.8
