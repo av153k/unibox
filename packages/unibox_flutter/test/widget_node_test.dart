@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 import 'package:unibox_flutter/unibox_flutter.dart';
 
+import 'support/appearance.dart';
 import 'support/harness.dart';
 
 /// A widget that only exists to prove an embed is rendered as itself.
@@ -138,6 +139,29 @@ void main() {
       );
     });
   });
+
+  group("a box of the user's own", () {
+    testWidgets('renders a node that extends a box as that box', (
+      tester,
+    ) async {
+      await pumpNode(
+        tester,
+        const _TintedBox(children: <core.UINode>[core.TextNode('Hi')]),
+      );
+
+      // The node is not one of the eight: the renderer reaches it through the
+      // `Box` it extends, which is how a design-system package ships a card
+      // without this package ever knowing its name.
+      expect(appearanceOf(tester).backgroundColor, core.BoxColors.blue);
+      expect(find.text('Hi'), findsOneWidget);
+    });
+  });
+}
+
+/// A box of an application's own, which is still a box.
+final class _TintedBox extends core.Box {
+  const _TintedBox({super.children})
+    : super(backgroundColor: core.BoxColors.blue);
 }
 
 /// A builder with nothing to wrap.
