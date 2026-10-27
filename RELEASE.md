@@ -41,8 +41,11 @@ dart analyze
    `packages/unibox_flutter/pubspec.yaml`, `packages/unibox_jaspr/pubspec.yaml` and
    `packages/unibox_material/pubspec.yaml`, and the matching `unibox_core: ^x.y.z`
    constraints in the three dependants.
-3. **Close the changelogs.** Every package has an `## Unreleased` section; rename it
-   to `## x.y.z` and add a fresh `## Unreleased` above it.
+3. **Check the changelogs.** Each one describes the package as it stands under a
+   single `## x.y.z` heading — `0.1.0` today — with no `## Unreleased` section to
+   close, because nothing has been published yet. From the second release on, add a
+   new section above the released one, written as what changed for the user rather
+   than which file changed.
 4. **Remove `publish_to: none`** from the four packages being published. Leave it
    in `unibox_testing`.
 5. **Dry run each package**, in dependency order:
@@ -73,5 +76,6 @@ dart analyze
 
 `design.md` §5.7 has the rules: additions are minor, renames and removals are
 breaking and keep the old spelling as a deprecated forwarding member for at least
-one minor release. Every published change is listed in the package `CHANGELOG.md`,
-which is why each one has an `## Unreleased` section while work is in progress.
+one minor release. Every published change is listed in the package `CHANGELOG.md`:
+before the first release the section describes the package as a whole, and after it
+each release gets its own section.

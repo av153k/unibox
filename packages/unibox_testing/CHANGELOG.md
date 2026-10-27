@@ -1,39 +1,21 @@
 # Changelog
 
-## Unreleased
-
-- `OverlayAppearance` describes how a rendered overlay is presented — the colour
-  of its barrier and where its content sits — and `overlayCases` is the table both
-  renderers are checked against: one case per token and one with both.
-- A box case for the merge order of `Box.styles`, so both renderers are held to the
-  same left-to-right result.
-- `BoxAppearance` carries `opacity` and `transform`, with cases for both and both
-  tokens added to the "every token at once" case. The Flutter suite reads the
-  transform back out of the matrix the renderer composed; the web suite parses the
-  declaration. An identity transform compares as no transform.
-- `BoxAppearance` carries `transitionDuration` and `transitionCurve`, and the box
-  table gains a case for them: both renderers have to state the same duration and
-  the same curve for the same transition.
-- `TextAppearance` describes the typography of a rendered text node, and
-  `textCases` is the table both renderers are checked against: one case per token,
-  one for the precedence of a `BoxTextStyle` and its flat overrides, and one with
-  every token at once.
-- `defaultTextAppearance` states the typography of a text that declares nothing,
-  which both renderers have to produce, and a test keeps it in step with
-  `core.BoxTextStyle.defaults`.
-- `TokenDifference` is shared by both appearances.
-
 ## 0.1.0
 
-The first release of the renderer contract.
+The first release of the presentation contract: **test only**, a `dev_dependency`
+of the two renderers and never something an application installs.
 
-- `BoxAppearance` describes the presentation of a rendered box: direction, main
-  and cross alignment, gap, padding, margin, width, height, background colour,
-  corner radius and border.
-- `differencesFrom` compares two appearances token by token and names the ones
-  that drifted, treating an absent token and a zero token as the same
-  presentation.
-- `boxCases` is the table both renderers are checked against: one case per
-  token, plus one case with every token at once.
-- The suite checks the table itself, so a case that stops pinning anything fails
-  before a renderer gets the chance to pass it.
+- `BoxAppearance` and `boxCases`: the appearance a rendered box has to produce —
+  direction, alignment, gap, padding, margin, size, background, radius, border,
+  opacity, transform and the transition's duration and curve — one case per token,
+  one for composed style bags, and one with every token at once.
+- `TextAppearance`, `textCases` and `defaultTextAppearance`: the typography a rendered
+  text node has to be given — size, weight, colour, line height, letter spacing,
+  family, alignment and truncation — plus the model's default for a text that
+  declares nothing.
+- `TokenDifference` and `differencesFrom`, which compare two appearances token by
+  token and name the ones that drifted, so a failure says which token moved instead
+  of printing two objects side by side.
+- The suite checks the tables themselves: no two cases expect the same presentation,
+  every token appears in the "every token at once" case, and the default text
+  appearance matches the model's own defaults.
