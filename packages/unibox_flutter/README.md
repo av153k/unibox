@@ -177,6 +177,24 @@ text from drifting apart.
 A source that fails to load renders an empty box with the declared dimensions
 instead of throwing, so a broken image never breaks the layout.
 
+### What this target does not read
+
+`srcSet`, `sizes`, `loading` and `fetchPriority` are web attributes, and a Flutter
+image loads exactly one source:
+
+| Unibox | Flutter |
+| --- | --- |
+| `srcSet`, `sizes` | nothing — `src` is what a device gets |
+| `loading` | nothing — an `Image` starts loading as soon as it is built, which is `ImageLoading.eager`, the model's default |
+| `fetchPriority` | nothing |
+
+This is the one node field where the two renderings deliberately differ, and the
+reason the model's default is `eager`: a default has to be the answer both targets
+can give. Ship `src` at the size a phone needs; the wider candidates are then a
+free improvement on the web. A density-aware Flutter image would need
+`ResizeImage` and the laid-out width, which is a measurement a rendering does not
+have.
+
 ## Link mapping
 
 | Unibox   | Flutter                                        |

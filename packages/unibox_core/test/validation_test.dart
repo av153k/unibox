@@ -3,6 +3,35 @@ import 'package:unibox_core/unibox_core.dart';
 
 void main() {
   group('validateTree', () {
+    test('accepts a responsive image', () {
+      const ImageNode image = ImageNode(
+        'assets/logo.png',
+        srcSet: <int, String>{200: 'logo-200.png', 400: 'logo-400.png'},
+        sizes: '(min-width: 800px) 640px, 100vw',
+        loading: ImageLoading.lazy,
+        fetchPriority: ImageFetchPriority.high,
+      );
+
+      expect(validateTree(image), isEmpty);
+    });
+
+    test('reports an image candidate without a positive width', () {
+      final List<TreeIssue> issues = validateTree(
+        const ImageNode('assets/logo.png', srcSet: <int, String>{0: 'z.png'}),
+      );
+
+      expect(issues.single.isError, isTrue);
+      expect(issues.single.message, contains('positive'));
+    });
+
+    test('reports sizes that name no candidate', () {
+      final List<TreeIssue> issues = validateTree(
+        const ImageNode('assets/logo.png', sizes: '100vw'),
+      );
+
+      expect(issues.single.message, contains('without a srcSet'));
+    });
+
     test('accepts a well formed tree', () {
       const Box tree = Box(
         direction: Axis.vertical,

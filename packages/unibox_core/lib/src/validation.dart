@@ -1,6 +1,7 @@
 import 'enums.dart';
 import 'nodes/box.dart';
 import 'nodes/embed_node.dart';
+import 'nodes/image_node.dart';
 import 'nodes/link_node.dart';
 import 'nodes/overlay_node.dart';
 import 'nodes/positioned_node.dart';
@@ -70,7 +71,9 @@ class TreeIssue {
 /// * a transition declared on a state style instead of the resting one, which no
 ///   renderer applies,
 /// * a transition with a duration that changes nothing,
-/// * an opacity outside the `0` to `1` that both targets accept.
+/// * an opacity outside the `0` to `1` that both targets accept,
+/// * an image candidate whose width is not positive, which no browser can pick,
+/// * an image that gives `sizes` without a `srcSet`, which a browser never reads.
 List<TreeIssue> validateTree(UINode root) {
   final List<TreeIssue> issues = <TreeIssue>[];
   _validate(root, parent: null, inLink: false, issues: issues);
@@ -94,6 +97,35 @@ void _validate(
             'the child renders at its natural position.',
       ),
     );
+  }
+
+  if (node is ImageNode) {
+    for (final int width in node.srcSet.keys) {
+      if (width <= 0) {
+        issues.add(
+          TreeIssue(
+            node: node,
+            severity: TreeIssueSeverity.error,
+            message:
+                'An ImageNode srcSet entry names a width of $width. A browser '
+                'picks a candidate by the width it declares, so every entry '
+                'needs a positive one.',
+          ),
+        );
+      }
+    }
+
+    if (node.srcSet.isEmpty && node.sizes != null) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          message:
+              'An ImageNode declares sizes without a srcSet. A browser reads '
+              'the layout width only to choose between candidates, so this one '
+              'names nothing: give the node a srcSet, or drop the sizes.',
+        ),
+      );
+    }
   }
 
   if (node is OverlayNode &&

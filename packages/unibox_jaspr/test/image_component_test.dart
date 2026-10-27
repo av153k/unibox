@@ -14,6 +14,9 @@ void main() {
       expect(attributesOf(find.tag('img')), <String, String>{
         'src': 'https://example.com/a.png',
         'alt': '',
+        // The defaults are written out: the model's answer, not the user agent's.
+        'loading': 'eager',
+        'fetchpriority': 'auto',
       });
       expect(stylesOf(find.tag('img')), <String, String>{
         'display': 'block',
@@ -44,6 +47,68 @@ void main() {
 
       expect(styles['width'], '200px');
       expect(styles['height'], '100%');
+    });
+
+    testComponents('writes the candidates of a responsive image', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.ImageNode(
+          'assets/logo.png',
+          srcSet: <int, String>{800: 'logo-800.png', 200: 'logo-200.png'},
+          sizes: '(min-width: 800px) 640px, 100vw',
+        ),
+      );
+
+      final Map<String, String> attributes = attributesOf(find.tag('img'));
+
+      expect(attributes['srcset'], 'logo-200.png 200w, logo-800.png 800w');
+      expect(attributes['sizes'], '(min-width: 800px) 640px, 100vw');
+    });
+
+    testComponents('writes when and how hard to fetch', (tester) async {
+      pumpNode(
+        tester,
+        const core.ImageNode(
+          'assets/hero.png',
+          loading: core.ImageLoading.lazy,
+          fetchPriority: core.ImageFetchPriority.high,
+        ),
+      );
+
+      final Map<String, String> attributes = attributesOf(find.tag('img'));
+
+      expect(attributes['loading'], 'lazy');
+      expect(attributes['fetchpriority'], 'high');
+    });
+
+    testComponents('gives the browser the aspect ratio before it fetches', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.ImageNode('assets/logo.png', width: 200, height: 120.6),
+      );
+
+      final Map<String, String> attributes = attributesOf(find.tag('img'));
+
+      expect(attributes['width'], '200');
+      expect(attributes['height'], '121');
+    });
+
+    testComponents('leaves the attributes off a size the browser cannot use', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.ImageNode('assets/logo.png', height: double.infinity),
+      );
+
+      final Map<String, String> attributes = attributesOf(find.tag('img'));
+
+      expect(attributes.containsKey('width'), isFalse);
+      expect(attributes.containsKey('height'), isFalse);
     });
 
     testComponents('maps every image fit to object-fit', (tester) async {

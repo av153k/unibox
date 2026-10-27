@@ -12,6 +12,13 @@ import 'values.dart';
 /// fills the available space, and a missing dimension keeps the natural aspect
 /// ratio. `fit` maps to `object-fit` and `borderRadius` to `border-radius`.
 ///
+/// The node's responsive fields are HTML attributes: `srcSet` becomes `srcset`,
+/// `sizes` becomes `sizes`, `loading` becomes `loading` and `fetchPriority`
+/// becomes `fetchpriority`. A finite width or height is also written as the
+/// element's `width` and `height`, which is how a browser learns the picture's
+/// aspect ratio before it has fetched it and reserves the right box instead of
+/// shifting the page.
+///
 /// In Flutter an image is a leaf box, so the element is rendered as a block
 /// rather than the default inline image: the picture then occupies exactly its
 /// bounds instead of adding a line box with a baseline gap around it.
@@ -24,6 +31,27 @@ class JasprImage extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return img(src: node.src, alt: node.alt, styles: toImageStyles(node));
+    return img(
+      src: node.src,
+      alt: node.alt,
+      width: _pixels(node.width),
+      height: _pixels(node.height),
+      attributes: <String, String>{
+        'srcset': ?node.resolvedSrcSet,
+        'sizes': ?node.sizes,
+        'loading': node.loading.name,
+        'fetchpriority': node.fetchPriority.name,
+      },
+      styles: toImageStyles(node),
+    );
+  }
+
+  /// [value] in whole pixels, or `null` when it is missing or unbounded.
+  ///
+  /// The attribute is a hint for the browser's layout, so a fraction of a pixel
+  /// or an infinite box has nothing to say: the CSS keeps the exact size.
+  static int? _pixels(double? value) {
+    if (value == null || !value.isFinite) return null;
+    return value.round();
   }
 }

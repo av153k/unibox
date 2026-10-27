@@ -142,6 +142,39 @@ enum ImageFit {
   scaleDown,
 }
 
+/// When a browser fetches an image.
+///
+/// The value is HTML's `loading` attribute. Flutter has no counterpart — an
+/// `Image` widget starts loading when it is built — so the default is the answer
+/// Flutter already gives, and a lazy image is an optimisation the web alone can
+/// honour.
+enum ImageLoading {
+  /// Fetch the image at once, even while it is off screen.
+  eager,
+
+  /// Wait until the image comes near the viewport before fetching it.
+  lazy,
+
+  /// Leave the decision to the browser.
+  auto,
+}
+
+/// How much a browser should prioritise one image against the others on a page.
+///
+/// The value is HTML's `fetchpriority` attribute, which a browser may use to
+/// order fetches it has already started. Flutter has no counterpart, and the
+/// value never changes a rendering.
+enum ImageFetchPriority {
+  /// Raise the image above the default priority, for a hero image.
+  high,
+
+  /// Lower it below the default, for decoration far down the page.
+  low,
+
+  /// Let the browser decide.
+  auto,
+}
+
 /// Relative weight of a font.
 enum FontWeight {
   /// Regular text weight.

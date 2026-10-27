@@ -12,6 +12,14 @@ import 'values.dart';
 /// The fit is always passed, even when the node names none: the renderer would
 /// otherwise leave the question to `Image`, whose answer is its own, while the
 /// web renderer would leave it to the browser's `object-fit: fill`.
+///
+/// The responsive fields of the node — [core.ImageNode.srcSet],
+/// [core.ImageNode.sizes], [core.ImageNode.loading] and
+/// [core.ImageNode.fetchPriority] — are not read here. Flutter loads one source,
+/// so [core.ImageNode.src] is what a device gets; the web renderer writes the four
+/// as `<img>` attributes. This is a deliberate difference between the two
+/// renderings, recorded in both READMEs: a candidate list is a web optimisation
+/// and a model cannot ask Skia to pick from it.
 class FlutterImage extends StatelessWidget {
   /// Creates a renderer for [node].
   const FlutterImage({required this.node, super.key});

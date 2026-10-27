@@ -240,9 +240,18 @@ the page.
 | Unibox           | Jaspr / CSS                                   |
 | ---------------- | --------------------------------------------- |
 | `src`, `alt`     | `src` and `alt` attributes                    |
-| `width`/`height` | `width`/`height` (`double.infinity` → `100%`) |
+| `width`/`height` | `width`/`height` (`double.infinity` → `100%`), and the same numbers as the element's `width`/`height` attributes |
 | `fit`            | `object-fit` (`cover`, `contain`, `fill`, `scale-down`) |
 | `borderRadius`   | `border-radius`                               |
+| `srcSet`         | `srcset`, one `url 200w` candidate per entry, narrowest first |
+| `sizes`          | `sizes`                                       |
+| `loading`        | `loading` (`eager`, `lazy`, `auto`)           |
+| `fetchPriority`  | `fetchpriority` (`high`, `low`, `auto`)       |
+
+A finite `width` or `height` is written twice: as CSS, which lays the picture out,
+and as an attribute, which tells the browser the aspect ratio before the fetch, so
+the page does not shift when the image arrives. A fractional size is rounded and
+`double.infinity` has no attribute at all.
 
 Images render as `display: block`, matching the leaf box they are in Flutter: no
 line box, and therefore no baseline gap beneath the picture.

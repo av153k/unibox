@@ -17,6 +17,10 @@ on the server and readable without a client bundle.
 - Typography becomes the inherited CSS font properties, and `renderJaspr` emits the
   model's default typography in a `:root` rule so an undeclared text is typeset the
   same way the Flutter renderer typesets it.
+- An `ImageNode` becomes an `<img>` with everything a browser can use: `srcset`,
+  `sizes`, `loading` and `fetchpriority`, and a finite `width`/`height` written both
+  as CSS and as the element's attributes, so the browser reserves the right box
+  before the picture arrives.
 - A `BoxTransition` becomes one `transition` entry per property, with
   `transition-delay` where a part asks for one, so a state change is interpolated by
   the browser and a static export animates with no JavaScript.

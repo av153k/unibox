@@ -10,6 +10,29 @@ Image renderedImage(WidgetTester tester) =>
 
 void main() {
   group('ImageNode', () {
+    testWidgets('loads the src even when the node lists candidates', (
+      tester,
+    ) async {
+      await pumpNode(
+        tester,
+        const core.ImageNode(
+          'assets/logo.png',
+          width: 40,
+          height: 40,
+          srcSet: <int, String>{200: 'logo-200.png', 400: 'logo-400.png'},
+          sizes: '100vw',
+          loading: core.ImageLoading.lazy,
+          fetchPriority: core.ImageFetchPriority.high,
+        ),
+      );
+
+      // Flutter has one source per image: the candidates are a web attribute.
+      final ImageProvider<Object> provider = renderedImage(tester).image;
+
+      expect(provider, isA<AssetImage>());
+      expect((provider as AssetImage).assetName, 'assets/logo.png');
+    });
+
     testWidgets('loads absolute urls from the network', (tester) async {
       await pumpNode(
         tester,

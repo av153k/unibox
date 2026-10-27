@@ -16,6 +16,11 @@ and the checks that keep a tree renderable.
 - Typography is the one inherited axis: `Box.textStyle` reaches the texts inside, and
   `BoxTextStyle.defaults` (16 logical pixels, normal weight, black, 1.5, no letter
   spacing) is the default both renderers install at the root of a tree.
+- `ImageNode` carries the responsive fields a browser reads — `srcSet` (candidate
+  widths and their URLs), `sizes`, `loading` and `fetchPriority` — and resolves the
+  `srcset` attribute itself, narrowest candidate first, so the same candidates
+  always produce the same HTML. `validateTree` reports a candidate with no positive
+  width, and a `sizes` that names nothing because there is no `srcSet`.
 - `BoxTransition` and `BoxTransitionPart` ease a change of look, of opacity or of a
   transform, with `BoxProperty` naming the parts and `BoxCurve` the five curves CSS
   and Flutter define the same way.

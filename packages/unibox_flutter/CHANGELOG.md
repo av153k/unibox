@@ -12,6 +12,9 @@ The first release of the Flutter renderer: one node tree becomes a widget tree.
 - Typography is inherited through `DefaultTextStyle`, and the renderer installs
   `BoxTextStyle.defaults` around the tree so an undeclared text is typeset the same
   way the web renderer typesets it.
+- `FlutterImage` loads the node's `src`. The responsive fields of an `ImageNode`
+  (`srcSet`, `sizes`, `loading`, `fetchPriority`) are web attributes and are not
+  read here: Flutter loads one source, and the README records the difference.
 - `BoxTransition` becomes implicit animation: the decoration tweens through
   `DecorationTween`, a delay is an `Interval` of the longest timeline, opacity is
   `AnimatedOpacity` and a transform is a `TweenAnimationBuilder` over

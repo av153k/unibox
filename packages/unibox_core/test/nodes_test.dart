@@ -100,6 +100,29 @@ void main() {
       expect(node.fit, isNull);
       expect(node.borderRadius, isNull);
       expect(node.children, isEmpty);
+      // The responsive fields are opt-in, and the defaults are the answers
+      // Flutter can give on its own.
+      expect(node.srcSet, isEmpty);
+      expect(node.sizes, isNull);
+      expect(node.loading, ImageLoading.eager);
+      expect(node.fetchPriority, ImageFetchPriority.auto);
+      expect(node.resolvedSrcSet, isNull);
+    });
+
+    test('writes the candidates narrowest first, whatever the map order', () {
+      const node = ImageNode(
+        'assets/logo.png',
+        srcSet: <int, String>{
+          800: 'logo-800.png',
+          200: 'logo-200.png',
+          400: 'logo-400.png',
+        },
+      );
+
+      expect(
+        node.resolvedSrcSet,
+        'logo-200.png 200w, logo-400.png 400w, logo-800.png 800w',
+      );
     });
 
     test('stores media tokens', () {
