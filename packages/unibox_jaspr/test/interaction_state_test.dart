@@ -4,6 +4,54 @@ import 'package:unibox_core/unibox_core.dart' as core;
 import 'support/harness.dart';
 
 void main() {
+  group('transform and opacity', () {
+    testComponents('fades a box without moving it', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          width: 60,
+          height: 40,
+          opacity: 0.4,
+          backgroundColor: core.BoxColor.black,
+        ),
+      );
+
+      final Map<String, String> styles = stylesOf(find.tag('div'));
+
+      expect(styles['opacity'], '0.4');
+      expect(styles['width'], '60px');
+      // No transform-origin: CSS centres one by default, like the Flutter side.
+      expect(styles.containsKey('transform-origin'), isFalse);
+    });
+
+    testComponents('writes a transform in the order the model states', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          transform: core.BoxTransform(
+            scale: 2,
+            rotation: 15,
+            offsetX: 10,
+            offsetY: -4,
+          ),
+        ),
+      );
+
+      expect(
+        stylesOf(find.tag('div'))['transform'],
+        'translate(10px, -4px) rotate(15deg) scale(2)',
+      );
+    });
+
+    testComponents('leaves an identity transform out', (tester) async {
+      pumpNode(tester, const core.Box(transform: core.BoxTransform(scale: 1)));
+
+      expect(stylesOf(find.tag('div')).containsKey('transform'), isFalse);
+    });
+  });
+
   group('transitions', () {
     testComponents('writes the paint properties into a transition', (
       tester,
@@ -24,7 +72,8 @@ void main() {
       expect(
         stylesOf(find.tag('div'))['transition'],
         'background-color 150ms ease-in-out, border-color 150ms ease-in-out, '
-        'border-radius 150ms ease-in-out, box-shadow 150ms ease-in-out',
+        'border-radius 150ms ease-in-out, box-shadow 150ms ease-in-out, '
+        'opacity 150ms ease-in-out, transform 150ms ease-in-out',
       );
     });
 

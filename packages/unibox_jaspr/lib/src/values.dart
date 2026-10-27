@@ -355,6 +355,34 @@ Styles toPositionedStyles(core.PositionedNode node) {
   );
 }
 
+/// The declarations of the look tokens a box states in raw CSS.
+///
+/// `transform-origin` is not written: CSS centres a transform by default and the
+/// Flutter renderer does the same, so both turn and scale about the middle of the
+/// box. The three functions are always listed in the model's order — translate,
+/// rotate, scale — because CSS only interpolates two transforms function by
+/// function when the lists match.
+Map<String, String>? _lookDeclarations(core.BoxTransform? transform) {
+  if (transform == null || transform.isIdentity) {
+    return null;
+  }
+
+  return <String, String>{
+    'transform':
+        'translate(${_pixels(transform.offsetX)}, '
+        '${_pixels(transform.offsetY)}) '
+        'rotate(${_number(transform.rotation)}deg) '
+        'scale(${_number(transform.scale)})',
+  };
+}
+
+/// A length in logical pixels, as CSS writes it.
+String _pixels(double value) => '${_number(value)}px';
+
+/// A number without a needless `.0`, which both CSS and a reader prefer.
+String _number(double value) =>
+    value == value.roundToDouble() ? '${value.toInt()}' : '$value';
+
 /// The `transition` shorthand of [transition].
 ///
 /// Only the paint properties are listed. A list that named layout would let the
@@ -387,6 +415,8 @@ const List<String> _transitionedProperties = <String>[
   'border-color',
   'border-radius',
   'box-shadow',
+  'opacity',
+  'transform',
 ];
 
 /// The padding a user agent puts around [element], cancelled as `0`.
@@ -497,6 +527,8 @@ Styles toBoxStyles(
   final core.BoxSpacing? margin = style.margin;
   final core.BoxColor? backgroundColor = style.backgroundColor;
   final core.Overflow? overflow = style.overflow;
+  final core.BoxTransform? transform = style.transform;
+  final double? opacity = style.opacity;
   final double? gap = style.gap;
   final double? borderRadius = style.borderRadius;
   final int? flex = style.flex;
@@ -535,6 +567,8 @@ Styles toBoxStyles(
     border: toCssBorder(border),
     shadow: shadow == null ? null : toCssBoxShadow(shadow),
     overflow: overflow == null ? null : toCssOverflow(overflow),
+    opacity: opacity,
+    raw: _lookDeclarations(transform),
     cursor: interactive ? Cursor.pointer : null,
   );
 
