@@ -16,10 +16,10 @@
   `teal`, `blue`, `indigo`, `purple`, `pink`, `brown`) — at the values Flutter's
   `Colors` gives the same names, so a tree that names one matches the widgets
   drawn around it.
-- `BoxLook` and `BoxTransitionPart`: a transition can ease one part of a look before
+- `BoxProperty` and `BoxTransitionPart`: a transition can ease one part of a look before
   another. `BoxTransition.parts` overrides the base duration and curve per look,
   `timingOf` resolves one look, `totalDuration` is the longest `delay + duration` and
-  `BoxLook.paint` is the four paint looks as one set, because a `BoxDecoration`
+  `BoxProperty.paint` is the four paint properties as one set, because a `BoxDecoration`
   interpolates as a unit.
 - `Box.styles`: a list of style bags, merged left to right, with flat parameters
   winning over all of them. **Breaking:** `style` is deprecated in favour of it.

@@ -5,7 +5,7 @@ import '../enums.dart';
 /// A look is made of parts a renderer animates separately, and CSS names each of
 /// them as its own property. The set is deliberately the one both targets can
 /// animate: the four things a box paints, its opacity and its transform.
-enum BoxLook {
+enum BoxProperty {
   /// The colour behind the children.
   backgroundColor,
 
@@ -31,7 +31,7 @@ enum BoxLook {
   /// in one part is the way to say "the paint, all of it, at this speed"; splitting
   /// it is reported by `validateTree`, and a box that really wants two paint speeds
   /// nests a box.
-  static const Set<BoxLook> paint = <BoxLook>{
+  static const Set<BoxProperty> paint = <BoxProperty>{
     backgroundColor,
     borderColor,
     borderRadius,
@@ -47,12 +47,12 @@ enum BoxLook {
 ///   parts: <BoxTransitionPart>[
 ///     // the colour first…
 ///     BoxTransitionPart(
-///       looks: <BoxLook>{BoxLook.backgroundColor},
+///       properties: <BoxProperty>{BoxProperty.backgroundColor},
 ///       duration: Duration(milliseconds: 100),
 ///     ),
 ///     // …then the scale, once the colour has settled
 ///     BoxTransitionPart(
-///       looks: <BoxLook>{BoxLook.transform},
+///       properties: <BoxProperty>{BoxProperty.transform},
 ///       duration: Duration(milliseconds: 150),
 ///       delay: Duration(milliseconds: 100),
 ///     ),
@@ -62,14 +62,14 @@ enum BoxLook {
 final class BoxTransitionPart {
   /// Creates a part that eases [looks] over [duration], after [delay].
   const BoxTransitionPart({
-    required this.looks,
+    required this.properties,
     required this.duration,
     this.curve = BoxCurve.ease,
     this.delay = Duration.zero,
   });
 
   /// The looks this part eases.
-  final Set<BoxLook> looks;
+  final Set<BoxProperty> properties;
 
   /// How long they take.
   final Duration duration;
@@ -85,13 +85,13 @@ final class BoxTransitionPart {
 
   /// Creates a copy of this part with the given fields replaced.
   BoxTransitionPart copyWith({
-    Set<BoxLook>? looks,
+    Set<BoxProperty>? properties,
     Duration? duration,
     BoxCurve? curve,
     Duration? delay,
   }) {
     return BoxTransitionPart(
-      looks: looks ?? this.looks,
+      properties: properties ?? this.properties,
       duration: duration ?? this.duration,
       curve: curve ?? this.curve,
       delay: delay ?? this.delay,
@@ -101,19 +101,19 @@ final class BoxTransitionPart {
   @override
   bool operator ==(Object other) =>
       other is BoxTransitionPart &&
-      other.looks.length == looks.length &&
-      other.looks.containsAll(looks) &&
+      other.properties.length == properties.length &&
+      other.properties.containsAll(properties) &&
       other.duration == duration &&
       other.curve == curve &&
       other.delay == delay;
 
   @override
   int get hashCode =>
-      Object.hash(Object.hashAllUnordered(looks), duration, curve, delay);
+      Object.hash(Object.hashAllUnordered(properties), duration, curve, delay);
 
   @override
   String toString() =>
-      'BoxTransitionPart(looks: ${looks.map((BoxLook l) => l.name).join(', ')}, '
+      'BoxTransitionPart(properties: ${properties.map((BoxProperty l) => l.name).join(', ')}, '
       'duration: $duration, curve: $curve, delay: $delay)';
 }
 
@@ -173,9 +173,9 @@ final class BoxTransition {
 
   /// The timing [look] eases with: its own part when one names it, the base
   /// otherwise.
-  BoxTransitionTiming timingOf(BoxLook look) {
+  BoxTransitionTiming timingOf(BoxProperty look) {
     for (final BoxTransitionPart part in parts) {
-      if (part.looks.contains(look)) {
+      if (part.properties.contains(look)) {
         return (duration: part.duration, curve: part.curve, delay: part.delay);
       }
     }
@@ -186,7 +186,7 @@ final class BoxTransition {
   /// that finishes.
   Duration get totalDuration {
     Duration total = Duration.zero;
-    for (final BoxLook look in BoxLook.values) {
+    for (final BoxProperty look in BoxProperty.values) {
       final Duration end = timingOf(look).delay + timingOf(look).duration;
       if (end > total) {
         total = end;

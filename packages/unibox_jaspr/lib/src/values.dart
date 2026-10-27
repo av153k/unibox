@@ -391,7 +391,7 @@ String _number(double value) =>
 /// Flutter as a paint change.
 String _transitionOf(core.BoxTransition transition) {
   return <String>[
-    for (final MapEntry<core.BoxLook, String> entry
+    for (final MapEntry<core.BoxProperty, String> entry
         in _transitionedProperties.entries)
       '${entry.value} ${_timingOf(transition, entry.key)}',
   ].join(', ');
@@ -401,7 +401,7 @@ String _transitionOf(core.BoxTransition transition) {
 ///
 /// The delay is omitted when a part does not have one, which is the common case
 /// and the shorter declaration.
-String _timingOf(core.BoxTransition transition, core.BoxLook look) {
+String _timingOf(core.BoxTransition transition, core.BoxProperty look) {
   final core.BoxTransitionTiming timing = transition.timingOf(look);
   final String base =
       '${timing.duration.inMilliseconds}ms ${_cssCurve(timing.curve)}';
@@ -425,14 +425,14 @@ String _cssCurve(core.BoxCurve curve) {
 /// The CSS property of every look, in the order a transition lists them.
 ///
 /// The paint first, then what is painted on top of it.
-const Map<core.BoxLook, String> _transitionedProperties =
-    <core.BoxLook, String>{
-      core.BoxLook.backgroundColor: 'background-color',
-      core.BoxLook.borderColor: 'border-color',
-      core.BoxLook.borderRadius: 'border-radius',
-      core.BoxLook.shadow: 'box-shadow',
-      core.BoxLook.opacity: 'opacity',
-      core.BoxLook.transform: 'transform',
+const Map<core.BoxProperty, String> _transitionedProperties =
+    <core.BoxProperty, String>{
+      core.BoxProperty.backgroundColor: 'background-color',
+      core.BoxProperty.borderColor: 'border-color',
+      core.BoxProperty.borderRadius: 'border-radius',
+      core.BoxProperty.shadow: 'box-shadow',
+      core.BoxProperty.opacity: 'opacity',
+      core.BoxProperty.transform: 'transform',
     };
 
 /// The padding a user agent puts around [element], cancelled as `0`.

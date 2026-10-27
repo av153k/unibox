@@ -114,7 +114,7 @@ class _UniboxBoxState extends State<UniboxBox> {
   _Timing? _paintTiming(core.BoxTransition? transition) {
     return transition == null
         ? null
-        : _timingOf(transition, core.BoxLook.backgroundColor);
+        : _timingOf(transition, core.BoxProperty.backgroundColor);
   }
 
   /// Resolves the timing of [look] out of [transition].
@@ -122,7 +122,7 @@ class _UniboxBoxState extends State<UniboxBox> {
   /// A delay becomes an `Interval` of the longest timeline in the transition, so an
   /// implicit animation can wait without an `AnimationController` of its own: before
   /// its interval it holds the value it had, after it the one it is heading for.
-  _Timing _timingOf(core.BoxTransition transition, core.BoxLook look) {
+  _Timing _timingOf(core.BoxTransition transition, core.BoxProperty look) {
     final core.BoxTransitionTiming timing = transition.timingOf(look);
     final int total = transition.totalDuration.inMicroseconds;
     final Curve curve = toCurve(timing.curve);
@@ -192,14 +192,14 @@ class _UniboxBoxState extends State<UniboxBox> {
       result = _transformed(
         result,
         value,
-        animated ? _timingOf(transition, core.BoxLook.transform) : null,
+        animated ? _timingOf(transition, core.BoxProperty.transform) : null,
       );
     }
     if (alpha < 1 || animated) {
       result = _opacified(
         result,
         alpha,
-        animated ? _timingOf(transition, core.BoxLook.opacity) : null,
+        animated ? _timingOf(transition, core.BoxProperty.opacity) : null,
       );
     }
 

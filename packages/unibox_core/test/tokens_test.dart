@@ -466,7 +466,9 @@ void main() {
         curve: BoxCurve.easeOut,
       );
 
-      final BoxTransitionTiming timing = transition.timingOf(BoxLook.transform);
+      final BoxTransitionTiming timing = transition.timingOf(
+        BoxProperty.transform,
+      );
 
       expect(timing.duration, const Duration(milliseconds: 200));
       expect(timing.curve, BoxCurve.easeOut);
@@ -478,11 +480,11 @@ void main() {
         duration: Duration(milliseconds: 200),
         parts: <BoxTransitionPart>[
           BoxTransitionPart(
-            looks: <BoxLook>{BoxLook.backgroundColor},
+            properties: <BoxProperty>{BoxProperty.backgroundColor},
             duration: Duration(milliseconds: 100),
           ),
           BoxTransitionPart(
-            looks: <BoxLook>{BoxLook.transform},
+            properties: <BoxProperty>{BoxProperty.transform},
             duration: Duration(milliseconds: 150),
             delay: Duration(milliseconds: 100),
             curve: BoxCurve.easeIn,
@@ -491,10 +493,10 @@ void main() {
       );
 
       final BoxTransitionTiming paint = transition.timingOf(
-        BoxLook.backgroundColor,
+        BoxProperty.backgroundColor,
       );
       final BoxTransitionTiming transform = transition.timingOf(
-        BoxLook.transform,
+        BoxProperty.transform,
       );
 
       expect(paint.duration, const Duration(milliseconds: 100));
@@ -509,7 +511,7 @@ void main() {
 
     test('implements value equality for parts', () {
       const BoxTransitionPart part = BoxTransitionPart(
-        looks: <BoxLook>{BoxLook.opacity, BoxLook.transform},
+        properties: <BoxProperty>{BoxProperty.opacity, BoxProperty.transform},
         duration: Duration(milliseconds: 80),
         delay: Duration(milliseconds: 20),
       );
@@ -518,7 +520,9 @@ void main() {
       expect(part.hashCode, part.copyWith().hashCode);
       // A set of looks does not care about order.
       expect(
-        part.copyWith(looks: <BoxLook>{BoxLook.transform, BoxLook.opacity}),
+        part.copyWith(
+          properties: <BoxProperty>{BoxProperty.transform, BoxProperty.opacity},
+        ),
         part,
       );
       expect(part.end, const Duration(milliseconds: 100));

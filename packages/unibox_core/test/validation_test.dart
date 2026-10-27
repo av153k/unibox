@@ -93,11 +93,11 @@ void main() {
           duration: Duration(milliseconds: 200),
           parts: <BoxTransitionPart>[
             BoxTransitionPart(
-              looks: BoxLook.paint,
+              properties: BoxProperty.paint,
               duration: Duration(milliseconds: 100),
             ),
             BoxTransitionPart(
-              looks: <BoxLook>{BoxLook.transform},
+              properties: <BoxProperty>{BoxProperty.transform},
               duration: Duration(milliseconds: 150),
               delay: Duration(milliseconds: 100),
             ),
@@ -114,7 +114,7 @@ void main() {
           duration: Duration(milliseconds: 100),
           parts: <BoxTransitionPart>[
             BoxTransitionPart(
-              looks: <BoxLook>{},
+              properties: <BoxProperty>{},
               duration: Duration(milliseconds: 100),
             ),
           ],
@@ -130,11 +130,11 @@ void main() {
           duration: Duration(milliseconds: 100),
           parts: <BoxTransitionPart>[
             BoxTransitionPart(
-              looks: <BoxLook>{BoxLook.opacity},
+              properties: <BoxProperty>{BoxProperty.opacity},
               duration: Duration(milliseconds: 100),
             ),
             BoxTransitionPart(
-              looks: <BoxLook>{BoxLook.opacity},
+              properties: <BoxProperty>{BoxProperty.opacity},
               duration: Duration(milliseconds: 50),
             ),
           ],
@@ -152,11 +152,11 @@ void main() {
           duration: Duration(milliseconds: 200),
           parts: <BoxTransitionPart>[
             BoxTransitionPart(
-              looks: <BoxLook>{BoxLook.backgroundColor},
+              properties: <BoxProperty>{BoxProperty.backgroundColor},
               duration: Duration(milliseconds: 100),
             ),
             BoxTransitionPart(
-              looks: <BoxLook>{BoxLook.borderColor},
+              properties: <BoxProperty>{BoxProperty.borderColor},
               duration: Duration(milliseconds: 200),
             ),
           ],

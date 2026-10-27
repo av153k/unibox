@@ -473,12 +473,12 @@ transition: const BoxTransition(
   parts: <BoxTransitionPart>[
     // the paint first…
     BoxTransitionPart(
-      looks: BoxLook.paint,
+      properties: BoxProperty.paint,
       duration: Duration(milliseconds: 100),
     ),
     // …then the scale, once it has settled
     BoxTransitionPart(
-      looks: <BoxLook>{BoxLook.transform},
+      properties: <BoxProperty>{BoxProperty.transform},
       duration: Duration(milliseconds: 150),
       delay: Duration(milliseconds: 100),
     ),
@@ -486,7 +486,7 @@ transition: const BoxTransition(
 ),
 ```
 
-The four paint looks share a timing, because a `BoxDecoration` interpolates as one
+The four paint properties share a timing, because a `BoxDecoration` interpolates as one
 on Flutter; a box that needs two paint speeds nests a box, and `validateTree` says
 so instead of the renderer approximating.
 

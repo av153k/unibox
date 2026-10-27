@@ -121,7 +121,7 @@ that lands on one target only fails the suites.
    and the entry in `_flatStyle`. The flat spelling is the one most callers use,
    and it has to beat a bag.
 3. If the token is painted, `packages/unibox_core/lib/src/tokens/box_transition.dart`
-   — a `BoxLook` member and a place in `BoxLook.paint`; otherwise the token cannot
+   — a `BoxProperty` member and a place in `BoxProperty.paint`; otherwise the token cannot
    be eased and `validateTree` cannot see it.
 4. Flutter: `packages/unibox_flutter/lib/src/values.dart` (the mapping, when the
    token is a new value type), `lib/src/box.dart` (where the decoration, the

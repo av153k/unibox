@@ -251,17 +251,18 @@ List<TreeIssue> _transitionIssues(Box box, BoxTransition? transition) {
   }
 
   final List<TreeIssue> issues = <TreeIssue>[];
-  final Map<BoxLook, BoxTransitionPart> named = <BoxLook, BoxTransitionPart>{};
+  final Map<BoxProperty, BoxTransitionPart> named =
+      <BoxProperty, BoxTransitionPart>{};
 
   for (final BoxTransitionPart part in transition.parts) {
-    if (part.looks.isEmpty) {
+    if (part.properties.isEmpty) {
       issues.add(
         TreeIssue(
           node: box,
           severity: TreeIssueSeverity.error,
           message:
               'A BoxTransitionPart names no look, so it eases nothing. Name the '
-              'looks it should cover, e.g. {BoxLook.transform}.',
+              'looks it should cover, e.g. {BoxProperty.transform}.',
         ),
       );
     }
@@ -271,13 +272,13 @@ List<TreeIssue> _transitionIssues(Box box, BoxTransition? transition) {
         TreeIssue(
           node: box,
           message:
-              'A BoxTransitionPart eases ${part.looks.map((BoxLook l) => l.name)} '
+              'A BoxTransitionPart eases ${part.properties.map((BoxProperty l) => l.name)} '
               'over ${part.duration}, which changes nothing.',
         ),
       );
     }
 
-    for (final BoxLook look in part.looks) {
+    for (final BoxProperty look in part.properties) {
       if (named.containsKey(look)) {
         issues.add(
           TreeIssue(
@@ -293,14 +294,14 @@ List<TreeIssue> _transitionIssues(Box box, BoxTransition? transition) {
     }
   }
 
-  const Set<BoxLook> paint = <BoxLook>{
-    BoxLook.backgroundColor,
-    BoxLook.borderColor,
-    BoxLook.borderRadius,
-    BoxLook.shadow,
+  const Set<BoxProperty> paint = <BoxProperty>{
+    BoxProperty.backgroundColor,
+    BoxProperty.borderColor,
+    BoxProperty.borderRadius,
+    BoxProperty.shadow,
   };
   final Set<BoxTransitionTiming> paintTimings = <BoxTransitionTiming>{
-    for (final BoxLook look in paint) transition.timingOf(look),
+    for (final BoxProperty look in paint) transition.timingOf(look),
   };
 
   if (paintTimings.length > 1) {

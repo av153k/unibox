@@ -16,11 +16,11 @@ void main() {
             duration: Duration(milliseconds: 200),
             parts: <core.BoxTransitionPart>[
               core.BoxTransitionPart(
-                looks: core.BoxLook.paint,
+                properties: core.BoxProperty.paint,
                 duration: Duration(milliseconds: 100),
               ),
               core.BoxTransitionPart(
-                looks: <core.BoxLook>{core.BoxLook.transform},
+                properties: <core.BoxProperty>{core.BoxProperty.transform},
                 duration: Duration(milliseconds: 150),
                 delay: Duration(milliseconds: 100),
                 curve: core.BoxCurve.easeOut,
