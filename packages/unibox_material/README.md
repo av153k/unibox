@@ -167,12 +167,71 @@ one:
 - **It costs a second vocabulary.** `titleLarge` already means what Material
   means by it; `TitleText.medium` has to be mapped onto `titleMedium` or
   `titleSmall` and kept in step.
-- **It freezes an implementation detail.** The renderers match `TextNode` by
-  subtype today, but nothing promises that subclassing a node is a supported
-  extension point; fifteen exported presets would make it one.
+- **It widens a small contract.** Subclassing a node works today only because the
+  renderers match a node by subtype, and this package leans on that once — for the
+  card below. A promise made once, for a node that *is* a box, is a design
+  decision; fifteen text presets would turn it into a habit.
 
-Keep those four lines in the application that wants them; this package stays two
-names, and the day a preset needs a theme token it is a `BoxTextStyle` again.
+The line is between a look and a component. A look has no children, so it is a
+value, and a value can be themed by merging a token. A component owns children and
+a surface that have to travel together, so it is a node — built by extending the
+node that already draws it, which is why `MaterialCard` needs no renderer and no
+conformance case. A `TitleText` is the first kind pretending to be the second.
+
+Keep those four lines in the application that wants them. The package exports
+three names, and the day a preset needs a theme token it is a `BoxTextStyle`
+again.
+
+## The card
+
+`MaterialCard` is the other half of the package: a Material 3 surface with
+children.
+
+```dart
+const MaterialCard(
+  children: <UINode>[
+    TextNode('Order summary', style: MaterialTypography.titleMedium),
+    TextNode('Two nights, one room.'),
+  ],
+);
+```
+
+It is a `Box`, so both renderers already draw it, and every token it sets is one
+the conformance table already pins — the class is a combination, not a new token:
+
+| Token | Value | Why |
+| --- | --- | --- |
+| padding | `16` on every edge | the room Material gives card content |
+| background | `BoxColors.white` | the surface, until a colour scheme exists |
+| radius | `12` | the medium shape of Material 3 |
+| shadow | `MaterialCard.elevatedShadow` | elevation level one, one of its two layers |
+| typography | `MaterialTypography.bodyMedium` | inherited by the texts inside |
+| layout | a column (`Box`'s default) | a card stacks its content unless told otherwise |
+
+Every one is a parameter, so an application themes a card instead of forking it:
+
+```dart
+MaterialCard(
+  color: surfaceContainerLow,
+  border: const BoxBorder(color: outlineVariant),
+  textStyle: MaterialTypography.bodyMedium.merge(
+    const BoxTextStyle(color: onSurface),
+  ),
+  children: <UINode>[TextNode('Order summary')],
+)
+```
+
+The layout and interaction of a box come through too — `direction`, `gap`,
+`width`, `flex`, `onTap`, `stateStyles`, `semantics`, ... — so a clickable card
+states `onTap` and its role, not a wrapper component. What the card does not
+expose is a style bag: its own tokens are flat parameters, so a bag would lose to
+them. A `Box` around it is the escape hatch, and it is the box this class builds.
+
+**What it is not.** Material takes a card's surface from a colour scheme
+(`surfaceContainerLow`), its three official variants differ by tone, and a press
+ripples. None of those exist in the model yet: the surface is white, the variant
+is the elevated one, and a press is `stateStyles`. A colour scheme is the next
+decision, not a silent default.
 
 ## Line heights
 
@@ -190,10 +249,11 @@ division keeps the promise the renderers are tested against: a line box is
 
 ## Imports
 
-`unibox_material` exports two names, `MaterialTypography` and `MaterialTypeRole`,
-and it **does not re-export `unibox_core`**. A file that also imports Flutter can
-therefore import this package without a prefix; it still needs one for the tree, as
-described in the [core README](../unibox_core/README.md#beside-flutter).
+`unibox_material` exports three names — `MaterialTypography`, `MaterialTypeRole`
+and `MaterialCard` — and it **does not re-export `unibox_core`**. A file that also
+imports Flutter can therefore import this package without a prefix; it still needs
+one for the tree, as described in the
+[core README](../unibox_core/README.md#beside-flutter).
 
 ## Testing
 
@@ -204,13 +264,18 @@ dart test
 The suite holds every role to the specification's size, line box, tracking and
 weight, checks that the table covers every role in order, and checks the two
 properties the package relies on: a role is complete enough to reset what it does
-not share, and it takes a theme colour without restating its geometry.
+not share, and it takes a theme colour without restating its geometry. For the
+card it checks the defaults, that every one can be replaced, and that the node is
+validated as the box it is. That a node extending `Box` renders on both targets is
+pinned by the renderer suites, which is what lets the card exist without either of
+them knowing its name.
 
 ## Scope
 
-Typography only, for now. Material's colour scheme, elevation, shape and
-components are separate axes, and each one needs a decision about how it maps onto
-a model that has no theme layer yet — so they are not pretended to be here.
+Typography and one component, for now. Material's colour scheme, its elevation
+tones, its three official card variants and its other components are separate
+axes, and each one needs a decision about how it maps onto a model that has no
+theme layer yet — so they are not pretended to be here.
 
 ## License
 

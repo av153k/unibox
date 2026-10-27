@@ -1,5 +1,5 @@
 name: unibox_material
-description: The Material Design 3 type scale as Unibox typography tokens, usable by every renderer without depending on Flutter or Material.
+description: The Material Design 3 type scale and a card node for Unibox, usable by every renderer without depending on Flutter or Material.
 publish_to: none
 version: 0.1.0
 repository: https://github.com/cedvdb/unibox
