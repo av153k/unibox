@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
 import 'package:unibox_core/unibox_core.dart';
-import 'package:unibox_state/unibox_state.dart';
 
 final class _CounterStore extends StateStore<int> {
   _CounterStore() : super(0);
@@ -77,12 +76,39 @@ void main() {
       expect(calls, 1);
     });
 
+    test('lets a listener remove itself while it is called', () {
+      final store = _CounterStore();
+      var calls = 0;
+      void listener() {
+        calls++;
+        store.removeListener(listener);
+      }
+
+      store.addListener(listener);
+      store.increment();
+      store.increment();
+
+      expect(calls, 1);
+    });
+
     test('leaves the lifecycle empty by default', () {
       final store = _PlainStore();
 
       expect(store.onMount, returnsNormally);
       expect(store.onUnmount, returnsNormally);
       expect(store.state, 'first');
+    });
+
+    test('ignores a state published after it is disposed', () {
+      final store = _CounterStore();
+      var calls = 0;
+      store.addListener(() => calls++);
+
+      store.dispose();
+      store.increment();
+
+      expect(store.state, 0);
+      expect(calls, 0);
     });
 
     test('is the store a stateful node draws', () {

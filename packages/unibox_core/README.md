@@ -17,6 +17,7 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `TextInputNode`   | a single line or multiline field                              |
 | `StatefulNode`    | a subtree that owns a `Store` and draws a `NodeView`           |
 | `Store`           | the state contract a `StatefulNode` draws                     |
+| `StateStore`      | the ready made `Store`: one state value and its listeners     |
 | `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |
 | `BoxStyle`        | a bundle of every layout and visual token                     |
 | `BoxTextStyle`    | a bundle of typography tokens                                 |
@@ -170,10 +171,11 @@ renderer shows above it — a dialog, a sheet. The renderer owns how an overlay 
 shown (focus, the barrier, `Escape`, the leave animation), which is why the
 model has no dialog node and no presence token.
 
-`Store` names no platform. `unibox_state` ships `StateStore` on top of pure Dart
-listeners, so one store runs in Flutter, on a server and in a browser; `onMount`
-is where an initial request starts, which is why a server render can draw the
-first state without starting one.
+`Store` names no platform, and `StateStore` is the ready made implementation: a
+value, a listener list that belongs to this package, and a guarded setter, so a
+store runs in Flutter, on a server and in a browser without a dependency.
+`onMount` is where an initial request starts, which is why a server render can
+draw the first state without starting one.
 
 ## Inheritance
 

@@ -14,8 +14,8 @@
 /// ```
 ///
 /// The interface names no platform, so a store is the same object in Flutter, in
-/// a browser and in a test. `packages/unibox_state` holds one implementation
-/// (`StateStore`) on top of `package:listen`.
+/// a browser and in a test. [StateStore] is the ready made implementation, and
+/// it needs nothing outside this package.
 abstract interface class Store<S> {
   /// The current state, the value a renderer passes back into the node's view.
   S get state;

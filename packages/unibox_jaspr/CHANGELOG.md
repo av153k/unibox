@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- A `StatefulNode` is reported with an `UnsupportedError` that names the missing
+  client runtime, instead of failing as a node with no renderer: the page is written
+  once, so a view that reacts to a store needs the client build that is still on the
+  plan.
 - A box with `BoxElement.figcaption` renders `<figcaption>`, with no role repeating
   what the tag says.
 - A field writes `aria-required`, `aria-invalid` and `aria-description`, the last one

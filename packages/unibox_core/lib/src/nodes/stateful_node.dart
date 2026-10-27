@@ -31,6 +31,9 @@ typedef NodeView = ({UINode tree, List<UINode> overlays});
 /// );
 /// ```
 ///
+/// `StateStore` in this package is the ready made store; an application may also
+/// implement [Store] itself.
+///
 /// **The node holds a factory, never the store.** A renderer calls
 /// [createStore] once per mounting, subscribes to it, and disposes it on
 /// unmount; a rebuild of the same node (same `key`) keeps the state, a different

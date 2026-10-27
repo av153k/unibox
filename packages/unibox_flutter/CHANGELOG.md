@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- A `StatefulNode` renders through `UniboxStateful`: the store is created on
+  mount, subscribed, `onMount` is called, the view is rebuilt when the store
+  publishes, and `onUnmount` plus `dispose` run on unmount. The view's tree is drawn
+  in place and each overlay through `renderFlutter` into the root `Overlay`, above a
+  barrier, so an overlay escapes the clipping of the boxes around it. Focus
+  containment, `Escape` and the leave animation are not part of this layer yet.
 - A field announces `required`, `invalid` and its description through
   `Semantics.isRequired`, `Semantics.validationResult` and `Semantics.hint`, and the
   wrapper only appears when the node said something to announce.
