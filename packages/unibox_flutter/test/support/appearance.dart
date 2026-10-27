@@ -69,19 +69,59 @@ BoxAppearance appearanceOf(WidgetTester tester) {
 /// The facts are read from the `Text` widget the renderer built — the `TextStyle`
 /// it declared, the alignment, the line limit and the truncation it asked for —
 /// and never from the node tree. That is what makes the answer comparable with the
-/// CSS the Jaspr renderer emitted: only what this target *said* is compared, not
-/// what a font engine made of it.
+/// CSS the Jaspr renderer emitted: only what this target *said* about the node is
+/// compared, not what a font engine made of it.
 ///
 /// `Text.style` holds the tokens the renderer declared and nothing else, so a
-/// token the node left unset reads back as `null` even though Flutter's
-/// `DefaultTextStyle` fills it in at paint time.
+/// token the node left unset reads back as `null` even though the inherited style
+/// fills it in at paint time. [resolvedTextAppearanceOf] is the other half of that
+/// pair.
 TextAppearance textAppearanceOf(WidgetTester tester) {
-  final Text text = tester.widget<Text>(inNode(find.byType(Text)).first);
-  final TextStyle? style = text.style;
+  final Text text = _textOf(tester);
+
+  return _textAppearance(
+    text.style,
+    textAlign: text.textAlign,
+    maxLines: text.maxLines,
+    overflow: text.overflow,
+  );
+}
+
+/// The typesetting the text node is actually typeset in.
+///
+/// The style is resolved the way Flutter resolves it before painting: the
+/// inherited style of the closest `DefaultTextStyle` — which `renderFlutter`
+/// installs from the model — with the tokens the node declared laid over it. The
+/// Jaspr suite resolves the same pair from its `:root` rule and the declarations
+/// of the span.
+TextAppearance resolvedTextAppearanceOf(WidgetTester tester) {
+  final Element element = inNode(find.byType(Text)).evaluate().first;
+  final Text text = _textOf(tester);
+
+  return _textAppearance(
+    DefaultTextStyle.of(element).style.merge(text.style),
+    textAlign: text.textAlign,
+    maxLines: text.maxLines,
+    overflow: text.overflow,
+  );
+}
+
+/// The characters the renderer put into the text widget it built.
+String renderedTextOf(WidgetTester tester) => _textOf(tester).data ?? '';
+
+/// The `Text` widget the renderer built for the node under test.
+Text _textOf(WidgetTester tester) =>
+    tester.widget<Text>(inNode(find.byType(Text)).first);
+
+/// The typography a Flutter text style describes.
+TextAppearance _textAppearance(
+  TextStyle? style, {
+  required TextAlign? textAlign,
+  required int? maxLines,
+  required TextOverflow? overflow,
+}) {
   final FontWeight? weight = style?.fontWeight;
   final Color? color = style?.color;
-  final TextAlign? align = text.textAlign;
-  final TextOverflow? overflow = text.overflow;
 
   return TextAppearance(
     fontSize: style?.fontSize,
@@ -90,15 +130,10 @@ TextAppearance textAppearanceOf(WidgetTester tester) {
     lineHeight: style?.height,
     fontFamily: style?.fontFamily,
     letterSpacing: style?.letterSpacing,
-    textAlign: align == null ? null : _textAlignOf(align),
-    maxLines: text.maxLines,
+    textAlign: textAlign == null ? null : _textAlignOf(textAlign),
+    maxLines: maxLines,
     overflow: overflow == null ? null : _overflowOf(overflow),
   );
-}
-
-/// The characters the renderer put into the text widget it built.
-String renderedTextOf(WidgetTester tester) {
-  return tester.widget<Text>(inNode(find.byType(Text)).first).data ?? '';
 }
 
 /// The core weight of a Flutter font weight.

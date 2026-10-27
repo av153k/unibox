@@ -9,6 +9,8 @@ import 'link_node.dart';
 import 'stack_node.dart';
 import 'text_input_node.dart';
 import 'text_node.dart';
+import 'text_style_scope.dart';
+import 'values.dart';
 
 /// Renders [node] as a Flutter [Widget].
 ///
@@ -20,6 +22,13 @@ import 'text_node.dart';
 /// honour reports the offending nodes through [debugPrint], and an invalid one
 /// throws a [StateError].
 ///
+/// The tree is wrapped in the typography of the model
+/// ([core.BoxTextStyle.defaults]), so a text that declares nothing is typeset the
+/// way the web renderer typesets it instead of the way this host happens to
+/// default. The wrapper only lays its style over the ambient one: a host that
+/// provides a font family — through a `MaterialApp` theme, say — keeps it, and a
+/// box in the tree can declare any token to override it.
+///
 /// Throws an [UnsupportedError] when [node] has no Flutter renderer yet.
 ///
 /// A [core.PositionedNode] only carries offsets for an enclosing
@@ -30,7 +39,31 @@ import 'text_node.dart';
 /// that took over the position.
 Widget renderFlutter(core.UINode node) {
   _reportTreeIssues(node);
-  return renderNode(node);
+
+  return _withDefaultTypography(renderNode(node));
+}
+
+/// Wraps [child] in the typography of the model, `BoxTextStyle.defaults`.
+///
+/// The web renderer answers the same question with a `:root` rule, so a text
+/// that declares nothing looks the same on both targets instead of inheriting
+/// each host's own default. `DefaultTextStyle.merge` only lays the tokens of the
+/// default over the ambient style, so a host that brought a font family — through
+/// a `MaterialApp` theme, say — keeps it: the model owns what a text looks like,
+/// the application owns which font it is.
+///
+/// A `TextField` ignores the default text style and reads
+/// [UniboxTextStyleScope] instead, so the default is installed in both: without
+/// it a field would fall back to the Material input style while the `<input>` of
+/// the web renderer inherits the tree's typography.
+Widget _withDefaultTypography(Widget child) {
+  return DefaultTextStyle.merge(
+    style: toTextStyle(core.BoxTextStyle.defaults),
+    child: UniboxTextStyleScope(
+      style: core.BoxTextStyle.defaults,
+      child: child,
+    ),
+  );
 }
 
 /// Renders [node] without validating its subtree.

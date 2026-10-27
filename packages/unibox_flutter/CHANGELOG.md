@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- `renderFlutter` wraps the rendered tree in the typography of the model
+  (`BoxTextStyle.defaults`) through a `DefaultTextStyle`, so a text that declares
+  nothing is typeset at 16 logical pixels, black, with a 1.5 line height instead of
+  Flutter's own fallback of 14 pixels. The style is merged over the ambient one, so
+  a host keeps its font family, and a box in the tree overrides any token.
+- A `TextInputNode` adopts the typography of the tree in every tree now, because
+  there is always one to adopt: it used to keep the Material input style when no
+  box declared typography.
+
 ## 0.1.0
 
 The first release of the Flutter renderer.

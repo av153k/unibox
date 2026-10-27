@@ -124,7 +124,7 @@ void main() {
       expect(styleOf(tester, 'Hello').fontSize, 18);
     });
 
-    testWidgets('leaves the ambient style alone without a typography box', (
+    testWidgets('typesets an undeclared text with the model typography', (
       tester,
     ) async {
       await pumpNode(
@@ -132,7 +132,35 @@ void main() {
         const core.Box(children: <core.UINode>[core.TextNode('Hello')]),
       );
 
-      expect(styleOf(tester, 'Hello').fontSize, isNull);
+      // The two hosts have different ideas about this — 14 logical pixels of
+      // black here, 16 pixels of `canvastext` in a browser — so the renderer
+      // installs the default of the model instead of inheriting either.
+      final TextStyle style = styleOf(tester, 'Hello');
+
+      expect(style.fontSize, core.BoxTextStyle.defaults.fontSize);
+      expect(style.fontWeight, FontWeight.w400);
+      expect(style.color, const Color(0xFF000000));
+      expect(style.height, core.BoxTextStyle.defaults.lineHeight);
+      expect(style.letterSpacing, core.BoxTextStyle.defaults.letterSpacing);
+    });
+
+    testWidgets('keeps the font family the host brought', (tester) async {
+      await pumpNode(
+        tester,
+        const core.TextNode('Hello'),
+        wrap: (Widget child) => DefaultTextStyle(
+          style: const TextStyle(fontFamily: 'HostFont', fontSize: 40),
+          child: child,
+        ),
+      );
+
+      // The default is merged over the ambient style rather than installed in
+      // place of it: the model owns the tokens it declares, while the family is
+      // the application's, because a font file is an asset.
+      final TextStyle style = styleOf(tester, 'Hello');
+
+      expect(style.fontFamily, 'HostFont');
+      expect(style.fontSize, core.BoxTextStyle.defaults.fontSize);
     });
 
     testWidgets('lets a text field adopt the inherited typography', (
@@ -152,12 +180,17 @@ void main() {
       );
     });
 
-    testWidgets('keeps the material input style without a typography box', (
-      tester,
-    ) async {
+    testWidgets('typesets a field with the model typography', (tester) async {
       await pumpMaterialNode(tester, const core.TextInputNode());
 
-      expect(tester.widget<TextField>(find.byType(TextField)).style, isNull);
+      // An `<input>` inherits the typography of the page on the web, so the
+      // field adopts the tree's instead of keeping the Material input style.
+      final TextStyle? style = tester
+          .widget<TextField>(find.byType(TextField))
+          .style;
+
+      expect(style?.fontSize, core.BoxTextStyle.defaults.fontSize);
+      expect(style?.height, core.BoxTextStyle.defaults.lineHeight);
     });
   });
 }

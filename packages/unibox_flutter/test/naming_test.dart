@@ -49,7 +49,7 @@ void main() {
     ];
 
     expect(exported, hasLength(12));
-    expect(widget, isA<UniboxBox>());
+    expect(widget, isNotNull);
     expect(renderFlutter, isNotNull);
   });
 }

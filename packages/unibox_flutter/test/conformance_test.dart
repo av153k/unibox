@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unibox_conformance/unibox_conformance.dart';
+import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'support/appearance.dart';
 import 'support/harness.dart';
@@ -49,5 +50,46 @@ void main() {
         );
       });
     }
+  });
+
+  group('model default', () {
+    testWidgets('typesets an undeclared text with the typography of the model', (
+      WidgetTester tester,
+    ) async {
+      await pumpNode(tester, const core.TextNode('Hello'));
+
+      // Not Flutter's own fallback: the renderer installs the typography of the
+      // model at the root of the tree, which is what the web renderer puts in a
+      // `:root` rule.
+      expect(
+        resolvedTextAppearanceOf(tester).differencesFrom(defaultTextAppearance),
+        isEmpty,
+        reason: 'Flutter typesets an undeclared text differently.',
+      );
+    });
+
+    testWidgets('lets a declared token win over the default', (tester) async {
+      await pumpNode(
+        tester,
+        const core.TextNode(
+          'Hello',
+          fontSize: 24,
+          color: core.BoxColor.white,
+          fontFamily: 'Inter',
+        ),
+      );
+
+      expect(
+        resolvedTextAppearanceOf(tester).differencesFrom(
+          defaultTextAppearance.copyWith(
+            fontSize: 24,
+            color: core.BoxColor.white,
+            fontFamily: 'Inter',
+          ),
+        ),
+        isEmpty,
+        reason: 'Flutter lets a declared token lose to the default.',
+      );
+    });
   });
 }

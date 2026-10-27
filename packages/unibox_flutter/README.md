@@ -64,11 +64,17 @@ like a tight infinite `SizedBox` in plain Flutter.
 Typography tokens that are left unset are not passed to Flutter, so the ambient
 `DefaultTextStyle` keeps providing them.
 
+The ambient style is the model's, not the host's: `renderFlutter` wraps the tree in
+a `DefaultTextStyle` carrying `BoxTextStyle.defaults`, so a text that declares
+nothing is typeset at 16 logical pixels, black, with a 1.5 line height, exactly as
+the web renderer's `:root` rule does. It is a merge, not a replacement: a host that
+brought a font family keeps it, because the family is the one token the model
+leaves to the application.
+
 A line box is `fontSize * lineHeight` tall, which is the same length a unitless
 CSS `line-height` gives on the web: that is the one measurement the two renderers
 agree on exactly. Without a `lineHeight` the box is as tall as the font's own
-metrics instead, which the browser and Skia do not have to compute the same way —
-so declare it if a layout has to line up.
+metrics instead, which the browser and Skia do not have to compute the same way.
 
 ## Typography mapping
 

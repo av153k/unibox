@@ -64,8 +64,8 @@ class _UniboxTextInputState extends State<UniboxTextInput> {
     final bool multiline = node.multiline;
 
     // A box that sets typography is a deliberate decision, so the field adopts
-    // the ambient text style. Without a box in charge, Material's input style
-    // stays in place, which is what a plain `TextField` would do.
+    // the ambient text style; `renderFlutter` installs the model's typography at
+    // the root of every tree, so inside a tree there is always one to adopt.
     final bool inheritsTypography =
         UniboxTextStyleScope.maybeOf(context) != null;
     final String? semanticsLabel = node.semanticsLabel;
