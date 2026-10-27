@@ -355,6 +355,40 @@ Styles toPositionedStyles(core.PositionedNode node) {
   );
 }
 
+/// The `transition` shorthand of [transition].
+///
+/// Only the paint properties are listed. A list that named layout would let the
+/// two targets agree on the duration and disagree on what moves, and a border
+/// width is left out for the same reason: CSS animates it as a layout change and
+/// Flutter as a paint change.
+String _transitionOf(core.BoxTransition transition) {
+  final String timing =
+      '${transition.duration.inMilliseconds}ms ${_cssCurve(transition.curve)}';
+
+  return <String>[
+    for (final String property in _transitionedProperties) '$property $timing',
+  ].join(', ');
+}
+
+/// The CSS timing function of [curve].
+String _cssCurve(core.BoxCurve curve) {
+  return switch (curve) {
+    core.BoxCurve.linear => 'linear',
+    core.BoxCurve.ease => 'ease',
+    core.BoxCurve.easeIn => 'ease-in',
+    core.BoxCurve.easeOut => 'ease-out',
+    core.BoxCurve.easeInOut => 'ease-in-out',
+  };
+}
+
+/// The properties a transition covers: the paint, never the layout.
+const List<String> _transitionedProperties = <String>[
+  'background-color',
+  'border-color',
+  'border-radius',
+  'box-shadow',
+];
+
 /// The padding a user agent puts around [element], cancelled as `0`.
 ///
 /// A list comes with an indent, which a Flutter `Column` knows nothing about; the
@@ -508,5 +542,19 @@ Styles toBoxStyles(
     style.textStyle ?? const core.BoxTextStyle(),
   );
 
-  return typography == null ? boxStyles : boxStyles.combine(typography);
+  Styles result = typography == null
+      ? boxStyles
+      : boxStyles.combine(typography);
+
+  final core.BoxTransition? transition = style.transition;
+
+  // The transition is declared on the resting rule only: a state rule that
+  // restated it would be repeating a duration the change does not own.
+  if (transition != null && !declaredOnly) {
+    result = result.combine(
+      Styles(raw: <String, String>{'transition': _transitionOf(transition)}),
+    );
+  }
+
+  return result;
 }

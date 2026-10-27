@@ -4,6 +4,56 @@ import 'package:unibox_core/unibox_core.dart' as core;
 import 'support/harness.dart';
 
 void main() {
+  group('transitions', () {
+    testComponents('writes the paint properties into a transition', (
+      tester,
+    ) async {
+      // A box without state styles renders its look inline, which is where a
+      // transition on the resting style lands.
+      pumpNode(
+        tester,
+        const core.Box(
+          backgroundColor: core.BoxColor.white,
+          transition: core.BoxTransition(
+            duration: Duration(milliseconds: 150),
+            curve: core.BoxCurve.easeInOut,
+          ),
+        ),
+      );
+
+      expect(
+        stylesOf(find.tag('div'))['transition'],
+        'background-color 150ms ease-in-out, border-color 150ms ease-in-out, '
+        'border-radius 150ms ease-in-out, box-shadow 150ms ease-in-out',
+      );
+    });
+
+    testComponents('keeps the transition out of the state rule', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          backgroundColor: core.BoxColor.white,
+          transition: core.BoxTransition(duration: Duration(milliseconds: 150)),
+          hoverStyle: core.BoxStyle(backgroundColor: core.BoxColor.black),
+        ),
+      );
+
+      // A box with a state renders its resting look as a class rule, and the
+      // duration belongs to the change rather than to the state that causes it.
+      final String css = allCss();
+      final int hoverStart = css.indexOf(':hover {');
+
+      expect(hoverStart, greaterThan(-1));
+      expect(css, contains('transition: background-color 150ms ease'));
+      expect(
+        css.substring(hoverStart, css.indexOf('}', hoverStart)),
+        isNot(contains('transition')),
+      );
+    });
+  });
+
   group('state styles', () {
     testComponents('scopes every state into its own rule', (tester) async {
       pumpNode(
