@@ -21,6 +21,7 @@ library;
 
 export 'src/box.dart' show FlutterBox;
 export 'src/embed_node.dart' show FlutterWidgetEmbedBuilder, FlutterWidgetNode;
+export 'src/grid_node.dart' show FlutterGrid;
 export 'src/image_node.dart' show FlutterImage;
 export 'src/link_node.dart'
     show FlutterLinkOpener, FlutterLink, FlutterLinkScope;

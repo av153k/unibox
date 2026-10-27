@@ -5,6 +5,11 @@
 The first release of the platform agnostic core: the tree, the values it is made of,
 and the checks that keep a tree renderable.
 
+- `GridNode`: equal columns whose count follows the width of the box, with a
+  minimum item width, an optional column cap and a gutter, and `columnsFor` /
+  `cellWidthFor` as the arithmetic both renderers apply. `validateTree` reports a
+  grid child that flexes, sizes itself or asks for an infinite height, and an
+  image whose height would wait for the file.
 - `Box`, `TextNode`, `ImageNode`, `LinkNode`, `StackNode`, `PositionedNode`,
   `TextInputNode`, `StatefulNode` and `OverlayNode`, every one immutable, `const`
   where its values allow, and carrying an optional `key` that keeps state attached

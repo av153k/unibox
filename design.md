@@ -234,6 +234,12 @@ never inherited (CSS does not inherit them either).
   page, a card inside a page or a section of a Flutter screen. What the tree does
   contribute is structural markup — real text, `<img alt>`, `<a href>` and the
   `role` attributes of `BoxSemantics` — so a crawler reads it without JavaScript.
+- A grid is the model's second layout engine, and the last one. `GridNode` is
+  admitted because its answer is one arithmetic rule — a column count and a cell
+  width from a single minimum — that both targets can apply and a test can read
+  back; a table is refused because column sizing, collapsing borders and header
+  association are a family of algorithms with no single answer to compare. The
+  test is the same in both cases: can the result be read back and compared?
 - No widget/component wrapper API: renderers only translate nodes. `EmbedNode`
   is the single, explicit exception: host content enters the tree as an opaque
   payload that only its own renderer accepts, and any other renderer throws.
@@ -467,3 +473,41 @@ breaking change for a host stylesheet that names it.
   dismissible barrier with no `onDismiss`.
 - Dismissing is interaction, so on the web it waits for the client build; the
   server writes the layer and its barrier so the page looks right first.
+
+### 5.13 Reflow is a grid
+
+A tree states a rule, not a breakpoint. `GridNode(minItemWidth, maxColumns, gap)`
+means "fit as many columns of at least `minItemWidth` as the width allows, stop at
+`maxColumns`, and let the tracks share the width", and nothing in it knows a
+viewport:
+
+- the web renderer writes `repeat(auto-fill, minmax(min(100%, max(minItemWidth,
+  (100% - (maxColumns - 1) * gap) / maxColumns)), 1fr))`, which the browser
+  resolves against the width of the grid itself;
+- Flutter applies the same arithmetic — `columnsFor` and `cellWidthFor` in core —
+  to the constraints of the grid, so the two agree at **every** width rather than
+  at the widths a breakpoint happens to name. Measured in Chromium and WebKit
+  18.2 at 250, 375, 600, 899, 900, 901, 1280 and 1440: the counts and gutters are
+  identical and the cards agree to the 1/64 pixel a browser lays out with, which
+  is why a sweep compares widths with a 0.02 pixel tolerance.
+
+The clamp is not decoration: below `minItemWidth` the CSS track is `100%`, which
+is the one column `cellWidthFor` answers. The `max(...)` is the cap: the minimum
+track becomes a share of the width once the width fits `maxColumns`, so the count
+stops there and the cards keep growing.
+
+**The last row is where the targets could disagree, so the model fixes it.**
+`auto-fill` creates every track whether or not a card lands in it, so a short last
+row leaves its remaining tracks empty. Flutter pads the row with empty slots of the
+same width and uses no `Expanded` or `Flexible`, because a flexing child would
+stretch over the empty track in one target and not in the other. A grid child
+therefore may not flex or size itself: `validateTree` reports a `flex`, a finite
+`width` and an infinite `height`, and it reports an image whose height would wait
+for the file unless the height is known at layout time (a finite height, both
+dimensions, or an ancestor with a definite height — a ratio box, when the model
+has one, joins that list).
+
+`align-items: start` on both targets is the other half: a row is as tall as its
+tallest card and shorter cards are not stretched, which is also what keeps the
+Flutter side free of intrinsic measurement a card containing a scroll view could
+not answer.

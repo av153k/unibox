@@ -5,6 +5,9 @@
 The first release of the Jaspr renderer: one node tree becomes HTML and CSS, rendered
 on the server and readable without a client bundle.
 
+- `JasprGrid` writes a `GridNode` as one `repeat(auto-fill, minmax(…))`
+  declaration with the clamped minimum and the derived cap, so a build sends no
+  media query and a resize sends no request.
 - `renderJaspr(node)` and `node.toComponent()` render any node, and `renderNode` the
   same without re-validating a subtree that was already checked.
 - A box is one element with `display: flex` and its tokens as CSS: direction,

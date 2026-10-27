@@ -16,6 +16,7 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `StackNode`       | layered children, with `PositionedNode` placing them           |
 | `TextInputNode`   | a single line or multiline field                              |
 | `StatefulNode`    | a subtree that owns a `Store` and draws the tree of its state |
+| `GridNode`        | equal columns whose count follows the width of the box         |
 | `OverlayNode`     | content drawn above the page, with a barrier and a dismissal |
 | `Store`           | the state contract a `StatefulNode` draws                     |
 | `StateStore`      | the ready made `Store`: one state value and its listeners     |

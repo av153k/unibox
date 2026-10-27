@@ -1,6 +1,7 @@
 import 'enums.dart';
 import 'nodes/box.dart';
 import 'nodes/embed_node.dart';
+import 'nodes/grid_node.dart';
 import 'nodes/image_node.dart';
 import 'nodes/link_node.dart';
 import 'nodes/overlay_node.dart';
@@ -82,7 +83,15 @@ class TreeIssue {
 /// * an image that gives `sizes` without a `srcSet`, which a browser never reads.
 List<TreeIssue> validateTree(UINode root, {UniboxTheme? theme}) {
   final List<TreeIssue> issues = <TreeIssue>[];
-  _validate(root, parent: null, inLink: false, theme: theme, issues: issues);
+  _validate(
+    root,
+    parent: null,
+    inLink: false,
+    theme: theme,
+    inGrid: false,
+    definiteHeight: null,
+    issues: issues,
+  );
   return issues;
 }
 
@@ -167,6 +176,8 @@ void _validate(
   required UINode? parent,
   required bool inLink,
   required UniboxTheme? theme,
+  required bool inGrid,
+  required double? definiteHeight,
   required List<TreeIssue> issues,
 }) {
   _validateRoles(node, theme, issues);
@@ -199,6 +210,28 @@ void _validate(
       }
     }
 
+    if (inGrid) {
+      final double? height = node.height;
+      final bool ownHeight = height != null && height.isFinite;
+      final bool determinedAbove = definiteHeight != null;
+
+      if (!ownHeight && !determinedAbove) {
+        issues.add(
+          TreeIssue(
+            node: node,
+            severity: TreeIssueSeverity.error,
+            message:
+                'An ImageNode inside a GridNode needs a height that is known '
+                'before the file arrives: a finite height, both dimensions, or '
+                'an ancestor with a definite height (a fixed-height box, and a '
+                'ratio box once the model has one). Otherwise the height of its '
+                'row depends on the loaded image, and the two targets reserve '
+                'different space while the columns change.',
+          ),
+        );
+      }
+    }
+
     if (node.srcSet.isEmpty && node.sizes != null) {
       issues.add(
         TreeIssue(
@@ -209,6 +242,96 @@ void _validate(
               'names nothing: give the node a srcSet, or drop the sizes.',
         ),
       );
+    }
+  }
+
+  if (node is GridNode) {
+    if (node.minItemWidth <= 0) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A GridNode declares a minItemWidth of ${node.minItemWidth}. '
+              'No column can be that narrow, so the count is undefined: give '
+              'the grid a positive minimum.',
+        ),
+      );
+    }
+
+    if (node.gap < 0) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A GridNode declares a gap of ${node.gap}. A negative gutter '
+              'overlaps the cards and neither target can honour it.',
+        ),
+      );
+    }
+
+    if (node.maxColumns != null && node.maxColumns! < 1) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A GridNode declares maxColumns: ${node.maxColumns}. A grid with '
+              'no columns draws nothing: use null for no cap or at least 1.',
+        ),
+      );
+    }
+
+    for (final UINode child in node.children) {
+      if (child is! Box) {
+        continue;
+      }
+
+      final BoxStyle style = child.computedStyle;
+
+      if (style.flex != null) {
+        issues.add(
+          TreeIssue(
+            node: child,
+            severity: TreeIssueSeverity.error,
+            message:
+                'A box inside a GridNode declares flex: ${style.flex}. The '
+                'track fixes the width, and a flexing child would stretch the '
+                'empty slots of a short last row in Flutter and not in CSS.',
+          ),
+        );
+      }
+
+      final double? width = style.width;
+
+      if (width != null && width.isFinite) {
+        issues.add(
+          TreeIssue(
+            node: child,
+            severity: TreeIssueSeverity.error,
+            message:
+                'A box inside a GridNode declares a width of $width. The track '
+                'fixes the width of every card, and a tight cell in Flutter '
+                'would ignore this number where CSS would honour it. Give the '
+                'grid a minItemWidth instead.',
+          ),
+        );
+      }
+
+      if (style.height == double.infinity) {
+        issues.add(
+          TreeIssue(
+            node: child,
+            severity: TreeIssueSeverity.error,
+            message:
+                'A box inside a GridNode declares height: double.infinity. The '
+                'row is as tall as its tallest card, so an infinite height has '
+                'nothing to resolve against: give the card a finite height, or '
+                'none.',
+          ),
+        );
+      }
     }
   }
 
@@ -364,12 +487,26 @@ void _validate(
     );
   }
 
+  var childDefiniteHeight = definiteHeight;
+
+  if (node is Box) {
+    final double? height = node.computedStyle.height;
+
+    if (height != null && height.isFinite) {
+      childDefiniteHeight = height;
+    } else if (height != double.infinity) {
+      childDefiniteHeight = null;
+    }
+  }
+
   for (final UINode child in node.children) {
     _validate(
       child,
       parent: node,
       inLink: nestedInLink,
       theme: theme,
+      inGrid: inGrid || node is GridNode,
+      definiteHeight: node is GridNode ? null : childDefiniteHeight,
       issues: issues,
     );
   }

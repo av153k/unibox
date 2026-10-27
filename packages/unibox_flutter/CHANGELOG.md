@@ -4,6 +4,9 @@
 
 The first release of the Flutter renderer: one node tree becomes a widget tree.
 
+- `FlutterGrid` lays a `GridNode` out from the constraints it is given, one row
+  per line of fixed-width slots, empty slots for a short last line and no
+  `Expanded`, so a last-row card keeps its track.
 - `renderFlutter(node)` and `node.toWidget()` render any node, and `renderNode` the
   same without re-validating a subtree that was already checked.
 - A box is a `Flex` in `Padding`, `DecoratedBox`, `ClipRect`/`ClipRRect`, `SizedBox`

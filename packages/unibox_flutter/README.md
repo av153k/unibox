@@ -212,6 +212,19 @@ a `FlutterStateful`, say — can wrap around its tree instead. An overlay is the
 place it has to be handed over by hand: its content lives on the root overlay, which
 is outside the tree the page was rendered in, so `FlutterOverlay` reads the scope and
 passes it on.
+## Grid mapping
+
+A `GridNode` is a `LayoutBuilder` that asks the node for the count and the cell
+width at the constraints it was given, then lays out one `Row` per line of
+fixed-width slots with `SizedBox` gutters. A short last line is padded with empty
+slots of the same width — `auto-fill` creates every track, so the last cards keep
+their track instead of stretching, which is why nothing here is `Expanded` or
+`Flexible`. Cards are top-aligned in a row that is as tall as its tallest card
+(`align-items: start` on the web).
+
+An unbounded width — a grid inside a horizontal scroll view, or in a row that
+lets its children be as wide as they like — gets one column of `minItemWidth`,
+which is the answer `columnsFor` gives and the one that needs no surface.
 
 ## Link mapping
 

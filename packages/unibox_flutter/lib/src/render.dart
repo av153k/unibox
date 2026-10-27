@@ -3,6 +3,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'box.dart';
 import 'embed_node.dart';
+import 'grid_node.dart';
 import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
@@ -90,6 +91,10 @@ Widget renderNode(core.UINode node) {
     final core.ImageNode image => FlutterImage(
       node: image,
       key: toFlutterKey(image.key),
+    ),
+    final core.GridNode grid => FlutterGrid(
+      node: grid,
+      key: toFlutterKey(grid.key),
     ),
     final core.LinkNode link => FlutterLink(
       node: link,

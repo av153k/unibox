@@ -4,6 +4,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 import 'box.dart';
 import 'default_typography.dart';
 import 'embed_node.dart';
+import 'grid_node.dart';
 import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
@@ -72,6 +73,10 @@ Component renderNode(core.UINode node) {
     final core.ImageNode image => JasprImage(
       node: image,
       key: toJasprKey(image.key),
+    ),
+    final core.GridNode grid => JasprGrid(
+      node: grid,
+      key: toJasprKey(grid.key),
     ),
     final core.LinkNode link => JasprLink(
       node: link,

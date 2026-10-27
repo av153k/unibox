@@ -30,7 +30,7 @@ host that renders it.
 
 - A screen is an immutable Dart tree of nodes: `Box`, `TextNode`, `ImageNode`,
   `LinkNode`, `StackNode` + `PositionedNode`, `TextInputNode`, `StatefulNode`,
-  `OverlayNode`, `EmbedNode`.
+  `OverlayNode`, `GridNode`, `EmbedNode`.
 - One tree, two renderers: `renderFlutter(tree)` or `tree.toWidget()` in a Flutter
   app, `renderJaspr(tree)` or `tree.toComponent()` in a Jaspr one.
 - A node describes *what* is on screen, never which framework draws it. There is no
@@ -147,6 +147,7 @@ host that renders it.
 | `showModalBottomSheet` | `MaterialBottomSheet(title:, content:, actions:)` — the same overlay at the bottom |
 | `InkWell`, `InkResponse` | `MaterialInkWell(child:, onTap:)` — a box with Material's state layers |
 | `StatefulWidget` + `setState` around a tree | `StatefulNode` + a `StateStore` |
+| `GridView`, a `Wrap` of cards | `GridNode(minItemWidth:, maxColumns:, gap:)` — equal columns that follow the width, no breakpoint |
 | `Card` | `MaterialCard` (from `unibox_material`) |
 | `Icon` | `MaterialIcon.codePoint(Symbols.home.codePoint)`, or `MaterialIcon.ligature('home')` when the font is not tree-shaken anyway |
 | `ListTile` | `MaterialListTile` (from `unibox_material`) |

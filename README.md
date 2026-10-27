@@ -69,7 +69,7 @@ a static site, each host a single small file.
 
 ## The nodes
 
-There are ten node types. Each one is an immutable Dart object with a `const`
+There are eleven node types. Each one is an immutable Dart object with a `const`
 constructor, and each one describes *what* it is rather than which framework draws
 it. Style values — colours, spacing, borders, typography — are separate objects
 that a node takes as parameters, so a look can be reused as one `const BoxStyle`
@@ -377,6 +377,39 @@ render draws **the state the store starts with** without calling `onMount`, so a
 page that loads is a page that says it is loading; reacting to a click needs a
 client build, which is the next step (`TASK_PLAN.md`, Phase 22).
 
+### GridNode
+
+Equal columns whose count follows the width of the box: a card grid that reflows
+without a breakpoint and without asking a host how wide the screen is.
+
+```dart
+GridNode(
+  minItemWidth: 280,   // the narrowest a card may get
+  maxColumns: 3,       // the widest count; the columns keep growing instead
+  gap: 16,
+  children: cards,
+)
+```
+
+| Parameter | Type | Default | Meaning |
+| --- | --- | --- | --- |
+| `minItemWidth` | `double` | required | The narrowest a column may get. |
+| `maxColumns` | `int?` | none | Where the count stops; the columns share the width instead. |
+| `gap` | `double` | `0` | The gutter between two columns and two rows. |
+| `children` | `List<UINode>` | `[]` | The cards, in reading order. |
+
+The web renderer writes one declaration — `repeat(auto-fill, minmax(min(100%,
+max(280px, (100% - 32px) / 3)), 1fr))` — and Flutter applies the same arithmetic
+(`columnsFor`, `cellWidthFor`) to the constraints it is given, so the two agree at
+every width: one column at 375, two at 600, three from 900 on, and 250 is one
+column of 250. Nothing in the tree reads a viewport, and a resize sends no
+request.
+
+A short last row keeps its empty tracks, because `auto-fill` creates them; a grid
+child does not size or flex itself (`validateTree` reports a `flex`, a finite
+`width` or an infinite `height`), and a photo inside a grid needs a height that is
+known before the file arrives.
+
 ### OverlayNode
 
 Content drawn above the page instead of in the layout of its parent: a dialog, a
@@ -413,7 +446,7 @@ which could not dismiss anything.
 
 ### EmbedNode
 
-The escape hatch, for what the ten nodes cannot describe: a chart from a package,
+The escape hatch, for what the eleven nodes cannot describe: a chart from a package,
 a video player, an effect that only exists on one platform.
 
 A node carries **one implementation per renderer**, and each renderer draws the

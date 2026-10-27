@@ -344,6 +344,28 @@ A single dimension keeps the natural aspect ratio, just like an `Image` that
 only constrains one side. Relative sources need no rewriting: the browser
 resolves them against the page while the Flutter renderer loads them as assets.
 
+## Grid mapping
+
+A `GridNode` is one `div` carrying the whole reflow as a single declaration:
+
+```css
+display: grid;
+gap: 16px;
+align-items: start;
+grid-template-columns: repeat(auto-fill, minmax(min(100%, max(280px, (100% - 32px) / 3)), 1fr));
+```
+
+`auto-fill` creates the tracks from the width of the grid itself, so a narrow
+container gets fewer columns with no media query, no script and no second payload:
+the server render, the hydrated page and a resized window all resolve the same
+declaration. The `min(100%, …)` clamp keeps a container narrower than the minimum
+from overflowing, and the `max(…)` inside it is the column cap — once the width
+fits three columns the minimum track grows, so the count stops at three and the
+cards keep growing. Measured in Chromium and WebKit 18.2 at 250, 375, 600, 899,
+900, 901, 1280 and 1440 pixels: the counts and gutters match
+`GridNode.columnsFor` exactly, and the cards match it to the 1/64 pixel a browser
+lays out with.
+
 ## Link mapping
 
 A `LinkNode` becomes a real `<a>` element, so the link keeps working without
