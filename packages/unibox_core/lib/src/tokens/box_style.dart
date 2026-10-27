@@ -6,6 +6,7 @@ import 'box_spacing.dart';
 import 'box_text_style.dart';
 import 'box_transform.dart';
 import 'box_transition.dart';
+import 'unibox_theme.dart';
 
 /// A reusable, immutable bundle of box tokens.
 ///
@@ -153,6 +154,54 @@ final class BoxStyle {
   final BoxTransform? transform;
 
   /// Whether no token is set.
+  /// Whether any token here names a colour the theme has to resolve.
+  bool get hasRoleColors {
+    final BoxColor? background = backgroundColor;
+    return (background != null && background.isRole) ||
+        (border?.color.isRole ?? false) ||
+        (shadow?.color.isRole ?? false) ||
+        (textStyle?.color?.isRole ?? false);
+  }
+
+  /// This style with every role colour looked up in [theme].
+  ///
+  /// The Flutter renderer calls it once per style and every value it reads after
+  /// that is concrete; the web renderer leaves the roles alone and points them at
+  /// their custom property. A style with no role comes back as it is, so a tree of
+  /// values pays nothing for the possibility.
+  BoxStyle resolve(UniboxTheme theme) {
+    if (!hasRoleColors) {
+      return this;
+    }
+
+    final BoxColor? background = backgroundColor;
+
+    return BoxStyle(
+      direction: direction,
+      mainAlign: mainAlign,
+      crossAlign: crossAlign,
+      gap: gap,
+      flex: flex,
+      overflow: overflow,
+      width: width,
+      height: height,
+      minWidth: minWidth,
+      maxWidth: maxWidth,
+      minHeight: minHeight,
+      maxHeight: maxHeight,
+      padding: padding,
+      margin: margin,
+      backgroundColor: background == null ? null : theme.resolve(background),
+      borderRadius: borderRadius,
+      border: border?.resolve(theme),
+      shadow: shadow?.resolve(theme),
+      textStyle: textStyle?.resolve(theme),
+      transition: transition,
+      opacity: opacity,
+      transform: transform,
+    );
+  }
+
   bool get isEmpty => this == const BoxStyle();
 
   /// Creates a copy of this style with the given tokens replaced.

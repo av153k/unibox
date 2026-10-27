@@ -1,5 +1,6 @@
 import '../enums.dart';
 import 'box_color.dart';
+import 'unibox_theme.dart';
 
 /// An immutable bundle of typography tokens.
 ///
@@ -89,6 +90,17 @@ final class BoxTextStyle {
   ///
   /// Passing `null` keeps the current value; use a fresh [BoxTextStyle] to clear
   /// tokens.
+  /// This typography with its role colour looked up in [theme].
+  BoxTextStyle resolve(UniboxTheme theme) {
+    final BoxColor? current = color;
+
+    if (current == null || !current.isRole) {
+      return this;
+    }
+
+    return copyWith(color: theme.resolve(current));
+  }
+
   BoxTextStyle copyWith({
     double? fontSize,
     FontWeight? fontWeight,

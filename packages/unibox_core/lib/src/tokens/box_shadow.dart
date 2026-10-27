@@ -1,4 +1,5 @@
 import 'box_color.dart';
+import 'unibox_theme.dart';
 
 /// A drop shadow painted behind a box.
 final class BoxShadow {
@@ -10,6 +11,17 @@ final class BoxShadow {
     this.blurRadius = 4,
     this.spreadRadius = 0,
   });
+
+  /// This shadow with its role colour looked up in [theme].
+  BoxShadow resolve(UniboxTheme theme) => color.isRole
+      ? BoxShadow(
+          color: theme.resolve(color),
+          offsetX: offsetX,
+          offsetY: offsetY,
+          blurRadius: blurRadius,
+          spreadRadius: spreadRadius,
+        )
+      : this;
 
   /// The shadow color, including its opacity.
   final BoxColor color;

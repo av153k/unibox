@@ -6,10 +6,15 @@ import 'nodes/link_node.dart';
 import 'nodes/overlay_node.dart';
 import 'nodes/positioned_node.dart';
 import 'nodes/stack_node.dart';
+import 'nodes/text_node.dart';
 import 'nodes/ui_node.dart';
+import 'tokens/box_border.dart';
+import 'tokens/box_color.dart';
 import 'tokens/box_semantics.dart';
+import 'tokens/box_shadow.dart';
 import 'tokens/box_style.dart';
 import 'tokens/box_transition.dart';
+import 'tokens/unibox_theme.dart';
 
 /// How much a [TreeIssue] matters.
 enum TreeIssueSeverity {
@@ -72,12 +77,88 @@ class TreeIssue {
 ///   renderer applies,
 /// * a transition with a duration that changes nothing,
 /// * an opacity outside the `0` to `1` that both targets accept,
+/// * a colour role no theme can answer, when a theme is passed to the check,
 /// * an image candidate whose width is not positive, which no browser can pick,
 /// * an image that gives `sizes` without a `srcSet`, which a browser never reads.
-List<TreeIssue> validateTree(UINode root) {
+List<TreeIssue> validateTree(UINode root, {UniboxTheme? theme}) {
   final List<TreeIssue> issues = <TreeIssue>[];
-  _validate(root, parent: null, inLink: false, issues: issues);
+  _validate(root, parent: null, inLink: false, theme: theme, issues: issues);
   return issues;
+}
+
+/// Records a colour role [node] names that no theme can answer.
+///
+/// A role is only resolvable by the theme the renderer was given, so this is the
+/// one check that needs an argument: without it a role is a tree the renderer
+/// cannot paint, and with one the role has to be a member the theme defines.
+void _validateRoles(UINode node, UniboxTheme? theme, List<TreeIssue> issues) {
+  for (final BoxColor color in _roleColorsOf(node)) {
+    final Enum? role = color.role;
+
+    if (role == null) {
+      continue;
+    }
+
+    if (theme == null) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A ${node.runtimeType} names the colour role $role, but no theme '
+              'was given. Pass a UniboxTheme to the renderer and to this check.',
+        ),
+      );
+      continue;
+    }
+
+    if (theme.colorOf(role) == null) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'The colour role $role is not in the theme, so a '
+              '${node.runtimeType} would have no colour. Add it to '
+              'UniboxTheme.colors.',
+        ),
+      );
+    }
+  }
+}
+
+/// Every colour [node] names, roles and values alike.
+Iterable<BoxColor> _roleColorsOf(UINode node) {
+  final List<BoxColor> colors = <BoxColor>[];
+
+  void addStyle(BoxStyle style) {
+    final BoxColor? background = style.backgroundColor;
+    final BoxBorder? border = style.border;
+    final BoxShadow? shadow = style.shadow;
+    final BoxColor? text = style.textStyle?.color;
+
+    if (background != null) colors.add(background);
+    if (border != null) colors.add(border.color);
+    if (shadow != null) colors.add(shadow.color);
+    if (text != null) colors.add(text);
+  }
+
+  if (node is Box) {
+    addStyle(node.computedStyle);
+
+    for (final BoxStyle style
+        in node.stateStyles?.values ?? const <BoxStyle>[]) {
+      addStyle(style);
+    }
+  } else if (node is TextNode) {
+    final BoxColor? color = node.computedStyle.color;
+
+    if (color != null) {
+      colors.add(color);
+    }
+  }
+
+  return colors.where((BoxColor color) => color.isRole);
 }
 
 /// Walks [node] and records every issue of the subtree into [issues].
@@ -85,8 +166,11 @@ void _validate(
   UINode node, {
   required UINode? parent,
   required bool inLink,
+  required UniboxTheme? theme,
   required List<TreeIssue> issues,
 }) {
+  _validateRoles(node, theme, issues);
+
   if (node is PositionedNode && parent is! StackNode) {
     issues.add(
       TreeIssue(
@@ -281,7 +365,13 @@ void _validate(
   }
 
   for (final UINode child in node.children) {
-    _validate(child, parent: node, inLink: nestedInLink, issues: issues);
+    _validate(
+      child,
+      parent: node,
+      inLink: nestedInLink,
+      theme: theme,
+      issues: issues,
+    );
   }
 }
 

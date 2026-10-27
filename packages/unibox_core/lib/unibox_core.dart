@@ -42,4 +42,5 @@ export 'src/tokens/box_style.dart';
 export 'src/tokens/box_text_style.dart';
 export 'src/tokens/box_transform.dart';
 export 'src/tokens/box_transition.dart';
+export 'src/tokens/unibox_theme.dart';
 export 'src/validation.dart';
