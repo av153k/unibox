@@ -60,7 +60,7 @@ enum BoxProperty {
 /// )
 /// ```
 final class BoxTransitionPart {
-  /// Creates a part that eases [looks] over [duration], after [delay].
+  /// Creates a part that eases [properties] over [duration], after [delay].
   const BoxTransitionPart({
     required this.properties,
     required this.duration,
@@ -68,7 +68,7 @@ final class BoxTransitionPart {
     this.delay = Duration.zero,
   });
 
-  /// The looks this part eases.
+  /// The properties this part eases.
   final Set<BoxProperty> properties;
 
   /// How long they take.
