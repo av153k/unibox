@@ -396,6 +396,34 @@ MaterialBottomSheet(
 Material's modal entrance and exit transitions are not here, and the sheet's four
 corners are rounded because the model has one radius per box.
 
+## The icon and the progress indicator
+
+`MaterialIcon('home')` is one glyph of an icon font, centred in a 24 pixel square: a
+`Box` around a `TextNode`, so it recolours with `color` and scales with `size` like
+any text, and needs no embed. The font file is the host's (declare `Material Symbols
+Outlined` for Flutter, and an `@font-face` for the web); a host without it draws the
+name as plain text. A decorative icon is hidden from assistive technology, and a
+`label` announces a lone one. `MaterialIcon.codePoint(0xe88a)` names a glyph by
+code point.
+
+`MaterialProgressIndicator` is a `ProgressNode` with Material's 48 pixel ring, 4
+pixel stroke and `primary` arc, plus `surfaceContainerHighest` behind it when
+`showTrack` is set. It is circular only, and the indeterminate motion is each
+platform's own.
+
+## Fidelity
+
+What the components state against the Material 3 specification: a card in its three
+variants (`MaterialCard.elevated`, `.filled`, `.outlined`); a list tile with the 8
+pixel vertical padding and the palette's title, supporting text and state layers; a
+text field at least 56 pixels tall with a 2 pixel focused outline, a primary focused
+label, an `onSurface` hover outline and 38% opacity when disabled; a dialog whose
+content is `bodyMedium` in `onSurfaceVariant` over `labelLarge` actions in `primary`;
+and a bottom sheet that fills the width up to 640 pixels, with a drag handle and a
+shadow that rises. Still approximate: the sheet rounds all four corners, the handle
+is not draggable, shadows are one layer where Material has two, and every ripple is a
+tint.
+
 ## Line heights
 
 A `BoxTextStyle.lineHeight` is a multiple of the font size, because that is the
@@ -435,7 +463,7 @@ them knowing its name.
 
 ## Scope
 
-The type scale, the colour roles, and six components. What is deliberately not here
+The type scale, the colour roles, and eight components. What is deliberately not here
 is written on the class that lacks it, and it is all platform behaviour rather than a
 value the model could carry:
 
@@ -446,7 +474,8 @@ value the model could carry:
 | the caret, the selection and the focus ring | the platform draws them for the input node |
 | modal entrance and exit transitions | the same missing timeline |
 | `ColorScheme`, CSS custom properties, dynamic colour | the two wirings an application owns, described in Task 96 of `TASK_PLAN.md` |
-| Material's three card variants, chips, menus, navigation | not built; each is a component, not a decision |
+| a linear progress indicator | needs a width as a fraction of the parent, which the model cannot state |
+| chips, menus, navigation | not built; each is a component, not a decision |
 
 ## License
 

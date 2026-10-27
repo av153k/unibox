@@ -8,6 +8,7 @@ import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
 import 'overlay_node.dart';
+import 'progress_node.dart';
 import 'stack_node.dart';
 import 'stateful_node.dart';
 import 'text_input_node.dart';
@@ -62,6 +63,10 @@ Component renderNode(core.UINode node) {
     final core.PositionedNode positioned => Component.fragment(<Component>[
       renderNode(positioned.child),
     ], key: toJasprKey(positioned.key)),
+    final core.ProgressNode progress => JasprProgress(
+      node: progress,
+      key: toJasprKey(progress.key),
+    ),
     final core.TextInputNode textInput => JasprTextInput(
       node: textInput,
       key: toJasprKey(textInput.key),

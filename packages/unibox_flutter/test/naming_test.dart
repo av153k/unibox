@@ -40,6 +40,7 @@ void main() {
       FlutterLink,
       FlutterLinkScope,
       FlutterOverlay,
+      FlutterProgress,
       FlutterStack,
       FlutterStateful,
       FlutterText,
@@ -52,7 +53,7 @@ void main() {
       noBuilder,
     ];
 
-    expect(exported, hasLength(15));
+    expect(exported, hasLength(16));
     expect(widget, isNotNull);
     expect(renderFlutter, isNotNull);
   });

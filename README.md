@@ -363,6 +363,28 @@ render draws **the state the store starts with** without calling `onMount`, so a
 page that loads is a page that says it is loading; reacting to a click needs a
 client build, which is the next step (`TASK_PLAN.md`, Phase 22).
 
+### ProgressNode
+
+A circular progress ring, filled to a `value` from `0` to `1`, or turning while the
+value is `null`.
+
+```dart
+const ProgressNode();                                     // pending
+const ProgressNode(value: 0.4, color: BoxColors.blue, size: 32, strokeWidth: 3);
+```
+
+| Parameter | Type | Default | Meaning |
+| --- | --- | --- | --- |
+| `value` | `double?` | `null` | Done so far, `0` to `1`; `null` turns the ring. |
+| `color`, `trackColor` | `BoxColor` | black, transparent | The arc and the ring behind it. |
+| `size`, `strokeWidth` | `double` | `48`, `4` | The diameter and the thickness. |
+| `semanticsLabel` | `String?` | none | What a screen reader announces. |
+
+It is a node and not a styled box because a turning ring moves and the model
+describes a look, not a timeline. Flutter draws a `CircularProgressIndicator`, the
+web a conic-gradient ring under a `@keyframes` rule; the ends of the arc and the way
+it grows while turning are the platform's and outside the parity contract.
+
 ### OverlayNode
 
 Content drawn above the page instead of in the layout of its parent: a dialog, a

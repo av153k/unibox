@@ -30,7 +30,7 @@ host that renders it.
 
 - A screen is an immutable Dart tree of nodes: `Box`, `TextNode`, `ImageNode`,
   `LinkNode`, `StackNode` + `PositionedNode`, `TextInputNode`, `StatefulNode`,
-  `OverlayNode`, `EmbedNode`.
+  `OverlayNode`, `ProgressNode`, `EmbedNode`.
 - One tree, two renderers: `renderFlutter(tree)` or `tree.toWidget()` in a Flutter
   app, `renderJaspr(tree)` or `tree.toComponent()` in a Jaspr one.
 - A node describes *what* is on screen, never which framework draws it. There is no

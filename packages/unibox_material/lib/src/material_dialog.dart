@@ -52,8 +52,13 @@ final class MaterialDialog extends OverlayNode {
            shadow: elevation,
            children: <UINode>[
              TextNode(title, style: _titleStyle(palette)),
-             ?content,
-             if (actions.isNotEmpty) _ActionRow(actions: actions),
+             if (content != null)
+               Box(
+                 textStyle: _contentStyle(palette),
+                 children: <UINode>[content],
+               ),
+             if (actions.isNotEmpty)
+               _ActionRow(actions: actions, palette: palette),
            ],
          ),
        );
@@ -66,6 +71,11 @@ final class MaterialDialog extends OverlayNode {
   );
 
   /// The title: the headline role, in the on-surface colour.
+  static BoxTextStyle _contentStyle(MaterialPalette palette) =>
+      MaterialTypography.bodyMedium.merge(
+        BoxTextStyle(color: palette.onSurfaceVariant),
+      );
+
   static BoxTextStyle _titleStyle(MaterialPalette palette) => MaterialTypography
       .headlineSmall
       .merge(BoxTextStyle(color: palette.onSurface));
@@ -73,11 +83,15 @@ final class MaterialDialog extends OverlayNode {
 
 /// The actions of a dialog or a sheet: a row packed against its end.
 final class _ActionRow extends Box {
-  _ActionRow({required List<UINode> actions})
+  _ActionRow({required List<UINode> actions, required MaterialPalette palette})
     : super(
         direction: Axis.horizontal,
         mainAlign: MainAlign.end,
         gap: 8,
+        margin: const BoxSpacing.only(top: 8),
+        textStyle: MaterialTypography.labelLarge.merge(
+          BoxTextStyle(color: palette.primary),
+        ),
         children: actions,
       );
 }

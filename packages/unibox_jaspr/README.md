@@ -490,6 +490,14 @@ rather than passed in: a `@client` component may only receive simple values that
 survive being written into the page, and a node is a group of functions. The build
 is the next step (`TASK_PLAN.md`, Phase 22).
 
+## Progress
+
+A `ProgressNode` becomes a `<div role="progressbar">` drawn as a ring: a
+`conic-gradient` of the arc and the track cut by a radial `mask` of `strokeWidth`.
+Determinate, the gradient stops at the value and `aria-valuenow` is written;
+indeterminate, a quarter of the ring turns under a `@keyframes` rule. The ends of
+the arc are square where Flutter rounds them.
+
 ## Overlays
 
 An `OverlayNode` is drawn as a **fixed layer** over the page: the barrier in the

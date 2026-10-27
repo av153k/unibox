@@ -301,6 +301,13 @@ written once for every node an application defines:
 - the view returns one tree; a dialog is not part of the model yet, so nothing in
   this layer is modal.
 
+## Progress
+
+A `ProgressNode` becomes a `CircularProgressIndicator` in a `SizedBox` of `size`,
+with the node's `color`, `trackColor`, `strokeWidth` and round caps taken from the
+node and not from the theme. `semanticsLabel` is the indicator's label and a
+determinate value is announced as a percentage.
+
 ## Overlays
 
 An `OverlayNode` is presented through an `OverlayPortal` on the root overlay, so it

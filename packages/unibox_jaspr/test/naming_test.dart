@@ -29,6 +29,7 @@ void main() {
       JasprDefaultTypography,
       JasprComponentNode,
       JasprImage,
+      JasprProgress,
       JasprLink,
       JasprPositioned,
       JasprStack,
@@ -40,7 +41,7 @@ void main() {
       noBuilder,
     ];
 
-    expect(exported, hasLength(13));
+    expect(exported, hasLength(14));
     expect(component, isA<Component>());
     expect(renderJaspr, isNotNull);
   });

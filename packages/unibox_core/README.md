@@ -17,6 +17,7 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `TextInputNode`   | a single line or multiline field                              |
 | `StatefulNode`    | a subtree that owns a `Store` and draws the tree of its state |
 | `OverlayNode`     | content drawn above the page, with a barrier and a dismissal |
+| `ProgressNode`    | a circular progress ring: filled to a value, or turning       |
 | `Store`           | the state contract a `StatefulNode` draws                     |
 | `StateStore`      | the ready made `Store`: one state value and its listeners     |
 | `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |

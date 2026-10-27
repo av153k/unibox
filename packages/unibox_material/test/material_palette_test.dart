@@ -80,7 +80,9 @@ void main() {
       expect(tile.backgroundColor, palette.surfaceContainerLowest);
       expect(
         (tile.children.first as Box).textStyle,
-        MaterialTypography.bodyLarge,
+        MaterialTypography.bodyLarge.merge(
+          BoxTextStyle(color: palette.onSurface),
+        ),
       );
     });
   });

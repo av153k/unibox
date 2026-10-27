@@ -4,6 +4,8 @@
 
 The first release of the Flutter renderer: one node tree becomes a widget tree.
 
+- `FlutterProgress` draws a `ProgressNode` as a `CircularProgressIndicator` with the
+  node's colours, size and stroke instead of the theme's.
 - `renderFlutter(node)` and `node.toWidget()` render any node, and `renderNode` the
   same without re-validating a subtree that was already checked.
 - A box is a `Flex` in `Padding`, `DecoratedBox`, `ClipRect`/`ClipRRect`, `SizedBox`

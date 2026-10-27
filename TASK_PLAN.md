@@ -277,3 +277,8 @@ Deliberately out of scope for this pass, with the reason they were left:
   server and writes one file per page, so the only thing missing without a client
   bundle is the click that switches pages (the media query needs no JavaScript).
 
+### Phase 24: Material fidelity, icon and progress
+- [x] Task 110: Audit the Material components against the Material 3 specification and fix the gaps: card variants on the palette, list tile padding and palette colours, text field minimum height, focused outline, hover and disabled states, dialog content and action colours, a full-width bottom sheet with a drag handle and an upward shadow.
+- [x] Task 111: `MaterialIcon` — a glyph of an icon font in a square `Box`; the font is a host asset like any font.
+- [x] Task 112: Core `ProgressNode` and both renderers, and `MaterialProgressIndicator`. A node and not an `EmbedNode`: `unibox_material` stays pure Dart and cannot carry a `Widget` or a `Component`, and a ring that turns needs each renderer.
+

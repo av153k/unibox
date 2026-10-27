@@ -18,7 +18,10 @@ void main() {
       expect(tile.crossAlign, CrossAlign.center);
       expect(tile.width, double.infinity);
       expect(tile.gap, 16);
-      expect(tile.padding, const BoxSpacing.symmetric(horizontal: 16));
+      expect(
+        tile.padding,
+        const BoxSpacing.symmetric(horizontal: 16, vertical: 8),
+      );
       expect(tile.backgroundColor, isNull);
       expect(tile.children, hasLength(1));
     });
@@ -70,10 +73,20 @@ void main() {
       );
 
       final Box column = _textColumn(tile);
-      expect(column.textStyle, MaterialTypography.bodyLarge);
+      expect(
+        column.textStyle,
+        MaterialTypography.bodyLarge.merge(
+          BoxTextStyle(color: MaterialPalette.light.onSurface),
+        ),
+      );
 
       final Box subtitleBox = column.children.last as Box;
-      expect(subtitleBox.textStyle, MaterialListTile.subtitleTextStyle);
+      expect(
+        subtitleBox.textStyle,
+        MaterialTypography.bodyMedium.merge(
+          BoxTextStyle(color: MaterialPalette.light.onSurfaceVariant),
+        ),
+      );
 
       // The subtitle is `bodyMedium` with a colour, so the two cannot drift.
       const BoxTextStyle subtitle = MaterialListTile.subtitleTextStyle;
@@ -120,11 +133,11 @@ void main() {
 
       expect(
         tile.stateStyle(BoxState.hover)?.backgroundColor,
-        const BoxColor(0x14000000),
+        MaterialPalette.light.hoverLayer,
       );
       expect(
         tile.stateStyle(BoxState.pressed)?.backgroundColor,
-        const BoxColor(0x1A000000),
+        MaterialPalette.light.pressedLayer,
       );
       expect(
         themed.stateStyle(BoxState.hover)?.backgroundColor,

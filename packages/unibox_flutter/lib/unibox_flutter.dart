@@ -25,6 +25,7 @@ export 'src/image_node.dart' show FlutterImage;
 export 'src/link_node.dart'
     show FlutterLinkOpener, FlutterLink, FlutterLinkScope;
 export 'src/overlay_node.dart' show FlutterOverlay;
+export 'src/progress_node.dart' show FlutterProgress;
 export 'src/render.dart';
 export 'src/stack_node.dart' show FlutterStack;
 export 'src/stateful_node.dart' show FlutterStateful;

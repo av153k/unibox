@@ -5,6 +5,8 @@
 The first release of the Jaspr renderer: one node tree becomes HTML and CSS, rendered
 on the server and readable without a client bundle.
 
+- `JasprProgress` draws a `ProgressNode` as a `role="progressbar"` ring: a conic
+  gradient under a radial mask, turning under a `@keyframes` rule when indeterminate.
 - `renderJaspr(node)` and `node.toComponent()` render any node, and `renderNode` the
   same without re-validating a subtree that was already checked.
 - A box is one element with `display: flex` and its tokens as CSS: direction,

@@ -69,4 +69,39 @@ void main() {
       expect(MaterialTextField().children, hasLength(1));
     });
   });
+
+  group('MaterialTextField fidelity', () {
+    Box outlineOf(MaterialTextField field) =>
+        field.children.whereType<Box>().first;
+
+    test('is at least 56 pixels tall', () {
+      expect(outlineOf(MaterialTextField(label: 'Email')).minHeight, 56);
+    });
+
+    test('thickens the outline to 2 pixels when focused', () {
+      final resting = outlineOf(MaterialTextField(label: 'Email'));
+      final focused = outlineOf(
+        MaterialTextField(label: 'Email', focused: true),
+      );
+
+      expect(resting.border?.width, 1);
+      expect(focused.border?.width, 2);
+    });
+
+    test('darkens the outline on hover, but not while focused or invalid', () {
+      final palette = MaterialPalette.light;
+
+      expect(
+        outlineOf(MaterialTextField()).hoverStyle?.border?.color,
+        palette.onSurface,
+      );
+      expect(outlineOf(MaterialTextField(focused: true)).hoverStyle, isNull);
+      expect(outlineOf(MaterialTextField(invalid: true)).hoverStyle, isNull);
+    });
+
+    test('fades to 38% when disabled', () {
+      expect(outlineOf(MaterialTextField(enabled: false)).opacity, 0.38);
+      expect(outlineOf(MaterialTextField()).opacity, isNull);
+    });
+  });
 }

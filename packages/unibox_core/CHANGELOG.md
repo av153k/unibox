@@ -5,6 +5,8 @@
 The first release of the platform agnostic core: the tree, the values it is made of,
 and the checks that keep a tree renderable.
 
+- `ProgressNode`: a circular progress ring, determinate (`value` from 0 to 1) or
+  turning, with a colour, a track, a size, a stroke and a screen reader label.
 - `Box`, `TextNode`, `ImageNode`, `LinkNode`, `StackNode`, `PositionedNode`,
   `TextInputNode`, `StatefulNode` and `OverlayNode`, every one immutable, `const`
   where its values allow, and carrying an optional `key` that keeps state attached
