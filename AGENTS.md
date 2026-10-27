@@ -14,7 +14,7 @@ them in step.
 2. [`design.md`](design.md) §5 — the API conventions: naming, precedence,
    dimensions, parity, interaction, non-goals.
 3. The node or token you are about to change, in `packages/unibox_core/lib/src/`.
-4. `packages/unibox_conformance/lib/src/` — the appearance both renderers owe.
+4. `packages/unibox_testing/lib/src/` — the appearance both renderers owe.
 5. The renderer you are changing, and `test/support/appearance.dart` beside it.
 
 [`llms.txt`](llms.txt) indexes every document in the repository; the user-facing
@@ -30,7 +30,7 @@ guide is [`README.md`](README.md).
 | `packages/unibox_core/lib/src/validation.dart` | `validateTree` and `TreeIssue` | a construct becomes impossible to render faithfully |
 | `packages/unibox_flutter/lib/src/` | one file per node (`UniboxBox`, `UniboxText`, ...), `values.dart` (token → Flutter), `render.dart` (dispatch and the validation assert) | the Flutter target has to change |
 | `packages/unibox_jaspr/lib/src/` | the same for the web, plus `default_typography.dart` (the `:root` rule) | the web target has to change |
-| `packages/unibox_conformance/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases` | a presentational token is added or changed |
+| `packages/unibox_testing/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases` | a presentational token is added or changed |
 | `packages/unibox_material/lib/src/` | the Material 3 type scale: `MaterialTypography` (the fifteen roles as `const BoxTextStyle` values), `MaterialTypeRole`, and `MaterialCard` (a `Box` with the card's defaults) | a design-system role is added, a scale changes, or a component is added |
 | `packages/*/test/support/` | the harnesses (`pumpNode`, `inNode`, `stylesOf`, ...) and `appearance.dart`, which reads the presentation back out of the output | a test needs a new fact |
 | `example/unibox_example_shared/` | the two pages as pure Dart trees, the form state, the palette | the example content changes |
@@ -58,7 +58,7 @@ The eight suites, exactly as CI runs them:
 
 ```shell
 (cd packages/unibox_core && dart test)
-(cd packages/unibox_conformance && dart test)
+(cd packages/unibox_testing && dart test)
 (cd packages/unibox_material && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
@@ -90,7 +90,7 @@ before a commit, and `dart analyze` is strict here (`strict-casts`,
    focus ring, link underline or heading margin. A control looks the way the tree
    says it looks.
 5. **Parity is tested, not promised.** A presentational token is in
-   `unibox_conformance`, with one case that isolates it and a place in the
+   `unibox_testing`, with one case that isolates it and a place in the
    "every token at once" case, or the token is not finished.
 6. **Docs and changelogs move with the code.** A public change updates the README
    tables, the package README and the `## Unreleased` section of every
@@ -131,7 +131,7 @@ that lands on one target only fails the suites.
    inline style, the four state rules (`:hover`, `:focus-visible`, `:active`,
    `[aria-disabled="true"]`) and the `transition` property list — plus
    `test/support/appearance.dart`.
-6. The contract: `packages/unibox_conformance/lib/src/appearance.dart` (the field
+6. The contract: `packages/unibox_testing/lib/src/appearance.dart` (the field
    in `BoxAppearance` and in `differencesFrom`) and `lib/src/cases.dart` (one case
    that isolates the token, plus the token in the "every token at once" case).
    `test/cases_test.dart` asserts that no two cases expect the same presentation
@@ -159,7 +159,7 @@ that lands on one target only fails the suites.
 5. Jaspr: `lib/src/values.dart` (`toTypographyStyles`) and the emitter
    (`text_node.dart`, `text_input_node.dart`, and `default_typography.dart` for
    the `:root` rule).
-6. The contract: `packages/unibox_conformance/lib/src/text_appearance.dart` and
+6. The contract: `packages/unibox_testing/lib/src/text_appearance.dart` and
    `lib/src/text_cases.dart`, including `defaultTextAppearance` when the default
    is what changed. `textAppearanceOf` in both `test/support/appearance.dart`
    files has to read the new fact back out of the output.
@@ -196,7 +196,7 @@ that lands on one target only fails the suites.
 Parity is a contract case, not a hunch, so a bug is fixed from the table
 outwards:
 
-1. Write the failing case in `packages/unibox_conformance` first: the expected
+1. Write the failing case in `packages/unibox_testing` first: the expected
    appearance for the token, in a case that isolates it. Run both renderer suites
    and read which one disagrees.
 2. Fix the renderer that drifts — often both, because the table holds both to one
@@ -293,7 +293,7 @@ and two when each side is independently reviewable.
 | What does a token do on the web? | [`packages/unibox_jaspr/README.md`](packages/unibox_jaspr/README.md) |
 | What is the model's default? | [`packages/unibox_core/README.md`](packages/unibox_core/README.md) |
 | Which Material type role should I use? | [`packages/unibox_material/README.md`](packages/unibox_material/README.md) |
-| What has to look the same on both? | [`packages/unibox_conformance/README.md`](packages/unibox_conformance/README.md) |
+| What has to look the same on both? | [`packages/unibox_testing/README.md`](packages/unibox_testing/README.md) |
 | What is built, and what was deferred? | [`TASK_PLAN.md`](TASK_PLAN.md) |
 | How is a release cut? | [`RELEASE.md`](RELEASE.md) |
 | How do the examples fit together? | [`example/README.md`](example/README.md) |

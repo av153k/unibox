@@ -1,5 +1,5 @@
 import 'package:jaspr_test/jaspr_test.dart';
-import 'package:unibox_conformance/unibox_conformance.dart';
+import 'package:unibox_testing/unibox_testing.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'harness.dart';
@@ -14,7 +14,7 @@ import 'harness.dart';
 /// token that stopped being rendered should fail in.
 ///
 /// The Flutter suite reads the same facts out of the widget tree it built, and
-/// both compare them with the table in `unibox_conformance`.
+/// both compare them with the table in `unibox_testing`.
 BoxAppearance appearanceOf() {
   final Map<String, String> styles = stylesOf(find.tag('div').first);
   final String? border = styles['border'];

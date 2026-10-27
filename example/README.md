@@ -54,7 +54,7 @@ level in, both renderers scroll the same content.
 ## Keeping the two renderings alike
 
 Both apps render the same page, so they have to *show* the same page. That is
-pinned where a renderer lives, not here: `packages/unibox_conformance` holds one
+pinned where a renderer lives, not here: `packages/unibox_testing` holds one
 table of boxes and the appearance each of them has to produce, and both renderer
 suites render that table and read the appearance back out of their own output —
 the Flutter suite from the widget tree, the Jaspr suite from the emitted CSS.

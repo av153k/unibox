@@ -72,7 +72,7 @@
 - [x] Task 47: Jaspr host — render the example through a `Document` that gives the page's `100%` box a height to resolve against (`html, body { height: 100%; margin: 0 }`), and regenerate `build/index.html`.
 
 ### Phase 13: One contract for every token
-- [x] Task 48: `unibox_conformance` — a dev-only package holding the contract: `BoxAppearance` (direction, alignment, gap, padding, margin, width, height, background, radius, border), `differencesFrom` (absent equals zero, a border colour only counts when a border is drawn) and `boxCases`, one case per token plus one with all of them, with a suite that checks the table itself.
+- [x] Task 48: `unibox_testing` — a dev-only package holding the contract: `BoxAppearance` (direction, alignment, gap, padding, margin, width, height, background, radius, border), `differencesFrom` (absent equals zero, a border colour only counts when a border is drawn) and `boxCases`, one case per token plus one with all of them, with a suite that checks the table itself.
 - [x] Task 49: Both renderer suites — render every case and read the appearance back out of the rendered output (`test/support/appearance.dart` walking the widget tree in `unibox_flutter`, parsing the emitted CSS in `unibox_jaspr`), never out of the node tree, so a renderer that drops a token fails its own suite and neither target can be relaxed alone.
 - [x] Task 50: Jaspr renderer — strip the browser's native focus ring from a field (`outline: none`), because the ring is drawn around the field inside the padding and border of the box that wraps it ("a box inside a box" on focus) and Flutter has no counterpart to it; a focused field is a state style, not platform chrome.
 - [x] Task 51: Remove the example level parity fixtures (`CardParity`, both `visual_facts.dart` extractors, both `parity_test.dart`) now that the contract lives in the library, keeping the app level tests and moving the "fills the host surface" check into the Flutter app suite.
@@ -151,7 +151,7 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
   a control (Material's field underline, the browser's input border, focus ring
   and link underline). A control looks the way the tree says it looks, which is
   what makes the same node render the same on both targets.
-- **Where conformance is pinned:** in `packages/unibox_conformance`, not in
+- **Where conformance is pinned:** in `packages/unibox_testing`, not in
   `example/`. The contract is a property of the renderers, so it is checked by the
   renderer suites against boxes they render themselves; an example can only show
   that one card happens to look alike, and it changes whenever the card does. The

@@ -1,7 +1,7 @@
 # Releasing Unibox
 
 Five packages live in this workspace. Four are meant for pub.dev — `unibox_core`,
-`unibox_flutter`, `unibox_jaspr` and `unibox_material` — and `unibox_conformance`
+`unibox_flutter`, `unibox_jaspr` and `unibox_material` — and `unibox_testing`
 stays development only, because it is the test contract and nothing an application
 needs.
 
@@ -19,7 +19,7 @@ flutter pub get
 dart format --output=none --set-exit-if-changed .
 dart analyze
 (cd packages/unibox_core && dart test)
-(cd packages/unibox_conformance && dart test)
+(cd packages/unibox_testing && dart test)
 (cd packages/unibox_material && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
@@ -44,7 +44,7 @@ dart analyze
 3. **Close the changelogs.** Every package has an `## Unreleased` section; rename it
    to `## x.y.z` and add a fresh `## Unreleased` above it.
 4. **Remove `publish_to: none`** from the four packages being published. Leave it
-   in `unibox_conformance`.
+   in `unibox_testing`.
 5. **Dry run each package**, in dependency order:
 
    ```shell
@@ -65,7 +65,7 @@ dart analyze
 
 - **CI never publishes.** The workflow checks formatting, analysis, the eight test
   suites and the documentation; publishing is a human running the steps above.
-- **`unibox_conformance` is not released.** It is a dev dependency of the two
+- **`unibox_testing` is not released.** It is a dev dependency of the two
   renderer packages and would only add a fifth name to keep in step.
 - **The example is not released.** It is a workspace application, not a package.
 

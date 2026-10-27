@@ -456,7 +456,7 @@ Component tests use `jaspr_test`; `test/support/harness.dart` exposes
 helpers to assert on the rendered DOM.
 
 `test/conformance_test.dart` runs the renderer against
-[`unibox_conformance`](../unibox_conformance) — the table of boxes both renderers
+[`unibox_testing`](../unibox_testing) — the table of boxes both renderers
 are checked against — through `test/support/appearance.dart`, which reads the
 presentation of a box back out of the CSS this renderer emitted. The same table
 is what the Flutter suite answers, which is how the two outputs are held to one

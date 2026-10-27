@@ -1,4 +1,8 @@
-# unibox_conformance
+# unibox_testing
+
+**Test only.** Nothing in this package ships: it is a `dev_dependency` of the two
+renderers, it is not published (`publish_to: none`), and an application never
+depends on it.
 
 The presentation contract both Unibox renderers are tested against.
 

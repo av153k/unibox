@@ -10,7 +10,7 @@ In short:
 - `packages/unibox_core` is pure Dart: no `dart:ui`, no Flutter, no Jaspr, no
   package dependencies.
 - Every presentational change lands on both targets, pinned by a case in
-  `packages/unibox_conformance`. Neither renderer may fall back to its host's
+  `packages/unibox_testing`. Neither renderer may fall back to its host's
   default for a token the model leaves unset.
 - `tool/verify.sh` is the gate: format check, `dart analyze`, eight test suites,
   and with `--docs` the API docs, which fail on a warning.

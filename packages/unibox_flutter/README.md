@@ -291,7 +291,7 @@ flutter test
 ```
 
 Widget tests build the widgets `renderFlutter` returns. `test/conformance_test.dart`
-runs the renderer against [`unibox_conformance`](../unibox_conformance) — the table
+runs the renderer against [`unibox_testing`](../unibox_testing) — the table
 of boxes both renderers are checked against — through
 `test/support/appearance.dart`, which reads the presentation of a box back out of
 the widget tree this renderer built. The Jaspr suite answers the same table from

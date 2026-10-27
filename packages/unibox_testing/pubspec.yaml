@@ -1,5 +1,5 @@
-name: unibox_conformance
-description: The presentation contract both Unibox renderers are tested against, as one table of boxes and the result each renderer has to produce.
+name: unibox_testing
+description: Test-only. The presentation contract both Unibox renderers are tested against, as one table of boxes and texts with the result each renderer has to produce.
 publish_to: none
 version: 0.1.0
 repository: https://github.com/cedvdb/unibox

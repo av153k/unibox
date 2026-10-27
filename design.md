@@ -150,7 +150,7 @@ never inherited (CSS does not inherit them either).
 - A state rule may only contribute the tokens of its state. The browser layers
   `:hover` over the resting rule exactly like the Flutter renderer merges a
   state style, so a state rule that restated the layout would reset it.
-- Parity is *tested*, not assumed: `unibox_conformance` lists the boxes every
+- Parity is *tested*, not assumed: `unibox_testing` lists the boxes every
   renderer has to present the same way and the texts every renderer has to
   typeset the same way, and each renderer suite reads the appearance back out of
   its own output — the Flutter one from the widget tree, the web one from the
@@ -161,7 +161,7 @@ never inherited (CSS does not inherit them either).
   is compared is what a renderer *declares* — layout, spacing, paint, the six
   typography tokens, alignment and truncation — never what a text engine makes of
   it. Glyph rasterisation, hinting and line breaking belong to the engine, and
-  `unibox_conformance/README.md` has the table that says which is which. One
+  `unibox_testing/README.md` has the table that says which is which. One
   length is exempt from that, because both sides compute it the same way: a line
   box is `fontSize * lineHeight` on both.
 - The default typography is part of the model, not of a host: renderers install

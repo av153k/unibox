@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:unibox_conformance/unibox_conformance.dart';
+import 'package:unibox_testing/unibox_testing.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 import 'package:unibox_flutter/unibox_flutter.dart';
 
@@ -14,7 +14,7 @@ import 'harness.dart';
 /// created, the padding it applied, the decoration it painted — and never from
 /// the node tree, so they describe what this target *did* with the node. The
 /// Jaspr suite reads the same facts out of the CSS its renderer emitted, and both
-/// compare them with the table in `unibox_conformance`.
+/// compare them with the table in `unibox_testing`.
 ///
 /// The rendered root node has to be a [core.Box]; a suite that renders anything
 /// else is asking the wrong question.

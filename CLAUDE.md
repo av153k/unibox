@@ -8,7 +8,7 @@ The three rules that are broken most often:
 
 - `packages/unibox_core` never imports `dart:ui`, Flutter or Jaspr, and has no
   package dependencies at all.
-- A change lands on both targets. `packages/unibox_conformance` is the single place
+- A change lands on both targets. `packages/unibox_testing` is the single place
   where the expected appearance of a token is written down, and both renderer
   suites are checked against it.
 - `tool/verify.sh` runs what CI runs: the format check, `dart analyze` and the eight

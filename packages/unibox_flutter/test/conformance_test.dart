@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:unibox_conformance/unibox_conformance.dart';
+import 'package:unibox_testing/unibox_testing.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'support/appearance.dart';

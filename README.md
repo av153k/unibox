@@ -551,7 +551,7 @@ Three mechanisms, all of them tested:
    undeclared text uses `BoxTextStyle.defaults`, an image without a fit scales down.
    Neither renderer may answer with its platform's default, because that is how the
    same tree starts looking like two different products.
-2. **One table of expected results.** `unibox_conformance` lists boxes and texts with
+2. **One table of expected results.** `unibox_testing` lists boxes and texts with
    the appearance each one must have. The Flutter suite reads that appearance back out
    of the widget tree it built, the Jaspr suite out of the CSS it emitted, and both
    compare it with the same entry — so a value one renderer stops drawing fails its
@@ -573,7 +573,7 @@ on both sides.
 | `packages/unibox_core` | The nodes, the style values and the validation. No dependencies outside the Dart SDK. |
 | `packages/unibox_flutter` | The Flutter renderer: `renderFlutter(node)` and `node.toWidget()`. |
 | `packages/unibox_jaspr` | The Jaspr renderer: `renderJaspr(node)` and `node.toComponent()`. |
-| `packages/unibox_conformance` | The tables both renderers are tested against. Development only, not published. |
+| `packages/unibox_testing` | The tables both renderers are tested against. Development only, not published. |
 | `packages/unibox_material` | The Material 3 type scale and a card node, for an application that wants Material's typography. Optional: no renderer depends on it. |
 | `example/` | Two pages, one form and one navigation bar shared by a Flutter app and a static site. |
 
@@ -624,7 +624,7 @@ flutter pub get                                  # resolve the workspace
 dart analyze                                     # static analysis everywhere
 
 (cd packages/unibox_core && dart test)
-(cd packages/unibox_conformance && dart test)
+(cd packages/unibox_testing && dart test)
 (cd packages/unibox_material && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
@@ -663,7 +663,7 @@ Where to read more:
   [material](packages/unibox_material/README.md),
   [flutter](packages/unibox_flutter/README.md),
   [jaspr](packages/unibox_jaspr/README.md),
-  [conformance](packages/unibox_conformance/README.md).
+  [conformance](packages/unibox_testing/README.md).
 
 ## License
 
