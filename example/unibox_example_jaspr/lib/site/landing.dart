@@ -15,7 +15,8 @@ UINode buildLanding() {
     gap: 40,
     children: <UINode>[
       Box(
-        width: 760,
+        width: double.infinity,
+        maxWidth: 720,
         gap: 16,
         children: <UINode>[
           TextNode(
@@ -41,12 +42,35 @@ UINode buildLanding() {
           ),
         ],
       ),
-      ImageNode(
-        'assets/hero.svg',
-        alt:
-            'One immutable Dart node tree on the left, a fork into two panels '
-            'showing the same card drawn by Flutter and by Jaspr.',
-        width: double.infinity,
+      // The figure sits on the right and keeps to itself: this is a page of text
+      // first, and a diagram at the full width of a wide screen is a poster.
+      Box(
+        direction: Axis.horizontal,
+        mainAlign: MainAlign.end,
+        children: <UINode>[
+          Box(
+            width: double.infinity,
+            maxWidth: 520,
+            gap: 8,
+            children: <UINode>[
+              ImageNode(
+                'assets/hero-compact.svg',
+                alt:
+                    'One node tree splits into a Flutter panel drawing it through '
+                    'tree.toWidget() and a Jaspr panel drawing it through '
+                    'tree.toComponent(); both panels show the same card.',
+                width: double.infinity,
+              ),
+              TextNode(
+                'The figure is a node tree too: this site is drawn with the library '
+                'it documents.',
+                style: MaterialTypography.labelSmall.copyWith(
+                  color: palette.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       Box(
         direction: Axis.horizontal,

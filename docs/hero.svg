@@ -57,7 +57,7 @@
   <!-- Flutter panel -->
   <rect x="580" y="190" width="556" height="180" rx="18" fill="#F7F2FA" stroke="#CAC4D0"/>
   <text class="renderer" x="604" y="222">Flutter</text>
-  <text class="call" x="604" y="242">renderFlutter(tree) → widgets</text>
+  <text class="call" x="604" y="242">tree.toWidget() → Flutter widgets</text>
 
   <g filter="url(#cardShadow)">
     <rect x="748" y="228" width="364" height="124" rx="14" fill="#FFFFFF" stroke="#CAC4D0"/>
@@ -70,7 +70,7 @@
   <!-- Jaspr panel -->
   <rect x="580" y="400" width="556" height="180" rx="18" fill="#F7F2FA" stroke="#CAC4D0"/>
   <text class="renderer" x="604" y="432">Jaspr</text>
-  <text class="call" x="604" y="452">renderJaspr(tree) → HTML + CSS</text>
+  <text class="call" x="604" y="452">tree.toComponent() → HTML + CSS</text>
 
   <g filter="url(#cardShadow)">
     <rect x="748" y="438" width="364" height="124" rx="14" fill="#FFFFFF" stroke="#CAC4D0"/>

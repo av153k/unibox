@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 480" width="520" height="480" role="img" aria-labelledby="compactTitle compactDesc">
+  <title id="compactTitle">One node tree, two renderers</title>
+  <desc id="compactDesc">One Unibox node tree splits into two panels: the same card drawn by Flutter through tree.toWidget(), and by Jaspr through tree.toComponent().</desc>
+
+  <style>
+    text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .node { font-size: 11.5px; fill: #21005D; }
+    .node-strong { font-size: 14px; font-weight: 600; fill: #FFFFFF; }
+    .renderer { font-size: 14px; font-weight: 600; fill: #6750A4; }
+    .call { font-size: 11.5px; fill: #49454F; }
+    .card-title { font-size: 13px; font-weight: 600; fill: #1D1B20; }
+    .card-body { font-size: 11px; fill: #49454F; }
+    .button { font-size: 11px; font-weight: 500; fill: #FFFFFF; }
+    .note { font-size: 11px; fill: #49454F; }
+  </style>
+
+  <rect width="520" height="480" rx="18" fill="#FEF7FF"/>
+
+  <!-- The tree -->
+  <rect x="170" y="20" width="180" height="44" rx="10" fill="#6750A4"/>
+  <text class="node-strong" x="260" y="48" text-anchor="middle">Box</text>
+
+  <rect x="100" y="92" width="140" height="38" rx="8" fill="#EADDFF"/>
+  <text class="node" x="170" y="116" text-anchor="middle">TextNode</text>
+
+  <rect x="280" y="92" width="140" height="38" rx="8" fill="#EADDFF"/>
+  <text class="node" x="350" y="116" text-anchor="middle">Box · onTap</text>
+
+  <path d="M260 64 V80 M170 80 H350 M170 80 V92 M350 80 V92"
+        fill="none" stroke="#79747E" stroke-width="1.6"/>
+
+  <text class="note" x="260" y="152" text-anchor="middle">one tree, any page</text>
+
+  <!-- Fork -->
+  <path d="M260 164 V188" fill="none" stroke="#79747E" stroke-width="2"/>
+  <path d="M260 196 l-6 -12 h12 z" fill="#79747E"/>
+
+  <!-- Flutter panel -->
+  <rect x="20" y="202" width="226" height="210" rx="16" fill="#F7F2FA" stroke="#CAC4D0"/>
+  <text class="renderer" x="36" y="230">Flutter</text>
+  <text class="call" x="36" y="250">tree.toWidget()</text>
+
+  <g filter="url(#cardShadow)">
+    <rect x="36" y="262" width="194" height="120" rx="12" fill="#FFFFFF" stroke="#CAC4D0"/>
+  </g>
+  <text class="card-title" x="52" y="288">Order summary</text>
+  <text class="card-body" x="52" y="308">Two nights, one room.</text>
+  <rect x="52" y="320" width="88" height="28" rx="14" fill="#6750A4"/>
+  <text class="button" x="96" y="338" text-anchor="middle">Confirm</text>
+
+  <!-- Jaspr panel -->
+  <rect x="274" y="202" width="226" height="210" rx="16" fill="#F7F2FA" stroke="#CAC4D0"/>
+  <text class="renderer" x="290" y="230">Jaspr</text>
+  <text class="call" x="290" y="250">tree.toComponent()</text>
+
+  <g filter="url(#cardShadow)">
+    <rect x="290" y="262" width="194" height="120" rx="12" fill="#FFFFFF" stroke="#CAC4D0"/>
+  </g>
+  <text class="card-title" x="306" y="288">Order summary</text>
+  <text class="card-body" x="306" y="308">Two nights, one room.</text>
+  <rect x="306" y="320" width="88" height="28" rx="14" fill="#6750A4"/>
+  <text class="button" x="350" y="338" text-anchor="middle">Confirm</text>
+
+  <text class="note" x="260" y="332" text-anchor="middle">=</text>
+  <text class="note" x="260" y="448" text-anchor="middle">one contract, the same appearance</text>
+
+  <defs>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#1D1B20" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+</svg>
