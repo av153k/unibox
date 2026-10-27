@@ -306,6 +306,19 @@ Styles toPositionedStyles(core.PositionedNode node) {
 /// the box around a field draws the border and the padding on both targets, so a
 /// field looks the same on either of them and not like a browser widget on one
 /// and a Material widget on the other.
+///
+/// The focus ring goes with them. A browser draws it around the field itself,
+/// which sits inside the padding and the border of the box that wraps it, so a
+/// focused field would show a second frame inside the one the tree asked for —
+/// and Flutter has no counterpart to it, where a collapsed `TextField` only draws
+/// its caret.
+///
+/// The cost is that a focused field now has no frame of its own, because the
+/// tree cannot draw one either: a box raises its `focus` state by being focused
+/// itself, not by holding a focused child, and a browser only matches
+/// `:focus-visible` on the focused element. So a focused field shows its caret and
+/// nothing else, on both targets — the same cue on both is worth more than a
+/// browser frame on one.
 Styles toTextInputStyles() {
   return Styles(
     boxSizing: BoxSizing.borderBox,
@@ -316,6 +329,7 @@ Styles toTextInputStyles() {
       'border': 'none',
       'padding': '0',
       'background-color': 'transparent',
+      'outline': 'none',
     },
   );
 }

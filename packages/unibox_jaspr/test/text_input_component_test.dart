@@ -20,16 +20,17 @@ void main() {
         'border': 'none',
         'padding': '0',
         'background-color': 'transparent',
+        'outline': 'none',
       });
     });
 
     testComponents('renders a text input without the browser form chrome', (
       tester,
     ) async {
-      // A browser draws a border, a padding and a background around a field of
-      // its own. Neither of those has a Flutter counterpart: the renderer draws
-      // a field without Material chrome, so the box around it is the only thing
-      // that decides how a field looks on either target.
+      // A browser draws a border, a padding, a background and a focus ring
+      // around a field of its own. None of those has a Flutter counterpart: the
+      // renderer draws a field without Material chrome, so the box around it is
+      // the only thing that decides how a field looks on either target.
       pumpNode(tester, const core.TextInputNode());
 
       final Map<String, String> styles = stylesOf(find.tag('input'));
@@ -37,8 +38,32 @@ void main() {
       expect(styles['border'], 'none');
       expect(styles['padding'], '0');
       expect(styles['background-color'], 'transparent');
+      expect(styles['outline'], 'none');
       expect(styles['font'], 'inherit');
       expect(styles['color'], 'inherit');
+    });
+
+    testComponents('draws no focus ring inside the box that wraps the field', (
+      tester,
+    ) async {
+      // The ring a browser draws sits around the field, which is inside the
+      // padding and the border of the box around it, so focusing a field would
+      // show a second frame inside the one the tree asked for.
+      pumpNode(
+        tester,
+        const core.Box(
+          padding: core.BoxSpacing.all(11),
+          border: core.BoxBorder(),
+          children: <core.UINode>[core.TextInputNode()],
+        ),
+      );
+
+      final Map<String, String> field = stylesOf(find.tag('input'));
+      final Map<String, String> box = stylesOf(find.tag('div'));
+
+      expect(field['outline'], 'none');
+      expect(box['border'], isNotNull);
+      expect(box['padding'], '11px');
     });
 
     testComponents('writes the value of a controlled input', (tester) async {
