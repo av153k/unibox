@@ -336,13 +336,12 @@ void main() {
         ),
       );
 
-      expect(find.tag('style'), findsOneComponent);
       expect(stylesOf(find.tag('div')), isEmpty);
 
       final String className = classesOf(find.tag('div'))!;
       expect(className, matches(RegExp(r'^unibox-box-[0-9a-f]{8}$')));
 
-      final String css = cssOf(find.tag('style'));
+      final String css = allCss();
       expect(css, contains('.$className {'));
       expect(css, contains('.$className:hover {'));
       expect(css, contains('background-color: #ffffff;'));
@@ -368,7 +367,7 @@ void main() {
       );
 
       final String className = classesOf(find.tag('div'))!;
-      final String css = cssOf(find.tag('style'));
+      final String css = allCss();
       final String hoverRule = _ruleOf(css, '.$className:hover');
 
       expect(hoverRule, contains('background-color: #000000;'));

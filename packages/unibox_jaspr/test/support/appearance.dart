@@ -95,15 +95,41 @@ core.CrossAlign _crossAlignOf(String? value) {
 /// target *said* is compared, not what a font engine made of it.
 ///
 /// Declarations the node left alone read back as `null` even though the browser
-/// inherits a value from the page, which is the same line the Flutter suite draws
-/// with `DefaultTextStyle`.
+/// inherits a value from the `:root` rule, which is the same line the Flutter
+/// suite draws with `DefaultTextStyle`.
 ///
 /// A clamped text is reported as truncating with an ellipsis: `-webkit-line-clamp`
 /// is the only way to end a text after a number of lines in CSS, and it ends the
 /// last line with an ellipsis, which is why the model can leave `text-overflow`
 /// out of the declarations it writes.
-TextAppearance textAppearanceOf() {
-  final Map<String, String> styles = stylesOf(find.tag('span').first);
+TextAppearance textAppearanceOf() => _textAppearance(stylesOf(_text));
+
+/// The typesetting the text node is actually typeset in.
+///
+/// The default typography of the model comes from the `:root` rule and the tokens
+/// of the node are laid over it, the way the cascade lays an inherited value under
+/// a declared one — which is the same pair the Flutter suite resolves through
+/// `DefaultTextStyle`.
+TextAppearance resolvedTextAppearanceOf() {
+  return _textAppearance(<String, String>{
+    ...declarationsOf(':root'),
+    ...stylesOf(_text),
+  });
+}
+
+/// The span the renderer emitted for the text node.
+Finder get _text => find.tag('span').first;
+
+/// The characters the renderer put into the element it built.
+String renderedTextOf() {
+  return elementOf(_text).children
+      .whereType<TestRenderText>()
+      .map((TestRenderText child) => child.text)
+      .join();
+}
+
+/// The typography a set of CSS declarations describes.
+TextAppearance _textAppearance(Map<String, String> styles) {
   final String? clamp = styles['-webkit-line-clamp'];
 
   return TextAppearance(
@@ -122,14 +148,6 @@ TextAppearance textAppearanceOf() {
   );
 }
 
-/// The characters the renderer put into the element it built.
-String renderedTextOf() {
-  return elementOf(find.tag('span').first).children
-      .whereType<TestRenderText>()
-      .map((TestRenderText child) => child.text)
-      .join();
-}
-
 /// The weight a `font-weight` names.
 core.FontWeight? _fontWeightOrNull(String? value) {
   return switch (value) {
@@ -143,11 +161,17 @@ core.FontWeight? _fontWeightOrNull(String? value) {
 }
 
 /// The family a `font-family` names, without the quotes CSS writes it in.
+/// The family a `font-family` names, without the quotes CSS writes it in.
+///
+/// `system-ui` reads back as `null`: it is how CSS spells the family the model
+/// leaves unnamed — "the platform's UI font" — and Flutter says the same thing by
+/// naming no family at all.
 String? _familyOrNull(String? value) {
   if (value == null) {
     return null;
   }
-  return value.replaceAll(RegExp(r"""^['"]|['"]$"""), '');
+  final String family = value.replaceAll(RegExp(r"""^['"]|['"]$"""), '');
+  return family == 'system-ui' ? null : family;
 }
 
 /// The multiple of the font size a `line-height` names.

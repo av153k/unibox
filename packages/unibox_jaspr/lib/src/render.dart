@@ -2,6 +2,7 @@ import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'box.dart';
+import 'default_typography.dart';
 import 'embed_node.dart';
 import 'image_node.dart';
 import 'keys.dart';
@@ -15,6 +16,13 @@ import 'text_node.dart';
 /// In debug builds the tree is validated first: a tree that a renderer cannot
 /// honour is printed to stdout, and an invalid one throws a [StateError].
 ///
+/// The tree is preceded by the typography of the model
+/// ([core.BoxTextStyle.defaults]) as a `:root` rule, so a text that declares
+/// nothing is typeset the way the Flutter renderer typesets it instead of the way
+/// a browser happens to default. The rule states only what the model declares: a
+/// host that sets a `font-family` keeps it, and a box in the tree can declare any
+/// token to override the default for its subtree.
+///
 /// Node types without a web renderer yet throw an [UnsupportedError] so a
 /// partially rendered tree can never be shipped silently.
 ///
@@ -23,7 +31,11 @@ import 'text_node.dart';
 /// belongs to.
 Component renderJaspr(core.UINode node) {
   _reportTreeIssues(node);
-  return renderNode(node);
+
+  return Component.fragment(<Component>[
+    const DefaultTypography(),
+    renderNode(node),
+  ]);
 }
 
 /// Renders [node] without validating its subtree.

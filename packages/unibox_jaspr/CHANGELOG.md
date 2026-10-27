@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- `renderJaspr` emits a `:root` rule carrying the typography of the model
+  (`BoxTextStyle.defaults`), so a text that declares nothing is typeset at 16
+  pixels, black, with a 1.5 line height and `font-family: system-ui` instead of the
+  browser's own default — the same answer the Flutter renderer installs as a
+  `DefaultTextStyle`. The tree it returns is therefore a fragment: the rule first,
+  the tree second. `renderNode` renders a node without it.
+
 ## 0.1.0
 
 The first release of the Jaspr (HTML/CSS) renderer.

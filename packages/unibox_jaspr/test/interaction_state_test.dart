@@ -24,7 +24,7 @@ void main() {
 
       expect(stylesOf(find.tag('div')), isEmpty);
       final String className = classesOf(find.tag('div'))!;
-      final String css = cssOf(find.tag('style'));
+      final String css = allCss();
 
       expect(css, contains('@media all and (hover: hover)'));
       expect(css, contains('.$className:hover'));
@@ -47,7 +47,9 @@ void main() {
         ),
       );
 
-      expect(find.tag('style'), findsNothing);
+      // The only rule on the page is the typography of the model, so nothing
+      // scoped a state here.
+      expect(allCss(), isNot(contains('.unibox-box-')));
       expect(stylesOf(find.tag('div'))['background-color'], '#ffffff');
       expect(classesOf(find.tag('div')), isNull);
     });

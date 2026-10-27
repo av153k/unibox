@@ -172,6 +172,26 @@ Styles? toTypographyStyles(core.BoxTextStyle textStyle) {
   );
 }
 
+/// Builds the declarations of the typography a tree falls back to.
+///
+/// The tokens are the ones in [core.BoxTextStyle.defaults], so both renderers
+/// answer with the same numbers. Only the family is spelled here: the model names
+/// none, because a font file is an asset of the application, and unset means "the
+/// platform's UI font" — which Flutter gets by saying nothing and CSS by naming
+/// the generic `system-ui`.
+///
+/// The family has to be written raw: a quoted `'system-ui'` would name a font
+/// instead of asking for the generic one, and no platform installs a font by that
+/// name.
+Styles defaultTypographyStyles() {
+  final Styles? typography = toTypographyStyles(core.BoxTextStyle.defaults);
+  const Styles family = Styles(
+    raw: <String, String>{'font-family': 'system-ui'},
+  );
+
+  return typography == null ? family : typography.combine(family);
+}
+
 /// Builds the CSS of a text node.
 ///
 /// Only the typography tokens that are set are emitted, so the text inherits

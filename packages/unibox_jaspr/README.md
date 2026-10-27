@@ -133,6 +133,13 @@ Typography that the node leaves unset emits nothing, so the text inherits the
 font family, size, weight and color of the page — the same contract
 `DefaultTextStyle` provides in Flutter.
 
+What the page starts from is the model's, not the browser's: `renderJaspr` emits a
+`:root` rule carrying `BoxTextStyle.defaults` (16 logical pixels, black, a 1.5 line
+height, no letter spacing, `font-family: system-ui`), which is what the Flutter
+renderer installs as a `DefaultTextStyle` around the tree. A host that renders other
+content next to the tree can restyle its own, and a host that wants a font family
+states one — the family is the one token the model leaves to the application.
+
 `maxLines` needs the prefixed box layout, since that is the only portable way to
 truncate after N lines:
 

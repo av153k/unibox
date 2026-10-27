@@ -7,21 +7,24 @@ import 'support/harness.dart';
 
 void main() {
   group('UINode.key', () {
-    test('keys the component of every node type', () {
+    // The key sits on the renderer of the node, not on what `renderJaspr`
+    // returns: that is a fragment carrying the typography rule of the model as
+    // well, and a key on it would describe the tree rather than the node.
+    test('keys the renderer of every node type', () {
       expect(
-        renderJaspr(const core.Box(key: 'box')).key,
+        renderNode(const core.Box(key: 'box')).key,
         const ValueKey<Object>('box'),
       );
       expect(
-        renderJaspr(const core.TextNode('Hello', key: 'text')).key,
+        renderNode(const core.TextNode('Hello', key: 'text')).key,
         const ValueKey<Object>('text'),
       );
       expect(
-        renderJaspr(const core.ImageNode('logo.png', key: 'image')).key,
+        renderNode(const core.ImageNode('logo.png', key: 'image')).key,
         const ValueKey<Object>('image'),
       );
       expect(
-        renderJaspr(
+        renderNode(
           const core.LinkNode(
             'https://unibox.dev',
             key: 'link',
@@ -31,17 +34,17 @@ void main() {
         const ValueKey<Object>('link'),
       );
       expect(
-        renderJaspr(const core.StackNode(key: 'stack')).key,
+        renderNode(const core.StackNode(key: 'stack')).key,
         const ValueKey<Object>('stack'),
       );
       expect(
-        renderJaspr(const core.TextInputNode(key: 'input')).key,
+        renderNode(const core.TextInputNode(key: 'input')).key,
         const ValueKey<Object>('input'),
       );
     });
 
     test('leaves an unkeyed node unkeyed', () {
-      expect(renderJaspr(const core.TextNode('Hello')).key, isNull);
+      expect(renderNode(const core.TextNode('Hello')).key, isNull);
     });
 
     testComponents('keys the rendered elements', (tester) async {
