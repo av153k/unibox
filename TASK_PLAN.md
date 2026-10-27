@@ -132,6 +132,12 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [x] Task 91: Tests and docs — the suite holds every role to the specification (size, tracking, weight and the `fontSize * lineHeight` line box), the table to every role in order, the package to `unibox_core` plus the SDK, and the exports to names a core import leaves alone; the package README and changelog, `design.md` §5.9, the root README, `RELEASE.md` and the CI workflow all take the new package in.
 - [x] Task 92: Decision record — a design system is values, not node types: the package README gains the "presets: values, not classes" recipe (a `const` catalogue in the app, the four line subclass it replaces, and why the package exports none), and `design.md` §5.9 states the three rules behind it (no wrapper nodes, one `style` per text, presets are values) plus the cost asymmetry that keeps the token vocabulary the stable layer.
 
+### Phase 21: Material components
+- [ ] Task 93: `unibox_material` — `MaterialPalette`: the Material 3 colour roles as `const BoxColor` values (`primary`, `onPrimary`, `surface`, `onSurface`, `onSurfaceVariant`, `outline`, `error`, ...), with a light and a dark instance, next to `MaterialTypography` and following its shape. The palette lives here and not in `unibox_core` because the roles are Material's vocabulary: a core theme would put one design system's words into the model every renderer carries. A test pins the roles and the pairs that have to contrast.
+- [ ] Task 94: `unibox_material` — `MaterialFieldLook` (text, hint, fill, border and error colour, derived from a palette in pure Dart) and the first component node, `MaterialTextField` (filled, static label). The Flutter renderer passes those colours to a Material `TextField` explicitly instead of letting it inherit the host's `MaterialApp` theme, and the Jaspr renderer writes the same values as CSS, so the field is the same on both targets by construction. The caret, the selection and the focus ring stay Material's on one side and are documented as approximate on the other: the first entry in a "what stays approximate" section of the material README.
+- [ ] Task 95: Logical directions — `TextAlign.start`/`end` and start/end insets, mapped to `TextAlign.start`/`end` and `EdgeInsetsDirectional` in Flutter and to `text-align: start`/`end` and `padding-inline-start`/`end` in CSS, so a host that sets `Directionality` or `dir` gets a mirrored tree without the model ever knowing the direction.
+- [ ] Task 96: Host duties — the material README states the two wirings a Material application owns: one palette value feeding both the tree builders and `MaterialApp(theme:)`, and one direction feeding both the tree and the host's ambient direction. There is no `PageNode` and no core theme behind this, and the README says why.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
@@ -205,6 +211,16 @@ Deliberately out of scope for this pass, with the reason they were left:
   Flutter host's in-app navigation, and "in-app navigation with real urls" is a
   router — an application concern each host answers differently. **Discarded** from
   the library; the example README states the trade-off.
+- A `PageNode` and a `BoxTheme` in core. A page node would carry a title, a
+  language and a direction, and only the third is more than a document fact: RTL
+  mirrors rows and flips `start`/`end`, so it changes the layout. But both platforms
+  already resolve a logical direction natively — `Directionality` in Flutter, `dir` on
+  the web — so setting it is a host duty like the font file, and the tree only has to
+  speak logical tokens. A `BoxTheme` in core would be worse: `onPrimary` and
+  `outline` are Material's words, and a design system is a package of values
+  (`unibox_material`), not a concept the model has to carry. The outward projection
+  that a core theme would have needed — `ThemeData` on one side, CSS variables on the
+  other — is fifteen lines in a Material application, which is where it stays.
 - A triggered keyframe timeline (`BoxAnimation`: `press`/`hover`/`focus`/`autoplay`
   or a host `play` key, with stops per look, rendered as CSS `@keyframes` and a
   Flutter `TweenSequence`). The portable part of what it was for is already here:
