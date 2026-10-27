@@ -555,6 +555,11 @@ dart analyze                                     # static analysis everywhere
 (cd example/unibox_example_flutter && flutter test)
 ```
 
+`tool/verify.sh` runs the format check, the analysis and all seven suites in that
+order, which is the command to reach for before a commit; `--fast` stops after the
+analysis, `--fix` formats the tree first and `--docs` adds the API docs of every
+package.
+
 The workspace targets Dart `^3.13.0` and pins Jaspr to the `0.24` line. Continuous
 integration runs the format check, `dart analyze`, the seven test suites and
 `dart doc` for each package on every push (see
@@ -562,6 +567,11 @@ integration runs the format check, `dart analyze`, the seven test suites and
 
 Where to read more:
 
+- [AGENTS.md](AGENTS.md) — the working rules for a coding agent: the guardrails, the
+  repository map, the verification command and the touch points for a change that
+  spans core and both renderers.
+- [llms.txt](llms.txt) — a plain text index of this documentation, for a tool that
+  reads files rather than links.
 - [design.md](design.md) — why the model looks like this: the rules behind the
   defaults, the naming, the non-goals, and what was deliberately left out.
 - [TASK_PLAN.md](TASK_PLAN.md) — what is done, what is next, and what was deliberately

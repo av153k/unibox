@@ -1,0 +1,59 @@
+# Unibox
+
+> One immutable Dart description of a screen, rendered natively by Flutter and as HTML/CSS by Jaspr.
+
+Unibox is a Dart 3.13 workspace of four packages. `packages/unibox_core` holds the
+node tree and the design tokens and has no dependencies at all; `packages/unibox_flutter`
+and `packages/unibox_jaspr` are two renderers of the same tree; `packages/unibox_conformance`
+holds one table of expected presentation that both renderer suites are checked
+against, so the two renderings cannot drift apart silently.
+
+Paths in this file are relative to the repository root. This is an index: the rules
+a coding agent needs are in [AGENTS.md](AGENTS.md), and every other document
+assumes you have read the README's node sections.
+
+## Start here
+
+- [AGENTS.md](AGENTS.md): the instruction set for a coding agent — non-negotiable
+  rules, repository map, commands, and the touch points for a token, a node type,
+  a parity fix or an example change.
+- [README.md](README.md): the user guide. One section per node, with the parameter
+  tables, typography, motion, semantics, and what the host owns.
+- [design.md](design.md): why the model looks like this — defaults, precedence,
+  dimensions, parity, interaction, non-goals, compatibility.
+
+## Packages
+
+- [unibox_core](packages/unibox_core/README.md): the model — nodes, tokens,
+  defaults, validation. Pure Dart; never imports `dart:ui`, Flutter or Jaspr.
+- [unibox_flutter](packages/unibox_flutter/README.md): the Flutter renderer
+  (`renderFlutter`, `node.toWidget()`), node by node, with what differs from the web.
+- [unibox_jaspr](packages/unibox_jaspr/README.md): the Jaspr renderer
+  (`renderJaspr`, `node.toComponent()`), the CSS it emits, and the document work it
+  leaves to the host.
+- [unibox_conformance](packages/unibox_conformance/README.md): the presentation
+  contract — `BoxAppearance`, `boxCases`, `TextAppearance`, `textCases` — and the
+  line between "the same" and "close enough".
+
+## Working on the repository
+
+- [tool/verify.sh](tool/verify.sh): format check, analysis and the seven test
+  suites, the way CI runs them. `--fast` skips the suites, `--docs` adds `dart doc`.
+- [.github/workflows/ci.yml](.github/workflows/ci.yml): what continuous integration
+  actually runs, including the docs job that fails on a `dart doc` warning.
+- [TASK_PLAN.md](TASK_PLAN.md): what is built, the decisions taken, and the
+  `Deferred` list that is deliberately out of scope.
+- [RELEASE.md](RELEASE.md): the human release checklist. CI never publishes.
+- [example/README.md](example/README.md): the two pages shared by a Flutter app and
+  a static site, and how each host answers what a tree cannot know.
+
+## Optional
+
+- [analysis_options.yaml](analysis_options.yaml): the strict analyzer settings and
+  the enabled lints.
+- [packages/unibox_core/CHANGELOG.md](packages/unibox_core/CHANGELOG.md),
+  [packages/unibox_flutter/CHANGELOG.md](packages/unibox_flutter/CHANGELOG.md),
+  [packages/unibox_jaspr/CHANGELOG.md](packages/unibox_jaspr/CHANGELOG.md): the
+  unreleased changes, which is where a new token is described for the user.
+- [example/unibox_example_shared/lib/](example/unibox_example_shared/lib/): the
+  example trees as plain Dart, the arrangement to copy for a real application.
