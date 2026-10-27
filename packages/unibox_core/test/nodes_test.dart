@@ -325,23 +325,38 @@ void main() {
   });
 
   group('EmbedNode', () {
-    test('carries the payload of its subclass', () {
-      const node = _FakeEmbed('payload', key: 'embed');
+    test('carries the implementations of its subclass', () {
+      const node = _FakeEmbed(<Object>['widget', 'component'], key: 'embed');
 
-      expect(node.payload, 'payload');
+      expect(node.implementations, <Object>['widget', 'component']);
       expect(node.key, 'embed');
       expect(node.children, isEmpty);
       expect(node, isA<UINode>());
+    });
+
+    test('exposes a wrapped child as its content', () {
+      const child = TextNode('Ripple');
+      const node = _FakeEmbed(<Object>['widget'], child: child);
+
+      // The child is what an implementation wraps, so validation and the renderers
+      // reach it like the content of any other parent node.
+      expect(node.child, child);
+      expect(node.children, <UINode>[child]);
+    });
+
+    test('still answers payload for a node that carries one', () {
+      const node = _FakeEmbed(<Object>['widget']);
+
+      // ignore: deprecated_member_use_from_same_package
+      expect(node.payload, 'widget');
     });
   });
 }
 
 /// A minimal embed, standing in for a host specific node.
 final class _FakeEmbed extends EmbedNode {
-  const _FakeEmbed(this.value, {super.key});
-
-  final String value;
+  const _FakeEmbed(this.implementations, {super.key, super.child});
 
   @override
-  Object get payload => value;
+  final List<Object> implementations;
 }

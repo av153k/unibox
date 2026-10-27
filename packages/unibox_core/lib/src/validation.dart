@@ -1,5 +1,6 @@
 import 'enums.dart';
 import 'nodes/box.dart';
+import 'nodes/embed_node.dart';
 import 'nodes/link_node.dart';
 import 'nodes/positioned_node.dart';
 import 'nodes/stack_node.dart';
@@ -61,7 +62,9 @@ class TreeIssue {
 /// * a box that scrolls along its main axis while distributing its children
 ///   with [Box.mainAlign], which pushes overflowing children out of reach,
 /// * a list item whose parent is not a list, which is invalid HTML and which no
-///   assistive technology can announce as a list.
+///   assistive technology can announce as a list,
+/// * an embed that carries no implementation at all, which no renderer can draw
+///   and which would otherwise vanish from the page.
 List<TreeIssue> validateTree(UINode root) {
   final List<TreeIssue> issues = <TreeIssue>[];
   _validate(root, parent: null, inLink: false, issues: issues);
@@ -143,6 +146,19 @@ void _validate(
         ),
       );
     }
+  }
+
+  if (node is EmbedNode && node.implementations.isEmpty) {
+    issues.add(
+      TreeIssue(
+        node: node,
+        severity: TreeIssueSeverity.error,
+        message:
+            'An ${node.runtimeType} carries no implementation, so no renderer can '
+            'draw it and every target reports it. Give the node one payload per '
+            'renderer that has to render the tree.',
+      ),
+    );
   }
 
   for (final UINode child in node.children) {

@@ -53,6 +53,27 @@ void main() {
       expect(issue.message, contains('invalid HTML'));
     });
 
+    test('reports an embed without an implementation', () {
+      const Box tree = Box(children: <UINode>[_EmptyEmbed()]);
+
+      final TreeIssue issue = validateTree(tree).single;
+
+      expect(issue.severity, TreeIssueSeverity.error);
+      expect(issue.message, contains('carries no implementation'));
+    });
+
+    test('reaches the child an embed wraps', () {
+      const Box tree = Box(
+        children: <UINode>[
+          _WrappingEmbed(child: PositionedNode(top: 0, child: TextNode('x'))),
+        ],
+      );
+
+      // The child of an embed is content like any other, so a node validation
+      // rejects is reported even when an embed holds it.
+      expect(validateTree(tree).single.message, contains('StackNode'));
+    });
+
     test('warns about a positioned node outside a stack', () {
       const Box tree = Box(
         children: <UINode>[PositionedNode(top: 8, child: TextNode('badge'))],
@@ -166,4 +187,20 @@ void main() {
       );
     });
   });
+}
+
+/// An embed that carries nothing, which no renderer can draw.
+final class _EmptyEmbed extends EmbedNode {
+  const _EmptyEmbed();
+
+  @override
+  List<Object> get implementations => const <Object>[];
+}
+
+/// An embed that wraps a child it does not draw itself.
+final class _WrappingEmbed extends EmbedNode {
+  const _WrappingEmbed({required super.child});
+
+  @override
+  List<Object> get implementations => const <Object>['widget'];
 }
