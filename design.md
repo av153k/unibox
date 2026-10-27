@@ -162,12 +162,16 @@ never inherited (CSS does not inherit them either).
   it. Glyph rasterisation, hinting and line breaking belong to the engine, and
   `unibox_conformance/README.md` has the table that says which is which. One
   length is exempt from that, because both sides compute it the same way: a line
-  box is `fontSize * lineHeight` on both. Two consequences follow, and both are
-  the application's business rather than the renderer's: a tree that has to be
-  pixel-stable declares its typography, because the ambient defaults differ
-  (Flutter falls back to 14 logical pixels of black, a browser to 16 pixels of
-  `canvastext`), and it ships the same font file to both hosts, because a family
-  installed on one side only falls back with different metrics.
+  box is `fontSize * lineHeight` on both.
+- The default typography is part of the model, not of a host: renderers install
+  `BoxTextStyle.defaults` at the root of the tree they render — a
+  `DefaultTextStyle` around the widget tree, a `:root` rule on the page — because
+  the hosts disagree about the answer (14 logical pixels of black in Flutter, 16
+  pixels of `canvastext`, a colour that flips with the theme, in a browser) and a
+  default that lives in the host is the drift this library exists to remove. The
+  font family is the one token the default leaves out: a font file is an asset of
+  the application, so unset means the platform's UI font on both targets
+  (`system-ui` in CSS, the engine default in Flutter).
 - The surface a tree is drawn on is host business: a `100%` box needs a root with
   a height, and a font needs a host that has one. An application declares both in
   its own idiom (`MaterialApp`, a Jaspr `Document`) and the renderer stays out of

@@ -117,14 +117,15 @@ A value is resolved in this order, and the first match wins:
 **Fidelity.** The two renderings are meant to look the same, and what "the same"
 means is written down and tested: the same layout, spacing and paint for a box,
 and the same font size, weight, colour, line height, letter spacing, family,
-alignment and truncation for a text. What is *not* promised is the pixels. A
-line box is the one length both sides compute identically — `fontSize *
-lineHeight`, on both — while glyph rasterisation, hinting and line breaking
-belong to the text engine, and Skia is not a browser. Two things make an
-application pixel-stable: declare its typography in the tree rather than relying
-on the host (Flutter falls back to 14 logical pixels of black, a browser to 16
-pixels of `canvastext`), and ship the same font file to both hosts, because a
-family installed on one side only falls back with different metrics.
+alignment and truncation for a text. The typography a tree does not declare is not
+left to the host either — `BoxTextStyle.defaults` is the model's, and both
+renderers apply it to the root they render, so an undeclared text is typeset the
+same way twice instead of inheriting Flutter's 14 pixels of black or a browser's
+16 pixels of `canvastext`. What is *not* promised is the pixels: a line box is the
+one length both sides compute identically — `fontSize * lineHeight` — while glyph
+rasterisation, hinting and line breaking belong to the text engine, and Skia is
+not a browser. The one token the model leaves to the application is the font
+family, because a font file is an asset: ship the same one to both hosts.
 
 **Dimensions.** Numbers are logical pixels (`px` on the web). `double.infinity`
 means "fill the available space": `100%` in CSS, an `Expanded` or an

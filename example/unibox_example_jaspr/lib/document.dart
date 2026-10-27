@@ -36,12 +36,14 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.signup}) {
         selector: const Selector('html, body'),
         styles: Styles(height: const Unit.percent(100), margin: Spacing.zero),
       ),
-      // The font is the other half of that surface. Flutter hands the tree the
-      // platform UI font through its theme, so the document asks CSS for the same
-      // thing: a browser falls back along the stack to the face its platform
-      // considers the UI font. The stack is written raw because a comma separated
-      // list is a CSS construct — a `BoxTextStyle.fontFamily` names one family,
-      // which Flutter and CSS both understand the same way.
+      // The font is the other half of that surface, and the one thing the model
+      // leaves to the application: `BoxTextStyle.defaults` has no family, because
+      // a font file is an asset. Flutter hands the tree the platform UI font by
+      // saying nothing, so the document asks CSS for the same thing — a browser
+      // falls back along the stack to the face its platform considers the UI font.
+      // The stack is written raw because a comma separated list is a CSS
+      // construct, while a `BoxTextStyle.fontFamily` names one family, which
+      // Flutter and CSS both understand the same way.
       const StyleRule(
         selector: Selector('body'),
         styles: Styles(
