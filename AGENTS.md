@@ -31,7 +31,7 @@ guide is [`README.md`](README.md).
 | `packages/unibox_flutter/lib/src/` | one file per node (`UniboxBox`, `UniboxText`, ...), `values.dart` (token → Flutter), `render.dart` (dispatch and the validation assert) | the Flutter target has to change |
 | `packages/unibox_jaspr/lib/src/` | the same for the web, plus `default_typography.dart` (the `:root` rule) | the web target has to change |
 | `packages/unibox_conformance/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases` | a presentational token is added or changed |
-| `packages/unibox_material/lib/src/` | the Material 3 type scale: `MaterialTypography` (the fifteen roles as `const BoxTextStyle` values) and `MaterialTypeRole` | a design-system role is added or a scale changes |
+| `packages/unibox_material/lib/src/` | the Material 3 type scale: `MaterialTypography` (the fifteen roles as `const BoxTextStyle` values), `MaterialTypeRole`, and `MaterialCard` (a `Box` with the card's defaults) | a design-system role is added, a scale changes, or a component is added |
 | `packages/*/test/support/` | the harnesses (`pumpNode`, `inNode`, `stylesOf`, ...) and `appearance.dart`, which reads the presentation back out of the output | a test needs a new fact |
 | `example/unibox_example_shared/` | the two pages as pure Dart trees, the form state, the palette | the example content changes |
 | `example/unibox_example_flutter/`, `example/unibox_example_jaspr/` | hosts: state and surface, never layout | state, navigation or the surface changes |
@@ -99,10 +99,12 @@ before a commit, and `dart analyze` is strict here (`strict-casts`,
 7. **One direction of dependency.** Renderers depend on core; core never imports a
    renderer. A renderer knows nothing of the other renderer, and neither knows
    `unibox_material`.
-8. **A design system is a package of values.** `unibox_material` holds the Material
-   3 type scale as `const` `BoxTextStyle` values and depends on `unibox_core`
-   alone. It exports no nodes: a preset is a value, never a `TitleText`-style
-   subclass, so an application can still re-theme it by merging a token.
+8. **A design system is a package of values, plus nodes built from nodes.**
+   `unibox_material` holds the Material 3 type scale as `const` `BoxTextStyle`
+   values and `MaterialCard`, a `Box` with the card's defaults. It depends on
+   `unibox_core` alone and adds no renderer code: a look is a value, and a
+   component is a node that extends the node already drawn for it, never a new node
+   type.
 
 ## How a change lands
 

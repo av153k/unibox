@@ -437,9 +437,9 @@ that wants its own ships the same file to both.
 A scale can be written by hand, as the example does, or taken ready made:
 [`unibox_material`](packages/unibox_material/README.md) holds the Material 3 type
 scale as `const BoxTextStyle` values (`MaterialTypography.titleLarge`,
-`MaterialTypography.bodyMedium`, ...). It is optional and pure Dart, and the
-renderers do not know it exists — a tree that uses it is drawn by the same two
-renderers as one that does not.
+`MaterialTypography.bodyMedium`, ...) and a `MaterialCard` node built from the same
+tokens. It is optional and pure Dart, and the renderers do not know it exists — a
+tree that uses it is drawn by the same two renderers as one that does not.
 
 ## Motion
 
@@ -574,7 +574,7 @@ on both sides.
 | `packages/unibox_flutter` | The Flutter renderer: `renderFlutter(node)` and `node.toWidget()`. |
 | `packages/unibox_jaspr` | The Jaspr renderer: `renderJaspr(node)` and `node.toComponent()`. |
 | `packages/unibox_conformance` | The tables both renderers are tested against. Development only, not published. |
-| `packages/unibox_material` | The Material 3 type scale as tokens, for an application that wants Material's typography. Optional: no renderer depends on it. |
+| `packages/unibox_material` | The Material 3 type scale and a card node, for an application that wants Material's typography. Optional: no renderer depends on it. |
 | `example/` | Two pages, one form and one navigation bar shared by a Flutter app and a static site. |
 
 Dependencies point one way: both renderers depend on `unibox_core`, never the other

@@ -131,6 +131,7 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [x] Task 90: New package `unibox_material` — pure Dart, depending on `unibox_core` alone: `MaterialTypeRole` names the fifteen roles of the Material 3 type scale, and `MaterialTypography` states each one as a `const BoxTextStyle` with the specification's size, weight, letter spacing and line height (the line height as the division its pixel height implies, `64 / 57` for display large), plus a `styles` table and an `of(role)` lookup. Each role is a complete style so it resets the tokens it does not share; `color` and `fontFamily` stay unset because a colour scheme and a font file are the application's.
 - [x] Task 91: Tests and docs — the suite holds every role to the specification (size, tracking, weight and the `fontSize * lineHeight` line box), the table to every role in order, the package to `unibox_core` plus the SDK, and the exports to names a core import leaves alone; the package README and changelog, `design.md` §5.9, the root README, `RELEASE.md` and the CI workflow all take the new package in.
 - [x] Task 92: Decision record — a design system is values, not node types: the package README gains the "presets: values, not classes" recipe (a `const` catalogue in the app, the four line subclass it replaces, and why the package exports none), and `design.md` §5.9 states the three rules behind it (no wrapper nodes, one `style` per text, presets are values) plus the cost asymmetry that keeps the token vocabulary the stable layer.
+- [x] Task 93: `MaterialCard` — the first component, and the line it draws: a card owns children and a surface, so it is a `Box` with the card's defaults (16 of padding, a white surface, a 12 pixel radius, elevation level one as the one `BoxShadow` the model has, `bodyMedium` for the text inside) rather than a `TitleText`-style node. Every token is a parameter, the layout and interaction of a box come through, and neither renderer knows the class; the renderer suites gain the test the card rests on (a node that extends `Box` renders as that box), and §5.9, both agent rule files and the package README state where a design system stops being a value.
 
 ### Phase 21: Material components
 - [ ] Task 93: `unibox_material` — `MaterialPalette`: the Material 3 colour roles as `const BoxColor` values (`primary`, `onPrimary`, `surface`, `onSurface`, `onSurfaceVariant`, `outline`, `error`, ...), with a light and a dark instance, next to `MaterialTypography` and following its shape. The palette lives here and not in `unibox_core` because the roles are Material's vocabulary: a core theme would put one design system's words into the model every renderer carries. A test pins the roles and the pairs that have to contrast.
@@ -175,8 +176,11 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
   mode in the core. The renderers stay unaware of all of them, which is what lets
   a tree use Material's scale on both targets without either host importing
   Material. Presets are values, not node types: a `TitleText`-shaped wrapper stays
-  in the application, because a node type cannot read a theme and the published
-  API is the part that cannot be withdrawn cheaply.
+  in the application, because a look baked into a node type cannot read a theme and
+  the published API is the part that cannot be withdrawn cheaply. A component that
+  owns children is the other kind, and it is a node built from the node that
+  already draws it — `MaterialCard` extends `Box`, so it costs no renderer and no
+  conformance case.
 
 ## Deferred
 

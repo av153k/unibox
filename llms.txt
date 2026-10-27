@@ -43,8 +43,9 @@ assumes you have read the README's node sections.
   contract — `BoxAppearance`, `boxCases`, `TextAppearance`, `textCases` — and the
   line between "the same" and "close enough".
 - [unibox_material](packages/unibox_material/README.md): the Material 3 type scale
-  as `BoxTextStyle` values (`MaterialTypography`, `MaterialTypeRole`), optional and
-  pure Dart, for a tree that wants Material's typography on both targets.
+  as `BoxTextStyle` values (`MaterialTypography`, `MaterialTypeRole`) and
+  `MaterialCard`, a `Box` with the card's defaults — optional and pure Dart, for a
+  tree that wants Material's typography on both targets.
 
 ## Working on the repository
 

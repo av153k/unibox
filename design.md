@@ -7,7 +7,7 @@ Unibox provides pure Dart layout primitives that compile natively to both Flutte
   - `packages/unibox_core`: Pure Dart AST & tokens. Zero dependencies (no Flutter, no Jaspr, no `dart:ui`).
   - `packages/unibox_flutter`: Depends on `unibox_core` + Flutter SDK.
   - `packages/unibox_jaspr`: Depends on `unibox_core` + `jaspr: ^0.24.0`.
-  - `packages/unibox_material`: Optional design-system tokens (the Material 3 type scale). Depends on `unibox_core` only; no renderer depends on it.
+  - `packages/unibox_material`: Optional design-system tokens and one component (the Material 3 type scale and `MaterialCard`). Depends on `unibox_core` only; no renderer depends on it.
 - **Engineering Agency:** You have permission to diverge, adjust signatures, or simplify types where it makes sense, as long as the packages remain decoupled and work seamlessly across both platforms.
 
 ---
@@ -310,14 +310,19 @@ never inherited (CSS does not inherit them either).
   scale. A second design system can be added as a second package without touching
   the core or a renderer, and an application that wants no system at all is not
   made to carry one.
-- A design system is values, not node types. A role enters a tree through
-  `Box.textStyle` or `TextNode.style`, and a product that wants its own names
-  writes a class of `const` values in its own package. No `TitleText`-shaped
-  wrapper is exported: a node subclass bakes a role into a type that cannot read
-  a theme (the tree has no context), names a look like a structure (`headingLevel`
-  is a separate token), duplicates Material's own vocabulary, and would turn
-  "renderers match a node by subtype" from an implementation detail into a
-  public extension point.
+- A design system is values for looks and nodes for structure. A role enters a
+  tree through `Box.textStyle` or `TextNode.style`, and a product that wants its
+  own names writes a class of `const` values in its own package. No
+  `TitleText`-shaped wrapper is exported: a look baked into a node type cannot
+  read a theme (the tree has no context), names a look like a structure
+  (`headingLevel` is a separate token) and duplicates Material's own vocabulary.
+- A component that owns children is a node, and it is built from the node that
+  already draws it. `unibox_material` exports `MaterialCard`, a `Box` with the
+  card's surface, shape, elevation and body typography: no renderer change, no new
+  token and therefore no conformance case, and the two suites pin the property it
+  rests on — a node that extends `Box` renders as that box on both targets. The
+  distinction is what keeps the package honest: a look is a value, a component is
+  a node, and neither is a new renderer.
 - A text takes one `style`, not a list of them. Typography composes by
   inheritance (`Box.textStyle`) and by `merge` at author time, so a
   `TextNode.styles` list would add a second, node local cascade — the CSS cascade
