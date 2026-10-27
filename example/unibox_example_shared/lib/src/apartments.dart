@@ -1,0 +1,229 @@
+import 'package:unibox_core/unibox_core.dart';
+
+import 'theme.dart';
+
+/// A listing on the apartments page.
+///
+/// Plain data, like the signup form: the page is a function of the list, so a
+/// host can hand it what it loaded from wherever it loads things from without
+/// touching the tree.
+final class Apartment {
+  /// Creates a listing.
+  const Apartment({
+    required this.name,
+    required this.rooms,
+    required this.area,
+    required this.rent,
+    required this.tint,
+  });
+
+  /// The name of the building.
+  final String name;
+
+  /// How many rooms it has.
+  final int rooms;
+
+  /// The living area in square metres.
+  final int area;
+
+  /// The monthly rent in euro.
+  final int rent;
+
+  /// The colour of the square standing in for its photo.
+  final BoxColor tint;
+
+  /// The one line summary under the name.
+  String get summary => '$rooms rooms · $area m²';
+
+  /// The asking rent.
+  String get priceLine => '€$rent / month';
+}
+
+/// The listings the example shows.
+///
+/// More of them than fit on a normal window, which is the point: the page
+/// scrolls under the navigation bar instead of growing the page.
+const List<Apartment> exampleApartments = <Apartment>[
+  Apartment(
+    name: 'Via Bellavista 12',
+    rooms: 3,
+    area: 84,
+    rent: 1850,
+    tint: BoxColor(0xFFFDE8D3),
+  ),
+  Apartment(
+    name: 'Corso Umberto 4',
+    rooms: 2,
+    area: 61,
+    rent: 1240,
+    tint: BoxColor(0xFFE1EBFA),
+  ),
+  Apartment(
+    name: 'Piazza della Scala 7',
+    rooms: 1,
+    area: 44,
+    rent: 980,
+    tint: BoxColor(0xFFF3E3F1),
+  ),
+  Apartment(
+    name: 'Vicolo del Forno 3',
+    rooms: 4,
+    area: 112,
+    rent: 2400,
+    tint: BoxColor(0xFFE3F2E8),
+  ),
+  Apartment(
+    name: 'Lungomare 21',
+    rooms: 2,
+    area: 70,
+    rent: 1420,
+    tint: BoxColor(0xFFFAF0D5),
+  ),
+  Apartment(
+    name: 'Salita San Marco 9',
+    rooms: 3,
+    area: 95,
+    rent: 2100,
+    tint: BoxColor(0xFFE8E6F7),
+  ),
+];
+
+/// The apartments page: the listings, and the map beside them when there is room.
+///
+/// The page scrolls, the frame does not. The scrolling box is the page itself
+/// and the bar above it belongs to the frame, so the navigation stays where it
+/// is while the list moves — on both targets, from `Overflow.scroll`, which is
+/// a `SingleChildScrollView` in Flutter and `overflow: auto` in CSS.
+///
+/// The padding sits on a box *inside* the scrolling one on purpose: Flutter puts
+/// the padding of a scrolling box around its viewport (so it stays put), while
+/// CSS puts it inside the scrollport (so it scrolls away). Moving it one level
+/// in leaves both renderers scrolling the same content.
+///
+/// [map] is how a host answers "is there room for the map?". The tree cannot
+/// answer it: a viewport is a fact about the surface the tree is drawn on, not
+/// about the description, so there is no breakpoint token to test here. Flutter
+/// measures its surface and passes the panel or `null`; the web host always
+/// passes it and lets CSS hide it below [ExampleLayout.wideBreakpoint]. Both
+/// end up with the same two layouts — the list alone, or the list and the map
+/// side by side — because an element that is not displayed takes no room.
+///
+/// The panel is a child of the row itself rather than something wrapped in a
+/// slot, and that is what lets the two answers meet: a host that hides it can
+/// hide the whole column, because the column *is* the panel.
+Box buildApartmentsPage({UINode? map}) {
+  return Box(
+    flex: 1,
+    direction: Axis.vertical,
+    width: double.infinity,
+    overflow: Overflow.scroll,
+    children: <UINode>[
+      Box(
+        direction: Axis.vertical,
+        width: double.infinity,
+        padding: const BoxSpacing.all(24),
+        gap: 20,
+        textStyle: ExampleType.body,
+        children: <UINode>[
+          _heading(),
+          Box(
+            direction: Axis.horizontal,
+            width: double.infinity,
+            gap: 24,
+            crossAlign: CrossAlign.start,
+            children: <UINode>[
+              Box(
+                direction: Axis.vertical,
+                flex: 3,
+                gap: 12,
+                children: <UINode>[
+                  for (final Apartment apartment in exampleApartments)
+                    _listing(apartment),
+                ],
+              ),
+              ?map,
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+/// The map panel: a coloured square standing in for a real map.
+///
+/// It is a node like any other, so the host decides whether it is on the page at
+/// all while the tree keeps owning how it looks. Its `flex` is what makes it the
+/// second column of the row: three parts of the width go to the listings, two to
+/// the map, on both targets.
+Box buildExampleMap() {
+  return Box(
+    flex: 2,
+    width: double.infinity,
+    height: 420,
+    mainAlign: MainAlign.center,
+    crossAlign: CrossAlign.center,
+    borderRadius: 16,
+    backgroundColor: ExamplePalette.mapSurface,
+    border: const BoxBorder(color: ExamplePalette.mapLine),
+    textStyle: ExampleType.map,
+    children: <UINode>[const TextNode('Map')],
+  );
+}
+
+/// The title of the page and the line under it.
+UINode _heading() {
+  return Box(
+    direction: Axis.vertical,
+    gap: 4,
+    width: double.infinity,
+    textStyle: ExampleType.title,
+    children: <UINode>[
+      const TextNode('Apartments'),
+      TextNode(
+        '${exampleApartments.length} listings in the old town. The map shows '
+        'up when the window is wide enough to hold it.',
+        style: ExampleType.muted,
+      ),
+    ],
+  );
+}
+
+/// One listing: a coloured square for the photo, then what the rent gets you.
+///
+/// The row is what makes the card work at any width: the text column takes the
+/// space that is left (`flex: 1`) and wraps inside it, so the card is as wide as
+/// the page and never wider than it.
+UINode _listing(Apartment apartment) {
+  return Box(
+    direction: Axis.horizontal,
+    width: double.infinity,
+    gap: 14,
+    crossAlign: CrossAlign.center,
+    padding: const BoxSpacing.all(14),
+    borderRadius: 14,
+    backgroundColor: ExamplePalette.surface,
+    border: const BoxBorder(color: ExamplePalette.border),
+    stateStyles: const <BoxState, BoxStyle>{
+      BoxState.hover: BoxStyle(border: BoxBorder(color: ExamplePalette.accent)),
+    },
+    children: <UINode>[
+      Box(
+        width: 88,
+        height: 88,
+        borderRadius: 10,
+        backgroundColor: apartment.tint,
+      ),
+      Box(
+        flex: 1,
+        direction: Axis.vertical,
+        gap: 4,
+        children: <UINode>[
+          TextNode(apartment.name, style: ExampleType.listingName),
+          TextNode(apartment.summary, style: ExampleType.muted),
+          TextNode(apartment.priceLine, style: ExampleType.listingPrice),
+        ],
+      ),
+    ],
+  );
+}

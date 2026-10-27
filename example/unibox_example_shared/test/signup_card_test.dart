@@ -2,50 +2,7 @@ import 'package:test/test.dart';
 import 'package:unibox_core/unibox_core.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
 
-/// Every node of [root], depth first.
-List<UINode> flatten(UINode root) => <UINode>[
-  root,
-  for (final UINode child in root.children) ...flatten(child),
-];
-
-/// The text of every [TextNode] in [root], depth first.
-List<String> textsIn(UINode root) =>
-    flatten(root)
-        .whereType<TextNode>()
-        .map((TextNode node) => node.text)
-        .toList();
-
-/// The innermost box that contains a [TextNode] with [label].
-Box boxAround(UINode root, String label) =>
-    flatten(root)
-        .whereType<Box>()
-        .lastWhere((Box box) => textsIn(box).contains(label));
-
-/// Stands in for a host application: records what the card reports.
-final class RecordingHost {
-  /// The names reported through `onNameChanged`.
-  final List<String> names = <String>[];
-
-  /// The emails reported through `onEmailChanged`.
-  final List<String> emails = <String>[];
-
-  /// How often the newsletter opt-in was toggled.
-  int newsletterToggles = 0;
-
-  /// How often the form was submitted.
-  int submissions = 0;
-
-  /// Builds the card for [state] with recording callbacks.
-  Box card([SignupFormState state = const SignupFormState()]) {
-    return buildSignupCard(
-      state: state,
-      onNameChanged: names.add,
-      onEmailChanged: emails.add,
-      onNewsletterToggled: () => newsletterToggles++,
-      onSubmit: () => submissions++,
-    );
-  }
-}
+import 'support/tree.dart';
 
 void main() {
   group('SignupFormState', () {
@@ -240,14 +197,24 @@ void main() {
     });
   });
 
-  group('buildExamplePage', () {
-    test('fills the surface in both directions', () {
-      final Box page = buildExamplePage(RecordingHost().card());
+  group('buildSignupPage', () {
+    test('fills the space the navigation leaves', () {
+      final Box page = RecordingHost().signupPage();
 
+      expect(page.flex, 1);
       expect(page.width, double.infinity);
-      expect(page.height, double.infinity);
-      expect(page.backgroundColor, ExamplePalette.canvas);
+      expect(page.mainAlign, MainAlign.center);
+      expect(page.crossAlign, CrossAlign.center);
       expect(page.children.single, isA<Box>());
+    });
+
+    test('centres the card the host describes', () {
+      final Box page = RecordingHost().signupPage(
+        const SignupFormState(name: 'Ada'),
+      );
+
+      expect(textsIn(page), contains('Join Unibox'));
+      expect(flatten(page).whereType<TextInputNode>().first.value, 'Ada');
     });
   });
 }

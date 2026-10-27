@@ -1,95 +1,6 @@
 import 'package:unibox_core/unibox_core.dart';
 
-/// The palette of the example.
-///
-/// The colors are declared once because both renderers paint the same card:
-/// Flutter translates them to a `Color`, the web renderer to a CSS color.
-abstract final class ExamplePalette {
-  /// The accent of the banner, the button and the checkbox.
-  static const BoxColor accent = BoxColor.rgb(0x2D, 0x6C, 0xF3);
-
-  /// The accent while the pointer is over the button.
-  static const BoxColor accentHover = BoxColor.rgb(0x1D, 0x4E, 0xD8);
-
-  /// The accent while the button is pressed.
-  static const BoxColor accentPressed = BoxColor.rgb(0x16, 0x3E, 0xB0);
-
-  /// The background of the card.
-  static const BoxColor surface = BoxColor.white;
-
-  /// The color of the page behind the card.
-  static const BoxColor canvas = BoxColor.rgb(0xF3, 0xF4, 0xF6);
-
-  /// The default text color.
-  static const BoxColor text = BoxColor.rgb(0x11, 0x18, 0x27);
-
-  /// The color of supporting text.
-  static const BoxColor muted = BoxColor.rgb(0x6B, 0x72, 0x80);
-
-  /// The color of borders, and of the button while it is not ready.
-  static const BoxColor border = BoxColor.rgb(0xE5, 0xE7, 0xEB);
-
-  /// The color of the confirmation message.
-  static const BoxColor success = BoxColor.rgb(0x15, 0x80, 0x3D);
-
-  /// The background of the confirmation message.
-  static const BoxColor successSurface = BoxColor.rgb(0xEC, 0xFD, 0xF5);
-}
-
-/// The typography of the example.
-///
-/// Typography is the one thing a box passes down to its children, so the card
-/// states it once per area and the text nodes only repeat a token they
-/// override. The result is identical in Flutter and on the web: a
-/// `DefaultTextStyle` on one side, plain CSS inheritance on the other.
-abstract final class ExampleType {
-  /// The line height of the example, as a multiple of the font size.
-  ///
-  /// The unitless form is the only one that means the same thing in CSS and in
-  /// Flutter, so every text of the card gets the same leading on both targets.
-  /// A font *family* is deliberately left out: a family is a host decision — the
-  /// Flutter app inherits the platform font from its theme, the web app declares
-  /// a stack on the document — and both platforms end up on their own UI font,
-  /// which is the closest a family can get across two applications.
-  static const double lineHeight = 1.45;
-
-  /// The body text of the card.
-  ///
-  /// This is the style the card installs, so everything below it inherits the
-  /// line height and only overrides size, weight and colour.
-  static const BoxTextStyle body = BoxTextStyle(
-    fontSize: 14,
-    color: ExamplePalette.text,
-    lineHeight: lineHeight,
-  );
-
-  /// Supporting text, such as hints and the status line.
-  static const BoxTextStyle muted = BoxTextStyle(
-    fontSize: 13,
-    color: ExamplePalette.muted,
-  );
-
-  /// The title of the card.
-  static const BoxTextStyle title = BoxTextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-    color: ExamplePalette.text,
-  );
-
-  /// The label of the primary button.
-  static const BoxTextStyle button = BoxTextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.semiBold,
-    color: ExamplePalette.surface,
-  );
-
-  /// The link under the button.
-  static const BoxTextStyle link = BoxTextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.medium,
-    color: ExamplePalette.accent,
-  );
-}
+import 'theme.dart';
 
 /// The values entered in the signup card.
 ///
@@ -147,20 +58,34 @@ SignupFormState submitSignupForm(SignupFormState state) {
   return state.isComplete ? state.copyWith(submitted: true) : state;
 }
 
-/// Centers the signup card on the example canvas.
+/// Centers the signup card on the space the navigation leaves.
 ///
-/// The page expands in both directions, so it fills the host surface: a
-/// `Scaffold` body in Flutter, the whole viewport on the web.
-Box buildExamplePage(UINode child) {
+/// The page takes the room the frame gives it (`flex: 1`) instead of the whole
+/// surface, because the navigation bar above it is part of the page frame now:
+/// the card is centred in what is left, which is what both hosts show.
+Box buildSignupPage({
+  required SignupFormState state,
+  required TextChangedCallback onNameChanged,
+  required TextChangedCallback onEmailChanged,
+  required TapCallback onNewsletterToggled,
+  required TapCallback onSubmit,
+}) {
   return Box(
+    flex: 1,
     direction: Axis.vertical,
     mainAlign: MainAlign.center,
     crossAlign: CrossAlign.center,
     width: double.infinity,
-    height: double.infinity,
     padding: const BoxSpacing.all(24),
-    backgroundColor: ExamplePalette.canvas,
-    children: <UINode>[child],
+    children: <UINode>[
+      buildSignupCard(
+        state: state,
+        onNameChanged: onNameChanged,
+        onEmailChanged: onEmailChanged,
+        onNewsletterToggled: onNewsletterToggled,
+        onSubmit: onSubmit,
+      ),
+    ],
   );
 }
 
