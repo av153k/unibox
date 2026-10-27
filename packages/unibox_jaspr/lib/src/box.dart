@@ -44,15 +44,19 @@ class UniboxBox extends StatelessComponent {
         .toList(growable: false);
     final Map<String, String>? attributes = _attributes();
     final Map<String, EventCallback>? events = _events();
+    final core.BoxElement element =
+        box.semantics?.element ?? core.BoxElement.div;
     final Styles restingStyles = toBoxStyles(
       box.computedStyle,
       interactive: box.isInteractive,
+      element: element,
     );
     final String className = 'unibox-box-${_hashOf(box, restingStyles)}';
     final List<StyleRule> stateRules = _stateRules(className);
 
     if (stateRules.isEmpty) {
-      return div(
+      return _element(
+        element,
         children,
         styles: restingStyles,
         attributes: attributes,
@@ -70,7 +74,13 @@ class UniboxBox extends StatelessComponent {
           ...stateRules,
         ],
       ),
-      div(children, classes: className, attributes: attributes, events: events),
+      _element(
+        element,
+        children,
+        classes: className,
+        attributes: attributes,
+        events: events,
+      ),
     ]);
   }
 
@@ -138,9 +148,15 @@ class UniboxBox extends StatelessComponent {
   }
 
   /// The accessibility attributes of the box, or `null` when it needs none.
+  ///
+  /// The element already announces what it is, so `role` is only written when the
+  /// box asks for a role its element does not imply: `<nav>` is a navigation
+  /// landmark without a `role="navigation"` next to it, and `role="link"` on a
+  /// `<div>` is the only way to say what that div means.
   Map<String, String>? _attributes() {
     final core.BoxSemantics? semantics = box.semantics;
     final core.BoxRole role = semantics?.role ?? core.BoxRole.none;
+    final core.BoxElement element = semantics?.element ?? core.BoxElement.div;
     final Map<String, String> attributes = <String, String>{};
     final String? htmlRole = _htmlRole(role);
     final String? label = semantics?.label;
@@ -148,7 +164,7 @@ class UniboxBox extends StatelessComponent {
     final bool isCheckable =
         role == core.BoxRole.checkbox || role == core.BoxRole.switch_;
 
-    if (htmlRole != null) {
+    if (htmlRole != null && htmlRole != _impliedRole(element)) {
       attributes['role'] = htmlRole;
     }
     if (label != null) {
@@ -162,6 +178,24 @@ class UniboxBox extends StatelessComponent {
     }
     if (box.isFocusable && box.enabled) {
       attributes['tabindex'] = '0';
+    }
+
+    final bool? expanded = semantics?.expanded;
+    final bool? selected = semantics?.selected;
+
+    if (expanded != null) {
+      attributes['aria-expanded'] = '$expanded';
+    }
+    if (selected != null) {
+      attributes['aria-selected'] = '$selected';
+    }
+    // A hidden box keeps its look and leaves the accessibility tree, and it is
+    // never focusable, so it cannot be a focusable element with aria-hidden.
+    if (semantics?.hidden ?? false) {
+      attributes['aria-hidden'] = 'true';
+    }
+    if (semantics?.liveRegion ?? false) {
+      attributes['aria-live'] = 'polite';
     }
 
     return attributes.isEmpty ? null : attributes;
@@ -283,6 +317,60 @@ String _hashOf(core.Box box, Styles restingStyles) {
     hash = ((hash ^ codeUnit) * 0x01000193) & 0xFFFFFFFF;
   }
   return hash.toRadixString(16).padLeft(8, '0');
+}
+
+/// Builds the element [element] of a box, or a `<div>` when it is a plain one.
+///
+/// Everything the box needs — styles, classes, attributes and listeners — goes on
+/// that one element, so the semantic element is the box and not a wrapper around
+/// it: `<main>` *is* the page box.
+Component _element(
+  core.BoxElement element,
+  List<Component> children, {
+  String? classes,
+  Styles? styles,
+  Map<String, String>? attributes,
+  Map<String, EventCallback>? events,
+}) {
+  if (element == core.BoxElement.div) {
+    return div(
+      children,
+      classes: classes,
+      styles: styles,
+      attributes: attributes,
+      events: events,
+    );
+  }
+
+  return Component.element(
+    tag: element.name,
+    classes: classes,
+    styles: styles,
+    attributes: attributes,
+    events: events,
+    children: children,
+  );
+}
+
+/// The ARIA role [element] already implies, or `null` when it implies none.
+///
+/// These are the implicit roles of the HTML elements the model has, which is what
+/// lets the renderer skip a `role` attribute that would only repeat the tag.
+String? _impliedRole(core.BoxElement element) {
+  return switch (element) {
+    core.BoxElement.main => 'main',
+    core.BoxElement.nav => 'navigation',
+    core.BoxElement.header => 'banner',
+    core.BoxElement.footer => 'contentinfo',
+    core.BoxElement.aside => 'complementary',
+    core.BoxElement.section => 'region',
+    core.BoxElement.article => 'article',
+    core.BoxElement.form => 'form',
+    core.BoxElement.figure => 'figure',
+    core.BoxElement.ul || core.BoxElement.ol => 'list',
+    core.BoxElement.li => 'listitem',
+    core.BoxElement.div => null,
+  };
 }
 
 /// The ARIA role of [role], or `null` for a plain container.

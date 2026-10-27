@@ -203,10 +203,35 @@ Styles toTextStyles(core.TextNode node) {
 
   final Styles own = Styles(
     textAlign: textAlign == null ? null : toCssTextAlign(textAlign),
-    raw: _truncationStyles(node.maxLines, node.overflow),
+    raw: <String, String>{
+      ...?_truncationStyles(node.maxLines, node.overflow),
+      ...?_headingResetStyles(node),
+    },
   );
 
   return typography == null ? own : own.combine(typography);
+}
+
+/// The declarations that cancel what a browser does to a heading by itself.
+///
+/// An `<h1>`–`<h6>` arrives with a font size, a bold weight and a margin from the
+/// user agent stylesheet, none of which is in the model: a heading is structure.
+/// The reset is written only for the tokens the node does not declare, so the
+/// tree's typography stays in charge and a heading looks exactly like the text it
+/// would be without the element.
+Map<String, String>? _headingResetStyles(core.TextNode node) {
+  final int? level = node.headingLevel;
+  if (level == null) {
+    return null;
+  }
+
+  final core.BoxTextStyle style = node.computedStyle;
+
+  return <String, String>{
+    'margin': '0',
+    if (style.fontSize == null) 'font-size': 'inherit',
+    if (style.fontWeight == null) 'font-weight': 'inherit',
+  };
 }
 
 /// Builds the CSS that truncates text after [maxLines].
@@ -330,6 +355,29 @@ Styles toPositionedStyles(core.PositionedNode node) {
   );
 }
 
+/// The padding a user agent puts around [element], cancelled as `0`.
+///
+/// A list comes with an indent, which a Flutter `Column` knows nothing about; the
+/// renderer states the reset so the two targets agree. Guarded by the caller
+/// against the box declaring its own padding.
+Spacing? _userAgentPadding(core.BoxElement element) {
+  return element == core.BoxElement.ul || element == core.BoxElement.ol
+      ? Spacing.zero
+      : null;
+}
+
+/// The margin a user agent puts around [element], cancelled as `0`.
+///
+/// A list and a `figure` bring outer space from the user agent stylesheet that no
+/// Flutter counterpart has.
+Spacing? _userAgentMargin(core.BoxElement element) {
+  return element == core.BoxElement.ul ||
+          element == core.BoxElement.ol ||
+          element == core.BoxElement.figure
+      ? Spacing.zero
+      : null;
+}
+
 /// Builds the CSS of a single line text input or a text area.
 ///
 /// Inputs are replaced elements: the browser gives them an intrinsic width, its
@@ -398,6 +446,7 @@ Styles toBoxStyles(
   core.BoxStyle style, {
   bool interactive = false,
   bool declaredOnly = false,
+  core.BoxElement element = core.BoxElement.div,
 }) {
   final core.Axis? direction = declaredOnly
       ? style.direction
@@ -434,8 +483,15 @@ Styles toBoxStyles(
     minHeight: toCssUnit(style.minHeight),
     maxWidth: toCssUnit(style.maxWidth),
     maxHeight: toCssUnit(style.maxHeight),
-    padding: padding == null ? null : toCssSpacing(padding),
-    margin: margin == null ? null : toCssSpacing(margin),
+    // A `<ul>`, an `<ol>` or a `<figure>` comes with space around it that no
+    // Flutter counterpart has, so the renderer writes the reset instead of
+    // inheriting it. A token the box declares still wins.
+    padding: padding == null
+        ? (declaredOnly ? null : _userAgentPadding(element))
+        : toCssSpacing(padding),
+    margin: margin == null
+        ? (declaredOnly ? null : _userAgentMargin(element))
+        : toCssSpacing(margin),
     backgroundColor: backgroundColor == null
         ? null
         : toCssColor(backgroundColor),
