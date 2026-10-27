@@ -36,6 +36,7 @@ library;
 export 'src/material_bottom_sheet.dart';
 export 'src/material_card.dart';
 export 'src/material_dialog.dart';
+export 'src/material_icon.dart';
 export 'src/material_ink_well.dart';
 export 'src/material_list_tile.dart';
 export 'src/material_palette.dart';

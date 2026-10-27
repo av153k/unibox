@@ -396,6 +396,35 @@ MaterialBottomSheet(
 Material's modal entrance and exit transitions are not here, and the sheet's four
 corners are rounded because the model has one radius per box.
 
+## The icon
+
+`MaterialIcon` is one glyph of an icon font, centred in a 24 pixel square: a `Box`
+around a `TextNode`, so it recolours with `color` and scales with `size` like any
+text, and needs no embed.
+
+```dart
+MaterialIcon.codePoint(Symbols.home.codePoint);             // by codepoint
+MaterialIcon.ligature('home');                               // by ligature name
+MaterialIcon.ligature('delete', color: palette.error, label: 'Delete');
+```
+
+The font file is the host's, like any other font: declare the family in the
+application (`fonts:` in the Flutter pubspec, an `@font-face` for the web) and name
+it with `fontFamily`. A host that has no font for it draws the character as plain
+text. A decorative icon is hidden from assistive technology; a `label` announces a
+lone one.
+
+**Tree shaking wants codepoints, not ligatures.** `--tree-shake-icons` reads const
+`IconData` instances out of the application and subsets the fonts they name, so a
+codepoint that comes from a const `IconData` turns a 10.7 MB variable font into a
+few kilobytes — while a ligature name, being a string, leaves the whole font in the
+build. Take the codepoint from `Symbols.home` (the `material_symbols_icons` package)
+or from a `const IconData(0xe9b2, fontFamily: …)` of your own; the Symbols
+codepoints are not the legacy `Icons` ones (`home` is `e9b2`, not `e88a`). A web
+export has no shaker of its own: serve the subset the Flutter build wrote, or one
+from `pyftsubset`, with its `@font-face`, plus `font-display: block` and a preload so
+a glyph does not flash as text.
+
 ## Fidelity
 
 What the components state against the Material 3 specification: a card in its three
@@ -448,7 +477,7 @@ them knowing its name.
 
 ## Scope
 
-The type scale, the colour roles, and six components. What is deliberately not here
+The type scale, the colour roles, and seven components. What is deliberately not here
 is written on the class that lacks it, and it is all platform behaviour rather than a
 value the model could carry:
 
@@ -459,6 +488,7 @@ value the model could carry:
 | the caret, the selection and the focus ring | the platform draws them for the input node |
 | modal entrance and exit transitions | the same missing timeline |
 | `ColorScheme`, CSS custom properties, dynamic colour | the two wirings an application owns, described in Task 96 of `TASK_PLAN.md` |
+| the icon font and its subset | a host asset: declared in `fonts:` or with an `@font-face`, and subset by the Flutter build |
 | chips, menus, navigation | not built; each is a component, not a decision |
 
 ## License

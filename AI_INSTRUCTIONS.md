@@ -50,9 +50,9 @@ host that renders it.
   Never reach for the host's default.
 - `unibox_material` is optional: the fifteen Material type roles as `const`
   `BoxTextStyle` values, the colour roles as `MaterialPalette` (`light` and `dark`,
-  each a `const` set of `BoxColor`s), and six components built on nodes the renderers
-  already draw — `MaterialCard`, `MaterialListTile`, `MaterialInkWell` and
-  `MaterialTextField` are `Box` subclasses, `MaterialDialog` and
+  each a `const` set of `BoxColor`s), and seven components built on nodes the
+  renderers already draw — `MaterialCard`, `MaterialListTile`, `MaterialInkWell`,
+  `MaterialTextField` and `MaterialIcon` are `Box` subclasses, `MaterialDialog` and
   `MaterialBottomSheet` are `OverlayNode`s. The palette is a value the tree wears —
   pass the roles into the builders; there is no `Theme` lookup at render time.
   Wiring the same roles into the platform (`ColorScheme`, CSS custom properties) is
@@ -148,6 +148,7 @@ host that renders it.
 | `InkWell`, `InkResponse` | `MaterialInkWell(child:, onTap:)` — a box with Material's state layers |
 | `StatefulWidget` + `setState` around a tree | `StatefulNode` + a `StateStore` |
 | `Card` | `MaterialCard` (from `unibox_material`) |
+| `Icon` | `MaterialIcon.codePoint(Symbols.home.codePoint)`, or `MaterialIcon.ligature('home')` when the font is not tree-shaken anyway |
 | `ListTile` | `MaterialListTile` (from `unibox_material`) |
 | `Theme.of(context).textTheme.titleLarge` | `MaterialTypography.titleLarge` |
 | `Theme.of(context).colorScheme.primary` | `MaterialPalette.light.primary` (or `dark`), passed into the tree |

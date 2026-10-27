@@ -162,7 +162,8 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [x] Task 116: `unibox_jaspr` — the stylesheet pass: `UniboxStylesheet` collects one class per distinct set of declarations, `renderJaspr` writes them as a single `<style>` after the tree, and boxes, texts, images, fields, stacks, links and overlays carry a class instead of an inline style. A component rendered on its own still writes inline, which is what a single node can do correctly. The test harness reads a class's declarations back, so every existing expectation kept its meaning; three tests that pinned the old inline/scoped split now pin the new contract, and five new ones cover the deduplication itself. On the site build this took 224 of 224 elements from inline to classed and left 73 rules, and it ended a duplication the class names had hidden: a state-styled box emitted its own `<style>` element, so the listings page came to twelve `<style>` elements for three classes, one of them restated twelve times, and now has one sheet. Two tests pin both halves — six identical state-styled boxes share one class and one rule each, and six rendered without a sheet still repeat theirs.
 
 ### Phase 24: Material fidelity
-- [x] Task 115: Audit the Material components against the Material 3 specification and fix the gaps: card variants on the palette, list tile padding and palette colours, text field minimum height, focused outline, hover and disabled states, dialog content and action colours, a full-width bottom sheet with a drag handle and an upward shadow.
+- [x] Task 116: Audit the Material components against the Material 3 specification and fix the gaps: card variants on the palette, list tile padding and palette colours, text field minimum height, focused outline, hover and disabled states, dialog content and action colours, a full-width bottom sheet with a drag handle and an upward shadow.
+- [x] Task 117: `unibox_material` — `MaterialIcon`: a glyph of an icon font in a square `Box`, by codepoint or by ligature name. A codepoint that comes from a const `IconData` is what the Flutter tree shaker can subset (10.7 MB became 3.6 kB in the check), a ligature name ships the whole font, and a web export serves whatever subset the host puts next to its `@font-face`; the README states the recipe and the Symbols codepoints.
 
 ## Decisions
 
@@ -281,14 +282,11 @@ Deliberately out of scope for this pass, with the reason they were left:
 - Wiring the Jaspr client build into the workspace: the example renders on the
   server and writes one file per page, so the only thing missing without a client
   bundle is the click that switches pages (the media query needs no JavaScript).
-- Material icons. A glyph of an icon font in a square `Box` is the obvious component, and it
-  was written for the overlays PR: it needs no node, recolours and scales like text, and
-  the font is a host asset. It is held back because a *ligature* cannot be tree-shaken:
-  `--tree-shake-icons` reads const `IconData` constants out of the kernel and a
-  `TextStyle(fontFamily:)` around a string is invisible to it, so the whole font ships.
-  The code-point form can be shaken when the application references a const `IconData`
-  for each glyph (its `codePoint` and `fontFamily`), which is a recipe the docs would
-  have to teach; **discarded** until it does.
+- An icon subset for the web export. Flutter's `--tree-shake-icons` is a build feature of
+  the Flutter target; a Jaspr export serves whatever font the host puts beside its
+  `@font-face`. The subset has to be produced once — the Flutter build already writes it,
+  or `pyftsubset` makes one — and copied into the static site. **Deferred**: the
+  material README states the recipe, and the example carries no icons.
 - A circular progress indicator. A ring needs an arc, and the model has no gradient, no
   per-side border and no clipping that punches a hole, so it cannot be composed from
   boxes; indeterminate, it also needs an animation the model does not have. A node is

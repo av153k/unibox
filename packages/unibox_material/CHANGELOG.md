@@ -6,6 +6,9 @@ The first release: Material 3 as a package of values, plus the components built
 from them. Every value here is a plain token of `unibox_core`, so neither renderer
 has to know this package exists.
 
+- `MaterialIcon`: one glyph of an icon font in a square `Box`, by codepoint (which the
+  Flutter tree shaker can subset from a const `IconData`) or by ligature name (which it
+  cannot), recoloured and scaled like text. The font is a host asset.
 - Fidelity pass against Material 3: `MaterialCard.elevated`/`.filled`/`.outlined` on the
   palette; list tile with 8 pixel vertical padding and palette colours; text field with
   a 56 pixel minimum height, 2 pixel focused outline, primary focused label, hover
