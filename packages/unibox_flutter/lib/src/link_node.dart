@@ -6,7 +6,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 import 'render.dart';
 
 /// Follows the destination of a [core.LinkNode].
-typedef LinkOpener = FutureOr<void> Function(String url);
+typedef FlutterLinkOpener = FutureOr<void> Function(String url);
 
 /// Configures how [core.LinkNode]s open their destination on Flutter.
 ///
@@ -30,10 +30,10 @@ class FlutterLinkScope extends InheritedWidget {
   const FlutterLinkScope({required this.open, required super.child, super.key});
 
   /// Follows the url a link points at, the way the host application navigates.
-  final LinkOpener open;
+  final FlutterLinkOpener open;
 
   /// The opener of the closest enclosing scope, or `null` when there is none.
-  static LinkOpener? maybeOf(BuildContext context) {
+  static FlutterLinkOpener? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<FlutterLinkScope>()?.open;
   }
 
@@ -51,7 +51,7 @@ class FlutterLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LinkOpener? open = FlutterLinkScope.maybeOf(context);
+    final FlutterLinkOpener? open = FlutterLinkScope.maybeOf(context);
 
     assert(
       open != null || node.onTap != null,

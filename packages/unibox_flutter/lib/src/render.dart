@@ -117,7 +117,7 @@ Widget renderNode(core.UINode node) {
 ///
 /// The model keeps the payloads opaque, so the choice is made here: the first
 /// payload that is a [Widget] is drawn as it is, and the first that is a
-/// [WidgetEmbedBuilder] receives the rendered child, because an effect that wraps
+/// [FlutterWidgetEmbedBuilder] receives the rendered child, because an effect that wraps
 /// content needs the content. A node whose implementations this target cannot
 /// draw, or that carries two of them, is reported instead of silently skipped —
 /// a class the library has never seen renders here as long as it brings one of
@@ -125,13 +125,13 @@ Widget renderNode(core.UINode node) {
 Widget _renderEmbed(core.EmbedNode embed) {
   final List<Object> implementations = embed.implementations;
   final List<Object> drawable = implementations
-      .where((Object it) => it is Widget || it is WidgetEmbedBuilder)
+      .where((Object it) => it is Widget || it is FlutterWidgetEmbedBuilder)
       .toList(growable: false);
 
   if (drawable.isEmpty) {
     throw UnsupportedError(
       'No Flutter renderer for ${embed.runtimeType}: this target draws a Widget '
-      'or a WidgetEmbedBuilder, and the node carries '
+      'or a FlutterWidgetEmbedBuilder, and the node carries '
       '${implementations.map((Object it) => it.runtimeType).join(', ')}.',
     );
   }
@@ -153,12 +153,12 @@ Widget _renderEmbed(core.EmbedNode embed) {
 
   if (child == null) {
     throw StateError(
-      '${embed.runtimeType} is drawn by a WidgetEmbedBuilder, which wraps the '
+      '${embed.runtimeType} is drawn by a FlutterWidgetEmbedBuilder, which wraps the '
       'child of the embed, but the node has no child.',
     );
   }
 
-  return (implementation as WidgetEmbedBuilder)(renderNode(child));
+  return (implementation as FlutterWidgetEmbedBuilder)(renderNode(child));
 }
 
 /// Reports the tree issues of [node], in debug builds only.

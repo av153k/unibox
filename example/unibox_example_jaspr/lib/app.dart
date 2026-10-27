@@ -60,7 +60,9 @@ class UniboxExampleAppState extends State<UniboxExampleApp> {
         onSubmit: () => _update(submitSignupForm(_state)),
       ),
       ExamplePage.apartments => buildApartmentsPage(
-        map: ComponentNode(WideOnly(child: buildExampleMap().toComponent())),
+        map: JasprComponentNode(
+          WideOnly(child: buildExampleMap().toComponent()),
+        ),
       ),
     };
   }

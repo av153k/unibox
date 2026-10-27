@@ -6,7 +6,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 /// An effect that needs the content it decorates — a ripple, a hover glow, a
 /// transition — is a wrapper and not a leaf, so its implementation receives the
 /// rendered child instead of standing next to it.
-typedef ComponentEmbedBuilder = Component Function(Component child);
+typedef JasprComponentEmbedBuilder = Component Function(Component child);
 
 /// Renders a Jaspr [Component] inside a Unibox tree.
 ///
@@ -18,16 +18,16 @@ typedef ComponentEmbedBuilder = Component Function(Component child);
 /// ```dart
 /// Box(
 ///   padding: const BoxSpacing.all(16),
-///   children: <core.UINode>[ComponentNode(MyChart())],
+///   children: <core.UINode>[JasprComponentNode(MyChart())],
 /// );
 /// ```
 ///
 /// A node with no implementation this target can draw is reported by [renderJaspr]
 /// instead of being skipped, so a tree that was built for another target fails
 /// loudly.
-final class ComponentNode extends core.EmbedNode {
+final class JasprComponentNode extends core.EmbedNode {
   /// Wraps [component] as a node.
-  const ComponentNode(this.component, {super.key});
+  const JasprComponentNode(this.component, {super.key});
 
   /// The component to render.
   final Component component;

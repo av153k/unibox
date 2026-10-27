@@ -41,7 +41,7 @@ final class _Badge extends core.EmbedNode {
 }
 
 void main() {
-  group('ComponentNode', () {
+  group('JasprComponentNode', () {
     testComponents('renders the component inside the surrounding box', (
       tester,
     ) async {
@@ -52,7 +52,7 @@ void main() {
           gap: 16,
           children: <core.UINode>[
             const core.TextNode('before'),
-            const ComponentNode(_Marker('chart')),
+            const JasprComponentNode(_Marker('chart')),
           ],
         ),
       );
@@ -63,13 +63,16 @@ void main() {
     });
 
     testComponents('carries the key of its node', (tester) async {
-      pumpNode(tester, const ComponentNode(_Marker('chart'), key: 'chart'));
+      pumpNode(
+        tester,
+        const JasprComponentNode(_Marker('chart'), key: 'chart'),
+      );
 
       expect(find.byKey(const ValueKey<Object>('chart')), findsOneComponent);
     });
 
     test('exposes the component as its implementation', () {
-      const ComponentNode node = ComponentNode(_Marker('chart'));
+      const JasprComponentNode node = JasprComponentNode(_Marker('chart'));
 
       expect(node.implementations.single, isA<_Marker>());
       expect(node.children, isEmpty);

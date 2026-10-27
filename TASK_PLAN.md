@@ -54,8 +54,8 @@
 
 ### Phase 10: Host embeds
 - [x] Task 35: Core — `abstract class EmbedNode extends UINode` with an `Object get payload`, documented as the escape hatch for host specific content.
-- [x] Task 36: Flutter — `WidgetNode(Widget)` accepted by `renderFlutter`, with an `UnsupportedError` for foreign payloads.
-- [x] Task 37: Jaspr — `ComponentNode(Component)` accepted by `renderJaspr` with the same contract.
+- [x] Task 36: Flutter — `FlutterWidgetNode(Widget)` accepted by `renderFlutter`, with an `UnsupportedError` for foreign payloads.
+- [x] Task 37: Jaspr — `JasprComponentNode(Component)` accepted by `renderJaspr` with the same contract.
 
 ### Phase 11: Public readiness
 - [x] Task 38: Add the MIT `LICENSE`, per package `CHANGELOG.md` files and the `repository`, `homepage`, `issue_tracker` and `topics` pubspec metadata while keeping `publish_to: none`.
@@ -107,8 +107,8 @@ Tasks 70, 72 and 73 were **discarded**; `Deferred` records why.
 
 ### Phase 17: A component of the user's own, on both targets
 - [x] Task 74: Core — `EmbedNode` becomes plural and platform-agnostic: it carries `List<Object> implementations` (one per renderer that can draw it) and an optional `child` the implementations wrap, `children` exposes that child so validation reaches it, `payload` stays as a deprecated first-implementation getter, and `validateTree` reports an embed that carries no implementation at all.
-- [x] Task 75: Flutter renderer — dispatch an embed by payload type instead of by node class: a `Widget` is drawn as it is, a `WidgetEmbedBuilder` receives the rendered child, two drawable implementations and none are both reported with the types this target accepts, so a node class the library has never seen renders here.
-- [x] Task 76: Jaspr renderer — the same for a `Component` and a `ComponentEmbedBuilder`, so one node with one implementation per renderer is the whole extension point.
+- [x] Task 75: Flutter renderer — dispatch an embed by payload type instead of by node class: a `Widget` is drawn as it is, a `FlutterWidgetEmbedBuilder` receives the rendered child, two drawable implementations and none are both reported with the types this target accepts, so a node class the library has never seen renders here.
+- [x] Task 76: Jaspr renderer — the same for a `Component` and a `JasprComponentEmbedBuilder`, so one node with one implementation per renderer is the whole extension point.
 - [x] Task 77: Tests — core (implementations, wrapped child, the deprecation, the empty-embed error), Flutter and Jaspr (a user defined embed node renders, a builder receives the child, both failure modes).
 - [x] Task 78: Docs — the three package READMEs state that the model names no platform and how a renderer picks its implementation, `design.md` §5.8 records that this escape hatch is outside the contract by construction, and the changelogs carry the breaking change.
 

@@ -4,7 +4,8 @@
 
 - The classes that draw a node are named after their target: `JasprBox`, `JasprText`,
   `JasprImage`, `JasprLink`, `JasprStack`, `JasprPositioned`, `JasprTextInput`,
-  `JasprStateful` and `JasprDefaultTypography`. They are exported now, so the two
+  `JasprStateful`, `JasprDefaultTypography`, `JasprComponentNode` and
+  `JasprComponentEmbedBuilder`. They are exported now, so the two
   renderer packages have the same public shape: the entry point, the extension, the
   embed node and one class per node.
 - An `OverlayNode` is drawn as a fixed layer with the barrier in the node's colour
@@ -35,11 +36,11 @@
   properties it animates, on the resting rule only, so a browser interpolates the
   change of a state rule without any script.
 - An embed is dispatched by payload type instead of by node class: a `Component` is
-  rendered as it is and a `ComponentEmbedBuilder` receives the rendered child, so a
+  rendered as it is and a `JasprComponentEmbedBuilder` receives the rendered child, so a
   node class from outside this package renders here. Two drawable payloads, none,
   and a builder without a child are all reported with the types this target
   accepts.
-- `ComponentEmbedBuilder` is exported, and `ComponentNode` carries its component as
+- `JasprComponentEmbedBuilder` is exported, and `JasprComponentNode` carries its component as
   its implementation.
 - A heading renders `<h1>`–`<h6>`, with the user agent's margin, size and weight
   cancelled so the tree keeps deciding how a heading looks.
@@ -90,6 +91,6 @@ The first release of the Jaspr (HTML/CSS) renderer.
   a second frame inside the one the tree asked for.
 - A state rule only carries the tokens of its state, so `:hover`, `:focus-visible`
   and `:active` no longer restate the flex layout and a hovered row stays a row.
-- `ComponentNode` embeds any Jaspr component.
+- `JasprComponentNode` embeds any Jaspr component.
 - The tree is validated before it is rendered, so an invalid tree fails while it
   is being built instead of rendering something wrong.

@@ -100,6 +100,12 @@ breaking change even when it compiles.
   without depending on its position. What the web renderer does not export is the
   link scope, because the web needs no hook: a `<a href>` navigates itself. A
   renderer package exports only those names and **never** re-exports
+  The rule covers classes and typedefs alike: `FlutterWidgetNode` and
+  `FlutterWidgetEmbedBuilder` are the Flutter-side names for the embed that
+  carries a `Widget`, `JasprComponentNode` and `JasprComponentEmbedBuilder` the
+  web ones, `FlutterLinkOpener` the signature a host implements to follow a
+  link. Only functions are exempt, because they already name their target
+  (`renderFlutter`) or extend a core type (`toWidget`).
   `unibox_core`, so a host file can import it next to `flutter/material.dart`;
   the `naming_test.dart` of each renderer package writes every export out
   beside that import to keep it true.

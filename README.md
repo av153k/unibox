@@ -423,8 +423,8 @@ final class InkRipple extends EmbedNode {
 | `implementations` | `List<Object>` | required | The payloads, one per renderer. A renderer accepts a `Widget`/`Component`, or a builder of one that wraps the child. |
 | `child` | `UINode?` | none | The content the implementations wrap, for effects. |
 
-Two conveniences cover the single-implementation case: `WidgetNode(widget)` in
-`unibox_flutter` and `ComponentNode(component)` in `unibox_jaspr`.
+Two conveniences cover the single-implementation case: `FlutterWidgetNode(widget)`
+in `unibox_flutter` and `JasprComponentNode(component)` in `unibox_jaspr`.
 
 **Worth knowing.** The payloads are platform values, so the node is usually
 declared where both types are visible, or it takes its half through a parameter its

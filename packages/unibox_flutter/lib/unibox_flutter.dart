@@ -20,9 +20,10 @@
 library;
 
 export 'src/box.dart' show FlutterBox;
-export 'src/embed_node.dart' show WidgetEmbedBuilder, WidgetNode;
+export 'src/embed_node.dart' show FlutterWidgetEmbedBuilder, FlutterWidgetNode;
 export 'src/image_node.dart' show FlutterImage;
-export 'src/link_node.dart' show LinkOpener, FlutterLink, FlutterLinkScope;
+export 'src/link_node.dart'
+    show FlutterLinkOpener, FlutterLink, FlutterLinkScope;
 export 'src/overlay_node.dart' show FlutterOverlay;
 export 'src/render.dart';
 export 'src/stack_node.dart' show FlutterStack;

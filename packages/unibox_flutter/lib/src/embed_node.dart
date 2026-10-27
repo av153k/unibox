@@ -6,7 +6,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 /// An effect that needs the content it decorates — an ink ripple, a hover glow, a
 /// hero transition — is a wrapper and not a leaf, so its implementation receives
 /// the rendered child instead of standing next to it.
-typedef WidgetEmbedBuilder = Widget Function(Widget child);
+typedef FlutterWidgetEmbedBuilder = Widget Function(Widget child);
 
 /// Renders a Flutter [Widget] inside a Unibox tree.
 ///
@@ -19,16 +19,16 @@ typedef WidgetEmbedBuilder = Widget Function(Widget child);
 /// ```dart
 /// Box(
 ///   padding: const BoxSpacing.all(16),
-///   children: <core.UINode>[WidgetNode(const Placeholder())],
+///   children: <core.UINode>[FlutterWidgetNode(const Placeholder())],
 /// );
 /// ```
 ///
 /// A node with no implementation this target can draw is reported by
 /// [renderFlutter] instead of being skipped, so a tree that was built for another
 /// target fails loudly.
-final class WidgetNode extends core.EmbedNode {
+final class FlutterWidgetNode extends core.EmbedNode {
   /// Wraps [widget] as a node.
-  const WidgetNode(this.widget, {super.key});
+  const FlutterWidgetNode(this.widget, {super.key});
 
   /// The widget to render.
   final Widget widget;

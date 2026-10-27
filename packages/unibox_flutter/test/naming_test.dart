@@ -31,8 +31,8 @@ void main() {
 
     // The typedefs are written out like the classes are; nothing in this list has
     // to be called.
-    const LinkOpener? noHook = null;
-    const WidgetEmbedBuilder? noBuilder = null;
+    const FlutterLinkOpener? noHook = null;
+    const FlutterWidgetEmbedBuilder? noBuilder = null;
 
     final List<Object?> exported = <Object?>[
       FlutterBox,
@@ -45,7 +45,7 @@ void main() {
       FlutterText,
       FlutterTextInput,
       FlutterTextStyleScope,
-      WidgetNode,
+      FlutterWidgetNode,
       renderFlutter,
       widget,
       noHook,

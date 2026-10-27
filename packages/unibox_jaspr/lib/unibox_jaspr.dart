@@ -25,7 +25,8 @@ library;
 
 export 'src/box.dart' show JasprBox;
 export 'src/default_typography.dart' show JasprDefaultTypography;
-export 'src/embed_node.dart' show ComponentEmbedBuilder, ComponentNode;
+export 'src/embed_node.dart'
+    show JasprComponentEmbedBuilder, JasprComponentNode;
 export 'src/image_node.dart' show JasprImage;
 export 'src/link_node.dart' show JasprLink;
 export 'src/render.dart';

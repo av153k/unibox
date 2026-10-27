@@ -42,7 +42,7 @@ final class _Badge extends core.EmbedNode {
 }
 
 void main() {
-  group('WidgetNode', () {
+  group('FlutterWidgetNode', () {
     testWidgets('renders the widget inside the surrounding box', (
       tester,
     ) async {
@@ -53,7 +53,7 @@ void main() {
           gap: 8,
           children: <core.UINode>[
             core.TextNode('before'),
-            WidgetNode(_Marker('chart')),
+            FlutterWidgetNode(_Marker('chart')),
           ],
         ),
       );
@@ -64,13 +64,16 @@ void main() {
     });
 
     testWidgets('carries the key of its node', (tester) async {
-      await pumpNode(tester, const WidgetNode(_Marker('chart'), key: 'chart'));
+      await pumpNode(
+        tester,
+        const FlutterWidgetNode(_Marker('chart'), key: 'chart'),
+      );
 
       expect(find.byKey(const ValueKey<Object>('chart')), findsOneWidget);
     });
 
     testWidgets('exposes the widget as its implementation', (tester) async {
-      const WidgetNode node = WidgetNode(_Marker('chart'));
+      const FlutterWidgetNode node = FlutterWidgetNode(_Marker('chart'));
 
       expect(node.implementations.single, isA<_Marker>());
       expect(node.children, isEmpty);

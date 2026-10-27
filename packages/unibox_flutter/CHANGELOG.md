@@ -5,7 +5,9 @@
 - The classes that draw a node are named after their target: `UniboxBox` is
   `FlutterBox`, and `UniboxText`, `UniboxImage`, `FlutterLink`, `FlutterStack`,
   `FlutterTextInput`, `FlutterOverlay`, `FlutterStateful`, `FlutterLinkScope` and
-  `FlutterTextStyleScope` follow the same rule. Nothing else about them changed.
+  `FlutterTextStyleScope` follow the same rule, and so do `FlutterWidgetNode`,
+  `FlutterWidgetEmbedBuilder` and `FlutterLinkOpener`. Nothing else about them
+  changed.
 - An `OverlayNode` is presented by `UniboxOverlay` through an `OverlayPortal` on
   the root overlay: a barrier in the node's colour, `Escape` and a barrier press
   calling `onDismiss`, focus kept inside and handed back on exit, and the layer
@@ -38,10 +40,10 @@
   new state asks for; the five `BoxCurve` values map onto `Curves.linear`,
   `Curves.ease`, `Curves.easeIn`, `Curves.easeOut` and `Curves.easeInOut`.
 - An embed is dispatched by payload type instead of by node class: a `Widget` is
-  drawn as it is and a `WidgetEmbedBuilder` receives the rendered child, so a node
+  drawn as it is and a `FlutterWidgetEmbedBuilder` receives the rendered child, so a node
   class from outside this package renders here. Two drawable payloads, none, and a
   builder without a child are all reported with the types this target accepts.
-- `WidgetEmbedBuilder` is exported, and `WidgetNode` carries its widget as its
+- `FlutterWidgetEmbedBuilder` is exported, and `FlutterWidgetNode` carries its widget as its
   implementation.
 - A heading becomes `Semantics(header: true, headingLevel: n)`, so a screen reader
   can build the same outline a browser builds from `h1`–`h6`. The text looks
@@ -88,7 +90,7 @@ The first release of the Flutter renderer.
 - `UniboxBox`, `UniboxText`, `UniboxTextInput`, `UniboxLink`, `UniboxImage` and
   `UniboxStack` are exported, so a host or a test can address a rendered node
   without depending on its position in the tree.
-- `WidgetNode` embeds any Flutter widget.
+- `FlutterWidgetNode` embeds any Flutter widget.
 - Links follow their url through `UniboxLinkScope`; a link that can neither open
   nor call back is reported as a host configuration error in debug builds.
 - The tree is validated before it is rendered, so an invalid tree fails while it

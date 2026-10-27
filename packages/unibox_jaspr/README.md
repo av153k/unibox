@@ -432,16 +432,16 @@ final class InkRipple extends core.EmbedNode {
 
   @override
   List<Object> get implementations => <Object>[
-    // This target draws a ComponentEmbedBuilder, which receives the child.
+    // This target draws a JasprComponentEmbedBuilder, which receives the child.
     (Component child) => div(<Component>[child], classes: 'ink-ripple'),
   ];
 }
 ```
 
 An implementation is either a `Component`, rendered as it is, or a
-`ComponentEmbedBuilder` (`Component Function(Component child)`), which receives the
+`JasprComponentEmbedBuilder` (`Component Function(Component child)`), which receives the
 rendered child — that is what an effect that wraps content needs, and the class it
-adds is where the CSS lives. `ComponentNode` is the convenience for a single
+adds is where the CSS lives. `JasprComponentNode` is the convenience for a single
 component payload with no child; a node carrying an implementation this target
 cannot draw, or two of them, is reported by `renderJaspr` instead of being skipped.
 

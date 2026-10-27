@@ -274,15 +274,15 @@ final class InkRipple extends core.EmbedNode {
 
   @override
   List<Object> get implementations => <Object>[
-    // This target draws a WidgetEmbedBuilder, which receives the child.
+    // This target draws a FlutterWidgetEmbedBuilder, which receives the child.
     (Widget child) => InkWell(onTap: onTap, child: child),
   ];
 }
 ```
 
-An implementation is either a `Widget`, drawn as it is, or a `WidgetEmbedBuilder`
+An implementation is either a `Widget`, drawn as it is, or a `FlutterWidgetEmbedBuilder`
 (`Widget Function(Widget child)`), which receives the rendered child — that is what
-an effect that wraps content needs. `WidgetNode` is the convenience for a single
+an effect that wraps content needs. `FlutterWidgetNode` is the convenience for a single
 widget payload with no child; a node carrying an implementation this target cannot
 draw, or two of them, is reported by `renderFlutter` instead of being skipped.
 

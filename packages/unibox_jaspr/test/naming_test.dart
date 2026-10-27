@@ -22,12 +22,12 @@ void main() {
     );
     final Component component = tree.toComponent();
 
-    const ComponentEmbedBuilder? noBuilder = null;
+    const JasprComponentEmbedBuilder? noBuilder = null;
 
     final List<Object?> exported = <Object?>[
       JasprBox,
       JasprDefaultTypography,
-      ComponentNode,
+      JasprComponentNode,
       JasprImage,
       JasprLink,
       JasprPositioned,
