@@ -5,9 +5,10 @@
 - An `ImageNode` always emits `object-fit`, `scale-down` when the node names no
   fit: left out, a browser stretched the picture over its box while Flutter scaled
   it down.
-- A stack child that is not positioned is placed with `place-self: start`, so it
-  keeps its own size instead of stretching to fill the cell the way a grid item
-  does by default.
+- A stack child that is not positioned is laid out at the start of both axes by
+  its cell wrapper, so it keeps its own size instead of stretching to fill the
+  cell the way a grid item does by default. The wrapper still fills the cell, which
+  is what lets a child with `width: double.infinity` resolve its `100%`.
 - A text area starts at one row instead of the browser's two, and its styles carry
   `resize: none`, which removes the resize grip Flutter has no counterpart to.
 - `renderJaspr` emits a `:root` rule carrying the typography of the model

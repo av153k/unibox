@@ -296,14 +296,22 @@ Styles toStackStyles(core.StackNode node) {
 /// Children placed like this overlap each other, painted in source order, so the
 /// last one ends up on top.
 ///
-/// `place-self: start` is what keeps them their own size: a grid item stretches
-/// to fill its cell by default, while a Flutter `Stack` lays a child that is not
-/// positioned out at its natural size in the top start corner. Without it a small
-/// child — a badge, an icon — would grow to the size of the stack on the web and
-/// stay small in Flutter.
+/// The wrapper takes the whole cell and then lays its child out at the start of
+/// both axes, which is what a Flutter `Stack` does with a child that is not
+/// positioned: the cell is the constraint, the child is its own size. Sizing the
+/// wrapper itself to its content (`place-self: start` on the grid item) looks
+/// like the same thing and is not: a child that fills the cell — `width:
+/// double.infinity`, which the model renders as `100%` — would then resolve its
+/// percentage against a wrapper that has no width of its own, and collapse. A flex
+/// container keeps both promises: the wrapper stays as big as the cell, its
+/// percentage-resolving content box included, and a child that asks for nothing
+/// keeps its own size instead of stretching.
 Styles toStackChildStyles() {
   return Styles(
-    raw: const <String, String>{'grid-area': '1 / 1', 'place-self': 'start'},
+    display: Display.flex,
+    alignItems: AlignItems.start,
+    justifyContent: JustifyContent.start,
+    raw: const <String, String>{'grid-area': '1 / 1'},
   );
 }
 

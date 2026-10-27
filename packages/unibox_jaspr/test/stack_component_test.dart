@@ -3,6 +3,14 @@ import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'support/harness.dart';
 
+/// The declarations of a stack cell: the whole grid area, content at the start.
+const Map<String, String> _cellStyles = <String, String>{
+  'display': 'flex',
+  'align-items': 'start',
+  'justify-content': 'start',
+  'grid-area': '1 / 1',
+};
+
 void main() {
   group('StackNode', () {
     testComponents('renders a relative grid', (tester) async {
@@ -39,17 +47,11 @@ void main() {
 
       // One container plus one cell wrapper per child.
       expect(find.tag('div'), findsNComponents(3));
-      // `place-self: start` keeps a child its own size: a grid item stretches to
-      // fill its cell by default, while a Flutter `Stack` lays it out at its
-      // natural size in the top start corner.
-      expect(stylesOf(find.tag('div').at(1)), <String, String>{
-        'grid-area': '1 / 1',
-        'place-self': 'start',
-      });
-      expect(stylesOf(find.tag('div').at(2)), <String, String>{
-        'grid-area': '1 / 1',
-        'place-self': 'start',
-      });
+      // The cell wrapper fills the grid area and lays its child out at the top
+      // start corner: a Flutter `Stack` gives a child that is not positioned the
+      // cell as a constraint and leaves it its own size.
+      expect(stylesOf(find.tag('div').at(1)), _cellStyles);
+      expect(stylesOf(find.tag('div').at(2)), _cellStyles);
       expect(find.text('Bottom'), findsOneComponent);
       expect(find.text('Top'), findsOneComponent);
     });
@@ -112,10 +114,7 @@ void main() {
         ),
       );
 
-      expect(stylesOf(find.tag('div').at(1)), <String, String>{
-        'grid-area': '1 / 1',
-        'place-self': 'start',
-      });
+      expect(stylesOf(find.tag('div').at(1)), _cellStyles);
     });
 
     testComponents('nests further nodes', (tester) async {
