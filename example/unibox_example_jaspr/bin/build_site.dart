@@ -41,7 +41,7 @@ Future<void> main(List<String> arguments) async {
 
   for (final ExamplePage page in ExamplePage.values) {
     final String path = page == ExamplePage.apartments
-        ? 'web/index.html'
+        ? 'web/listings/index.html'
         : 'web/${page.name}/index.html';
 
     await _write(out, path, buildExampleDocument(page: page));

@@ -49,6 +49,7 @@ final class RecordingHost {
       onEmailChanged: emails.add,
       onNewsletterToggled: () => newsletterToggles++,
       onSubmit: () => submissions++,
+      onDismiss: () => dismissals++,
     );
   }
 

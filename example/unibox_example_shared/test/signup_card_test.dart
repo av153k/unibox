@@ -179,11 +179,22 @@ void main() {
     test('links to the documentation in a new tab', () {
       final LinkNode link = flatten(RecordingHost().card())
           .whereType<LinkNode>()
-          .single;
+          .firstWhere((LinkNode node) => node.newTab);
 
       expect(link.url, 'https://unibox.dev');
       expect(link.newTab, isTrue);
       expect(textsIn(link), <String>['Read the docs']);
+    });
+
+    test('offers a way back to the listings', () {
+      // A static page cannot dismiss a dialog with a tap, so the way out is a link
+      // to the document the dialog covers.
+      final LinkNode close = flatten(RecordingHost().card())
+          .whereType<LinkNode>()
+          .firstWhere((LinkNode node) => !node.newTab);
+
+      expect(close.url, ExampleRoutes.listings);
+      expect(textsIn(close), <String>['Close']);
     });
 
     test('layers the avatar chip over the banner', () {

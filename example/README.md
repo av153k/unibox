@@ -53,11 +53,12 @@ exit. The web renderer draws a fixed layer with `role="dialog"` and
 104), so the static export is a snapshot of the layer rather than an interactive
 modal.
 
-That is what the two documents are: `build/site/web/index.html` is the listings, and
-`build/site/web/signup/index.html` is the same page with the dialog over it, written
-by `dart run bin/build_site.dart` (`tool/site.sh` puts the Flutter build beside
-them). A browser without the client bundle can only be shown one of the two — so the
-entry document is the one that can be read without dismissing anything, and the form
+That is what the two documents are: `build/site/web/listings/index.html` is the
+listings, and `build/site/web/signup/index.html` is the same page with the dialog over
+it, written by `dart run bin/build_site.dart` (`tool/site.sh` puts the Flutter build
+beside them). A browser without the client bundle can only be shown one of the two — so
+the listings document is the one that can be read without dismissing anything, and the
+form
 is its own url.
 
 ## The listings page
@@ -115,9 +116,9 @@ tool/site.sh --base=/unibox/ --url=https://cedvdb.github.io/unibox/
 | `/` | What the library is, and the two ways in |
 | `/material/` | The Material library: the type scale, the colour roles and the components |
 | `/showcase/` | The example drawn by both renderers, side by side in two frames |
-| `/web/` | The example's listings, rendered by Jaspr — HTML and CSS, no JavaScript |
+| `/web/listings/` | The example's listings, rendered by Jaspr — HTML and CSS, no JavaScript |
 | `/web/signup/` | The same page with the sign-up dialog over it |
-| `/flutter/`, `/flutter/signup/` | The same two pages, rendered by Flutter |
+| `/flutter/listings/`, `/flutter/signup/` | The same two pages, rendered by Flutter |
 
 The pages link with paths relative to their own depth and the documents carry **no
 `<base>` element**, so the same build works at `/` and at `/unibox/`: a base href of
@@ -171,12 +172,14 @@ the site also publishes:
 ```shell
 cd example/unibox_example_jaspr
 dart run bin/build_site.dart --out=build/site
-open build/site/web/index.html
+open build/site/web/listings/index.html
 ```
 
 There is one file per destination because being open is state, and a static
-export cannot keep state — open the document you want. `web/index.html` is the
-listings; `web/signup/index.html` is the same page with the dialog already open.
+export cannot keep state — open the document you want. `web/listings/index.html` is
+the listings; `web/signup/index.html` is the same page with the dialog already open.
+The navigation is a real link for the same reason: a click follows it to the document
+that draws the state, because a page has no client runtime to open a dialog with.
 The whole site, with both renderings and the Flutter build beside them, is
 `tool/site.sh` (see [the static site](#the-static-site)).
 

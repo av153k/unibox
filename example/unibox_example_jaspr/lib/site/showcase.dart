@@ -21,10 +21,14 @@ UINode buildShowcase() {
     gap: 1,
     backgroundColor: palette.outlineVariant,
     children: <UINode>[
-      _panel(title: 'Jaspr — HTML and CSS', src: '../web/', palette: palette),
+      _panel(
+        title: 'Jaspr — HTML and CSS',
+        src: '../web/listings/',
+        palette: palette,
+      ),
       _panel(
         title: 'Flutter — the same tree',
-        src: '../flutter/',
+        src: '../flutter/listings/',
         palette: palette,
       ),
     ],

@@ -15,42 +15,40 @@ UINode buildLanding() {
     gap: 40,
     children: <UINode>[
       Box(
-        width: double.infinity,
-        maxWidth: 720,
-        gap: 16,
-        children: <UINode>[
-          TextNode(
-            'Describe a screen once.',
-            style: MaterialTypography.displayMedium,
-          ),
-          TextNode(
-            'Unibox is one immutable tree of nodes — boxes, text, images, links, '
-            'stacks, fields, overlays — drawn by two renderers from that single '
-            'description: Flutter widgets in an application, and HTML with CSS in a '
-            'browser. They agree because one table of expected appearance holds both '
-            'renderer suites to the same answer.',
-            style: MaterialTypography.bodyLarge,
-            color: palette.onSurfaceVariant,
-          ),
-          TextNode(
-            'The tree is pure Dart with no dependencies. Layout, spacing, colours, '
-            'typography and the accessibility tree are written once, state lives in '
-            'a store the tree owns, and a design system is a package of values and '
-            'nodes rather than a renderer — which is what unibox_material is.',
-            style: MaterialTypography.bodyLarge,
-            color: palette.onSurfaceVariant,
-          ),
-        ],
-      ),
-      // The figure sits on the right and keeps to itself: this is a page of text
-      // first, and a diagram at the full width of a wide screen is a poster.
-      Box(
         direction: Axis.horizontal,
-        mainAlign: MainAlign.end,
+        crossAlign: CrossAlign.start,
+        gap: 48,
         children: <UINode>[
           Box(
-            width: double.infinity,
-            maxWidth: 520,
+            flex: 2,
+            gap: 16,
+            children: <UINode>[
+              TextNode(
+                'Describe a screen once.',
+                style: MaterialTypography.displayMedium,
+              ),
+              TextNode(
+                'Unibox is one immutable tree of nodes — boxes, text, images, links, '
+                'stacks, fields, overlays — drawn by two renderers from that single '
+                'description: Flutter widgets in an application, and HTML with CSS in '
+                'a browser. They agree because one table of expected appearance holds '
+                'both renderer suites to the same answer.',
+                style: MaterialTypography.bodyLarge,
+                color: palette.onSurfaceVariant,
+              ),
+              TextNode(
+                'The tree is pure Dart with no dependencies. Layout, spacing, colours, '
+                'typography and the accessibility tree are written once, state lives '
+                'in a store the tree owns, and a design system is a package of values '
+                'and nodes rather than a renderer — which is what unibox_material is.',
+                style: MaterialTypography.bodyLarge,
+                color: palette.onSurfaceVariant,
+              ),
+            ],
+          ),
+          Box(
+            flex: 1,
+            maxWidth: 480,
             gap: 8,
             children: <UINode>[
               ImageNode(

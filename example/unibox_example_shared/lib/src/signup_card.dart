@@ -1,5 +1,6 @@
 import 'package:unibox_core/unibox_core.dart';
 
+import 'page.dart';
 import 'theme.dart';
 
 /// The values entered in the signup card.
@@ -102,6 +103,7 @@ OverlayNode buildSignupDialog({
       onEmailChanged: onEmailChanged,
       onNewsletterToggled: onNewsletterToggled,
       onSubmit: onSubmit,
+      onDismiss: onDismiss,
     ),
   );
 }
@@ -117,6 +119,7 @@ Box buildSignupCard({
   required TextChangedCallback onEmailChanged,
   required TapCallback onNewsletterToggled,
   required TapCallback onSubmit,
+  required TapCallback onDismiss,
 }) {
   final UINode? status = _status(state);
 
@@ -139,6 +142,7 @@ Box buildSignupCard({
     ),
     children: <UINode>[
       _banner(),
+      _closeRow(onDismiss),
       _heading(),
       _field(
         TextInputNode(
@@ -166,6 +170,35 @@ Box buildSignupCard({
       _newsletterRow(state, onNewsletterToggled),
       _footer(state, onSubmit),
       ?status,
+    ],
+  );
+}
+
+/// The way out for a reader on a static page: a link back to the listings.
+///
+/// A page cannot dismiss a dialog with a tap unless the client runtime is there, so
+/// the control is an anchor that goes back to the document the dialog covers, and
+/// Flutter turns the same tap into the dismissal the barrier calls.
+UINode _closeRow(TapCallback onDismiss) {
+  return Box(
+    direction: Axis.horizontal,
+    mainAlign: MainAlign.end,
+    children: <UINode>[
+      LinkNode(
+        ExampleRoutes.listings,
+        child: Box(
+          onTap: onDismiss,
+          padding: const BoxSpacing.symmetric(horizontal: 12, vertical: 6),
+          borderRadius: 8,
+          semantics: const BoxSemantics(role: BoxRole.button, label: 'Close'),
+          stateStyles: const <BoxState, BoxStyle>{
+            BoxState.hover: BoxStyle(
+              backgroundColor: ExamplePalette.accentSurface,
+            ),
+          },
+          children: const <UINode>[TextNode('Close', style: ExampleType.nav)],
+        ),
+      ),
     ],
   );
 }

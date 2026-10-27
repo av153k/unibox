@@ -20,10 +20,30 @@ void main() {
       expect(find.text('Create account'), findsOneComponent);
       expect(find.text('Read the docs'), findsOneComponent);
 
-      final Map<String, String> link = attributesOf(find.tag('a'));
+      final TestRenderElement docs = elementsOf(find.tag('a')).firstWhere(
+        (TestRenderElement element) =>
+            element.attributes?['target'] == '_blank',
+      );
 
-      expect(link['href'], 'https://unibox.dev');
-      expect(link['target'], '_blank');
+      expect(docs.attributes?['href'], 'https://unibox.dev');
+      expect(docs.attributes?['target'], '_blank');
+    });
+
+    testComponents('links each destination to its document', (tester) async {
+      tester.pumpComponent(signupApp());
+
+      final List<String?> hrefs = elementsOf(find.tag('a'))
+          .map((TestRenderElement element) => element.attributes?['href'])
+          .toList();
+
+      // The navigation is a real anchor, so a static page follows it: the sign-up
+      // item lands on the document that draws the dialog open, the other one on
+      // the listings, and the dialog's close control goes back to the listings.
+      expect(hrefs, containsAll(<String>['../signup/', '../listings/']));
+      expect(
+        hrefs.where((String? href) => href == '../listings/'),
+        hasLength(2),
+      );
     });
 
     testComponents('fills the viewport', (tester) async {
@@ -66,9 +86,9 @@ void main() {
             )
             .toList();
 
-        // Two navigation items plus the opt-in row; the button is disabled until
-        // the form is complete.
-        expect(clickable, hasLength(3));
+        // Two navigation items, the dialog's close control and the opt-in row; the
+        // submit button is disabled until the form is complete.
+        expect(clickable, hasLength(4));
 
         // The bar's sign-up trigger is a button too, and it comes first; the
         // submit button is the last one in the tree.
@@ -97,7 +117,7 @@ void main() {
           )
           .toList();
 
-      expect(clickable, hasLength(4));
+      expect(clickable, hasLength(5));
 
       final TestRenderElement button = elementsOf(find.tag('div')).lastWhere(
         (TestRenderElement element) => element.attributes?['role'] == 'button',

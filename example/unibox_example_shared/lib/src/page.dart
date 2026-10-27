@@ -23,6 +23,22 @@ enum ExamplePage {
   final String label;
 }
 
+/// The addresses of the example's documents, relative to any of them.
+///
+/// Every destination is written into its own directory — `web/listings/`,
+/// `web/signup/`, and the same pair under `flutter/` — so a sibling link is the
+/// same string from every document, which is why the tree can carry it without the
+/// host telling it where it is. It is also how a static page does what a click on a
+/// button cannot without a client runtime: follow a link and land on the state the
+/// destination names.
+abstract final class ExampleRoutes {
+  /// The document that shows the listings.
+  static const String listings = '../listings/';
+
+  /// The document that shows the sign-up dialog open over the listings.
+  static const String signup = '../signup/';
+}
+
 /// The frame every page is drawn in: the canvas, the navigation bar, [page] and,
 /// when it is open, [dialog].
 ///
@@ -103,40 +119,42 @@ UINode _navigationBar({
   );
 }
 
-/// One item of the navigation: a label, highlighted while its destination is
-/// open.
+/// One item of the navigation: a link around a label, highlighted while its
+/// destination is open.
 ///
-/// An item that changes the page is a [BoxRole.link]; the one that opens the
-/// sign-up dialog is a [BoxRole.button], because it does not take the reader
-/// anywhere — it asks for a form. Only the page can be the current document, so
-/// `aria-current` is left off the dialog's trigger. The label is left out of the
-/// semantics on purpose: the visible text already says where the item goes, and a
-/// second copy could only drift away from it.
+/// The link is what makes the item work without a client runtime: a static page
+/// follows `signup/` and lands on the document that draws the dialog open, while
+/// Flutter calls the box's `onTap` and opens the overlay instead. The box keeps its
+/// own role and `aria-current`, because on Flutter it is the focusable control; the
+/// anchor is what a browser announces.
 UINode _navigationItem(
   ExamplePage page, {
   required bool current,
   required TapCallback onTap,
 }) {
-  return Box(
-    onTap: onTap,
-    direction: Axis.horizontal,
-    mainAlign: MainAlign.center,
-    padding: const BoxSpacing.symmetric(horizontal: 12, vertical: 6),
-    borderRadius: 8,
-    backgroundColor: current ? ExamplePalette.accentSurface : null,
-    textStyle: current ? ExampleType.navCurrent : ExampleType.nav,
-    semantics: BoxSemantics(
-      role: page == ExamplePage.signup ? BoxRole.button : BoxRole.link,
-      // The item of the page the reader is on: `aria-current` on the web, the
-      // selected item of a set in Flutter. A dialog is not a document.
-      current: current && page == ExamplePage.apartments
-          ? BoxCurrent.page
-          : null,
+  return LinkNode(
+    page == ExamplePage.signup ? ExampleRoutes.signup : ExampleRoutes.listings,
+    child: Box(
+      onTap: onTap,
+      direction: Axis.horizontal,
+      mainAlign: MainAlign.center,
+      padding: const BoxSpacing.symmetric(horizontal: 12, vertical: 6),
+      borderRadius: 8,
+      backgroundColor: current ? ExamplePalette.accentSurface : null,
+      textStyle: current ? ExampleType.navCurrent : ExampleType.nav,
+      semantics: BoxSemantics(
+        role: page == ExamplePage.signup ? BoxRole.button : BoxRole.link,
+        // The item of the page the reader is on: `aria-current` on the web, the
+        // selected item of a set in Flutter. A dialog is not a document.
+        current: current && page == ExamplePage.apartments
+            ? BoxCurrent.page
+            : null,
+      ),
+      stateStyles: const <BoxState, BoxStyle>{
+        BoxState.hover: BoxStyle(backgroundColor: ExamplePalette.accentSurface),
+      },
+      transition: ExampleType.transition,
+      children: <UINode>[TextNode(page.label)],
     ),
-    stateStyles: const <BoxState, BoxStyle>{
-      BoxState.hover: BoxStyle(backgroundColor: ExamplePalette.accentSurface),
-    },
-    transition: ExampleType.transition,
-    children: <UINode>[TextNode(page.label)],
   );
 }
