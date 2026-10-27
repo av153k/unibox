@@ -39,6 +39,7 @@ void main() {
       UniboxImage,
       UniboxLink,
       UniboxLinkScope,
+      UniboxOverlay,
       UniboxStack,
       UniboxStateful,
       UniboxTextInput,
@@ -49,7 +50,7 @@ void main() {
       noHook,
     ];
 
-    expect(exported, hasLength(13));
+    expect(exported, hasLength(14));
     expect(widget, isNotNull);
     expect(renderFlutter, isNotNull);
   });

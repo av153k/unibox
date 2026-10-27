@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- An `OverlayNode` is presented by `UniboxOverlay` through an `OverlayPortal` on
+  the root overlay: a barrier in the node's colour, `Escape` and a barrier press
+  calling `onDismiss`, focus kept inside and handed back on exit, and the layer
+  announced as a route. The overlay takes no room in its parent, and a tree that
+  contains one needs an `Overlay` ancestor, which every `MaterialApp` provides.
 - A `StatefulNode` renders through `UniboxStateful`: the store is created on
   mount, subscribed, `onMount` is called, the view is rebuilt when the store
   publishes, and `onUnmount` plus `dispose` run on unmount. The view's tree is drawn

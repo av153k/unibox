@@ -299,6 +299,22 @@ written once for every node an application defines:
 - the view returns one tree; a dialog is not part of the model yet, so nothing in
   this layer is modal.
 
+## Overlays
+
+An `OverlayNode` is presented through an `OverlayPortal` on the root overlay, so it
+escapes the clipping and the scrolling of the boxes around it:
+
+- the node's barrier covers the page with `barrierColor`; a press dismisses it
+  when `barrierDismissible` is set and the node has an `onDismiss`;
+- `Escape` calls `onDismiss` while the overlay has focus;
+- a `FocusScope` with closed-loop traversal keeps Tab inside the content, and the
+  focus that was on the page goes back to it when the overlay leaves;
+- the layer is announced as a route, so a screen reader enters it as a dialog;
+- the node itself takes no room: the portal's child is empty.
+
+A tree that contains an overlay needs an `Overlay` above it — every `MaterialApp`
+or `WidgetsApp` provides one.
+
 ## Testing
 
 ```sh

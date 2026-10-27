@@ -23,6 +23,7 @@ export 'src/box.dart' show UniboxBox;
 export 'src/embed_node.dart' show WidgetEmbedBuilder, WidgetNode;
 export 'src/image_node.dart' show UniboxImage;
 export 'src/link_node.dart' show LinkOpener, UniboxLink, UniboxLinkScope;
+export 'src/overlay_node.dart' show UniboxOverlay;
 export 'src/render.dart';
 export 'src/stack_node.dart' show UniboxStack;
 export 'src/stateful_node.dart' show UniboxStateful;

@@ -6,6 +6,7 @@ import 'embed_node.dart';
 import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
+import 'overlay_node.dart';
 import 'stack_node.dart';
 import 'stateful_node.dart';
 import 'text_input_node.dart';
@@ -101,6 +102,10 @@ Widget renderNode(core.UINode node) {
     final core.EmbedNode embed => KeyedSubtree(
       key: toFlutterKey(embed.key),
       child: _renderEmbed(embed),
+    ),
+    final core.OverlayNode overlay => UniboxOverlay(
+      node: overlay,
+      key: toFlutterKey(overlay.key),
     ),
     final core.StatefulNode<Object, core.Store<Object>> stateful =>
       UniboxStateful(node: stateful, key: toFlutterKey(stateful.key)),
