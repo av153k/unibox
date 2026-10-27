@@ -72,10 +72,25 @@ suites depend on `unibox_conformance`, which holds the table they are held to.
 
 ## Design conventions
 
-**Naming.** `Box` is the only node without a `Node` suffix. A node only carries
-the suffix when its bare name would collide with a Flutter widget that
-consumers import next to this package: `Text`, `Image`, `Stack`, `Positioned`
-and `Link` all exist in `flutter/widgets.dart`.
+**Naming.** Names are picked so that a Flutter file can hold both imports
+unprefixed, because that is the file the renderer is used from: every node but
+`Box` carries a `Node` suffix, since `Text`, `Image`, `Stack` and `Positioned`
+are Flutter widgets and four out of six names needing the suffix makes it the
+rule rather than the exception. `Box` has no Flutter counterpart and stays short,
+because it is typed more often than everything else together. The renderers
+export only `Unibox*` names and never re-export `unibox_core`, and a test writes
+every one of them out next to `package:flutter/material.dart` so a future name
+cannot quietly break that.
+
+`unibox_core` is the import that cannot stay out of Flutter's way: `Axis`,
+`BoxBorder`, `BoxShadow` and `TextOverflow` are ambiguous next to
+`flutter/material.dart`, and `TextAlign` and `FontWeight` are worse, because
+Flutter re-exports those two from `dart:ui` and the shadowing happens with no
+diagnostic at all — `Text('x', textAlign: TextAlign.center)` simply stops
+compiling. Every file in this repository therefore imports the tree as
+`import 'package:unibox_core/unibox_core.dart' as core;`, and a tree that lives in
+its own renderer-free library — `example/unibox_example_shared` is one — needs
+neither a prefix nor `hide`, because no file ever sees both APIs.
 
 **Flat parameters win over tokens.** Every `Box` accepts flat parameters
 (`gap`, `padding`, `backgroundColor`, ...) and an optional `style: BoxStyle`.

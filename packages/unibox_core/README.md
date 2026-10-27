@@ -30,6 +30,32 @@ A node resolves its own typography with `computedStyle`, which merges its flat
 tokens over its `style`. `Box.computedTextStyle` does the same for a box, so both
 renderers resolve identical values from identical input.
 
+## Beside Flutter
+
+This package declares a few names that `package:flutter/material.dart` also
+declares, because both describe the same things:
+
+| Name | Beside Flutter |
+| --- | --- |
+| `Axis`, `BoxBorder`, `BoxShadow`, `TextOverflow` | `ambiguous_import`, reported by the analyzer |
+| `TextAlign`, `FontWeight` | shadowed silently: Flutter re-exports these from `dart:ui`, and an SDK declaration loses to a package declaration with no diagnostic at all |
+
+A file that needs the tree _and_ a renderer therefore prefixes this import:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:unibox_core/unibox_core.dart' as core;
+import 'package:unibox_flutter/unibox_flutter.dart';
+
+Widget view() => const core.Box(direction: core.Axis.vertical).toWidget();
+```
+
+Better still, keep the tree in a library of its own: a package that imports
+`unibox_core` but no renderer never sees both APIs, needs neither a prefix nor
+`hide`, and is where a shared Flutter/web tree belongs anyway. `unibox_flutter`
+and `unibox_jaspr` never re-export this package, so importing a renderer is
+always safe.
+
 ## Validation
 
 `validateTree(node)` reports the trees no renderer can honour: a `PositionedNode`

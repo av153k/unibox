@@ -84,14 +84,29 @@ breaking change even when it compiles.
 
 ### 5.1 Naming
 - Nodes live in `unibox_core` and extend `UINode`.
-- A node carries the `Node` suffix **only** when the bare name collides with a
-  Flutter widget (`Text`, `Image`, `Stack`, `Positioned`, `Link`). `Box` has no
-  Flutter counterpart and stays unsuffixed.
+- Every node but `Box` carries the `Node` suffix. The suffix answers Flutter,
+  which consumes the tree: `Text`, `Image`, `Stack` and `Positioned` are all
+  widgets, so four of six names would have to be qualified anyway and the family
+  is better off uniform. `Box` has no Flutter counterpart and stays unsuffixed.
 - Tokens are prefixed with `Box` (`BoxColor`, `BoxSpacing`, `BoxBorder`,
   `BoxShadow`, `BoxStyle`), enums are unprefixed (`Axis`, `MainAlign`, ...).
 - Renderer side classes are prefixed with `Unibox` (`UniboxBox`, `UniboxText`)
   and are internal: consumers see `renderFlutter`/`renderJaspr` and the
-  `toWidget`/`toComponent` extensions.
+  `toWidget`/`toComponent` extensions. A renderer package exports only those
+  names and **never** re-exports `unibox_core`, so a host file can import it next
+  to `flutter/material.dart`; the `naming_test.dart` of each renderer package
+  writes every export out beside that import to keep it true.
+- `unibox_core` itself does not stay out of Flutter's way, and a host that needs
+  both imports the tree with a prefix:
+  `import 'package:unibox_core/unibox_core.dart' as core;`.
+  - Reported by the analyzer: `Axis`, `BoxBorder`, `BoxShadow`, `TextOverflow`.
+  - Reported by nothing: `TextAlign`, `FontWeight`. Flutter re-exports those two
+    from `dart:ui`, and an SDK declaration loses to a package declaration without
+    a diagnostic, so the failure surfaces later as
+    `a value of type 'TextAlign' can't be assigned to a parameter of type
+    'TextAlign?'`.
+  - A tree in its own renderer-free library needs neither prefix nor `hide`,
+    because no file sees both APIs. That is the arrangement the example uses.
 
 ### 5.2 Precedence
 1. Flat node parameters (`gap`, `padding`, `fontSize`, ...).
