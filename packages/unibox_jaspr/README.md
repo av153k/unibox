@@ -202,11 +202,16 @@ the page.
 | ---------------- | --------------------------------------------- |
 | `src`, `alt`     | `src` and `alt` attributes                    |
 | `width`/`height` | `width`/`height` (`double.infinity` → `100%`) |
-| `fit`            | `object-fit` (`cover`, `contain`, `fill`)     |
+| `fit`            | `object-fit` (`cover`, `contain`, `fill`, `scale-down`) |
 | `borderRadius`   | `border-radius`                               |
 
 Images render as `display: block`, matching the leaf box they are in Flutter: no
 line box, and therefore no baseline gap beneath the picture.
+
+`object-fit` is always written, even when the node names no fit: the model's
+answer is `ImageFit.scaleDown`, which CSS spells `scale-down`. Left out, the
+browser would stretch the picture over its box (`object-fit: fill`) while Flutter
+scales it down, so the same tree would look squashed on one target.
 
 A single dimension keeps the natural aspect ratio, just like an `Image` that
 only constrains one side. Relative sources need no rewriting: the browser
@@ -249,11 +254,16 @@ a `Stack` with `Clip.none` in Flutter.
 | -------------------------- | ---------------------------------------------------- |
 | `StackNode`                | `position: relative` plus `display: grid`            |
 | `StackNode.width`/`height` | `width`/`height` (`double.infinity` → `100%`)        |
-| plain child                | `grid-area: 1 / 1` cell wrapper                      |
+| plain child                | `grid-area: 1 / 1` cell wrapper, `place-self: start`  |
 | `PositionedNode`           | `position: absolute` plus `top`/`right`/`bottom`/`left` |
 
 Each child is wrapped in a cell `<div>`: the overlap is a property of the
 container, and the rendered child already carries its own inline styles.
+
+`place-self: start` is what keeps that child its own size. A grid item stretches
+to fill its cell by default, while a Flutter `Stack` lays a child that is not
+positioned out at its natural size in the top start corner — so without the
+declaration a badge would grow to the size of the stack here and stay small there.
 
 A `PositionedNode` without any offset keeps its natural place, exactly like the
 `Positioned` widget Flutter never needed, and a `PositionedNode` rendered
@@ -266,6 +276,10 @@ A `TextInputNode` becomes `<input type="text">`, `<input type="password">` when
 stretched over the available width with `box-sizing: border-box` — the layout a
 Flutter `TextField` gets from the column it lives in — and it inherits the font,
 the colour and the line height of its box, which is what sizes it.
+
+A text area starts at one row and never shows the resize grip of a browser,
+because a Flutter field starts at one line and has no grip: `rows` is written out
+from `maxLines` and `resize: none` is part of the field styles.
 
 Everything a browser draws around a form field by itself is stripped: no border,
 no padding, no background, and no focus ring. A Flutter field carries no Material

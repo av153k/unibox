@@ -243,11 +243,15 @@ Map<String, String>? _truncationStyles(
 }
 
 /// Converts a Unibox [core.ImageFit] to the CSS `object-fit` keyword.
+///
+/// `scaleDown` is a CSS keyword as well, so the model's default means the same
+/// thing here as `BoxFit.scaleDown` does in Flutter.
 String toCssObjectFit(core.ImageFit fit) {
   return switch (fit) {
     core.ImageFit.cover => 'cover',
     core.ImageFit.contain => 'contain',
     core.ImageFit.fill => 'fill',
+    core.ImageFit.scaleDown => 'scale-down',
   };
 }
 
@@ -257,7 +261,6 @@ String toCssObjectFit(core.ImageFit fit) {
 /// Flutter: no baseline gap under the picture and no line box contribution.
 /// `object-fit` is written raw, since the typed properties do not expose it.
 Styles toImageStyles(core.ImageNode node) {
-  final core.ImageFit? fit = node.fit;
   final double? borderRadius = node.borderRadius;
 
   return Styles(
@@ -267,9 +270,9 @@ Styles toImageStyles(core.ImageNode node) {
     radius: borderRadius == null
         ? null
         : BorderRadius.circular(Unit.pixels(borderRadius)),
-    raw: fit == null
-        ? null
-        : <String, String>{'object-fit': toCssObjectFit(fit)},
+    // Always written out: left unset, the browser would stretch the picture over
+    // its box (`object-fit: fill`), which is not what a Flutter `Image` does.
+    raw: <String, String>{'object-fit': toCssObjectFit(node.resolvedFit)},
   );
 }
 
@@ -292,8 +295,16 @@ Styles toStackStyles(core.StackNode node) {
 ///
 /// Children placed like this overlap each other, painted in source order, so the
 /// last one ends up on top.
+///
+/// `place-self: start` is what keeps them their own size: a grid item stretches
+/// to fill its cell by default, while a Flutter `Stack` lays a child that is not
+/// positioned out at its natural size in the top start corner. Without it a small
+/// child — a badge, an icon — would grow to the size of the stack on the web and
+/// stay small in Flutter.
 Styles toStackChildStyles() {
-  return Styles(raw: const <String, String>{'grid-area': '1 / 1'});
+  return Styles(
+    raw: const <String, String>{'grid-area': '1 / 1', 'place-self': 'start'},
+  );
 }
 
 /// Builds the CSS of a [core.PositionedNode] that declares at least one offset.
@@ -350,6 +361,10 @@ Styles toTextInputStyles() {
       'padding': '0',
       'background-color': 'transparent',
       'outline': 'none',
+      // A text area comes with a grip in its bottom corner that lets the user
+      // resize it, and Flutter has no counterpart to it. `resize` is ignored by
+      // an `<input>`, so the declaration only ever reaches a text area.
+      'resize': 'none',
     },
   );
 }

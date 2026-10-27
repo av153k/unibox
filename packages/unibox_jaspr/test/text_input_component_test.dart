@@ -21,6 +21,7 @@ void main() {
         'padding': '0',
         'background-color': 'transparent',
         'outline': 'none',
+        'resize': 'none',
       });
     });
 
@@ -109,12 +110,20 @@ void main() {
       expect(find.text('First line'), findsOneComponent);
     });
 
-    testComponents('leaves the rows of a text area unset without maxLines', (
+    testComponents('starts a text area at one row without maxLines', (
       tester,
     ) async {
       pumpNode(tester, const core.TextInputNode(multiline: true));
 
-      expect(attributesOf(find.tag('textarea')).containsKey('rows'), isFalse);
+      // A browser would start it at two; a Flutter field starts at one line.
+      expect(attributesOf(find.tag('textarea'))['rows'], '1');
+    });
+
+    testComponents('removes the resize grip of a text area', (tester) async {
+      pumpNode(tester, const core.TextInputNode(multiline: true));
+
+      // Flutter has no counterpart to the grip a browser puts in the corner.
+      expect(stylesOf(find.tag('textarea'))['resize'], 'none');
     });
 
     testComponents('registers no listeners without callbacks', (tester) async {

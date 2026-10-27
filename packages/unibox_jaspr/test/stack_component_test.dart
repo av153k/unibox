@@ -39,11 +39,16 @@ void main() {
 
       // One container plus one cell wrapper per child.
       expect(find.tag('div'), findsNComponents(3));
+      // `place-self: start` keeps a child its own size: a grid item stretches to
+      // fill its cell by default, while a Flutter `Stack` lays it out at its
+      // natural size in the top start corner.
       expect(stylesOf(find.tag('div').at(1)), <String, String>{
         'grid-area': '1 / 1',
+        'place-self': 'start',
       });
       expect(stylesOf(find.tag('div').at(2)), <String, String>{
         'grid-area': '1 / 1',
+        'place-self': 'start',
       });
       expect(find.text('Bottom'), findsOneComponent);
       expect(find.text('Top'), findsOneComponent);
@@ -109,6 +114,7 @@ void main() {
 
       expect(stylesOf(find.tag('div').at(1)), <String, String>{
         'grid-area': '1 / 1',
+        'place-self': 'start',
       });
     });
 

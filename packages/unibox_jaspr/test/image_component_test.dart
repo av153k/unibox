@@ -15,7 +15,10 @@ void main() {
         'src': 'https://example.com/a.png',
         'alt': '',
       });
-      expect(stylesOf(find.tag('img')), <String, String>{'display': 'block'});
+      expect(stylesOf(find.tag('img')), <String, String>{
+        'display': 'block',
+        'object-fit': 'scale-down',
+      });
     });
 
     testComponents('sets the alt text', (tester) async {
@@ -48,6 +51,7 @@ void main() {
         core.ImageFit.cover: 'cover',
         core.ImageFit.contain: 'contain',
         core.ImageFit.fill: 'fill',
+        core.ImageFit.scaleDown: 'scale-down',
       };
 
       for (final MapEntry<core.ImageFit, String> entry in fits.entries) {
@@ -71,8 +75,20 @@ void main() {
       final Map<String, String> styles = stylesOf(find.tag('img'));
 
       expect(styles['border-radius'], '8px');
-      expect(styles['object-fit'], isNull);
+      expect(styles['object-fit'], 'scale-down');
     });
+
+    testComponents(
+      'writes the default fit instead of leaving it to the browser',
+      (tester) async {
+        pumpNode(tester, const core.ImageNode('assets/logo.png'));
+
+        // A browser stretches an image over its box when `object-fit` is absent,
+        // while a Flutter `Image` scales it down: the model decides, not the user
+        // agent.
+        expect(stylesOf(find.tag('img'))['object-fit'], 'scale-down');
+      },
+    );
 
     testComponents('renders inside a box next to text', (tester) async {
       pumpNode(

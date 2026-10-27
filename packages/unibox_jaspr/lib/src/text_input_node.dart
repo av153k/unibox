@@ -43,7 +43,7 @@ class UniboxTextInput extends StatelessComponent {
       return textarea(
         <Component>[if (value != null) Component.text(value)],
         placeholder: placeholder,
-        rows: node.maxLines,
+        rows: node.maxLines ?? _defaultRows,
         disabled: !node.enabled,
         readonly: node.readOnly,
         autofocus: node.autofocus,
@@ -136,6 +136,15 @@ class UniboxTextInput extends StatelessComponent {
     };
   }
 }
+
+/// The height of a text area that declares no [core.TextInputNode.maxLines].
+///
+/// A browser starts a text area at two rows and a Flutter field at one line, so
+/// the value is written out instead of being left to the user agent. One row is
+/// the closer of the two answers to Flutter's: a multiline field grows with its
+/// content there, while a text area of a fixed number of rows scrolls, which is a
+/// difference no declaration can remove.
+const int _defaultRows = 1;
 
 /// The `type` of the `<input>` for [node].
 ///
