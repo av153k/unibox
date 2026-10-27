@@ -127,6 +127,10 @@ Tasks 70, 72 and 73 were **discarded**; `Deferred` records why.
 
 Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it — were **discarded**; `Deferred` says why.
 
+### Phase 20: A design system you can opt into (Material typography)
+- [x] Task 90: New package `unibox_material` — pure Dart, depending on `unibox_core` alone: `MaterialTypeRole` names the fifteen roles of the Material 3 type scale, and `MaterialTypography` states each one as a `const BoxTextStyle` with the specification's size, weight, letter spacing and line height (the line height as the division its pixel height implies, `64 / 57` for display large), plus a `styles` table and an `of(role)` lookup. Each role is a complete style so it resets the tokens it does not share; `color` and `fontFamily` stay unset because a colour scheme and a font file are the application's.
+- [x] Task 91: Tests and docs — the suite holds every role to the specification (size, tracking, weight and the `fontSize * lineHeight` line box), the table to every role in order, the package to `unibox_core` plus the SDK, and the exports to names a core import leaves alone; the package README and changelog, `design.md` §5.9, the root README, `RELEASE.md` and the CI workflow all take the new package in.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
@@ -157,6 +161,13 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
   the map as a parameter and each host decides whether to pass it — Flutter by
   measuring the window, the web host by asking CSS. The breakpoint constant lives
   in the shared example so the two answers cannot drift apart.
+- **Design systems are packages:** the Material 3 type scale lives in
+  `unibox_material`, not in `unibox_core` and not in a renderer. The core keeps
+  one neutral default and no brand, a package of `const` tokens is what an
+  application opts into, and a second system costs a second package instead of a
+  mode in the core. The renderers stay unaware of all of them, which is what lets
+  a tree use Material's scale on both targets without either host importing
+  Material.
 
 ## Deferred
 

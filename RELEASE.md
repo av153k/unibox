@@ -1,8 +1,9 @@
 # Releasing Unibox
 
-Four packages live in this workspace. Three are meant for pub.dev — `unibox_core`,
-`unibox_flutter`, `unibox_jaspr` — and `unibox_conformance` stays development only,
-because it is the test contract and nothing an application needs.
+Five packages live in this workspace. Four are meant for pub.dev — `unibox_core`,
+`unibox_flutter`, `unibox_jaspr` and `unibox_material` — and `unibox_conformance`
+stays development only, because it is the test contract and nothing an application
+needs.
 
 Every package carries `publish_to: none` on purpose: it keeps an accidental
 `dart pub publish` from leaving the workspace. Cutting a release therefore starts
@@ -19,27 +20,30 @@ dart format --output=none --set-exit-if-changed .
 dart analyze
 (cd packages/unibox_core && dart test)
 (cd packages/unibox_conformance && dart test)
+(cd packages/unibox_material && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
 (cd example/unibox_example_shared && dart test)
 (cd example/unibox_example_jaspr && dart test)
 (cd example/unibox_example_flutter && flutter test)
 (cd packages/unibox_core && dart doc --output=/tmp/doc-core)
+(cd packages/unibox_material && dart doc --output=/tmp/doc-material)
 (cd packages/unibox_flutter && dart doc --output=/tmp/doc-flutter)
 (cd packages/unibox_jaspr && dart doc --output=/tmp/doc-jaspr)
 ```
 
 ## The steps
 
-1. **Pick the version.** The three packages move together: `unibox_flutter` and
-   `unibox_jaspr` depend on `unibox_core`, and their `^0.1.0` constraints have to
-   admit the new number.
+1. **Pick the version.** The four packages move together: `unibox_flutter`,
+   `unibox_jaspr` and `unibox_material` depend on `unibox_core`, and their `^0.1.0`
+   constraints have to admit the new number.
 2. **Bump `version:`** in `packages/unibox_core/pubspec.yaml`,
-   `packages/unibox_flutter/pubspec.yaml` and `packages/unibox_jaspr/pubspec.yaml`,
-   and the matching `unibox_core: ^x.y.z` constraints in both renderers.
+   `packages/unibox_flutter/pubspec.yaml`, `packages/unibox_jaspr/pubspec.yaml` and
+   `packages/unibox_material/pubspec.yaml`, and the matching `unibox_core: ^x.y.z`
+   constraints in the three dependants.
 3. **Close the changelogs.** Every package has an `## Unreleased` section; rename it
    to `## x.y.z` and add a fresh `## Unreleased` above it.
-4. **Remove `publish_to: none`** from the three packages being published. Leave it
+4. **Remove `publish_to: none`** from the four packages being published. Leave it
    in `unibox_conformance`.
 5. **Dry run each package**, in dependency order:
 
@@ -47,21 +51,22 @@ dart analyze
    (cd packages/unibox_core && dart pub publish --dry-run)
    (cd packages/unibox_flutter && dart pub publish --dry-run)
    (cd packages/unibox_jaspr && dart pub publish --dry-run)
+   (cd packages/unibox_material && dart pub publish --dry-run)
    ```
 
    The dry run is also the only check that the published archive holds what it
    should: `dart pub publish` refuses a package whose `README`, `CHANGELOG` or
    `LICENSE` is missing, and warns about files that should not ship.
-6. **Publish in the same order**, so a renderer never depends on a core version that
-   is not on pub.dev yet.
+6. **Publish in the same order**, so a renderer or the material package never
+   depends on a core version that is not on pub.dev yet.
 7. **Tag** the repository with the version and push the tag.
 
 ## What this repository does not do
 
-- **CI never publishes.** The workflow checks formatting, analysis, the seven test
+- **CI never publishes.** The workflow checks formatting, analysis, the eight test
   suites and the documentation; publishing is a human running the steps above.
 - **`unibox_conformance` is not released.** It is a dev dependency of the two
-  renderer packages and would only add a fourth name to keep in step.
+  renderer packages and would only add a fifth name to keep in step.
 - **The example is not released.** It is a workspace application, not a package.
 
 ## Version policy

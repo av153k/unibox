@@ -45,6 +45,8 @@ dependencies:
     path: ../unibox/packages/unibox_core
   unibox_flutter:            # or unibox_jaspr
     path: ../unibox/packages/unibox_flutter
+  unibox_material:           # optional: the Material 3 type scale
+    path: ../unibox/packages/unibox_material
 ```
 
 ```dart
@@ -432,6 +434,13 @@ The one value the model leaves to the host is the **font family**, because a fon
 file is an asset: unset means "the platform's UI font" on both targets, and an app
 that wants its own ships the same file to both.
 
+A scale can be written by hand, as the example does, or taken ready made:
+[`unibox_material`](packages/unibox_material/README.md) holds the Material 3 type
+scale as `const BoxTextStyle` values (`MaterialTypography.titleLarge`,
+`MaterialTypography.bodyMedium`, ...). It is optional and pure Dart, and the
+renderers do not know it exists — a tree that uses it is drawn by the same two
+renderers as one that does not.
+
 ## Motion
 
 `BoxTransition` says how long a change of look takes and how it eases. A state style
@@ -565,10 +574,15 @@ on both sides.
 | `packages/unibox_flutter` | The Flutter renderer: `renderFlutter(node)` and `node.toWidget()`. |
 | `packages/unibox_jaspr` | The Jaspr renderer: `renderJaspr(node)` and `node.toComponent()`. |
 | `packages/unibox_conformance` | The tables both renderers are tested against. Development only, not published. |
+| `packages/unibox_material` | The Material 3 type scale as tokens, for an application that wants Material's typography. Optional: no renderer depends on it. |
 | `example/` | Two pages, one form and one navigation bar shared by a Flutter app and a static site. |
 
 Dependencies point one way: both renderers depend on `unibox_core`, never the other
 way around, which is what keeps the description available to a third renderer.
+`unibox_material` depends on `unibox_core` as well and sits beside the renderers
+rather than under them: a tree imports it for its typography and the renderers
+never see it, so a tree with Material's type scale is drawn by the same two
+renderers as one with hand written values.
 
 **Imports.** `unibox_core` declares `Axis`, `BoxBorder`, `BoxShadow`, `TextOverflow`,
 `TextAlign` and `FontWeight`, which Flutter also declares. Next to
@@ -611,6 +625,7 @@ dart analyze                                     # static analysis everywhere
 
 (cd packages/unibox_core && dart test)
 (cd packages/unibox_conformance && dart test)
+(cd packages/unibox_material && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
 (cd example/unibox_example_shared && dart test)
@@ -624,7 +639,7 @@ analysis, `--fix` formats the tree first and `--docs` adds the API docs of every
 package.
 
 The workspace targets Dart `^3.13.0` and pins Jaspr to the `0.24` line. Continuous
-integration runs the format check, `dart analyze`, the seven test suites and
+integration runs the format check, `dart analyze`, the eight test suites and
 `dart doc` for each package on every push (see
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
@@ -645,6 +660,7 @@ Where to read more:
   what the static export contains.
 - The package READMEs hold the mapping tables, target by target:
   [core](packages/unibox_core/README.md),
+  [material](packages/unibox_material/README.md),
   [flutter](packages/unibox_flutter/README.md),
   [jaspr](packages/unibox_jaspr/README.md),
   [conformance](packages/unibox_conformance/README.md).

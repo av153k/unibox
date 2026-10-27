@@ -7,6 +7,7 @@ Unibox provides pure Dart layout primitives that compile natively to both Flutte
   - `packages/unibox_core`: Pure Dart AST & tokens. Zero dependencies (no Flutter, no Jaspr, no `dart:ui`).
   - `packages/unibox_flutter`: Depends on `unibox_core` + Flutter SDK.
   - `packages/unibox_jaspr`: Depends on `unibox_core` + `jaspr: ^0.24.0`.
+  - `packages/unibox_material`: Optional design-system tokens (the Material 3 type scale). Depends on `unibox_core` only; no renderer depends on it.
 - **Engineering Agency:** You have permission to diverge, adjust signatures, or simplify types where it makes sense, as long as the packages remain decoupled and work seamlessly across both platforms.
 
 ---
@@ -286,3 +287,27 @@ never inherited (CSS does not inherit them either).
   the effects both platforms express exactly, and an embed is for what is left
   over. When that work lands, an effect belongs in a token first and in an embed
   only if it cannot be described as one.
+
+### 5.9 Design systems are packages
+- A design system is a set of token values, not a mode of a renderer. It lives in
+  its own package, depends on `unibox_core` alone, and exports `const` values a
+  tree can use — so the renderers never learn that Material exists and a tree
+  typeset with Material's scale is drawn by the same code as one with hand
+  written values.
+- `unibox_material` is the first one: the fifteen roles of the Material 3 type
+  scale as `BoxTextStyle` values. Each role is a complete look (size, weight,
+  tracking, line height), because a partial style would let the surrounding text
+  turn a `titleMedium` bold. `color` and `fontFamily` are the two tokens left
+  unset, and for the same reason they are left unset in `BoxTextStyle.defaults`:
+  a colour scheme and a font file are the application's, and inheritance is what
+  lets one scale serve a light theme, a dark theme and a branded control.
+- A line height is written as the division the specification's pixel height
+  implies (`64 / 57` for display large), because the token is a multiple of the
+  font size on both targets; the resulting line box is the specification's, and
+  the suite checks `fontSize * lineHeight` against it.
+- `unibox_core` stays neutral about design systems. It has one default, chosen so
+  that the two hosts cannot disagree, and no opinion about a particular brand's
+  scale. A second design system can be added as a second package without touching
+  the core or a renderer, and an application that wants no system at all is not
+  made to carry one.
+
