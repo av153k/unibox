@@ -257,3 +257,17 @@ never inherited (CSS does not inherit them either).
 - What stays host work: navigation between documents (a `LinkNode` or the host's
   router), `aria-current`, figure captions, tables, and anything that describes the
   *document* rather than the tree (see 5.6).
+- The escape hatch is `EmbedNode`, and it is the one place the model admits that
+  two implementations may differ: a node carries opaque objects, one per renderer
+  that can draw it, and each renderer takes the first one whose type it
+  understands — a `Widget` or a builder that wraps the child, a `Component` or a
+  builder that wraps the child. The model names no target, so a third renderer
+  needs no change here, and a node class it has never seen renders as long as it
+  brings a payload of a shape that renderer draws. Nothing about an embed is in the
+  conformance contract, because the two halves can look different by definition;
+  what the model can check is that the hatch is not empty (`validateTree`) and that
+  a renderer never silently skips a node it cannot draw.
+- The portable route stays the token set: transitions, opacity and transforms are
+  the effects both platforms express exactly, and an embed is for what is left
+  over. When that work lands, an effect belongs in a token first and in an embed
+  only if it cannot be described as one.

@@ -393,6 +393,31 @@ Two things are worth knowing before relying on this for search:
 A sitemap is the third thing the renderer cannot write: it needs the url the pages
 are served from, which only the deployment knows.
 
+## Your own component
+
+A component of your own is a function returning a node tree, or — when it needs
+something the model does not have — an `EmbedNode` with one implementation per
+renderer. This package is the web half:
+
+```dart
+final class InkRipple extends core.EmbedNode {
+  const InkRipple({required super.child});
+
+  @override
+  List<Object> get implementations => <Object>[
+    // This target draws a ComponentEmbedBuilder, which receives the child.
+    (Component child) => div(<Component>[child], classes: 'ink-ripple'),
+  ];
+}
+```
+
+An implementation is either a `Component`, rendered as it is, or a
+`ComponentEmbedBuilder` (`Component Function(Component child)`), which receives the
+rendered child — that is what an effect that wraps content needs, and the class it
+adds is where the CSS lives. `ComponentNode` is the convenience for a single
+component payload with no child; a node carrying an implementation this target
+cannot draw, or two of them, is reported by `renderJaspr` instead of being skipped.
+
 ## Testing
 
 ```sh

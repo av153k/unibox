@@ -76,6 +76,49 @@ technologies and never focusable, so it cannot be reached by keyboard either.
 the one combination HTML forbids — and the renderers report the issues they cannot
 compensate for.
 
+## Your own component
+
+Most components are a function that returns a node tree, and both renderers already
+understand that:
+
+```dart
+UINode priceTag(String price) => Box(
+  padding: const BoxSpacing.symmetric(horizontal: 8, vertical: 4),
+  borderRadius: 6,
+  backgroundColor: BoxColor.white,
+  children: <UINode>[TextNode(price, fontWeight: FontWeight.bold)],
+);
+```
+
+That is the whole story for everything the model can express, and it is what the
+example does throughout: props are parameters, variants are enums, looks are
+`const BoxStyle` values.
+
+When an effect cannot be one description — a Material ink ripple and a CSS
+animation are not the same thing — the escape hatch is `EmbedNode`: a node that
+carries **one implementation per renderer** and the child they wrap.
+
+```dart
+final class InkRipple extends EmbedNode {
+  const InkRipple({required super.child, required this.implementations});
+
+  @override
+  final List<Object> implementations;
+}
+```
+
+Nothing in this package knows what those payloads are. Each renderer draws the
+first one whose type it understands — a `Widget` or a `Widget` builder in Flutter,
+a `Component` or a `Component` builder on the web — and reports the node when it
+finds none, or two. So a node class this package has never heard of renders
+everywhere that can draw one of its payloads, and a third renderer needs no change
+here.
+
+The payloads are platform values, which is the honest cost of the hatch: the node
+has to be built either in a package that can see both types or, more usually, with
+the host injecting its own half — the same shape the example uses for the map.
+`validateTree` reports an embed that carries nothing at all.
+
 ## Inheritance
 
 `Box.textStyle` (or `BoxStyle.textStyle`) is inherited by the descendants of the

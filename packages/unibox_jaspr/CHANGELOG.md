@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- An embed is dispatched by payload type instead of by node class: a `Component` is
+  rendered as it is and a `ComponentEmbedBuilder` receives the rendered child, so a
+  node class from outside this package renders here. Two drawable payloads, none,
+  and a builder without a child are all reported with the types this target
+  accepts.
+- `ComponentEmbedBuilder` is exported, and `ComponentNode` carries its component as
+  its implementation.
 - A heading renders `<h1>`–`<h6>`, with the user agent's margin, size and weight
   cancelled so the tree keeps deciding how a heading looks.
 - A box renders the element it names — `main`, `nav`, `header`, `footer`, `aside`,

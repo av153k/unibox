@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- An embed is dispatched by payload type instead of by node class: a `Widget` is
+  drawn as it is and a `WidgetEmbedBuilder` receives the rendered child, so a node
+  class from outside this package renders here. Two drawable payloads, none, and a
+  builder without a child are all reported with the types this target accepts.
+- `WidgetEmbedBuilder` is exported, and `WidgetNode` carries its widget as its
+  implementation.
 - A heading becomes `Semantics(header: true, headingLevel: n)`, so a screen reader
   can build the same outline a browser builds from `h1`–`h6`. The text looks
   exactly as it did.

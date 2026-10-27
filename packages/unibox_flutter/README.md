@@ -233,6 +233,32 @@ border, the background and the padding around it. The field does adopt the
 typography of its box, line height included, through `UniboxTextStyleScope`; that
 is what sizes it.
 
+## Your own component
+
+A component of your own is a function returning a node tree, or — when it needs
+something the model does not have — an `EmbedNode` with one implementation per
+renderer. This package is the Flutter half:
+
+```dart
+final class InkRipple extends core.EmbedNode {
+  const InkRipple({required super.child, required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  List<Object> get implementations => <Object>[
+    // This target draws a WidgetEmbedBuilder, which receives the child.
+    (Widget child) => InkWell(onTap: onTap, child: child),
+  ];
+}
+```
+
+An implementation is either a `Widget`, drawn as it is, or a `WidgetEmbedBuilder`
+(`Widget Function(Widget child)`), which receives the rendered child — that is what
+an effect that wraps content needs. `WidgetNode` is the convenience for a single
+widget payload with no child; a node carrying an implementation this target cannot
+draw, or two of them, is reported by `renderFlutter` instead of being skipped.
+
 ## Testing
 
 ```sh

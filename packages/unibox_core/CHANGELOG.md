@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- `EmbedNode` carries `implementations` instead of a single `payload`: one opaque
+  object per renderer that can draw the node, of which a renderer takes the first
+  whose type it understands. The model still names no platform, so a renderer can
+  draw a node class this package has never heard of. **Breaking:** `payload` is
+  deprecated in favour of `implementations`.
+- An embed can wrap one child (`child`), which its implementations receive, because
+  an effect is a wrapper and not a leaf; `children` exposes it, so validation and
+  the renderers reach it like any other subtree.
+- `validateTree` reports an embed that carries no implementation at all.
 - `TextNode.headingLevel` (1 to 6) makes a text a heading, and
   `BoxSemantics.element` gives a box an element: a landmark, sectioning content, or
   a list. Neither changes a look; both are what a page needs to be a document.

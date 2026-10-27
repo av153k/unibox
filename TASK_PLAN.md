@@ -106,6 +106,13 @@
 - [ ] Task 72: A page that can be crawled between documents: a `LinkNode` that points at an exported file (`index.html`, `apartments.html`) instead of switching host state, so the static export has a real navigation path and the `role="link"` boxes can go.
 - [ ] Task 73: Tables, if and when a real page needs one: `BoxElement.table`, `.tr`, `.th`, `.td` with the same validation rule a list item already has.
 
+### Phase 17: A component of the user's own, on both targets
+- [x] Task 74: Core — `EmbedNode` becomes plural and platform-agnostic: it carries `List<Object> implementations` (one per renderer that can draw it) and an optional `child` the implementations wrap, `children` exposes that child so validation reaches it, `payload` stays as a deprecated first-implementation getter, and `validateTree` reports an embed that carries no implementation at all.
+- [x] Task 75: Flutter renderer — dispatch an embed by payload type instead of by node class: a `Widget` is drawn as it is, a `WidgetEmbedBuilder` receives the rendered child, two drawable implementations and none are both reported with the types this target accepts, so a node class the library has never seen renders here.
+- [x] Task 76: Jaspr renderer — the same for a `Component` and a `ComponentEmbedBuilder`, so one node with one implementation per renderer is the whole extension point.
+- [x] Task 77: Tests — core (implementations, wrapped child, the deprecation, the empty-embed error), Flutter and Jaspr (a user defined embed node renders, a builder receives the child, both failure modes).
+- [x] Task 78: Docs — the three package READMEs state that the model names no platform and how a renderer picks its implementation, `design.md` §5.8 records that this escape hatch is outside the contract by construction, and the changelogs carry the breaking change.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
