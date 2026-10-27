@@ -156,7 +156,7 @@ final class MaterialListTile extends Box {
 
   /// The tint of a pressed tile, at the same colour and Material's 12%.
   static const Map<BoxState, BoxStyle> _stateTints = <BoxState, BoxStyle>{
-    BoxState.pressed: BoxStyle(backgroundColor: BoxColor(0x1F000000)),
+    BoxState.pressed: BoxStyle(backgroundColor: BoxColor(0x1A000000)),
   };
 
   /// The minimum height Material gives a one line tile, a two line tile, and

@@ -124,7 +124,7 @@ void main() {
       );
       expect(
         tile.stateStyle(BoxState.pressed)?.backgroundColor,
-        const BoxColor(0x1F000000),
+        const BoxColor(0x1A000000),
       );
       expect(
         themed.stateStyle(BoxState.hover)?.backgroundColor,

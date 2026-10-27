@@ -45,8 +45,10 @@ void main() {
     test('paints the state layers at the opacities Material states', () {
       const MaterialPalette palette = MaterialPalette.light;
 
+      // Material 3's state layers: 8% hover, 10% focus and press, 16% dragged.
       expect(palette.hoverLayer.opacity, closeTo(0.08, 0.005));
-      expect(palette.pressedLayer.opacity, closeTo(0.12, 0.005));
+      expect(palette.focusLayer.opacity, closeTo(0.10, 0.005));
+      expect(palette.pressedLayer.opacity, closeTo(0.10, 0.005));
       expect(palette.draggedLayer.opacity, closeTo(0.16, 0.005));
 
       // The layer is the on-surface colour, so it reads over any surface tone.

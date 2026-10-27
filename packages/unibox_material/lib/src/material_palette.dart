@@ -39,6 +39,7 @@ final class MaterialPalette {
     required this.onSurfaceVariant,
     required this.surfaceContainerLowest,
     required this.surfaceContainerLow,
+    required this.surfaceContainerHigh,
     required this.surfaceContainerHighest,
     required this.outline,
     required this.outlineVariant,
@@ -74,6 +75,9 @@ final class MaterialPalette {
   /// The surface of a resting card, which sits just above the page.
   final BoxColor surfaceContainerLow;
 
+  /// The surface of a dialog or a menu: above a card, below the highest tone.
+  final BoxColor surfaceContainerHigh;
+
   /// The surface of the most prominent container, such as a filled field.
   final BoxColor surfaceContainerHighest;
 
@@ -89,20 +93,25 @@ final class MaterialPalette {
   /// The text and icons drawn on [error].
   final BoxColor onError;
 
-  /// What covers the page behind a modal.
+  /// What covers the page behind a modal: black at 32%, so the page is dimmed
+  /// and not hidden.
   final BoxColor scrim;
 
-  /// The layer Material paints over a surface while the pointer is on it: 8% of
+  /// The layer Material paints while the pointer is on a control: 8% of
   /// [onSurface].
   ///
-  /// It is a translucent colour rather than a mixed one, so it sits over whatever
-  /// the box is painted on, which is what a CSS state layer does.
+  /// The layers are translucent colours rather than mixed ones, so they sit over
+  /// whatever the box is painted on — which is what a CSS state layer does, and
+  /// why one palette can tint three different surfaces.
   BoxColor get hoverLayer => _layerOver(onSurface, 0.08);
 
-  /// The layer Material paints while a control is pressed: 12% of [onSurface].
-  BoxColor get pressedLayer => _layerOver(onSurface, 0.12);
+  /// The layer Material paints while a control has keyboard focus: 10%.
+  BoxColor get focusLayer => _layerOver(onSurface, 0.10);
 
-  /// The layer Material paints over a control that is being dragged onto: 16%.
+  /// The layer Material paints while a control is pressed: 10%.
+  BoxColor get pressedLayer => _layerOver(onSurface, 0.10);
+
+  /// The layer Material paints over a control something is dragged onto: 16%.
   BoxColor get draggedLayer => _layerOver(onSurface, 0.16);
 
   /// The resting palette of Material 3's baseline light scheme.
@@ -116,12 +125,13 @@ final class MaterialPalette {
     onSurfaceVariant: BoxColor(0xFF49454F),
     surfaceContainerLowest: BoxColor(0xFFFFFFFF),
     surfaceContainerLow: BoxColor(0xFFF7F2FA),
+    surfaceContainerHigh: BoxColor(0xFFECE6F0),
     surfaceContainerHighest: BoxColor(0xFFE6E0E9),
     outline: BoxColor(0xFF79747E),
     outlineVariant: BoxColor(0xFFCAC4D0),
     error: BoxColor(0xFFB3261E),
     onError: BoxColor(0xFFFFFFFF),
-    scrim: BoxColor(0xFF000000),
+    scrim: BoxColor(0x52000000),
   );
 
   /// The resting palette of Material 3's baseline dark scheme.
@@ -135,12 +145,13 @@ final class MaterialPalette {
     onSurfaceVariant: BoxColor(0xFFCAC4D0),
     surfaceContainerLowest: BoxColor(0xFF0F0D13),
     surfaceContainerLow: BoxColor(0xFF1D1B20),
+    surfaceContainerHigh: BoxColor(0xFF2B2930),
     surfaceContainerHighest: BoxColor(0xFF36343B),
     outline: BoxColor(0xFF938F99),
     outlineVariant: BoxColor(0xFF49454F),
     error: BoxColor(0xFFF2B8B5),
     onError: BoxColor(0xFF601410),
-    scrim: BoxColor(0xFF000000),
+    scrim: BoxColor(0x52000000),
   );
 
   /// [base] at [opacity], keeping its channels.
