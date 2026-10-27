@@ -87,6 +87,85 @@ void main() {
       expect(issue.message, contains('0 to 1'));
     });
 
+    test('accepts a transition that eases one part before another', () {
+      const Box tree = Box(
+        transition: BoxTransition(
+          duration: Duration(milliseconds: 200),
+          parts: <BoxTransitionPart>[
+            BoxTransitionPart(
+              looks: BoxLook.paint,
+              duration: Duration(milliseconds: 100),
+            ),
+            BoxTransitionPart(
+              looks: <BoxLook>{BoxLook.transform},
+              duration: Duration(milliseconds: 150),
+              delay: Duration(milliseconds: 100),
+            ),
+          ],
+        ),
+      );
+
+      expect(validateTree(tree), isEmpty);
+    });
+
+    test('reports a part that names no look', () {
+      const Box tree = Box(
+        transition: BoxTransition(
+          duration: Duration(milliseconds: 100),
+          parts: <BoxTransitionPart>[
+            BoxTransitionPart(
+              looks: <BoxLook>{},
+              duration: Duration(milliseconds: 100),
+            ),
+          ],
+        ),
+      );
+
+      expect(validateTree(tree).single.message, contains('names no look'));
+    });
+
+    test('reports a look eased by two parts', () {
+      const Box tree = Box(
+        transition: BoxTransition(
+          duration: Duration(milliseconds: 100),
+          parts: <BoxTransitionPart>[
+            BoxTransitionPart(
+              looks: <BoxLook>{BoxLook.opacity},
+              duration: Duration(milliseconds: 100),
+            ),
+            BoxTransitionPart(
+              looks: <BoxLook>{BoxLook.opacity},
+              duration: Duration(milliseconds: 50),
+            ),
+          ],
+        ),
+      );
+
+      expect(validateTree(tree).single.message, contains('ambiguous'));
+    });
+
+    test('reports paint that eases at two speeds', () {
+      // A single decoration interpolates as a unit on Flutter, so the paint has to
+      // share one timing; the fix is to nest a box, not to approximate.
+      const Box tree = Box(
+        transition: BoxTransition(
+          duration: Duration(milliseconds: 200),
+          parts: <BoxTransitionPart>[
+            BoxTransitionPart(
+              looks: <BoxLook>{BoxLook.backgroundColor},
+              duration: Duration(milliseconds: 100),
+            ),
+            BoxTransitionPart(
+              looks: <BoxLook>{BoxLook.borderColor},
+              duration: Duration(milliseconds: 200),
+            ),
+          ],
+        ),
+      );
+
+      expect(validateTree(tree).single.message, contains('eases as one'));
+    });
+
     test('reports an embed without an implementation', () {
       const Box tree = Box(children: <UINode>[_EmptyEmbed()]);
 

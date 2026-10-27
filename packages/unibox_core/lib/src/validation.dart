@@ -169,6 +169,10 @@ void _validate(
       );
     }
 
+    for (final TreeIssue issue in _transitionIssues(node, transition)) {
+      issues.add(issue);
+    }
+
     if (transition != null && transition.duration <= Duration.zero) {
       issues.add(
         TreeIssue(
@@ -212,4 +216,85 @@ void _validate(
   for (final UINode child in node.children) {
     _validate(child, parent: node, inLink: nestedInLink, issues: issues);
   }
+}
+
+/// The issues of the transition parts of [box], if it declares any.
+///
+/// A part has to name a look, no look may be named twice, and the four things a
+/// box paints have to share one timing: a single `BoxDecoration` interpolates as a
+/// unit on Flutter, so paint properties that ease at different speeds would need
+/// layered decorations — which the tree expresses by nesting a box, and which the
+/// renderer must not approximate silently.
+List<TreeIssue> _transitionIssues(Box box, BoxTransition? transition) {
+  if (transition == null || transition.parts.isEmpty) {
+    return const <TreeIssue>[];
+  }
+
+  final List<TreeIssue> issues = <TreeIssue>[];
+  final Map<BoxLook, BoxTransitionPart> named = <BoxLook, BoxTransitionPart>{};
+
+  for (final BoxTransitionPart part in transition.parts) {
+    if (part.looks.isEmpty) {
+      issues.add(
+        TreeIssue(
+          node: box,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A BoxTransitionPart names no look, so it eases nothing. Name the '
+              'looks it should cover, e.g. {BoxLook.transform}.',
+        ),
+      );
+    }
+
+    if (part.duration <= Duration.zero) {
+      issues.add(
+        TreeIssue(
+          node: box,
+          message:
+              'A BoxTransitionPart eases ${part.looks.map((BoxLook l) => l.name)} '
+              'over ${part.duration}, which changes nothing.',
+        ),
+      );
+    }
+
+    for (final BoxLook look in part.looks) {
+      if (named.containsKey(look)) {
+        issues.add(
+          TreeIssue(
+            node: box,
+            severity: TreeIssueSeverity.error,
+            message:
+                'Two BoxTransitionParts ease ${look.name}, so it is ambiguous '
+                'which one applies. Name each look once.',
+          ),
+        );
+      }
+      named[look] = part;
+    }
+  }
+
+  const Set<BoxLook> paint = <BoxLook>{
+    BoxLook.backgroundColor,
+    BoxLook.borderColor,
+    BoxLook.borderRadius,
+    BoxLook.shadow,
+  };
+  final Set<BoxTransitionTiming> paintTimings = <BoxTransitionTiming>{
+    for (final BoxLook look in paint) transition.timingOf(look),
+  };
+
+  if (paintTimings.length > 1) {
+    issues.add(
+      TreeIssue(
+        node: box,
+        severity: TreeIssueSeverity.error,
+        message:
+            'The paint of a box (background, border colour, radius, shadow) eases '
+            'as one on Flutter, so its looks have to share a timing. Give them one '
+            'part, or nest a box and let each one ease its own paint.',
+      ),
+    );
+  }
+
+  return issues;
 }

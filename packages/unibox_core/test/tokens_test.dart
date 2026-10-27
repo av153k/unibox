@@ -420,6 +420,81 @@ void main() {
     });
   });
 
+  group('BoxTransition.parts', () {
+    test('falls back to the base timing for a look no part names', () {
+      const transition = BoxTransition(
+        duration: Duration(milliseconds: 200),
+        curve: BoxCurve.easeOut,
+      );
+
+      final BoxTransitionTiming timing = transition.timingOf(BoxLook.transform);
+
+      expect(timing.duration, const Duration(milliseconds: 200));
+      expect(timing.curve, BoxCurve.easeOut);
+      expect(timing.delay, Duration.zero);
+    });
+
+    test('lets a part ease one look before another', () {
+      const transition = BoxTransition(
+        duration: Duration(milliseconds: 200),
+        parts: <BoxTransitionPart>[
+          BoxTransitionPart(
+            looks: <BoxLook>{BoxLook.backgroundColor},
+            duration: Duration(milliseconds: 100),
+          ),
+          BoxTransitionPart(
+            looks: <BoxLook>{BoxLook.transform},
+            duration: Duration(milliseconds: 150),
+            delay: Duration(milliseconds: 100),
+            curve: BoxCurve.easeIn,
+          ),
+        ],
+      );
+
+      final BoxTransitionTiming paint = transition.timingOf(
+        BoxLook.backgroundColor,
+      );
+      final BoxTransitionTiming transform = transition.timingOf(
+        BoxLook.transform,
+      );
+
+      expect(paint.duration, const Duration(milliseconds: 100));
+      expect(paint.delay, Duration.zero);
+      expect(transform.duration, const Duration(milliseconds: 150));
+      expect(transform.delay, const Duration(milliseconds: 100));
+      expect(transform.curve, BoxCurve.easeIn);
+
+      // The longest `delay + duration` of all the looks.
+      expect(transition.totalDuration, const Duration(milliseconds: 250));
+    });
+
+    test('implements value equality for parts', () {
+      const BoxTransitionPart part = BoxTransitionPart(
+        looks: <BoxLook>{BoxLook.opacity, BoxLook.transform},
+        duration: Duration(milliseconds: 80),
+        delay: Duration(milliseconds: 20),
+      );
+
+      expect(part.copyWith(), part);
+      expect(part.hashCode, part.copyWith().hashCode);
+      // A set of looks does not care about order.
+      expect(
+        part.copyWith(looks: <BoxLook>{BoxLook.transform, BoxLook.opacity}),
+        part,
+      );
+      expect(part.end, const Duration(milliseconds: 100));
+      expect(part.toString(), contains('opacity'));
+
+      const BoxTransition transition = BoxTransition(
+        duration: Duration(milliseconds: 100),
+        parts: <BoxTransitionPart>[part],
+      );
+
+      expect(transition.copyWith(), transition);
+      expect(transition.hashCode, transition.copyWith().hashCode);
+    });
+  });
+
   group('BoxSemantics', () {
     test('describes a plain container by default', () {
       const semantics = BoxSemantics();
