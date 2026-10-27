@@ -12,6 +12,7 @@ dependencies:
   unibox_core: ^0.1.0
   unibox_example_shared: ^0.1.0
   unibox_jaspr: ^0.1.0
+  unibox_material: ^0.1.0
 
 dev_dependencies:
   jaspr_test: ^0.24.0-beta.0

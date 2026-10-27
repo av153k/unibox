@@ -10,7 +10,7 @@ import 'package:unibox_jaspr/unibox_jaspr.dart';
 /// the same store in a browser.
 ///
 /// [initialForm] and [openSignup] are for the static export: a document has no
-/// click to open the dialog, so `bin/build.dart` renders the state the document
+/// click to open the dialog, so `bin/build_site.dart` renders the state the document
 /// should start in.
 class ExampleApp extends JasprStateful {
   /// Creates the example application.

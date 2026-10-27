@@ -730,8 +730,10 @@ order, which is the command to reach for before a commit; `--fast` stops after t
 analysis, `--fix` formats the tree first and `--docs` adds the API docs of every
 package.
 
-`tool/site.sh` builds the example as a static site — the Jaspr export and the Flutter
-web build of the same node tree, with a landing page that shows them side by side.
+`tool/site.sh` builds the site: a gallery of the Material library at `/`, the example
+drawn by both renderers side by side at `/showcase/`, and the two builds behind them.
+Both pages are node trees — the frames in the showcase are the one thing the model
+cannot describe, and they arrive through `EmbedNode`.
 `--serve` previews the result locally, and
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes it to GitHub
 Pages on every push to `main`, which needs one setting first: Settings → Pages →

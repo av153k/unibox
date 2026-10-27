@@ -100,8 +100,8 @@ recognisably the same page.
 
 ## The static site
 
-`tool/site.sh` builds both renderings into `build/site`, a directory any static host
-can publish:
+`tool/site.sh` builds the site into `build/site`, a directory any static host can
+publish:
 
 ```shell
 tool/site.sh --serve                        # http://localhost:8000/
@@ -110,10 +110,16 @@ tool/site.sh --base=/unibox/ --url=https://cedvdb.github.io/unibox/
 
 | Path | What it is |
 | --- | --- |
-| `/` | A landing page: the two renderings side by side in two frames |
-| `/showcase/` | The listings, rendered by Jaspr — HTML and CSS, no JavaScript |
-| `/showcase/signup/` | The same page with the sign-up dialog over it |
-| `/flutter/`, `/flutter/showcase/`, `/flutter/showcase/signup/` | The same three, rendered by Flutter |
+| `/` | The Material library: the type scale, the colour roles and the components |
+| `/showcase/` | The example drawn by both renderers, side by side in two frames |
+| `/web/` | The example's listings, rendered by Jaspr — HTML and CSS, no JavaScript |
+| `/web/signup/` | The same page with the sign-up dialog over it |
+| `/flutter/`, `/flutter/signup/` | The same two pages, rendered by Flutter |
+
+The gallery and the showcase are node trees as well, so the site is built with the
+library it documents. The one thing the model cannot describe is an `<iframe>`, and
+that is what `EmbedNode` is for: the showcase's two frames are the only non-node
+content on the site, and the page around them is boxes and text.
 
 Being open is state, and a static page cannot be clicked into existence, so the
 export writes one document per destination and the Flutter app reads the path it was
@@ -151,18 +157,21 @@ flutter test
 
 The host is two files: `lib/main.dart` holds `ExampleApp`, the same node in its
 server form, and `lib/document.dart` puts it in a document (language, title,
-description, the `html, body` height and the font stack). `bin/build.dart`
-renders that document once per destination:
+description, the `html, body` height and the font stack). `bin/build_site.dart`
+renders that document once per destination, next to the gallery and the showcase
+the site also publishes:
 
 ```shell
 cd example/unibox_example_jaspr
-dart run bin/build.dart   # writes build/index.html and build/signup.html
-open build/index.html
+dart run bin/build_site.dart --out=build/site
+open build/site/web/index.html
 ```
 
 There is one file per destination because being open is state, and a static
-export cannot keep state — open the document you want. `index.html` is the
-listings; `signup.html` is the same page with the dialog already open.
+export cannot keep state — open the document you want. `web/index.html` is the
+listings; `web/signup/index.html` is the same page with the dialog already open.
+The whole site, with both renderings and the Flutter build beside them, is
+`tool/site.sh` (see [the static site](#the-static-site)).
 
 Each page is a document before it is a picture: the bar is a `<nav>`, the page box
 is a `<main>`, the card an `<article>`, the listings a `<ul>` of `<li>`s, the page

@@ -26,8 +26,9 @@ import 'main.dart';
 ///
 /// [page] is the destination the export starts on, which is the listings. Being
 /// open is state, so a static export cannot open anything by itself:
-/// `bin/build.dart` writes one document per destination, and the sign-up document
-/// starts with the dialog open while the entry document starts with it closed.
+/// `bin/build_site.dart` writes one document per destination, and the sign-up
+/// document starts with the dialog open while the entry document starts with it
+/// closed.
 ///
 /// The metadata is the host's, not the tree's: a title and a description describe
 /// a *document*, while a node tree describes a region of one. That is also why
