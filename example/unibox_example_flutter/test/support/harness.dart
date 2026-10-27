@@ -6,8 +6,15 @@ import 'package:unibox_example_flutter/app.dart';
 ///
 /// The wide test font makes every line taller than the real font the card is
 /// designed for, so the default 800x600 surface is too short.
-Future<void> pumpApp(WidgetTester tester) async {
-  tester.view.physicalSize = const Size(900, 1000);
+///
+/// [surface] is the window the app is given, which is what the tree is drawn on:
+/// the harness sets it to a wide window by default, and a test that cares about
+/// the breakpoint asks for its own.
+Future<void> pumpApp(
+  WidgetTester tester, {
+  Size surface = const Size(900, 1000),
+}) async {
+  tester.view.physicalSize = surface;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(const UniboxExampleApp());
@@ -18,3 +25,12 @@ Finder nameField() => find.byType(TextField).first;
 
 /// The email field of the card.
 Finder emailField() => find.byType(TextField).last;
+
+/// The navigation item that opens [label].
+Finder navItem(String label) => find.text(label);
+
+/// Opens the page labelled [label] through the navigation bar.
+Future<void> openPage(WidgetTester tester, String label) async {
+  await tester.tap(navItem(label));
+  await tester.pump();
+}

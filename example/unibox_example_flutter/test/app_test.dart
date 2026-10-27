@@ -110,5 +110,107 @@ void main() {
 
       expect(find.text('✓'), findsNothing);
     });
+
+    group('navigation', () {
+      testWidgets('opens the apartments page from the bar', (tester) async {
+        await pumpApp(tester);
+
+        await openPage(tester, 'Apartments');
+
+        expect(find.text('Join Unibox'), findsNothing);
+        expect(find.text('Via Bellavista 12'), findsOneWidget);
+        expect(find.byType(TextField), findsNothing);
+      });
+
+      testWidgets('comes back to the card with the form intact', (
+        tester,
+      ) async {
+        await pumpApp(tester);
+        await fillForm(tester);
+
+        await openPage(tester, 'Apartments');
+        await openPage(tester, 'Sign up');
+
+        expect(find.text('Join Unibox'), findsOneWidget);
+        expect(tester.widget<TextField>(nameField()).controller!.text, 'Ada');
+        expect(find.text('Looks good - press Create account.'), findsOneWidget);
+      });
+
+      testWidgets('shows the map beside the listings on a wide surface', (
+        tester,
+      ) async {
+        await pumpApp(tester);
+
+        await openPage(tester, 'Apartments');
+
+        // The two columns of the row: the listings take three parts of the
+        // width, the map two, and the map sits to the right of the list.
+        final Rect listings = tester.getRect(find.text('Via Bellavista 12'));
+        final Rect map = tester.getRect(find.text('Map'));
+
+        expect(map.left, greaterThan(listings.right));
+      });
+
+      testWidgets('leaves the map out on a narrow surface', (tester) async {
+        // The host answers the breakpoint question by not passing the panel at
+        // all, which is what the web host does with `display: none`: either way
+        // the list is the whole page.
+        await pumpApp(tester, surface: const Size(700, 900));
+
+        await openPage(tester, 'Apartments');
+
+        expect(find.text('Map'), findsNothing);
+        expect(find.text('Via Bellavista 12'), findsOneWidget);
+      });
+
+      testWidgets('keeps the listings readable on a small surface', (
+        tester,
+      ) async {
+        // The card is a row whose text column takes what is left, so the name, the
+        // summary and the rent wrap inside the card instead of widening it.
+        await pumpApp(tester, surface: const Size(500, 800));
+
+        await openPage(tester, 'Apartments');
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Via Bellavista 12'), findsOneWidget);
+        expect(find.text('€1850 / month'), findsOneWidget);
+
+        final Rect card = tester.getRect(
+          find
+              .ancestor(
+                of: find.text('Via Bellavista 12'),
+                matching: find.byType(UniboxBox),
+              )
+              .last,
+        );
+        expect(card.width, lessThanOrEqualTo(500));
+      });
+
+      testWidgets('scrolls the listings under the navigation', (tester) async {
+        // Short enough that the six listings do not fit, which is the case the
+        // scroll view exists for.
+        await pumpApp(tester, surface: const Size(900, 700));
+        await openPage(tester, 'Apartments');
+
+        final double bar = tester.getTopLeft(find.text('Unibox')).dy;
+        final double before = tester
+            .getTopLeft(find.text('Via Bellavista 12'))
+            .dy;
+
+        await tester.drag(
+          find.byType(SingleChildScrollView),
+          const Offset(0, -200),
+        );
+        await tester.pump();
+
+        expect(
+          tester.getTopLeft(find.text('Via Bellavista 12')).dy,
+          lessThan(before),
+        );
+        // The navigation belongs to the frame, not to the page that scrolls.
+        expect(tester.getTopLeft(find.text('Unibox')).dy, bar);
+      });
+    });
   });
 }
