@@ -40,8 +40,28 @@ void main() {
     });
 
     test('renders the shared card', () {
-      expect(html, contains('Unibox example'));
       expect(html, contains('Join Unibox'));
+      expect(html, contains('One description, two renderers.'));
+    });
+
+    test('declares the language of the page', () {
+      // A crawler and a screen reader both guess the language when the document
+      // does not state it.
+      expect(html, contains('<html lang="en">'));
+    });
+
+    test('describes the page to a search engine', () {
+      expect(html, contains('<title>Join Unibox — sign up</title>'));
+      expect(
+        html,
+        contains('<meta name="description" content="A sign-up card'),
+      );
+    });
+
+    test('marks the page title as a heading', () {
+      // The role is the only structural signal the tree can give a crawler: the
+      // box renderer writes it as ARIA instead of an `<h1>`.
+      expect(html, contains('role="heading"'));
     });
 
     test('writes the apartments page on request', () async {
@@ -57,6 +77,23 @@ void main() {
       expect(apartments, contains('overflow: auto'));
       expect(apartments, contains('@media screen and (min-width: 900px)'));
       expect(apartments, contains('display: none;'));
+    });
+
+    test('gives the apartments page its own title and description', () async {
+      // Two documents that share a title read as one page twice, and a result
+      // that repeats the sign-up copy under the apartments listing is worse than
+      // no description at all.
+      final ResponseLike page = await renderComponent(
+        buildExampleDocument(page: ExamplePage.apartments),
+      );
+      final String apartments = utf8.decode(page.body);
+
+      expect(apartments, contains('<title>Apartments — Unibox</title>'));
+      expect(apartments, contains('Six apartments'));
+      expect(
+        apartments,
+        isNot(contains('<title>Join Unibox — sign up</title>')),
+      );
     });
   });
 }

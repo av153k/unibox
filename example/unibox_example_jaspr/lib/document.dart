@@ -27,10 +27,21 @@ import 'app.dart';
 /// [page] is the page the export starts on. Navigation is state, so a static
 /// export cannot switch pages by itself; `bin/build.dart` writes one document
 /// per page so every layout can be opened on its own.
+///
+/// The metadata is the host's, not the tree's: a title and a description describe
+/// a *document*, while a node tree describes a region of one. That is also why
+/// each page gets its own: two documents that share a title look like one page
+/// twice to a search engine. A host that needs more — a canonical url, Open Graph
+/// tags, structured data — adds them through `Document.head`, which is where
+/// elements that do not belong to the tree go.
 Document buildExampleDocument({ExamplePage page = ExamplePage.signup}) {
   return Document(
-    title: 'Unibox example',
+    // Without `lang` both a screen reader and a crawler have to guess which
+    // language the page is in.
+    lang: 'en',
+    title: _titleOf(page),
     viewport: 'width=device-width, initial-scale=1',
+    meta: <String, String>{'description': _descriptionOf(page)},
     styles: <StyleRule>[
       StyleRule(
         selector: const Selector('html, body'),
@@ -57,4 +68,31 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.signup}) {
     ],
     body: UniboxExampleApp(initialPage: page),
   );
+}
+
+/// The `<title>` of [page], which is what a search result links and what a
+/// browser tab shows.
+///
+/// The page name comes first and the site name last, the order a reader scans a
+/// result in.
+String _titleOf(ExamplePage page) {
+  return switch (page) {
+    ExamplePage.signup => 'Join Unibox — sign up',
+    ExamplePage.apartments => 'Apartments — Unibox',
+  };
+}
+
+/// The `<meta name="description">` of [page].
+///
+/// It describes what the page is, in the words a reader would use, because a
+/// search engine may show it under the title instead of an excerpt of the text.
+String _descriptionOf(ExamplePage page) {
+  return switch (page) {
+    ExamplePage.signup =>
+      'A sign-up card described as one Unibox node tree and rendered by '
+          'Flutter and by Jaspr, with a working form on both.',
+    ExamplePage.apartments =>
+      'Six apartments with a map beside the listings on a wide screen and the '
+          'listings alone on a narrow one, from the same node tree.',
+  };
 }

@@ -4,7 +4,7 @@ import 'package:jaspr/server.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
 import 'package:unibox_example_jaspr/document.dart';
 
-/// Renders the example to one static HTML file per page.
+/// Renders the example to one static HTML file per page, plus a `robots.txt`.
 ///
 /// The Unibox renderer emits plain elements, inline styles and scoped `<style>`
 /// rules, so the page needs no client bundle to be readable: run
@@ -18,6 +18,13 @@ import 'package:unibox_example_jaspr/document.dart';
 /// the second page, and resizing the window there is what the breakpoint does:
 /// the map is beside the listings on a wide window and gone on a narrow one,
 /// with no JavaScript involved.
+///
+/// What a crawler can read is the export itself: the text, the `<img alt>` texts,
+/// the real `<a href>` of a `LinkNode`, the `role` attributes of the semantics
+/// tokens, and the `<title>`, description and `lang` of each page. A sitemap is
+/// the one thing that cannot be written here — it needs the url the pages are
+/// served from, which only the deployment knows — so the file names it lists are
+/// the two this loop writes.
 Future<void> main() async {
   Jaspr.initializeApp();
 
@@ -32,6 +39,11 @@ Future<void> main() async {
 
     stdout.writeln('Wrote ${file.path} (${rendered.body.length} bytes)');
   }
+
+  File('build/robots.txt')
+    ..createSync(recursive: true)
+    ..writeAsStringSync('User-agent: *\nAllow: /\n');
+  stdout.writeln('Wrote build/robots.txt');
 }
 
 /// The file the static export writes [page] to.
