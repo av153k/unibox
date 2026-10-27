@@ -59,9 +59,10 @@ void main() {
     });
 
     test('marks the page title as a heading', () {
-      // The role is the only structural signal the tree can give a crawler: the
-      // box renderer writes it as ARIA instead of an `<h1>`.
-      expect(html, contains('role="heading"'));
+      // A heading is an element here, so a crawler reads the outline of the page
+      // and a screen reader announces the level.
+      expect(html, contains('<h1 '));
+      expect(html, contains('Join Unibox'));
     });
 
     test('writes the apartments page on request', () async {

@@ -164,17 +164,18 @@ void main() {
         const UniboxExampleApp(initialPage: ExamplePage.apartments),
       );
 
-      final List<TestRenderElement> scrollable = elementsOf(find.tag('div'))
-          .where(
-            (TestRenderElement element) =>
-                element.styles?['overflow'] == 'auto',
-          )
-          .toList();
+      // The page is the `<main>` landmark and the scrolling box in one: it is
+      // the part of the frame that takes the room the navigation leaves.
+      final Map<String, String> page = stylesOf(find.tag('main'));
 
-      expect(scrollable, hasLength(1));
-      // The scrolling box is the page below the navigation, not the document: it
-      // is the part of the frame that takes the room that is left.
-      expect(scrollable.single.styles?['flex-grow'], '1');
+      expect(page['overflow'], 'auto');
+      expect(page['flex-grow'], '1');
+
+      // Nothing else scrolls, so the document itself stays one viewport tall.
+      final Iterable<TestRenderElement> scrollable = elementsOf(find.tag('div'))
+          .where((TestRenderElement e) => e.styles?['overflow'] == 'auto');
+
+      expect(scrollable, isEmpty);
     });
 
     testComponents('shows the map from the breakpoint up', (tester) async {
