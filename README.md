@@ -722,9 +722,11 @@ package.
 
 `tool/site.sh` builds the example as a static site — the Jaspr export and the Flutter
 web build of the same node tree, with a landing page that shows them side by side.
-It needs no extra tooling beyond the SDK; `--serve` previews the result locally, and
+`--serve` previews the result locally, and
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes it to GitHub
-Pages on every push to `main` (see [`example/README.md`](example/README.md#the-static-site)).
+Pages on every push to `main`, which needs one setting first: Settings → Pages →
+Source: **GitHub Actions** (see
+[`example/README.md`](example/README.md#the-static-site)).
 
 The workspace targets Dart `^3.13.0` and pins Jaspr to the `0.24` line. Continuous
 integration runs the format check, `dart analyze`, the eight test suites and

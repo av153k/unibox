@@ -3,8 +3,10 @@ name: Pages
 # Publishes the example as a static site: the Jaspr export and the Flutter build of
 # the same node tree, with a landing page that shows them side by side.
 #
-# One-time setup, and the only step a workflow cannot do: Settings -> Pages ->
-# Source: "GitHub Actions".
+# One-time setup, and the one step a workflow cannot do for you: Settings -> Pages ->
+# Source: "GitHub Actions". Until that is on, this workflow still verifies the
+# workspace and builds the site, keeps it as a downloadable artifact, and says in the
+# run summary that the deploy was skipped.
 
 on:
   push:
@@ -29,6 +31,8 @@ jobs:
   build:
     name: Build the site
     runs-on: ubuntu-latest
+    outputs:
+      pages: ${{ steps.pages.outputs.enabled }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -40,18 +44,40 @@ jobs:
         run: tool/verify.sh
       - name: Build the pages
         run: tool/site.sh --base=/unibox/ --url="$SITE_URL"
-      - uses: actions/configure-pages@v5
+
+      # A workflow cannot enable Pages with the repository token: `configure-pages`
+      # needs an administrator to have turned it on first. Detect that instead of
+      # failing, so the build keeps its value and the run link explains the next step.
+      - name: Check whether Pages is enabled
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Pages is not enabled::Settings -> Pages -> Source: GitHub Actions, then re-run this workflow to publish. The site built successfully and is attached to this run."
+          fi
+
+      - name: Keep the site for inspection
+        uses: actions/upload-artifact@v4
         with:
-          # Enables Pages with "GitHub Actions" as its source when it is not enabled
-          # yet, so the first push does not need a manual visit to the settings.
-          enablement: true
+          name: site
+          path: build/site
+          retention-days: 7
+
+      - uses: actions/configure-pages@v5
+        if: steps.pages.outputs.enabled == 'true'
       - uses: actions/upload-pages-artifact@v3
+        if: steps.pages.outputs.enabled == 'true'
         with:
           path: build/site
 
   deploy:
     name: Deploy
     needs: build
+    if: needs.build.outputs.pages == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

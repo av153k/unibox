@@ -122,9 +122,11 @@ rewrite rule either, which is why every Flutter route is a real `index.html`: th
 build writes one entry document and the script copies it to each route, with the
 absolute base href that lets the assets resolve from any depth.
 
-The deployment is `.github/workflows/pages.yml` — verify, build, publish — and it
-needs one setting a workflow cannot make: Settings → Pages → Source: **GitHub
-Actions**.
+The deployment is `.github/workflows/pages.yml` — verify, build, publish. It needs
+one setting a workflow cannot make: Settings → Pages → Source: **GitHub Actions**.
+Until that is on, the job still verifies the workspace and builds the site, keeps it
+as a downloadable artifact of the run, and skips the deploy with a notice; turning
+Pages on and re-running the workflow publishes the same build.
 
 ## Flutter app
 
