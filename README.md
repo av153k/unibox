@@ -363,14 +363,14 @@ const Box(
 );
 ```
 
-When two places say something different, the closer one wins:
+When two places set the same value, the more specific one wins:
 
 | Order | Where the value comes from |
 | --- | --- |
 | 1 | the flat parameter of the node (`fontSize`, `padding`, ...) |
-| 2 | the node's own bundle (`BoxStyle`, `BoxTextStyle`) |
+| 2 | the node's style object (`BoxStyle`, `BoxTextStyle`) |
 | 3 | the typography of the closest box above it |
-| 4 | the host's ambient style (Flutter's `DefaultTextStyle`, the page's CSS) |
+| 4 | the host's own default (Flutter's `DefaultTextStyle`, the page's CSS) |
 | 5 | the default of the model |
 
 The model has the last word, not the host: `BoxTextStyle.defaults` is 16 logical
