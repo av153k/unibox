@@ -1,8 +1,8 @@
 import 'package:unibox_core/unibox_core.dart' as core;
 
-/// What one side of a difference did with a token: the record's `actual` field is
-/// the presentation that was read back, `expected` the one the case asked for.
-typedef TokenDifference = ({Object? actual, Object? expected});
+import 'token_difference.dart';
+
+export 'token_difference.dart';
 
 /// How a box is presented once it has been rendered.
 ///
