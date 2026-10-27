@@ -115,6 +115,18 @@ from nine hundred pixels on and is gone below that, with no JavaScript involved.
 There is one file per page because navigation is state, and a static export
 cannot keep state — open the page you want.
 
+Each page also arrives with what a search engine reads before any script runs:
+`<html lang="en">`, its own `<title>` and description
+(`buildExampleDocument(page:)`), the text and the `role` attributes as markup, and
+a `robots.txt` next to the two documents. A sitemap would need the address the
+pages are served from, so it is left to the deployment.
+
+What cannot be crawled is the navigation between the two files: the bar switches
+the open page in host state (`onTap`), and a box with `BoxRole.link` has no
+`href`, so a crawler sees two documents and no link between them. A page that has
+to be found makes sense as a `LinkNode` with a real url — which is the router work
+`TASK_PLAN.md` lists as deferred.
+
 The static export is a snapshot of the server render: the markup, the inline
 styles, the scoped hover rules and the media query are all there, but the `click`
 and `input` listeners become live only once the component runs on the client (the

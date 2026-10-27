@@ -44,6 +44,11 @@ What both renderers agree on:
 - **Interaction states in the model.** Hover, focus, press and disabled are
   `BoxState` entries, rendered as `MouseRegion`/`Focus` and as `:hover`,
   `:focus-visible`, `:active` and `[aria-disabled]`.
+- **The web output is a document, not a canvas.** Text, images, links and roles
+  are emitted as markup, so a screen reader and a crawler read the page without
+  running JavaScript; a static export needs no client bundle to be legible. What
+  describes the *document* rather than the tree — title, language, description,
+  canonical url, structured data — is the host's, and deliberately not modelled.
 - **Accessibility is not an afterthought.** `BoxSemantics` turns a hand drawn
   control into a real button or checkbox, with a keyboard entry point and a
   screen reader name.

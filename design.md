@@ -215,6 +215,12 @@ never inherited (CSS does not inherit them either).
   `const BoxStyle` values.
 - No breakpoint, no `Visibility` and no conditional node: the model describes one
   layout, and how wide the surface is belongs to the host (see 5.4).
+- No SEO or document metadata: a title, a language, a description, a canonical
+  url and structured data describe a *document*, while a tree describes a region
+  of one. The host owns them, which is also what keeps the same tree usable as a
+  page, a card inside a page or a section of a Flutter screen. What the tree does
+  contribute is structural markup — real text, `<img alt>`, `<a href>` and the
+  `role` attributes of `BoxSemantics` — so a crawler reads it without JavaScript.
 - No widget/component wrapper API: renderers only translate nodes. `EmbedNode`
   is the single, explicit exception: host content enters the tree as an opaque
   payload that only its own renderer accepts, and any other renderer throws.

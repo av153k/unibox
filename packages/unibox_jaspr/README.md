@@ -254,16 +254,18 @@ a `Stack` with `Clip.none` in Flutter.
 | -------------------------- | ---------------------------------------------------- |
 | `StackNode`                | `position: relative` plus `display: grid`            |
 | `StackNode.width`/`height` | `width`/`height` (`double.infinity` → `100%`)        |
-| plain child                | `grid-area: 1 / 1` cell wrapper, `place-self: start`  |
+| plain child                | `grid-area: 1 / 1` cell wrapper, content at the start |
 | `PositionedNode`           | `position: absolute` plus `top`/`right`/`bottom`/`left` |
 
 Each child is wrapped in a cell `<div>`: the overlap is a property of the
 container, and the rendered child already carries its own inline styles.
 
-`place-self: start` is what keeps that child its own size. A grid item stretches
-to fill its cell by default, while a Flutter `Stack` lays a child that is not
-positioned out at its natural size in the top start corner — so without the
-declaration a badge would grow to the size of the stack here and stay small there.
+The cell wrapper fills the grid area and lays its child out at the start of
+both axes, which is what a `Stack` does with a child that is not positioned: the
+cell is the constraint, the child is its own size. The wrapper is a flex container
+rather than a content-sized grid item, because a child that asks to fill the cell —
+`width: double.infinity`, rendered as `100%` — has to resolve that percentage
+against the whole cell, and a wrapper without a width of its own would collapse it.
 
 A `PositionedNode` without any offset keeps its natural place, exactly like the
 `Positioned` widget Flutter never needed, and a `PositionedNode` rendered
@@ -315,6 +317,46 @@ there — the same split a Flutter `TextField` has with a multiline keyboard typ
 
 Both listeners read the field through the `package:web` DOM types Jaspr itself
 uses for `EventCallback`, which `universal_web` re-exports on every platform.
+
+## Search engines and screen readers
+
+What a crawler gets from this renderer is the page itself, not an empty shell that
+needs JavaScript: text is text in the markup, an image is an `<img>` with its `src`
+and `alt`, a link is a real `<a href>` that can be followed, and a semantics token
+is a `role` plus its `aria-*` attributes. Nothing about the layout hides content
+from a reader, and a static export is a plain document.
+
+What the renderer does **not** do is document metadata, because metadata describes
+a document while a node tree describes a region of one. The title, the language,
+the description, a canonical url, Open Graph tags and structured data all belong to
+the host, which in Jaspr means `Document`:
+
+```dart
+Document(
+  lang: 'en',
+  title: 'Apartments — Unibox',
+  meta: <String, String>{'description': 'Six listings and a map.'},
+  head: <Component>[
+    link(attributes: {'rel': 'canonical', 'href': 'https://example.com/'}),
+  ],
+  body: renderJaspr(tree),
+);
+```
+
+Two things are worth knowing before relying on this for search:
+
+- **A heading is ARIA, not an element.** `BoxSemantics(role: BoxRole.heading)`
+  writes `role="heading"`, whose implicit level is 2; the renderer never emits
+  `<h1>`–`<h6>`, because the model has no heading level and Flutter has no
+  counterpart to one. A page whose outline has to be readable as HTML needs those
+  elements from the host.
+- **A box that navigates on tap is not a link.** `Box(onTap: ...)` with
+  `BoxRole.link` is announced and keyboard operable, but it carries no `href`, so
+  a crawler cannot follow it. A page that has to be found is reached by a
+  `LinkNode`, which renders the anchor.
+
+A sitemap is the third thing the renderer cannot write: it needs the url the pages
+are served from, which only the deployment knows.
 
 ## Testing
 
