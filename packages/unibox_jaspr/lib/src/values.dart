@@ -390,12 +390,25 @@ String _number(double value) =>
 /// width is left out for the same reason: CSS animates it as a layout change and
 /// Flutter as a paint change.
 String _transitionOf(core.BoxTransition transition) {
-  final String timing =
-      '${transition.duration.inMilliseconds}ms ${_cssCurve(transition.curve)}';
-
   return <String>[
-    for (final String property in _transitionedProperties) '$property $timing',
+    for (final MapEntry<core.BoxLook, String> entry
+        in _transitionedProperties.entries)
+      '${entry.value} ${_timingOf(transition, entry.key)}',
   ].join(', ');
+}
+
+/// The `duration curve delay` of the look [look], as CSS writes it.
+///
+/// The delay is omitted when a part does not have one, which is the common case
+/// and the shorter declaration.
+String _timingOf(core.BoxTransition transition, core.BoxLook look) {
+  final core.BoxTransitionTiming timing = transition.timingOf(look);
+  final String base =
+      '${timing.duration.inMilliseconds}ms ${_cssCurve(timing.curve)}';
+
+  return timing.delay == Duration.zero
+      ? base
+      : '$base ${timing.delay.inMilliseconds}ms';
 }
 
 /// The CSS timing function of [curve].
@@ -409,15 +422,18 @@ String _cssCurve(core.BoxCurve curve) {
   };
 }
 
-/// The properties a transition covers: the paint, never the layout.
-const List<String> _transitionedProperties = <String>[
-  'background-color',
-  'border-color',
-  'border-radius',
-  'box-shadow',
-  'opacity',
-  'transform',
-];
+/// The CSS property of every look, in the order a transition lists them.
+///
+/// The paint first, then what is painted on top of it.
+const Map<core.BoxLook, String> _transitionedProperties =
+    <core.BoxLook, String>{
+      core.BoxLook.backgroundColor: 'background-color',
+      core.BoxLook.borderColor: 'border-color',
+      core.BoxLook.borderRadius: 'border-radius',
+      core.BoxLook.shadow: 'box-shadow',
+      core.BoxLook.opacity: 'opacity',
+      core.BoxLook.transform: 'transform',
+    };
 
 /// The padding a user agent puts around [element], cancelled as `0`.
 ///

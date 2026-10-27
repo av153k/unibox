@@ -30,6 +30,68 @@ core.Box statedBox(
 }
 
 void main() {
+  group('transition parts', () {
+    testWidgets('waits for the delay a part asks for', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          width: 60,
+          height: 40,
+          backgroundColor: core.BoxColor.white,
+          transition: core.BoxTransition(
+            duration: Duration(milliseconds: 200),
+            parts: <core.BoxTransitionPart>[
+              core.BoxTransitionPart(
+                looks: core.BoxLook.paint,
+                duration: Duration(milliseconds: 100),
+              ),
+              core.BoxTransitionPart(
+                looks: <core.BoxLook>{core.BoxLook.transform},
+                duration: Duration(milliseconds: 100),
+                delay: Duration(milliseconds: 100),
+              ),
+            ],
+          ),
+          hoverStyle: core.BoxStyle(
+            backgroundColor: core.BoxColor.black,
+            transform: core.BoxTransform(scale: 2),
+          ),
+        ),
+      );
+
+      final TestGesture pointer = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await pointer.addPointer(location: Offset.zero);
+      addTearDown(pointer.removePointer);
+      await pointer.moveTo(nodeCenter(tester));
+      await tester.pump();
+
+      // The paint starts at once…
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(decorationOf(tester)!.color, isNot(const Color(0xFFFFFFFF)));
+
+      // …while the scale is still waiting for its part of the timeline.
+      expect(
+        tester
+            .widget<Transform>(inNode(find.byType(Transform)).first)
+            .transform
+            .entry(0, 0),
+        closeTo(1, 1e-9),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(
+        tester
+            .widget<Transform>(inNode(find.byType(Transform)).first)
+            .transform
+            .entry(0, 0),
+        closeTo(2, 1e-9),
+      );
+    });
+  });
+
   group('transform and opacity', () {
     testWidgets('fades the box without moving it', (tester) async {
       await pumpNode(

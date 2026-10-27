@@ -4,6 +4,42 @@ import 'package:unibox_core/unibox_core.dart' as core;
 import 'support/harness.dart';
 
 void main() {
+  group('transition parts', () {
+    testComponents('gives each look the timing of the part that names it', (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          backgroundColor: core.BoxColor.white,
+          transition: core.BoxTransition(
+            duration: Duration(milliseconds: 200),
+            parts: <core.BoxTransitionPart>[
+              core.BoxTransitionPart(
+                looks: core.BoxLook.paint,
+                duration: Duration(milliseconds: 100),
+              ),
+              core.BoxTransitionPart(
+                looks: <core.BoxLook>{core.BoxLook.transform},
+                duration: Duration(milliseconds: 150),
+                delay: Duration(milliseconds: 100),
+                curve: core.BoxCurve.easeOut,
+              ),
+            ],
+          ),
+        ),
+      );
+
+      expect(
+        stylesOf(find.tag('div'))['transition'],
+        'background-color 100ms ease, border-color 100ms ease, '
+        'border-radius 100ms ease, box-shadow 100ms ease, '
+        // The paint settles first, then the scale starts and eases out.
+        'opacity 200ms ease, transform 150ms ease-out 100ms',
+      );
+    });
+  });
+
   group('transform and opacity', () {
     testComponents('fades a box without moving it', (tester) async {
       pumpNode(

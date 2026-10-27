@@ -55,7 +55,7 @@ class _UniboxBoxState extends State<UniboxBox> {
 
     final BoxDecoration? decoration = toDecoration(style);
     if (decoration != null) {
-      content = _decorated(decoration, style.transition, content);
+      content = _decorated(decoration, _paintTiming(style.transition), content);
     }
 
     // A scrolling box already clips its own viewport, but squarely: it needs an
@@ -89,12 +89,8 @@ class _UniboxBoxState extends State<UniboxBox> {
   /// from the decoration it painted last to the one the new state asks for, which
   /// is exactly the set `BoxDecoration.lerp` covers — background, border colour,
   /// corner radius and shadow. Layout never animates, matching the CSS side.
-  Widget _decorated(
-    BoxDecoration decoration,
-    core.BoxTransition? transition,
-    Widget child,
-  ) {
-    if (transition == null) {
+  Widget _decorated(BoxDecoration decoration, _Timing? timing, Widget child) {
+    if (timing == null) {
       return DecoratedBox(decoration: decoration, child: child);
     }
 
@@ -103,11 +99,46 @@ class _UniboxBoxState extends State<UniboxBox> {
       // from whatever the animation had reached, so a fast hover in and out of a
       // box does not snap back to the old look.
       tween: DecorationTween(begin: decoration, end: decoration),
-      duration: transition.duration,
-      curve: toCurve(transition.curve),
+      duration: timing.duration,
+      curve: timing.curve,
       builder: (BuildContext context, Decoration value, Widget? inner) =>
           DecoratedBox(decoration: value, child: inner),
       child: child,
+    );
+  }
+
+  /// The timing the paint of this box eases with, if it eases at all.
+  ///
+  /// The four paint looks share one timing (validated), so any of them stands for
+  /// the decoration they all belong to.
+  _Timing? _paintTiming(core.BoxTransition? transition) {
+    return transition == null
+        ? null
+        : _timingOf(transition, core.BoxLook.backgroundColor);
+  }
+
+  /// Resolves the timing of [look] out of [transition].
+  ///
+  /// A delay becomes an `Interval` of the longest timeline in the transition, so an
+  /// implicit animation can wait without an `AnimationController` of its own: before
+  /// its interval it holds the value it had, after it the one it is heading for.
+  _Timing _timingOf(core.BoxTransition transition, core.BoxLook look) {
+    final core.BoxTransitionTiming timing = transition.timingOf(look);
+    final int total = transition.totalDuration.inMicroseconds;
+    final Curve curve = toCurve(timing.curve);
+
+    if (total <= 0) {
+      return (duration: transition.totalDuration, curve: curve);
+    }
+
+    final double start = timing.delay.inMicroseconds / total;
+    final double end = (timing.delay + timing.duration).inMicroseconds / total;
+
+    return (
+      duration: transition.totalDuration,
+      curve: start <= 0 && end >= 1
+          ? curve
+          : Interval(start, end, curve: curve),
     );
   }
 
@@ -143,7 +174,7 @@ class _UniboxBoxState extends State<UniboxBox> {
     final double? opacity = style.opacity;
 
     final core.BoxTransition? transition = style.transition;
-    final bool animated = transition != null && _canChange(box);
+    final bool animated = transition != null;
 
     // A box that cannot change and has nothing to paint differently is left
     // alone. A box that *can* change keeps the wrappers even while its resting
@@ -158,31 +189,30 @@ class _UniboxBoxState extends State<UniboxBox> {
     Widget result = child;
 
     if (!value.isIdentity || animated) {
-      result = _transformed(result, value, animated ? transition : null);
+      result = _transformed(
+        result,
+        value,
+        animated ? _timingOf(transition, core.BoxLook.transform) : null,
+      );
     }
     if (alpha < 1 || animated) {
-      result = _opacified(result, alpha, animated ? transition : null);
+      result = _opacified(
+        result,
+        alpha,
+        animated ? _timingOf(transition, core.BoxLook.opacity) : null,
+      );
     }
 
     return result;
-  }
-
-  /// Whether the look of [box] can change while it is on screen.
-  ///
-  /// Only a box with state styles can change its look, so only that box needs the
-  /// animation machinery; a static box paints its transform once.
-  bool _canChange(core.Box box) {
-    final Map<core.BoxState, core.BoxStyle>? states = box.stateStyles;
-    return (states != null && states.isNotEmpty) || box.hoverStyle != null;
   }
 
   /// Applies [transform] to [child], animating it when [transition] is given.
   Widget _transformed(
     Widget child,
     core.BoxTransform transform,
-    core.BoxTransition? transition,
+    _Timing? timing,
   ) {
-    if (transition == null) {
+    if (timing == null) {
       return Transform(
         transform: toMatrix4(transform),
         alignment: Alignment.center,
@@ -192,8 +222,8 @@ class _UniboxBoxState extends State<UniboxBox> {
 
     return TweenAnimationBuilder<core.BoxTransform>(
       tween: _BoxTransformTween(begin: transform, end: transform),
-      duration: transition.duration,
-      curve: toCurve(transition.curve),
+      duration: timing.duration,
+      curve: timing.curve,
       builder:
           (BuildContext context, core.BoxTransform animated, Widget? inner) =>
               Transform(
@@ -206,19 +236,15 @@ class _UniboxBoxState extends State<UniboxBox> {
   }
 
   /// Applies [opacity] to [child], animating it when [transition] is given.
-  Widget _opacified(
-    Widget child,
-    double opacity,
-    core.BoxTransition? transition,
-  ) {
-    if (transition == null) {
+  Widget _opacified(Widget child, double opacity, _Timing? timing) {
+    if (timing == null) {
       return Opacity(opacity: opacity, child: child);
     }
 
     return AnimatedOpacity(
       opacity: opacity,
-      duration: transition.duration,
-      curve: toCurve(transition.curve),
+      duration: timing.duration,
+      curve: timing.curve,
       child: child,
     );
   }
@@ -550,3 +576,9 @@ final class _BoxTransformTween extends Tween<core.BoxTransform> {
   core.BoxTransform lerp(double t) =>
       core.BoxTransform.lerp(begin ?? end!, end ?? begin!, t);
 }
+
+/// How one look group of a box is animated: over what, and with which curve.
+///
+/// The curve is an `Interval` when the look waits for another one to settle, which
+/// is how a delay is expressed without a controller.
+typedef _Timing = ({Duration duration, Curve curve});

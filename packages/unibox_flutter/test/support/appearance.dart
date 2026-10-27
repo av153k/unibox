@@ -274,6 +274,13 @@ core.BoxTransform? _transformBefore(List<Element> parts, int end) {
   return null;
 }
 
+/// An opacity of `1` reads as no opacity.
+///
+/// A box with a transition always carries the wrapper, because the host may
+/// change its look; a solid box and one that happens to be at rest paint the
+/// same thing.
+double? _opacityValue(double value) => value >= 1 ? null : value;
+
 /// Rounds a number that was read out of a matrix.
 ///
 /// Turning a rotation back into degrees means trigonometry, which answers
@@ -290,10 +297,10 @@ double? _opacityBefore(List<Element> parts, int end) {
   for (var index = 0; index < end; index++) {
     final Widget widget = parts[index].widget;
     if (widget is AnimatedOpacity) {
-      return widget.opacity;
+      return _opacityValue(widget.opacity);
     }
     if (widget is Opacity) {
-      return widget.opacity;
+      return _opacityValue(widget.opacity);
     }
   }
   return null;
