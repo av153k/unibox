@@ -36,6 +36,25 @@ The font family is the one token the default leaves unset, because a font file i
 an asset of the application and not of the model. Unset means the platform's UI
 font: the engine default in Flutter, the generic `system-ui` family in CSS.
 
+## Defaults
+
+A tree says what it wants and nothing else, so every unset token needs an answer,
+and the answer has to be the model's — the two platforms would each give their own
+and the difference would show:
+
+| Unset | The model's answer |
+| --- | --- |
+| `Box.direction`, `mainAlign`, `crossAlign` | a column, laid out from the start (`BoxStyle.resolvedDirection`) |
+| any typography token | `BoxTextStyle.defaults` |
+| `ImageNode.fit` | `ImageFit.scaleDown` (`ImageNode.resolvedFit`), i.e. `BoxFit.scaleDown` and `object-fit: scale-down` |
+| `TextInputNode` chrome | none on either target: no border, padding, background, focus ring or resize grip, and the typography of the tree |
+| `StackNode` clipping | none, and a child that is not positioned keeps its own size |
+| `LinkNode` styling | the typography of its box: no link colour, no underline |
+
+What is left to the host, because only the host can answer it: the font family (a
+font file is an asset), the colour of a placeholder, a caret or a selection, the
+look of a scrollbar, and the rendering of the glyphs themselves.
+
 ## Inheritance
 
 `Box.textStyle` (or `BoxStyle.textStyle`) is inherited by the descendants of the

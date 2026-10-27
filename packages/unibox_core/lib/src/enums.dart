@@ -107,6 +107,16 @@ enum ImageFit {
 
   /// Stretch the image to fill its bounds, ignoring aspect ratio.
   fill,
+
+  /// Fit the image inside its bounds without ever enlarging it.
+  ///
+  /// This is the default, and it is the default for the same reason the typography
+  /// has one: the two targets would otherwise answer differently. A Flutter
+  /// `Image` without a fit scales the picture down on its own, while a browser
+  /// stretches it over its box (`object-fit: fill`), so an undeclared image would
+  /// look cropped on one target and squashed on the other. CSS spells this value
+  /// `object-fit: scale-down`, which is exactly what `BoxFit.scaleDown` does.
+  scaleDown,
 }
 
 /// Relative weight of a font.

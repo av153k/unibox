@@ -30,7 +30,18 @@ class ImageNode extends UINode {
   final double? height;
 
   /// How the image fills its bounds.
+  ///
+  /// `null` means [resolvedFit].
   final ImageFit? fit;
+
+  /// The fit both renderers apply; [ImageFit.scaleDown] when the node names none.
+  ///
+  /// The default belongs to the model, because a renderer would otherwise fall
+  /// back to its own platform: Flutter's `Image` scales a picture down and never
+  /// enlarges it, while a browser stretches it over its box. An image that
+  /// declares no fit therefore used to be squashed on the web and letterboxed in
+  /// Flutter, which is a difference the tree never asked for.
+  ImageFit get resolvedFit => fit ?? ImageFit.scaleDown;
 
   /// The corner radius in logical pixels.
   final double? borderRadius;

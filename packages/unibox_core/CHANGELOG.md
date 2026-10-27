@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `ImageFit.scaleDown` and `ImageNode.resolvedFit`: an image that names no fit is
+  `scaleDown` rather than whatever its renderer falls back to. Flutter's `Image`
+  already scaled down, while a browser stretched the picture over its box
+  (`object-fit: fill`), so the same tree was squashed on one target and letterboxed
+  on the other.
+- The README lists the defaults of every node and what is deliberately left to the
+  host.
 - `BoxTextStyle.defaults` is the typography a text is typeset in when the tree
   says nothing else: 16 logical pixels, normal weight, black, a line height of 1.5
   and no letter spacing. Both renderers install it at the root of the tree they
