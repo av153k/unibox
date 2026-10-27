@@ -1,5 +1,8 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:unibox_core/unibox_core.dart' as core;
+
+import 'values.dart';
 
 /// The classes one rendering needs: one per distinct set of declarations.
 ///
@@ -94,13 +97,63 @@ String fnv1a(String value) {
 /// sits.
 class JasprStylesheet extends StatelessComponent {
   /// Creates the stylesheet element of [sheet].
-  const JasprStylesheet({required this.sheet, super.key});
+  const JasprStylesheet({required this.sheet, this.theme, super.key});
 
   /// The sheet to write out.
   final UniboxStylesheet sheet;
 
+  /// The theme whose roles the rules point at, if the tree was given one.
+  final core.UniboxTheme? theme;
+
   @override
-  Component build(BuildContext context) => Style(styles: sheet.rules);
+  Component build(BuildContext context) {
+    final core.UniboxTheme? declared = theme;
+
+    if (declared == null || declared.isEmpty) {
+      return Style(styles: sheet.rules);
+    }
+
+    // The theme once, in `:root`, whether or not a node names each role: a host
+    // stylesheet or an embed has to be able to read a role the tree happens to
+    // leave alone, and a `:root` block that changed with the tree would be a
+    // different document every time the content did.
+    return Style(
+      styles: <StyleRule>[
+        StyleRule(
+          selector: const Selector(':root'),
+          styles: Styles(
+            raw: <String, String>{
+              for (final MapEntry<String, core.BoxColor> entry
+                  in declared.variables.entries)
+                entry.key: toCssColor(entry.value).value,
+            },
+          ),
+        ),
+        ...sheet.rules,
+      ],
+    );
+  }
+}
+
+/// Hands the theme of a rendering to the components inside it.
+///
+/// `renderJaspr` installs it from its `theme` argument; a host that composes the
+/// components itself — a page whose root is a `JasprStateful`, say — installs it
+/// around its tree instead, and the stylesheet still writes the `:root` block.
+class JasprThemeScope extends InheritedComponent {
+  /// Creates the scope around [child].
+  const JasprThemeScope({required this.theme, required super.child, super.key});
+
+  /// The values the roles of the tree stand for.
+  final core.UniboxTheme theme;
+
+  /// The theme in scope, or `null` when there is none.
+  static core.UniboxTheme? of(BuildContext context) =>
+      context.dependOnInheritedComponentOfExactType<JasprThemeScope>()?.theme;
+
+  @override
+  bool updateShouldNotify(JasprThemeScope oldComponent) =>
+      oldComponent.theme != theme;
 }
 
 /// Wraps [child] in a sheet of its own when the rendering has none in scope.
@@ -115,10 +168,11 @@ Component withStylesheet(BuildContext context, Component child) {
   }
 
   final UniboxStylesheet sheet = UniboxStylesheet();
+  final core.UniboxTheme? theme = JasprThemeScope.of(context);
 
   return Component.fragment(<Component>[
     UniboxStylesheetScope(sheet: sheet, child: child),
-    JasprStylesheet(sheet: sheet),
+    JasprStylesheet(sheet: sheet, theme: theme),
   ]);
 }
 

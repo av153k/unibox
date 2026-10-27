@@ -18,6 +18,25 @@ Color toCssColor(core.BoxColor color) {
   );
 }
 
+/// The custom property of a role colour, or `null` for a colour with its own
+/// channels.
+///
+/// A role is written as `var(--unibox-color-primary)`, so its value lives once, in
+/// the `:root` block the renderer emits for the theme, and a host stylesheet or a
+/// dark-mode block can outrank it. The name comes from the enum member, so a role
+/// is spelled the same way in the tree, in the theme and in the CSS.
+String? cssRoleReference(core.BoxColor color) {
+  final Enum? role = color.role;
+
+  return role == null ? null : 'var(${core.UniboxTheme.cssNameOf(role)})';
+}
+
+/// The `box-shadow` text of [shadow], with [color] as its colour.
+String _shadowText(core.BoxShadow shadow, String color) {
+  return '${shadow.offsetX}px ${shadow.offsetY}px ${shadow.blurRadius}px '
+      '${shadow.spreadRadius}px $color';
+}
+
 /// Converts a Unibox dimension to a CSS [Unit].
 ///
 /// `null` remains `null` so callers can omit the property entirely,
@@ -157,6 +176,7 @@ Styles? toTypographyStyles(core.BoxTextStyle textStyle) {
 
   final core.FontWeight? weight = textStyle.fontWeight;
   final core.BoxColor? color = textStyle.color;
+  final String? roleColor = color == null ? null : cssRoleReference(color);
   final String? fontFamily = textStyle.fontFamily;
   final double? fontSize = textStyle.fontSize;
   final double? lineHeight = textStyle.lineHeight;
@@ -165,10 +185,12 @@ Styles? toTypographyStyles(core.BoxTextStyle textStyle) {
   return Styles(
     fontSize: fontSize == null ? null : Unit.pixels(fontSize),
     fontWeight: weight == null ? null : toCssFontWeight(weight),
-    color: color == null ? null : toCssColor(color),
+    // A role is a custom property, which the typed API cannot express.
+    color: color == null || roleColor != null ? null : toCssColor(color),
     fontFamily: fontFamily == null ? null : FontFamily(fontFamily),
     letterSpacing: letterSpacing == null ? null : Unit.pixels(letterSpacing),
     lineHeight: lineHeight == null ? null : Unit.expression('$lineHeight'),
+    raw: roleColor == null ? null : <String, String>{'color': roleColor},
   );
 }
 
@@ -548,6 +570,15 @@ Styles toBoxStyles(
   final double? gap = style.gap;
   final double? borderRadius = style.borderRadius;
   final int? flex = style.flex;
+  final String? roleBackground = backgroundColor == null
+      ? null
+      : cssRoleReference(backgroundColor);
+  final String? roleBorder = border == null || !border.isVisible
+      ? null
+      : cssRoleReference(border.color);
+  final String? roleShadow = shadow == null
+      ? null
+      : cssRoleReference(shadow.color);
 
   final Styles boxStyles = Styles(
     boxSizing: BoxSizing.borderBox,
@@ -574,17 +605,34 @@ Styles toBoxStyles(
     margin: margin == null
         ? (declaredOnly ? null : _userAgentMargin(element))
         : toCssSpacing(margin),
-    backgroundColor: backgroundColor == null
+    backgroundColor: backgroundColor == null || roleBackground != null
         ? null
         : toCssColor(backgroundColor),
     radius: borderRadius == null
         ? null
         : BorderRadius.circular(Unit.pixels(borderRadius)),
-    border: toCssBorder(border),
-    shadow: shadow == null ? null : toCssBoxShadow(shadow),
+    // A role is written as a custom property; `raw` is emitted after the typed
+    // properties, so the border is declared here and its colour overridden below.
+    border: border == null || !border.isVisible
+        ? null
+        : Border.all(
+            color: roleBorder == null
+                ? toCssColor(border.color)
+                : Color.value(0x000000),
+            width: Unit.pixels(border.width),
+          ),
+    shadow: shadow == null || roleShadow != null
+        ? null
+        : toCssBoxShadow(shadow),
     overflow: overflow == null ? null : toCssOverflow(overflow),
     opacity: opacity,
-    raw: _lookDeclarations(transform),
+    raw: <String, String>{
+      ...?_lookDeclarations(transform),
+      'background-color': ?roleBackground,
+      'border-color': ?roleBorder,
+      if (shadow != null && roleShadow != null)
+        'box-shadow': _shadowText(shadow, roleShadow),
+    },
     cursor: interactive ? Cursor.pointer : null,
   );
 

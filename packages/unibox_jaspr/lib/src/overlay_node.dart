@@ -41,7 +41,9 @@ class JasprOverlay extends StatelessComponent {
       raw: <String, String>{
         'position': 'absolute',
         'inset': '0',
-        'background-color': toCssColor(node.barrierColor).value,
+        'background-color':
+            cssRoleReference(node.barrierColor) ??
+            toCssColor(node.barrierColor).value,
       },
     );
     final UniboxStylesheet? sheet = UniboxStylesheetScope.of(context);

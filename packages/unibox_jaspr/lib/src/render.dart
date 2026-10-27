@@ -39,18 +39,26 @@ import 'text_node.dart';
 /// override any of it — with a CSS custom property, a `@media` block or a
 /// stylesheet of its own. Rendering a component on its own, without
 /// [renderJaspr], writes the declarations inline instead.
-Component renderJaspr(core.UINode node) {
-  _reportTreeIssues(node);
+/// [theme] answers the colour roles the tree names: the roles are written as
+/// custom properties and the theme itself as one `:root` block, which is what lets
+/// a host stylesheet or a dark-mode block outrank the tree. A tree that names a
+/// role and is given no theme fails with the role in the message.
+Component renderJaspr(core.UINode node, {core.UniboxTheme? theme}) {
+  _reportTreeIssues(node, theme);
 
   final UniboxStylesheet sheet = UniboxStylesheet();
+  final Component tree = UniboxStylesheetScope(
+    sheet: sheet,
+    child: renderNode(node),
+  );
 
   return Component.fragment(<Component>[
     const JasprDefaultTypography(),
-    UniboxStylesheetScope(sheet: sheet, child: renderNode(node)),
+    if (theme == null) tree else JasprThemeScope(theme: theme, child: tree),
     // After the tree: every component has registered its class by the time this
     // is built. CSS applies wherever the element sits, so the `<style>` is one
     // element regardless of the page it lands in.
-    JasprStylesheet(sheet: sheet),
+    JasprStylesheet(sheet: sheet, theme: theme),
   ]);
 }
 
@@ -149,9 +157,9 @@ Component _renderEmbed(core.EmbedNode embed) {
 ///
 /// Server rendering has no widget inspector, so warnings go to stdout next to
 /// the request log, while errors throw to stop the response before it is wrong.
-void _reportTreeIssues(core.UINode node) {
+void _reportTreeIssues(core.UINode node, core.UniboxTheme? theme) {
   assert(() {
-    final List<core.TreeIssue> issues = core.validateTree(node);
+    final List<core.TreeIssue> issues = core.validateTree(node, theme: theme);
     final List<core.TreeIssue> errors = issues
         .where((core.TreeIssue issue) => issue.isError)
         .toList(growable: false);
@@ -178,5 +186,6 @@ extension UINodeJasprRenderer on core.UINode {
   /// ```dart
   /// runApp(const Box(padding: BoxSpacing.all(16)).toComponent());
   /// ```
-  Component toComponent() => renderJaspr(this);
+  Component toComponent({core.UniboxTheme? theme}) =>
+      renderJaspr(this, theme: theme);
 }

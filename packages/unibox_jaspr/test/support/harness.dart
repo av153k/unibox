@@ -4,8 +4,12 @@ import 'package:unibox_core/unibox_core.dart' as core;
 import 'package:unibox_jaspr/unibox_jaspr.dart';
 
 /// Renders [node] as the root component of the current test tree.
-void pumpNode(ComponentTester tester, core.UINode node) {
-  tester.pumpComponent(renderJaspr(node));
+void pumpNode(
+  ComponentTester tester,
+  core.UINode node, {
+  core.UniboxTheme? theme,
+}) {
+  tester.pumpComponent(renderJaspr(node, theme: theme));
 }
 
 /// Resolves the DOM element rendered for the component matched by [finder].
@@ -82,23 +86,41 @@ String allCss() => elementsOf(find.tag('style')).map(_cssText).join('\n');
 /// should fail in.
 Map<String, String> declarationsOf(String selector) {
   final String css = allCss();
-  final int start = css.indexOf('$selector {');
-  if (start == -1) {
-    throw StateError('No rule for $selector in:\n$css');
+  final Map<String, String> declarations = <String, String>{};
+  int from = 0;
+  int found = 0;
+
+  // A selector may own more than one block — the typography of the model and the
+  // variables of the theme both live in `:root` — and a browser merges them, so a
+  // test reading the declarations of a selector merges them too.
+  while (true) {
+    final int start = css.indexOf('$selector {', from);
+
+    if (start == -1) {
+      break;
+    }
+
+    found++;
+    final int end = css.indexOf('}', start);
+
+    for (final String declaration
+        in css.substring(start + selector.length + 2, end).split(';')) {
+      final int colon = declaration.indexOf(':');
+
+      if (colon == -1) {
+        continue;
+      }
+
+      declarations[declaration.substring(0, colon).trim()] = declaration
+          .substring(colon + 1)
+          .trim();
+    }
+
+    from = end;
   }
 
-  final int end = css.indexOf('}', start);
-  final Map<String, String> declarations = <String, String>{};
-
-  for (final String declaration
-      in css.substring(start + selector.length + 2, end).split(';')) {
-    final int colon = declaration.indexOf(':');
-    if (colon == -1) {
-      continue;
-    }
-    declarations[declaration.substring(0, colon).trim()] = declaration
-        .substring(colon + 1)
-        .trim();
+  if (found == 0) {
+    throw StateError('No rule for $selector in:\n$css');
   }
 
   return declarations;
