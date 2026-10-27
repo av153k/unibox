@@ -17,9 +17,12 @@ The first release of the Jaspr (HTML/CSS) renderer.
 - `TextInputNode` maps to an `<input>` or a `<textarea>` with its type, its
   autocomplete hint and its disabled, readonly and autofocus flags.
 - A field keeps no browser form chrome: no border, no padding, no background, and
-  its font and colour are inherited from its box. A link cancels the user agent
-  colour and underline. Both match what the Flutter renderer draws, so a field or
-  a link looks the same on the two targets.
+  no focus ring, and its font and colour are inherited from its box. A link
+  cancels the user agent colour and underline. Both match what the Flutter
+  renderer draws, so a field or a link looks the same on the two targets. The
+  focus ring is dropped because a browser draws it around the field itself, which
+  sits inside the padding and border of the box that wraps it: keeping it painted
+  a second frame inside the one the tree asked for.
 - A state rule only carries the tokens of its state, so `:hover`, `:focus-visible`
   and `:active` no longer restate the flex layout and a hovered row stays a row.
 - `ComponentNode` embeds any Jaspr component.

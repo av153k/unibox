@@ -123,17 +123,23 @@ never inherited (CSS does not inherit them either).
   `validateTree`; silently accepting it is not an option.
 - Platform chrome belongs to the tree. A node never keeps a decoration its
   platform adds by itself — no Material underline under a field, no user agent
-  border around an input, no user agent underline under a link — because the same
-  node would then look different on the two targets. Whatever a field or a link
-  should look like is expressed as a box around it.
+  border, focus ring or padding around an input, no user agent underline under a
+  link — because the same node would then look different on the two targets.
+  Whatever a field or a link should look like is expressed as a box around it.
+  The focus ring is the subtle case: a browser draws it around the field, which
+  sits inside the padding and the border of the box that wraps it, so keeping it
+  paints a second frame inside the one the tree asked for. Dropping it leaves the
+  caret as the only cue, which is the one thing both targets draw, and it is
+  listed under Deferred because a field cannot be given a frame by the tree yet.
 - A state rule may only contribute the tokens of its state. The browser layers
   `:hover` over the resting rule exactly like the Flutter renderer merges a
   state style, so a state rule that restated the layout would reset it.
-- Parity is *tested*, not assumed: `example/` renders one card on both targets
-  and compares the applied presentation of every box — layout, spacing, paint —
-  against a single fixture. Each suite extracts the facts from its own output,
-  the Flutter one from the widget tree, the web one from the emitted CSS, so the
-  tests fail when a renderer drifts, not only when the fixture is updated.
+- Parity is *tested*, not assumed: `unibox_conformance` lists the boxes every
+  renderer has to present the same way, and each renderer suite reads the
+  appearance back out of its own output — the Flutter one from the widget tree,
+  the web one from the emitted CSS. A renderer that drops a token therefore fails
+  its own suite, and because both answer the same entry, one target cannot be
+  relaxed without the other failing.
 - The surface a tree is drawn on is host business: a `100%` box needs a root with
   a height, and a font needs a host that has one. An application declares both in
   its own idiom (`MaterialApp`, a Jaspr `Document`) and the renderer stays out of

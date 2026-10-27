@@ -202,3 +202,17 @@ same on both targets — a box that wants a field to look like a field draws the
 border, the background and the padding around it. The field does adopt the
 typography of its box, line height included, through `UniboxTextStyleScope`; that
 is what sizes it.
+
+## Testing
+
+```sh
+flutter test
+```
+
+Widget tests build the widgets `renderFlutter` returns. `test/conformance_test.dart`
+runs the renderer against [`unibox_conformance`](../unibox_conformance) — the table
+of boxes both renderers are checked against — through
+`test/support/appearance.dart`, which reads the presentation of a box back out of
+the widget tree this renderer built. The Jaspr suite answers the same table from
+the CSS it emits, so a token that stops rendering fails a test instead of only
+making the two targets drift apart.

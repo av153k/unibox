@@ -251,8 +251,18 @@ Flutter `TextField` gets from the column it lives in — and it inherits the fon
 the colour and the line height of its box, which is what sizes it.
 
 Everything a browser draws around a form field by itself is stripped: no border,
-no padding, no background. A Flutter field carries no Material decoration either,
-so the box around a field is the only thing that draws one, on both targets.
+no padding, no background, and no focus ring. A Flutter field carries no Material
+decoration either, so the box around a field is the only thing that draws one, on
+both targets.
+
+The focus ring goes too, because a browser draws it around the field itself: the
+field sits inside the padding and the border of the box that wraps it, so a
+focused field would show a second frame inside the one the tree asked for, and
+Flutter has no counterpart to it — a collapsed `TextField` only draws its caret.
+The caret is what is left: the tree cannot draw a focus frame around a field
+either, because a box raises its `focus` state by being focused itself rather than
+by holding a focused child, and a browser matches `:focus-visible` on the focused
+element only.
 
 | Unibox        | Jaspr / HTML                                           |
 | ------------- | ------------------------------------------------------ |
@@ -284,3 +294,10 @@ dart test
 Component tests use `jaspr_test`; `test/support/harness.dart` exposes
 `pumpNode`, `elementOf`, `stylesOf`, `classesOf`, `attributesOf` and `cssOf`
 helpers to assert on the rendered DOM.
+
+`test/conformance_test.dart` runs the renderer against
+[`unibox_conformance`](../unibox_conformance) — the table of boxes both renderers
+are checked against — through `test/support/appearance.dart`, which reads the
+presentation of a box back out of the CSS this renderer emitted. The same table
+is what the Flutter suite answers, which is how the two outputs are held to one
+contract instead of to two opinions.

@@ -60,20 +60,24 @@
 ### Phase 11: Public readiness
 - [x] Task 38: Add the MIT `LICENSE`, per package `CHANGELOG.md` files and the `repository`, `homepage`, `issue_tracker` and `topics` pubspec metadata while keeping `publish_to: none`.
 - [x] Task 39: Audit `dart doc` for all three packages, fix unresolved references and undocumented public members.
-- [x] Task 40: Add a cross target parity fixture: one table of expected declarations in the example shared package, asserted by both renderer test suites.
+- [x] Task 40: Add a cross target parity fixture, later superseded by the library level contract of Phase 13: the example no longer carries presentation fixtures of its own.
 - [x] Task 41: Add a GitHub Actions CI workflow (format check, `dart analyze` and all three test suites).
 - [x] Task 42: Final workspace verification (format check, `dart analyze`, all six suites, `dart doc`), README refresh and `TASK_PLAN.md` completion.
 - [x] Task 43: Give an unset `direction` one meaning: `BoxStyle.resolvedDirection` resolves it to `Axis.vertical` and both renderers derive the flex layout from it, so `gap`, `mainAlign`, `crossAlign` and a child's `flex` apply to every box instead of silently doing nothing, and a direction-less box stops stacking in Flutter while flowing inline on the web.
 
-### Phase 12: The two example renderings look the same
+### Phase 12: The two renderings look the same
 - [x] Task 44: Flutter renderer — render a text input without Material's chrome (`InputDecoration.collapsed`), so the field is as tall as its line box and the surrounding box decides how it looks, and export the widget each node renders to.
-- [x] Task 45: Jaspr renderer — strip the browser form chrome from `<input>`/`<textarea>` (`border: none`, no padding, no background, inherited colour) and the UA underline from `<a>`, so a field and a link look like their Flutter counterparts.
+- [x] Task 45: Jaspr renderer — strip the browser form chrome from `<input>`/`<textarea>` (`border: none`, no padding, no background, no focus ring, inherited colour) and the UA underline from `<a>`, so a field and a link look like their Flutter counterparts.
 - [x] Task 46: Example shared — one line height on the card typography and the two fields wrapped in a shared `Box`, so both targets draw the same bordered field; the font family stays a host decision, because a CSS font stack is not a Flutter font family.
 - [x] Task 47: Jaspr host — render the example through a `Document` that gives the page's `100%` box a height to resolve against (`html, body { height: 100%; margin: 0 }`), and regenerate `build/index.html`.
-- [x] Task 48: Example shared — a `BoxFact` fixture (`CardParity.boxes`) describing the applied presentation of every box of the card in document order.
-- [x] Task 49: Both example suites — extract the box facts from the rendered output (Flutter widget tree, Jaspr inline CSS) and assert them against the one fixture, so the two renderings cannot drift apart.
-- [x] Task 50: Both example suites — assert that the page fills the host surface (measured rect in Flutter, document rules on the web) and that fields and links carry no platform chrome.
-- [x] Task 51: Docs — record how visual parity is pinned (fixture + the approximate parts that stay host specific) in the package and example READMEs, the CHANGELOGs and `design.md`.
+
+### Phase 13: One contract for every token
+- [x] Task 48: `unibox_conformance` — a dev-only package holding the contract: `BoxAppearance` (direction, alignment, gap, padding, margin, width, height, background, radius, border), `differencesFrom` (absent equals zero, a border colour only counts when a border is drawn) and `boxCases`, one case per token plus one with all of them, with a suite that checks the table itself.
+- [x] Task 49: Both renderer suites — render every case and read the appearance back out of the rendered output (`test/support/appearance.dart` walking the widget tree in `unibox_flutter`, parsing the emitted CSS in `unibox_jaspr`), never out of the node tree, so a renderer that drops a token fails its own suite and neither target can be relaxed alone.
+- [x] Task 50: Jaspr renderer — strip the browser's native focus ring from a field (`outline: none`), because the ring is drawn around the field inside the padding and border of the box that wraps it ("a box inside a box" on focus) and Flutter has no counterpart to it; a focused field is a state style, not platform chrome.
+- [x] Task 51: Remove the example level parity fixtures (`CardParity`, both `visual_facts.dart` extractors, both `parity_test.dart`) now that the contract lives in the library, keeping the app level tests and moving the "fills the host surface" check into the Flutter app suite.
+- [x] Task 52: Docs and CI — record the contract in the package, renderer and example READMEs, the CHANGELOGs, `design.md` and the workflow, alongside `dart test` for every package.
+
 
 ## Decisions
 
@@ -83,9 +87,14 @@
   Flutter counterpart, so it belongs to the host (`MaterialApp` theme on one
   side, a document rule on the other) and not to the tree.
 - **Platform chrome:** neither renderer keeps the decoration its platform adds to
-  a control (Material's field underline, the browser's input border and link
-  underline). A control looks the way the tree says it looks, which is what makes
-  the same node render the same on both targets.
+  a control (Material's field underline, the browser's input border, focus ring
+  and link underline). A control looks the way the tree says it looks, which is
+  what makes the same node render the same on both targets.
+- **Where conformance is pinned:** in `packages/unibox_conformance`, not in
+  `example/`. The contract is a property of the renderers, so it is checked by the
+  renderer suites against boxes they render themselves; an example can only show
+  that one card happens to look alike, and it changes whenever the card does. The
+  example keeps app level tests and drops the fixture it used to carry.
 - **Publishing:** publish ready but unpublished. Every package carries a
   `CHANGELOG.md`, a `LICENSE` and the repository metadata, while `publish_to:
   none` keeps `dart pub publish` from leaving the workspace by accident. Cutting
@@ -97,6 +106,11 @@ Deliberately out of scope for this pass, with the reason they were left:
 
 - `Box.onScroll` and scroll position: needs a shared scroll model that neither
   `SingleChildScrollView` nor the browser state exposes the same way.
+- A focus frame around a field: the browser's native ring is stripped (it sits
+  inside the padding of the box around the field), so a focused field only shows
+  its caret. Drawing a frame from the tree needs a `focus-within` state — Flutter
+  would listen to descendants of a `Focus`, the web needs `:has(:focus-visible)` —
+  which is a state model decision, not a token.
 - `ImageNode.onError` / `onLoad`: callbacks that only make sense per target, and
   an embed covers them today.
 - `Box.opacity`: a compositing hint rather than a layout token; it belongs with a

@@ -51,6 +51,11 @@ What both renderers agree on:
   enabled, read only and autofocus flags and its label.
 - **Mistakes fail loudly.** `validateTree` reports trees no renderer can honour,
   and an embed that belongs to another target throws instead of vanishing.
+- **One contract, two renderers.** `unibox_conformance` lists boxes and the
+  appearance each one has to produce. Both suites read that appearance back out
+  of the output they produced — the widget tree on one side, the emitted CSS on
+  the other — so a token a renderer stops rendering fails its own test instead
+  of quietly making the two targets look different.
 
 ## Packages
 
@@ -59,9 +64,11 @@ What both renderers agree on:
 | `packages/unibox_core` | Platform agnostic AST, style tokens and layout types. No dependencies outside the Dart SDK. |
 | `packages/unibox_flutter` | Flutter renderer (`renderFlutter()`, `.toWidget()`). |
 | `packages/unibox_jaspr` | Jaspr renderer (`renderJaspr()`, `.toComponent()`). |
+| `packages/unibox_conformance` | The presentation contract both renderers are tested against: one table of boxes, one expected appearance per box. Dev-only, not published. |
 
 Dependencies flow in one direction only: both renderers depend on
-`unibox_core`, and `unibox_core` never depends on a renderer.
+`unibox_core`, and `unibox_core` never depends on a renderer. Both renderer
+suites depend on `unibox_conformance`, which holds the table they are held to.
 
 ## Design conventions
 
