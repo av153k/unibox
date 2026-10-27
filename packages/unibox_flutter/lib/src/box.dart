@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
@@ -272,6 +273,22 @@ class _UniboxBoxState extends State<UniboxBox> {
     return KeyEventResult.handled;
   }
 
+  /// The Flutter role of [element], or `null` when Flutter has no counterpart.
+  ///
+  /// Flutter's accessibility tree has no landmarks: a screen reader on a phone
+  /// navigates by headings and reading order, not by `main` or `nav`, so those
+  /// elements say something only a browser can pass on. The three Flutter does have
+  /// a role for are the ones where the structure is also about content — a list, its
+  /// items, and a form — and those become the matching `SemanticsRole`.
+  SemanticsRole? _semanticsRole(core.BoxElement element) {
+    return switch (element) {
+      core.BoxElement.ul || core.BoxElement.ol => SemanticsRole.list,
+      core.BoxElement.li => SemanticsRole.listItem,
+      core.BoxElement.form => SemanticsRole.form,
+      _ => null,
+    };
+  }
+
   /// Describes [content] to assistive technologies.
   ///
   /// A plain enabled container is left untouched: an extra `Semantics` node on
@@ -304,6 +321,11 @@ class _UniboxBoxState extends State<UniboxBox> {
       enabled: box.enabled,
       focusable: focusable,
       focused: focusable ? _focused : null,
+      role: _semanticsRole(semantics?.element ?? core.BoxElement.div),
+      expanded: semantics?.expanded,
+      selected: semantics?.selected,
+      hidden: semantics?.hidden ?? false,
+      liveRegion: semantics?.liveRegion ?? false,
       child: content,
     );
   }

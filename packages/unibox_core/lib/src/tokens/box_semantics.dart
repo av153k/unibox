@@ -167,7 +167,12 @@ final class BoxSemantics {
   final bool liveRegion;
 
   /// Whether a box with this description takes keyboard focus.
-  bool get isFocusable => role.isInteractive;
+  ///
+  /// A hidden box never does: a control that a screen reader cannot see must not
+  /// be reachable with the keyboard either, or the reader lands on something no
+  /// assistive technology can name. Both renderers read this, so the tab order and
+  /// the accessibility tree stay in step.
+  bool get isFocusable => role.isInteractive && !hidden;
 
   /// Creates a copy of this description with the given fields replaced.
   BoxSemantics copyWith({

@@ -1,0 +1,161 @@
+import 'dart:ui' show Tristate;
+
+import 'package:flutter/rendering.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:unibox_core/unibox_core.dart' as core;
+
+import 'support/harness.dart';
+
+/// The semantics node of the rendered tree root.
+SemanticsData dataOf(WidgetTester tester, Finder finder) =>
+    tester.getSemantics(finder).getSemanticsData();
+
+void main() {
+  group('headings', () {
+    testWidgets('marks a text node as a heading with its level', (
+      tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpNode(tester, const core.TextNode('Title', headingLevel: 2));
+
+      final SemanticsData data = dataOf(tester, find.text('Title'));
+
+      expect(data.flagsCollection.isHeader, isTrue);
+      expect(data.headingLevel, 2);
+
+      handle.dispose();
+    });
+
+    testWidgets('leaves a text without a level as body text', (tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpNode(tester, const core.TextNode('Body'));
+
+      final SemanticsData data = dataOf(tester, find.text('Body'));
+
+      expect(data.flagsCollection.isHeader, isFalse);
+      expect(data.headingLevel, 0);
+
+      handle.dispose();
+    });
+
+    testWidgets('does not change how the heading looks', (tester) async {
+      await pumpNode(
+        tester,
+        const core.TextNode('Title', headingLevel: 1, fontSize: 24),
+      );
+
+      // A heading is structure: the element it renders to on the web brings no
+      // typography of its own, and neither does the `Semantics` wrapper here.
+      expect(tester.getSize(find.text('Title')).height, 36);
+    });
+  });
+
+  group('elements', () {
+    testWidgets('gives a list, its items and a form their Flutter role', (
+      tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpNode(
+        tester,
+        const core.Box(
+          semantics: core.BoxSemantics(element: core.BoxElement.ul),
+          children: <core.UINode>[
+            core.Box(
+              semantics: core.BoxSemantics(element: core.BoxElement.li),
+              children: <core.UINode>[core.TextNode('One')],
+            ),
+          ],
+        ),
+      );
+
+      expect(dataOf(tester, find.byKey(nodeKey)).role, SemanticsRole.list);
+
+      handle.dispose();
+    });
+
+    testWidgets('leaves a landmark as the container it already is', (
+      tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpNode(
+        tester,
+        const core.Box(
+          semantics: core.BoxSemantics(element: core.BoxElement.main),
+          children: <core.UINode>[core.TextNode('Page')],
+        ),
+      );
+
+      // Flutter's accessibility tree has no landmarks; the box is still a
+      // container, and the web renderer is where `main` means something.
+      expect(dataOf(tester, find.byKey(nodeKey)).role, SemanticsRole.none);
+
+      handle.dispose();
+    });
+  });
+
+  group('accessibility state', () {
+    testWidgets('reports an expanded, selected and live box', (tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpNode(
+        tester,
+        const core.Box(
+          semantics: core.BoxSemantics(
+            expanded: true,
+            selected: true,
+            liveRegion: true,
+          ),
+          children: <core.UINode>[core.TextNode('Saved')],
+        ),
+      );
+
+      final SemanticsData data = dataOf(tester, find.byKey(nodeKey));
+
+      expect(data.flagsCollection.isExpanded != Tristate.none, isTrue);
+      expect(data.flagsCollection.isExpanded == Tristate.isTrue, isTrue);
+      expect(data.flagsCollection.isSelected != Tristate.none, isTrue);
+      expect(data.flagsCollection.isSelected == Tristate.isTrue, isTrue);
+      expect(data.flagsCollection.isLiveRegion, isTrue);
+
+      handle.dispose();
+    });
+
+    testWidgets('hides a box from assistive technologies and the tab order', (
+      tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpNode(
+        tester,
+        core.Box(
+          onTap: () {},
+          semantics: const core.BoxSemantics(
+            role: core.BoxRole.button,
+            label: 'Decorative',
+            hidden: true,
+          ),
+        ),
+      );
+
+      final SemanticsData data = dataOf(tester, find.byKey(nodeKey));
+
+      expect(data.flagsCollection.isHidden, isTrue);
+      // A control no screen reader can see must not be reachable by keyboard
+      // either, which is why a hidden box is never focusable.
+      expect(
+        const core.BoxSemantics(
+          role: core.BoxRole.button,
+          hidden: true,
+        ).isFocusable,
+        isFalse,
+      );
+
+      handle.dispose();
+    });
+  });
+}
