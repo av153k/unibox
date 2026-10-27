@@ -113,12 +113,4 @@ void main() {
       expect(host.dismissals, 1);
     });
   });
-
-  group('ExampleLayout', () {
-    test('puts the map beside the list from nine hundred pixels on', () {
-      // Both hosts read this one number: Flutter compares the width of its
-      // surface with it, the web host turns it into a `min-width` query.
-      expect(ExampleLayout.wideBreakpoint, 900);
-    });
-  });
 }

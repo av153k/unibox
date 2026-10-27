@@ -359,8 +359,8 @@ is the long form of the node above.
 
 When a host really has to own a value — the route, the window width, something that
 outlives every node — it passes it into the node as a parameter, the way the example
-passes the map panel. What it must not do is keep a value the tree could have kept:
-that is the drift the model exists to prevent.
+passes the form a static document starts with. What it must not do is keep a value
+the tree could have kept: that is the drift the model exists to prevent.
 
 ## Before you return the code
 

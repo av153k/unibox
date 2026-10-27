@@ -157,6 +157,7 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [ ] Task 111: `unibox_material` — `MaterialDialog` and `MaterialBottomSheet` as `OverlayNode` subclasses (surface, radius, padding, max width, body type), plus the `MaterialInkWell` and `MaterialTextField` that came with the overlays PR.
 - [ ] Task 112: Web interaction — `Escape`, a barrier press and focus containment in the client runtime, alongside Task 104.
 - [x] Task 113: Example — the page is one `ExamplePageNode`, a `StatefulNode<ExampleState, ExampleStore>`: the form, the open destination and the dialog are store state, the view is the frame with the dialog layered in, and each host is one `main.dart` that supplies only the surface, the link policy and the panel. The dialog is a node in the store's tree, so nothing outside the page decides whether it is open.
+- [x] Task 114: Example — the rest of the host is gone: the listings page lost its map panel, so no host measures the window, `WideOnly` and `ExampleLayout` are deleted, and the Flutter host is a surface, a link scope and one `FlutterStateful`. The Jaspr host keeps the component in `lib/main.dart` and the page it is served in (`lib/document.dart`), so the file a reader copies holds the host and nothing else.
 
 ## Decisions
 
@@ -184,10 +185,11 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
   the tree would describe a page and the hosts would disagree about where it
   lives. The cost is that a static export cannot switch pages, which is why the
   example writes one file per page.
-- **Responsiveness:** the breakpoint is host state, not a token. The tree takes
-  the map as a parameter and each host decides whether to pass it — Flutter by
-  measuring the window, the web host by asking CSS. The breakpoint constant lives
-  in the shared example so the two answers cannot drift apart.
+- **Responsiveness:** the breakpoint is host state, not a token. A tree that needs
+the width takes it as a parameter and each host answers for itself — Flutter by
+measuring the window, a web host by asking CSS. The example used to carry a map
+panel to demonstrate it; the panel is gone, because a host that measures was the
+heaviest thing left in it, and the rule stands for an application that has one.
 - **State:** a `StatefulNode` creates a `Store`; the store publishes an immutable
   state and the view is a pure function of it: one tree per state. The node never
   holds the instance, so the tree stays a description; `onMount` is where work

@@ -116,14 +116,6 @@ void main() {
       expect(textsIn(tree), contains('Looks good - press Create account.'));
     });
 
-    test('shows the panel the host passes and nothing without one', () {
-      expect(textsIn(viewOf(ExamplePageNode())), isNot(contains('Map')));
-      expect(
-        textsIn(viewOf(ExamplePageNode(panel: buildExampleMap()))),
-        contains('Map'),
-      );
-    });
-
     test('starts in the state the export asks for', () {
       final ExamplePageNode node = ExamplePageNode(signupOpen: true);
       final ExampleStore store = node.create();

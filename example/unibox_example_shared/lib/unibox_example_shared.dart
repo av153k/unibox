@@ -6,9 +6,8 @@
 /// same node renders as Flutter widgets in `unibox_example_flutter` and as
 /// HTML/CSS in `unibox_example_jaspr`.
 ///
-/// The host is what a node cannot be: a surface, the way a link opens, and the
-/// width the map needs. Each host of the example is one small file for exactly
-/// that reason.
+/// The host is what a node cannot be: a surface and the way a link opens. Each
+/// host of the example is one small file for exactly that reason.
 library;
 
 export 'src/apartments.dart';

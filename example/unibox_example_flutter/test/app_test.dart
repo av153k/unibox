@@ -52,22 +52,6 @@ void main() {
       expect(find.text('Via Bellavista 12'), findsOneWidget);
     });
 
-    testWidgets('keeps the form when the window crosses the breakpoint', (
-      tester,
-    ) async {
-      await pumpApp(tester);
-      await openPage(tester, 'Sign up');
-      await fillForm(tester);
-
-      // The host passes a new node (without the panel) and the renderer keeps the
-      // store, which is why the page can lose its map without losing the form.
-      tester.view.physicalSize = const Size(700, 900);
-      await tester.pump();
-
-      expect(find.text('Map'), findsNothing);
-      expect(tester.widget<TextField>(nameField()).controller!.text, 'Ada');
-    });
-
     testWidgets('fills the surface the window gives it', (tester) async {
       // The page box of the tree fills the viewport on the web, so the Flutter
       // box fills the window instead of shrinking to the card: same tree, same
@@ -183,29 +167,6 @@ void main() {
         expect(find.text('Join Unibox'), findsOneWidget);
         expect(tester.widget<TextField>(nameField()).controller!.text, 'Ada');
         expect(find.text('Looks good - press Create account.'), findsOneWidget);
-      });
-
-      testWidgets('shows the map beside the listings on a wide surface', (
-        tester,
-      ) async {
-        await pumpApp(tester);
-
-        // The two columns of the row: the listings take three parts of the
-        // width, the map two, and the map sits to the right of the list.
-        final Rect listings = tester.getRect(find.text('Via Bellavista 12'));
-        final Rect map = tester.getRect(find.text('Map'));
-
-        expect(map.left, greaterThan(listings.right));
-      });
-
-      testWidgets('leaves the map out on a narrow surface', (tester) async {
-        // The host answers the breakpoint question by not passing the panel at
-        // all, which is what the web host does with `display: none`: either way
-        // the list is the whole page.
-        await pumpApp(tester, surface: const Size(700, 900));
-
-        expect(find.text('Map'), findsNothing);
-        expect(find.text('Via Bellavista 12'), findsOneWidget);
       });
 
       testWidgets('keeps the listings readable on a small surface', (

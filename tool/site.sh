@@ -105,7 +105,7 @@ cat >"$site/index.html" <<'HTML'
 <body>
 <header>
   <h1>Unibox</h1>
-  <p>One node tree. Two renderers. Left: Jaspr, as HTML and CSS. Right: Flutter. Resize the window and both answer the same breakpoint.</p>
+  <p>One node tree. Two renderers. Left: Jaspr, as HTML and CSS. Right: Flutter. The same page, the same state, built by two targets.</p>
   <nav>
     <a href="showcase/">Web — listings</a>
     <a href="showcase/signup/">Web — sign-up dialog</a>

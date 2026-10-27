@@ -35,7 +35,7 @@ guide is [`README.md`](README.md).
 | `packages/unibox_core/lib/src/state/` | `Store` and `StateStore`: the state a `StatefulNode` draws and the lifecycle a renderer calls | a store member, the publish rule or a lifecycle rule changes |
 | `packages/*/test/support/` | the harnesses (`pumpNode`, `inNode`, `stylesOf`, ...) and `appearance.dart`, which reads the presentation back out of the output | a test needs a new fact |
 | `example/unibox_example_shared/` | the page as one `StatefulNode` (`ExamplePageNode`, `ExampleState`, `ExampleStore`) and the trees it is built from, plus the palette | the example content changes |
-| `example/unibox_example_flutter/`, `example/unibox_example_jaspr/` | hosts: surface, link policy and the width the map needs, never layout or state | the surface, a link or the breakpoint changes |
+| `example/unibox_example_flutter/`, `example/unibox_example_jaspr/` | hosts: the surface and the link policy, never layout or state | the surface or a link changes |
 | `README.md`, `design.md`, package READMEs | the user guide, the reasoning, the per-target mapping tables | public API or behaviour changes |
 | `AI_INSTRUCTIONS.md` | the consumer-facing counterpart: rules and a translation table for an assistant writing application code | a parameter is renamed or a default changes |
 | `TASK_PLAN.md` | what was built, why, and what was deliberately deferred | rarely: record a decision, not a task |
@@ -218,10 +218,8 @@ outwards:
 
 `example/unibox_example_shared` holds the trees, the state and the palette; the two
 hosts hold only what a tree cannot know. Change the shared tree first, keep the
-hosts to state and surface, and never lay anything out in a host — a host that
-measures or spaces is the drift the conformance tables cannot catch. The
-breakpoint lives once, in `ExampleLayout.wideBreakpoint`, because Flutter measures
-against it and CSS puts it in a media query.
+hosts to the surface and the link policy, and never lay anything out in a host — a
+host that measures or spaces is the drift the conformance tables cannot catch.
 
 ### F. A stateful node
 

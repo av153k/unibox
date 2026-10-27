@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:jaspr/server.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
-import 'package:unibox_example_jaspr/main.dart';
+import 'package:unibox_example_jaspr/document.dart';
 
 /// Renders the example to one static HTML file per page, plus a `robots.txt`.
 ///

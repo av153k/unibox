@@ -88,7 +88,7 @@ const List<Apartment> exampleApartments = <Apartment>[
   ),
 ];
 
-/// The apartments page: the listings, and the map beside them when there is room.
+/// The apartments page: the listings, scrolling under the navigation bar.
 ///
 /// The page scrolls, the frame does not. The scrolling box is the page itself
 /// and the bar above it belongs to the frame, so the navigation stays where it
@@ -99,19 +99,7 @@ const List<Apartment> exampleApartments = <Apartment>[
 /// the padding of a scrolling box around its viewport (so it stays put), while
 /// CSS puts it inside the scrollport (so it scrolls away). Moving it one level
 /// in leaves both renderers scrolling the same content.
-///
-/// [map] is how a host answers "is there room for the map?". The tree cannot
-/// answer it: a viewport is a fact about the surface the tree is drawn on, not
-/// about the description, so there is no breakpoint token to test here. Flutter
-/// measures its surface and passes the panel or `null`; the web host always
-/// passes it and lets CSS hide it below [ExampleLayout.wideBreakpoint]. Both
-/// end up with the same two layouts — the list alone, or the list and the map
-/// side by side — because an element that is not displayed takes no room.
-///
-/// The panel is a child of the row itself rather than something wrapped in a
-/// slot, and that is what lets the two answers meet: a host that hides it can
-/// hide the whole column, because the column *is* the panel.
-Box buildApartmentsPage({UINode? map}) {
+Box buildApartmentsPage() {
   return Box(
     flex: 1,
     direction: Axis.vertical,
@@ -129,56 +117,18 @@ Box buildApartmentsPage({UINode? map}) {
         children: <UINode>[
           _heading(),
           Box(
-            direction: Axis.horizontal,
+            direction: Axis.vertical,
             width: double.infinity,
-            gap: 24,
-            crossAlign: CrossAlign.start,
+            gap: 12,
+            // A list of listings: the web gets `<ul>` and `<li>`, and a screen
+            // reader announces how many items there are.
+            semantics: const BoxSemantics(element: BoxElement.ul),
             children: <UINode>[
-              Box(
-                direction: Axis.vertical,
-                flex: 3,
-                gap: 12,
-                // A list of listings: the web gets `<ul>` and `<li>`, and a
-                // screen reader announces how many items there are.
-                semantics: const BoxSemantics(element: BoxElement.ul),
-                children: <UINode>[
-                  for (final Apartment apartment in exampleApartments)
-                    _listing(apartment),
-                ],
-              ),
-              ?map,
+              for (final Apartment apartment in exampleApartments)
+                _listing(apartment),
             ],
           ),
         ],
-      ),
-    ],
-  );
-}
-
-/// The map panel: a coloured square standing in for a real map.
-///
-/// It is a node like any other, so the host decides whether it is on the page at
-/// all while the tree keeps owning how it looks. Its `flex` is what makes it the
-/// second column of the row: three parts of the width go to the listings, two to
-/// the map, on both targets.
-Box buildExampleMap() {
-  return Box(
-    flex: 2,
-    width: double.infinity,
-    height: 420,
-    mainAlign: MainAlign.center,
-    crossAlign: CrossAlign.center,
-    borderRadius: 16,
-    backgroundColor: ExamplePalette.mapSurface,
-    border: const BoxBorder(color: ExamplePalette.mapLine),
-    textStyle: ExampleType.map,
-    // A picture with a label is a figure, and the label is its caption: a reader
-    // meets the panel as a figure named "Map" instead of a box of text.
-    semantics: const BoxSemantics(element: BoxElement.figure),
-    children: <UINode>[
-      Box(
-        semantics: const BoxSemantics(element: BoxElement.figcaption),
-        children: <UINode>[TextNode('Map')],
       ),
     ],
   );
@@ -199,8 +149,7 @@ UINode _heading() {
     children: <UINode>[
       const TextNode('Apartments', headingLevel: 1),
       TextNode(
-        '${exampleApartments.length} listings in the old town. The map shows '
-        'up when the window is wide enough to hold it.',
+        '${exampleApartments.length} listings in the old town.',
         style: ExampleType.muted,
       ),
     ],

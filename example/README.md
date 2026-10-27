@@ -6,19 +6,19 @@ two host applications. The description is a single page component —
 navigation bar and a sign-up form the bar opens as a dialog over it: two
 controlled text inputs, a hand drawn checkbox, a hover aware button, a link and a
 status line, in a card that a barrier and `Escape` dismiss. The list scrolls under
-the bar and shows a map beside it when the window is wide enough.
+the bar.
 
 | Package | Role |
 | --- | --- |
 | `unibox_example_shared` | The page as one node (`ExamplePageNode`, with `ExampleState` and `ExampleStore`) and the parts it is built from (`buildExamplePage`, `buildApartmentsPage`, `buildSignupDialog`), plus the palette. Pure Dart, no renderer. |
-| `unibox_example_flutter` | Flutter host: one file (`lib/main.dart`) — the surface, the link policy and the width the map needs. |
-| `unibox_example_jaspr` | Jaspr host: one component file (`lib/main.dart`) — the node in a document — plus `wide_only.dart`, the CSS gate of the panel. |
+| `unibox_example_flutter` | Flutter host: one file (`lib/main.dart`) — the surface and the link policy. |
+| `unibox_example_jaspr` | Jaspr host: one component file (`lib/main.dart`) and the document it is served in (`lib/document.dart`). |
 
 Neither host holds state. The page owns it in `ExampleStore`; the host renders the
 node through `FlutterStateful`, which creates the store, subscribes to it and
 disposes it. What a host still supplies is what a node cannot know — the surface
-the tree is drawn on, how a link opens, whether there is room for the map — which
-is why each one is a single small file.
+the tree is drawn on and how a link opens — which is why each one is a single
+small file.
 
 ## One component, two small hosts
 
@@ -29,8 +29,8 @@ destination, the dialog reports a dismissal; each publishes a new `ExampleState`
 and the renderer draws the view again. No host wires a callback, so the whole
 application moves between the two targets as one node.
 
-Flutter renders it with `FlutterStateful(node: ExamplePageNode(panel: ...))` inside
-its `MaterialApp`; Jaspr renders the same node through `FlutterStateful` inside a
+Flutter renders it with `FlutterStateful(node: ExamplePageNode())` inside its
+`MaterialApp`; Jaspr renders the same node through `JasprStateful` inside a
 `Document`, which draws the first state on the server. The client build (Task 104)
 is what makes a browser subscribe to the same store; until then the export is the
 first frame, which is why a static document has to be told which state to start
@@ -58,31 +58,7 @@ That is what the two documents are: `build/index.html` is the listings, and
 the client bundle can only be shown one of the two — so the entry document is the
 one that can be read without dismissing anything, and the form is its own url.
 
-## The listings page, and what makes it responsive
-
-`buildApartmentsPage({UINode? map})` describes one row: the listings on the left,
-the map on the right. Whether the map is there is a question about the *surface*
-the tree is drawn on, and no token can answer it — a box cannot ask how wide the
-window is — so each host answers it in its own idiom and both end up with the
-same two layouts:
-
-- **Flutter** measures its surface, passes `buildExampleMap()` when it is at
-  least `ExampleLayout.wideBreakpoint` wide and `null` otherwise. The panel is
-  simply not part of the tree on a narrow window.
-- **The web host** always passes the panel, wrapped in a `WideOnly` component: a
-  plain `<div>` that a scoped rule hides with `display: none` and a
-  `@media screen and (min-width: 900px)` rule turns into `display: contents`
-  again. A static export is rendered before a viewport exists, so the answer has
-  to arrive when the browser lays the page out rather than when it is built — and
-  CSS already knows the width.
-
-Hiding an element and leaving it out come to the same thing, because neither
-takes room in the flex row: below the breakpoint the wrapper and the panel are
-gone, above it the wrapper keeps no box of its own (`contents`) and the panel
-itself is the second column. On a narrow surface the list is as wide as the page
-on both targets. The number itself lives once, in
-`ExampleLayout.wideBreakpoint`, so the measurement and the media query cannot
-disagree.
+## The listings page
 
 The page scrolls, not the document. `Overflow.scroll` on the box below the
 navigation is a `SingleChildScrollView` in Flutter and `overflow: auto` in CSS,
@@ -103,8 +79,8 @@ A renderer that drops a token, or starts wrapping a node in something that paint
 differently, therefore fails its own suite instead of making the two renderings drift
 apart. The apps themselves only check that the page they draw is the page the
 shared tree describes: the title, the two fields, the button, the link, the
-confirmation, the listings, the map on a wide surface, a page box that fills the
-surface the host gives it, and a list that scrolls under the bar.
+confirmation, the listings, a page box that fills the surface the host gives it,
+and a list that scrolls under the bar.
 
 The rest of the parity lives in the hosts, because a host owns the surface a tree
 is drawn on:
@@ -152,11 +128,10 @@ Actions**.
 
 ## Flutter app
 
-The host is `lib/main.dart`: a `MaterialApp` for the surface, an
-`FlutterLinkScope` for what following a link means, and a `LayoutBuilder` that
-passes the map or not. `FlutterStateful` keeps the store, so a width change
-redraws the page without losing the form. The web runner is checked in
-(`web/index.html`), so a browser build needs no scaffolding step:
+The host is `lib/main.dart`: a `MaterialApp` for the surface, a
+`FlutterLinkScope` for what following a link means, and a `FlutterStateful` for
+the page. The web runner is checked in (`web/index.html`), so a browser build
+needs no scaffolding step:
 
 ```shell
 cd example/unibox_example_flutter
@@ -172,10 +147,10 @@ flutter test
 
 ## Jaspr app
 
-The host is `lib/main.dart` as well: `ExampleApp` renders the shared node, and
-`buildExampleDocument` puts it in the document (language, title, description, the
-`html, body` height and the font stack). `bin/build.dart` renders that document
-once per destination:
+The host is two files: `lib/main.dart` holds `ExampleApp`, the same node in its
+server form, and `lib/document.dart` puts it in a document (language, title,
+description, the `html, body` height and the font stack). `bin/build.dart`
+renders that document once per destination:
 
 ```shell
 cd example/unibox_example_jaspr
@@ -183,14 +158,13 @@ dart run bin/build.dart   # writes build/index.html and build/signup.html
 open build/index.html
 ```
 
-Resize the window on `build/index.html`: the map appears beside the listings
-from nine hundred pixels on and is gone below that, with no JavaScript involved.
 There is one file per destination because being open is state, and a static
-export cannot keep state — open the document you want.
+export cannot keep state — open the document you want. `index.html` is the
+listings; `signup.html` is the same page with the dialog already open.
 
 Each page is a document before it is a picture: the bar is a `<nav>`, the page box
-is a `<main>`, the card an `<article>`, the listings a `<ul>` of `<li>`s, the map a
-`<figure>`, the page title an `<h1>`, and the confirmation a live region. None of
+is a `<main>`, the card an `<article>`, the listings a `<ul>` of `<li>`s, the page
+title an `<h1>`, and the confirmation a live region. None of
 that changed a pixel, which is what the semantics tokens are for; open the export
 in a reader or a crawler and the outline is there.
 

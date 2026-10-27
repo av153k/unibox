@@ -14,26 +14,13 @@ enum ExamplePage {
   /// The sign-up form, shown as a dialog over the page.
   signup('Sign up'),
 
-  /// The list of apartments, with the map beside it when there is room.
+  /// The list of apartments.
   apartments('Apartments');
 
   const ExamplePage(this.label);
 
   /// The label of the destination in the navigation bar.
   final String label;
-}
-
-/// The layout facts both hosts have to agree on.
-abstract final class ExampleLayout {
-  /// The narrowest surface that shows the listings and the map side by side.
-  ///
-  /// The number lives here because both hosts are asked the same question and
-  /// have to answer it the same way: Flutter compares the width of its surface
-  /// with it, the web host turns it into a `min-width` media query. A breakpoint
-  /// is not a token — a box cannot know how wide the surface is, so it cannot
-  /// decide anything from it — which is why it belongs to the page that needs it
-  /// instead of to `unibox_core`.
-  static const double wideBreakpoint = 900;
 }
 
 /// The frame every page is drawn in: the canvas, the navigation bar, [page] and,

@@ -182,34 +182,15 @@ void main() {
       expect(scrollable, isEmpty);
     });
 
-    testComponents('shows the map from the breakpoint up', (tester) async {
-      tester.pumpComponent(const ExampleApp());
-
-      expect(find.text('Map'), findsOneComponent);
-
-      final String css = allCss();
-
-      // Hidden by default, so a narrow viewport lays the list out on its own, and
-      // displayed as a transparent wrapper from the breakpoint both hosts share —
-      // `contents` keeps no box of its own, so the panel is the second column of
-      // the row. Neither rule is inline: an inline `display` would beat the media
-      // query.
-      expect(css, contains('display: none;'));
-      expect(css, contains('display: contents;'));
-      expect(css, contains('@media screen and (min-width: 900px)'));
-    });
-
     testComponents('shows the listings behind the sign-up dialog', (
       tester,
     ) async {
       // The form is a layer over the page, not a page of its own: the static
-      // export of the sign-up document still carries the listings and their map.
+      // export of the sign-up document still carries the listings.
       tester.pumpComponent(signupApp());
 
       expect(find.text('Join Unibox'), findsOneComponent);
       expect(find.text('Via Bellavista 12'), findsOneComponent);
-      expect(find.text('Map'), findsOneComponent);
-      expect(allCss(), contains('@media screen and (min-width: 900px)'));
     });
   });
 }

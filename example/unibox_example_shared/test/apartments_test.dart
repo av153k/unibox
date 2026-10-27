@@ -4,10 +4,6 @@ import 'package:unibox_example_shared/unibox_example_shared.dart';
 
 import 'support/tree.dart';
 
-/// The box that holds the listings, the one that declares the `flex` factor.
-Box listingsColumn(UINode page) =>
-    flatten(page).whereType<Box>().firstWhere((Box box) => box.flex == 3);
-
 void main() {
   group('Apartment', () {
     test('summarises itself for the card', () {
@@ -66,32 +62,6 @@ void main() {
       }
     });
 
-    test('leaves the map out when the host has no room for it', () {
-      expect(textsIn(buildApartmentsPage()), isNot(contains('Map')));
-    });
-
-    test('puts the map in the second column of the row', () {
-      final Box map = buildExampleMap();
-      final Box page = buildApartmentsPage(map: map);
-
-      // The panel is a child of the row itself, so a host that hides it hides the
-      // whole column instead of leaving an empty one behind.
-      final Box row = flatten(page)
-          .whereType<Box>()
-          .firstWhere((Box box) => box.children.contains(map));
-
-      expect(row.direction, Axis.horizontal);
-      expect(map.flex, 2);
-    });
-
-    test('keeps the listings in the wider column', () {
-      final Box page = buildApartmentsPage(map: buildExampleMap());
-
-      expect(listingsColumn(page).flex, 3);
-      expect(textsIn(listingsColumn(page)), contains('Via Bellavista 12'));
-      expect(textsIn(listingsColumn(page)), isNot(contains('Map')));
-    });
-
     test('highlights a listing under the pointer', () {
       final Box listing = flatten(buildApartmentsPage())
           .whereType<Box>()
@@ -102,17 +72,6 @@ void main() {
         listing.stateStyle(BoxState.hover)?.border?.color,
         ExamplePalette.accent,
       );
-    });
-  });
-
-  group('buildExampleMap', () {
-    test('is a filled square with a label', () {
-      final Box map = buildExampleMap();
-
-      expect(map.width, double.infinity);
-      expect(map.height, 420);
-      expect(map.backgroundColor, ExamplePalette.mapSurface);
-      expect(textsIn(map), <String>['Map']);
     });
   });
 }

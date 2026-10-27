@@ -38,15 +38,6 @@ abstract final class ExamplePalette {
   /// The background of the confirmation message.
   static const BoxColor successSurface = BoxColor.rgb(0xEC, 0xFD, 0xF5);
 
-  /// The color of the panel standing in for the map.
-  static const BoxColor mapSurface = BoxColor.rgb(0xDF, 0xEA, 0xD6);
-
-  /// The border of the map panel.
-  static const BoxColor mapLine = BoxColor.rgb(0xC2, 0xD4, 0xB7);
-
-  /// The label in the middle of the map panel.
-  static const BoxColor mapLabel = BoxColor.rgb(0x3F, 0x5A, 0x3A);
-
   /// The tint of the square that stands in for the photo of a listing.
   static const List<BoxColor> listingTints = <BoxColor>[
     BoxColor.rgb(0xFD, 0xE8, 0xD3),
@@ -155,12 +146,5 @@ abstract final class ExampleType {
     fontSize: 14,
     fontWeight: FontWeight.semiBold,
     color: ExamplePalette.accent,
-  );
-
-  /// The label in the middle of the map panel.
-  static const BoxTextStyle map = BoxTextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.medium,
-    color: ExamplePalette.mapLabel,
   );
 }
