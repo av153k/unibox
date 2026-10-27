@@ -65,6 +65,13 @@ What stays approximate on purpose, and is therefore outside the contract
 altogether: the font face, line breaking, shadow blur, placeholder and focus
 colours, and hit testing.
 
+One combination inside the model has no exact counterpart, which is why it is not
+in the table: `maxLines` with `TextOverflow.clip`. Flutter cuts the text off after
+the last line; a `-webkit-line-clamp` box always ends it with an ellipsis, and
+`text-overflow: clip` does not take the ellipsis away (checked in Chrome, not
+assumed). An application that needs the two to agree uses `maxLines` with
+`TextOverflow.ellipsis`.
+
 ## Testing
 
 ```shell

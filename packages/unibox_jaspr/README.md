@@ -147,6 +147,11 @@ An `ellipsis` without `maxLines` truncates the single line instead
 (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis`), while `clip`
 only hides the overflow.
 
+Inside a clamp, `clip` cannot be honoured: `-webkit-line-clamp` always ends the
+last line with an ellipsis and `text-overflow: clip` does not remove it, so a
+`maxLines` with `TextOverflow.clip` ellipsizes here and cuts off in Flutter. Use
+`maxLines` with `TextOverflow.ellipsis` when the two have to agree.
+
 A unitless `line-height` makes a line box `fontSize * lineHeight` tall, which is
 exactly the box `TextStyle.height` produces in Flutter. Without a `lineHeight`
 the browser uses the font's own metrics (`normal`), which is a length Skia does
