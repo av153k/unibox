@@ -1,0 +1,180 @@
+import 'package:unibox_core/unibox_core.dart' as core;
+
+import 'appearance.dart';
+
+/// One box together with the presentation every renderer has to give it.
+///
+/// A renderer suite renders [box], reads the presentation back from its own
+/// output and compares it with [expected]. Since both renderers are checked
+/// against the same entry, the entry is the only place the answer is written
+/// down: it cannot be relaxed for one target without failing the other.
+final class BoxCase {
+  /// Creates a case named [description] that renders [box] into [expected].
+  const BoxCase({
+    required this.description,
+    required this.box,
+    required this.expected,
+  });
+
+  /// What the case describes, phrased as the test that checks it.
+  final String description;
+
+  /// The box to render.
+  final core.Box box;
+
+  /// The presentation the rendered output has to have.
+  final BoxAppearance expected;
+
+  @override
+  String toString() => 'BoxCase($description)';
+}
+
+/// The boxes every renderer is checked against.
+///
+/// The table takes the tokens a box can carry one by one — each case sets a
+/// single token and expects the presentation of a plain box plus that token —
+/// and then all of them at once, so a renderer has to both honour a token on its
+/// own and keep honouring it next to the others.
+///
+/// Every case lays out the same two empty children: `gap` only becomes visible
+/// between children, and a case that could not show its own token would pass on
+/// a renderer that ignores it.
+const List<BoxCase> boxCases = <BoxCase>[
+  BoxCase(
+    description: 'renders a box without tokens as a flex column at the start',
+    box: core.Box(children: _children),
+    expected: BoxAppearance(),
+  ),
+  BoxCase(
+    description: 'lays the children out in a row for Axis.horizontal',
+    box: core.Box(direction: core.Axis.horizontal, children: _children),
+    expected: BoxAppearance(direction: core.Axis.horizontal),
+  ),
+  BoxCase(
+    description: 'distributes the children with mainAlign',
+    box: core.Box(mainAlign: core.MainAlign.spaceBetween, children: _children),
+    expected: BoxAppearance(mainAlign: core.MainAlign.spaceBetween),
+  ),
+  BoxCase(
+    description: 'aligns the children across the axis with crossAlign',
+    box: core.Box(crossAlign: core.CrossAlign.center, children: _children),
+    expected: BoxAppearance(crossAlign: core.CrossAlign.center),
+  ),
+  BoxCase(
+    description: 'keeps a gap between two children',
+    box: core.Box(gap: 12, children: _children),
+    expected: BoxAppearance(gap: 12),
+  ),
+  BoxCase(
+    description: 'keeps the padding inside the border',
+    box: core.Box(padding: core.BoxSpacing.all(8), children: _children),
+    expected: BoxAppearance(padding: core.BoxSpacing.all(8)),
+  ),
+  BoxCase(
+    description: 'keeps an asymmetric padding on the edges it names',
+    box: core.Box(
+      padding: core.BoxSpacing.symmetric(horizontal: 12, vertical: 4),
+      children: _children,
+    ),
+    expected: BoxAppearance(
+      padding: core.BoxSpacing.symmetric(horizontal: 12, vertical: 4),
+    ),
+  ),
+  BoxCase(
+    description: 'keeps the padding inside the border and the margin outside',
+    // Both insets in one case: a padding and a margin of the same size are
+    // indistinguishable in a widget tree that paints nothing between them, so a
+    // case with only one of the two could not be read back on both targets.
+    box: core.Box(
+      padding: core.BoxSpacing.all(4),
+      margin: core.BoxSpacing.all(6),
+      children: _children,
+    ),
+    expected: BoxAppearance(
+      padding: core.BoxSpacing.all(4),
+      margin: core.BoxSpacing.all(6),
+    ),
+  ),
+  BoxCase(
+    description: 'sizes the box to its width',
+    box: core.Box(width: 120, children: _children),
+    expected: BoxAppearance(width: 120),
+  ),
+  BoxCase(
+    description: 'expands a width of double.infinity over the available space',
+    box: core.Box(width: double.infinity, children: _children),
+    expected: BoxAppearance(width: double.infinity),
+  ),
+  BoxCase(
+    description: 'sizes the box to its height',
+    box: core.Box(height: 40, children: _children),
+    expected: BoxAppearance(height: 40),
+  ),
+  BoxCase(
+    description: 'paints the background colour behind the box',
+    box: core.Box(backgroundColor: _blue, children: _children),
+    expected: BoxAppearance(backgroundColor: _blue),
+  ),
+  BoxCase(
+    description: 'paints a translucent background in its own alpha',
+    box: core.Box(backgroundColor: _veil, children: _children),
+    expected: BoxAppearance(backgroundColor: _veil),
+  ),
+  BoxCase(
+    description: 'rounds the corners by borderRadius',
+    box: core.Box(borderRadius: 8, children: _children),
+    expected: BoxAppearance(borderRadius: 8),
+  ),
+  BoxCase(
+    description: 'draws the border of the box',
+    box: core.Box(
+      border: core.BoxBorder(width: 2, color: _line),
+      children: _children,
+    ),
+    expected: BoxAppearance(borderWidth: 2, borderColor: _line),
+  ),
+  BoxCase(
+    description: 'presents every token at once',
+    box: core.Box(
+      direction: core.Axis.horizontal,
+      mainAlign: core.MainAlign.spaceBetween,
+      crossAlign: core.CrossAlign.center,
+      gap: 8,
+      padding: core.BoxSpacing.symmetric(horizontal: 18, vertical: 12),
+      margin: core.BoxSpacing.all(6),
+      width: 320,
+      height: 96,
+      backgroundColor: core.BoxColor.white,
+      borderRadius: 10,
+      border: core.BoxBorder(color: _line),
+      children: _children,
+    ),
+    expected: BoxAppearance(
+      direction: core.Axis.horizontal,
+      mainAlign: core.MainAlign.spaceBetween,
+      crossAlign: core.CrossAlign.center,
+      gap: 8,
+      padding: core.BoxSpacing.symmetric(horizontal: 18, vertical: 12),
+      margin: core.BoxSpacing.all(6),
+      width: 320,
+      height: 96,
+      backgroundColor: core.BoxColor.white,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: _line,
+    ),
+  ),
+];
+
+/// The two empty children every case lays out, so `gap` has something to sit
+/// between.
+const List<core.UINode> _children = <core.UINode>[core.Box(), core.Box()];
+
+/// The accent blue of the table.
+const core.BoxColor _blue = core.BoxColor.rgb(0x2D, 0x6C, 0xF3);
+
+/// A half transparent ink, for the alpha of a background.
+const core.BoxColor _veil = core.BoxColor(0x80112233);
+
+/// The hairline grey of the borders in the table.
+const core.BoxColor _line = core.BoxColor.rgb(0xE5, 0xE7, 0xEB);

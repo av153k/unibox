@@ -7,6 +7,7 @@ environment:
   sdk: ^3.13.0
 
 workspace:
+  - packages/unibox_conformance
   - packages/unibox_core
   - packages/unibox_flutter
   - packages/unibox_jaspr
