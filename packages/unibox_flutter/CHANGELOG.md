@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- A heading becomes `Semantics(header: true, headingLevel: n)`, so a screen reader
+  can build the same outline a browser builds from `h1`–`h6`. The text looks
+  exactly as it did.
+- The elements Flutter has a role for become a `SemanticsRole`: a list, its items
+  and a form. The landmarks stay plain containers, because Flutter's accessibility
+  tree has none.
+- `expanded`, `selected`, `hidden` and `liveRegion` become the matching `Semantics`
+  flags.
 - An `ImageNode` always receives a `fit`, `BoxFit.scaleDown` when the node names
   none, so Flutter and the web renderer answer the question the same way instead
   of each falling back to its own platform.

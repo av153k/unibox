@@ -230,3 +230,30 @@ never inherited (CSS does not inherit them either).
 - Renames and removals are breaking: keep the old name as a deprecated
   forwarding constructor or getter for at least one minor release.
 - Every published change is listed in the package `CHANGELOG.md`.
+
+### 5.8 Structure and semantics
+- A node says what it *is* as well as how it looks, and the two are separate
+  tokens: `BoxSemantics.element` picks the element a box becomes, `BoxRole` picks
+  the ARIA role of a hand drawn control, `TextNode.headingLevel` says a text is a
+  heading, and `expanded`, `selected`, `hidden` and `liveRegion` describe its
+  state. None of them changes a pixel, which is the test the semantics tests run:
+  a heading measures the same as the text it would be without the element.
+- A heading is a text and not a container: `<h1>`–`<h6>` on the web,
+  `Semantics(header: true, headingLevel: n)` in Flutter. The element brings no look
+  of its own — the renderer cancels the user agent's margin, size and weight —
+  because typography is the tree's business. `BoxRole.heading` stays for a heading
+  that cannot be written as one run of text.
+- The two targets are not equally expressive, and the gap is documented instead of
+  papered over: HTML has landmarks (`main`, `nav`, `header`, `footer`, `aside`) and
+  Flutter has none, so a landmark is structure a browser gets and a Flutter screen
+  reader does not need. Where Flutter *does* have the concept — a list, its items,
+  a form — both targets say the same thing.
+- The renderer states the reset a semantic element needs. A `<ul>`, an `<ol>` and
+  a `<figure>` come with an indent or a margin that no Flutter counterpart has, so
+  the space is written as `0` unless the box declares it; a `role` is only written
+  when the element does not already imply it.
+- Structure that HTML forbids is a tree error, not a rendering surprise: a
+  `BoxElement.li` outside a `ul` or an `ol` is reported by `validateTree`.
+- What stays host work: navigation between documents (a `LinkNode` or the host's
+  router), `aria-current`, figure captions, tables, and anything that describes the
+  *document* rather than the tree (see 5.6).

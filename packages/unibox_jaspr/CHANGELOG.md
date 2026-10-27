@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- A heading renders `<h1>`–`<h6>`, with the user agent's margin, size and weight
+  cancelled so the tree keeps deciding how a heading looks.
+- A box renders the element it names — `main`, `nav`, `header`, `footer`, `aside`,
+  `section`, `article`, `form`, `figure`, `ul`, `ol`, `li` — instead of a `<div>`,
+  with the space a list or a figure brings cancelled, and `role` only written when
+  the element does not already imply it.
+- `expanded`, `selected`, `hidden` and `liveRegion` become `aria-expanded`,
+  `aria-selected`, `aria-hidden` and `aria-live`; a hidden box loses its `tabindex`.
 - An `ImageNode` always emits `object-fit`, `scale-down` when the node names no
   fit: left out, a browser stretched the picture over its box while Flutter scaled
   it down.

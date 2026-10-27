@@ -48,6 +48,24 @@ flex parent the expanding child is wrapped in an `Expanded` (using `flex`, or
 parent. An infinite dimension in an unbounded parent is a layout error, exactly
 like a tight infinite `SizedBox` in plain Flutter.
 
+## Semantics
+
+A node says what it *is* as well as how it looks, and Flutter can express most of
+it. Nothing in this section changes a pixel.
+
+| Token | Flutter |
+| --- | --- |
+| `TextNode.headingLevel` | `Semantics(header: true, headingLevel: n)` around the `Text` |
+| `BoxSemantics.element` = `ul`, `ol` | `SemanticsRole.list` |
+| `BoxSemantics.element` = `li` | `SemanticsRole.listItem` |
+| `BoxSemantics.element` = `form` | `SemanticsRole.form` |
+| `BoxSemantics.element` = `main`, `nav`, `header`, `footer`, `aside`, `section`, `article`, `figure` | nothing: Flutter's accessibility tree has no landmarks, and a phone reader navigates by headings and reading order |
+| `BoxSemantics.role` | `button`, `link`, `header`, `checked`/`toggled` and the focused flag of `Semantics` |
+| `BoxSemantics.expanded` / `.selected` | `Semantics.expanded` / `Semantics.selected` |
+| `BoxSemantics.hidden` | `Semantics.hidden`, and the box is never focusable |
+| `BoxSemantics.liveRegion` | `Semantics.liveRegion` |
+| `BoxSemantics.label` | `Semantics.label`, with the contents excluded so the two cannot drift |
+
 ## Text mapping
 
 | Unibox                  | Flutter                                                        |

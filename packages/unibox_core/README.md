@@ -55,6 +55,27 @@ What is left to the host, because only the host can answer it: the font family (
 font file is an asset), the colour of a placeholder, a caret or a selection, the
 look of a scrollbar, and the rendering of the glyphs themselves.
 
+## Structure and semantics
+
+A node says what it is as well as how it looks, and none of it changes a pixel:
+
+| Token | Meaning |
+| --- | --- |
+| `TextNode.headingLevel` | the text is a heading of level 1 to 6: `<h1>`–`<h6>` on the web, `Semantics(header: true, headingLevel: n)` in Flutter |
+| `BoxSemantics.element` | the element the box becomes: `div`, `main`, `nav`, `header`, `footer`, `aside`, `section`, `article`, `form`, `figure`, `ul`, `ol` or `li` |
+| `BoxSemantics.role` | the ARIA role of a hand drawn control: button, checkbox, switch, link or heading |
+| `BoxSemantics.expanded`, `.selected`, `.hidden`, `.liveRegion` | the state a reader announces and a browser exposes as `aria-expanded`, `aria-selected`, `aria-hidden` and `aria-live` |
+| `BoxSemantics.label` | the name to announce instead of the contents |
+
+A heading is a text rather than a container, and the element brings no look: the
+web renderer cancels the user agent's margin, size and weight, so a heading is
+typeset by the tree like every other text. A hidden box is hidden from assistive
+technologies and never focusable, so it cannot be reached by keyboard either.
+
+`validateTree` reports a `BoxElement.li` whose parent is not a `ul` or an `ol` —
+the one combination HTML forbids — and the renderers report the issues they cannot
+compensate for.
+
 ## Inheritance
 
 `Box.textStyle` (or `BoxStyle.textStyle`) is inherited by the descendants of the

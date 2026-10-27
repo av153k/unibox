@@ -112,6 +112,39 @@ JavaScript for it. A tappable box also gets `cursor: pointer`. Long presses map
 to pointer listeners with a 500 ms threshold and suppress the follow-up `click`,
 mirroring Flutter.
 
+## Element mapping
+
+`BoxSemantics.element` decides the tag a box renders as. Everything the box
+carries — styles, classes, attributes and listeners — goes on that element, so
+`<main>` *is* the page box rather than a wrapper around it.
+
+| `BoxElement` | Tag | Role it already implies |
+| --- | --- | --- |
+| `div` (default) | `<div>` | none |
+| `main`, `nav`, `header`, `footer`, `aside` | `<main>`, `<nav>`, `<header>`, `<footer>`, `<aside>` | the matching landmark |
+| `section` | `<section>` | `region` |
+| `article`, `form`, `figure` | `<article>`, `<form>`, `<figure>` | `article`, `form`, `figure` |
+| `ul`, `ol`, `li` | `<ul>`, `<ol>`, `<li>` | `list`, `list`, `listitem` |
+
+`role` is only written when the box asks for one its element does not imply: a
+`<nav>` carries no `role="navigation"` next to it, while a `<div>` with
+`BoxRole.link` does carry `role="link"`. A list and a figure also get the space a
+browser adds around them cancelled (`padding: 0` and `margin: 0`), because no
+Flutter counterpart has it.
+
+## Semantics attributes
+
+| Token | Attribute |
+| --- | --- |
+| `BoxSemantics.role` | `role`, unless the element already implies it |
+| `BoxSemantics.label` | `aria-label` |
+| `BoxSemantics.checked` | `aria-checked` on a checkbox or a switch |
+| `BoxSemantics.expanded` | `aria-expanded` |
+| `BoxSemantics.selected` | `aria-selected` |
+| `BoxSemantics.liveRegion` | `aria-live="polite"` |
+| `BoxSemantics.hidden` | `aria-hidden="true"`, and no `tabindex` |
+| `Box.enabled` | `aria-disabled="true"`, and no listeners |
+
 ## Text mapping
 
 A `TextNode` becomes a `<span>`, so it flows inline like Flutter's `Text` does
@@ -126,6 +159,7 @@ inside a `Row`.
 | `fontFamily`    | `font-family`                                    |
 | `letterSpacing` | `letter-spacing` in `px`                         |
 | `textAlign`     | `text-align`                                     |
+| `headingLevel`  | `<h1>`–`<h6>`, with the user agent styles cancelled |
 | `maxLines`      | `-webkit-line-clamp` box                         |
 | `overflow`      | `text-overflow`                                  |
 
@@ -345,11 +379,12 @@ Document(
 
 Two things are worth knowing before relying on this for search:
 
-- **A heading is ARIA, not an element.** `BoxSemantics(role: BoxRole.heading)`
-  writes `role="heading"`, whose implicit level is 2; the renderer never emits
-  `<h1>`–`<h6>`, because the model has no heading level and Flutter has no
-  counterpart to one. A page whose outline has to be readable as HTML needs those
-  elements from the host.
+- **A heading is an element, and a landmark is a landmark.** `TextNode` with a
+  `headingLevel` renders `<h1>`–`<h6>` (and Flutter announces the same level), and
+  `BoxSemantics(element: BoxElement.main)` renders `<main>` — so the outline of the
+  page is in the markup where a crawler reads it, without a look of its own:
+  `role="heading"` on a `<div>` is what the model used to offer and is now the
+  fallback for a heading that is not one run of text.
 - **A box that navigates on tap is not a link.** `Box(onTap: ...)` with
   `BoxRole.link` is announced and keyboard operable, but it carries no `href`, so
   a crawler cannot follow it. A page that has to be found is reached by a

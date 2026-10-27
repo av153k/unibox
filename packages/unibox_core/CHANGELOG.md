@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `TextNode.headingLevel` (1 to 6) makes a text a heading, and
+  `BoxSemantics.element` gives a box an element: a landmark, sectioning content, or
+  a list. Neither changes a look; both are what a page needs to be a document.
+- `BoxSemantics` gains the accessibility state both platforms expose: `expanded`,
+  `selected`, `hidden` and `liveRegion`. A hidden box is also no longer focusable,
+  so it cannot be reached by keyboard either.
+- `validateTree` reports a `BoxElement.li` whose parent is not a `ul` or an `ol`.
 - `ImageFit.scaleDown` and `ImageNode.resolvedFit`: an image that names no fit is
   `scaleDown` rather than whatever its renderer falls back to. Flutter's `Image`
   already scaled down, while a browser stretched the picture over its box

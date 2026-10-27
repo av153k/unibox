@@ -115,6 +115,12 @@ from nine hundred pixels on and is gone below that, with no JavaScript involved.
 There is one file per page because navigation is state, and a static export
 cannot keep state — open the page you want.
 
+Each page is a document before it is a picture: the bar is a `<nav>`, the page box
+is a `<main>`, the card an `<article>`, the listings a `<ul>` of `<li>`s, the map a
+`<figure>`, the page title an `<h1>`, and the confirmation a live region. None of
+that changed a pixel, which is what the semantics tokens are for; open the export
+in a reader or a crawler and the outline is there.
+
 Each page also arrives with what a search engine reads before any script runs:
 `<html lang="en">`, its own `<title>` and description
 (`buildExampleDocument(page:)`), the text and the `role` attributes as markup, and
