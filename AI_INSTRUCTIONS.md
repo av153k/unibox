@@ -49,9 +49,12 @@ host that renders it.
   black at a line height of 1.5, an image scales down), and both renderers apply it.
   Never reach for the host's default.
 - `unibox_material` is optional: the fifteen Material type roles as `const`
-  `BoxTextStyle` values, and two components (`MaterialCard`, `MaterialListTile`) that
-  are `Box` subclasses. It has no colour scheme yet, so a themed Material screen
-  still states its colours itself.
+  `BoxTextStyle` values, the colour roles as `MaterialPalette` (`light` and `dark`,
+  each a `const` set of `BoxColor`s), and two components (`MaterialCard`,
+  `MaterialListTile`) that are `Box` subclasses. The palette is a value the tree
+  wears — pass the roles into the builders; there is no `Theme` lookup at render
+  time. Wiring the same roles into the platform (`ColorScheme`, CSS custom
+  properties) is the application's job.
 
 
 ## The rules that make generated code run
@@ -144,6 +147,7 @@ host that renders it.
 | `Card` | `MaterialCard` (from `unibox_material`) |
 | `ListTile` | `MaterialListTile` (from `unibox_material`) |
 | `Theme.of(context).textTheme.titleLarge` | `MaterialTypography.titleLarge` |
+| `Theme.of(context).colorScheme.primary` | `MaterialPalette.light.primary` (or `dark`), passed into the tree |
 | `MediaQuery`, `LayoutBuilder` | host work: measure there and pass the answer in |
 | a third party widget | an `EmbedNode` that carries that `Widget` in `implementations` |
 
