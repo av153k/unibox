@@ -30,6 +30,124 @@ core.Box statedBox(
 }
 
 void main() {
+  group('transform and opacity', () {
+    testWidgets('fades the box without moving it', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          width: 60,
+          height: 40,
+          opacity: 0.4,
+          backgroundColor: core.BoxColor.black,
+        ),
+      );
+
+      expect(tester.widget<Opacity>(inNode(find.byType(Opacity))).opacity, 0.4);
+      // The box keeps its room: a faded box is not a missing box.
+      expect(tester.getSize(find.byKey(nodeKey)), const Size(60, 40));
+    });
+
+    testWidgets('scales and turns about the centre', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          width: 60,
+          height: 40,
+          transform: core.BoxTransform(scale: 2, offsetX: 10),
+        ),
+      );
+
+      final Transform transform = tester.widget<Transform>(
+        inNode(find.byType(Transform)).first,
+      );
+      final Matrix4 matrix = transform.transform;
+
+      expect(transform.alignment, Alignment.center);
+      expect(matrix.entry(0, 0), closeTo(2, 1e-9));
+      expect(matrix.entry(1, 1), closeTo(2, 1e-9));
+      expect(matrix.entry(0, 3), closeTo(10, 1e-9));
+    });
+
+    testWidgets('eases a scale that a state introduces', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          width: 60,
+          height: 40,
+          backgroundColor: core.BoxColor.white,
+          transition: core.BoxTransition(duration: Duration(milliseconds: 100)),
+          hoverStyle: core.BoxStyle(transform: core.BoxTransform(scale: 1.5)),
+        ),
+      );
+
+      final TestGesture pointer = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await pointer.addPointer(location: Offset.zero);
+      addTearDown(pointer.removePointer);
+
+      double scale() => tester
+          .widget<TweenAnimationBuilder<core.BoxTransform>>(
+            inNode(find.byType(TweenAnimationBuilder<core.BoxTransform>)).first,
+          )
+          .tween
+          .end!
+          .scale;
+
+      // The resting box is untransformed, and the state asks for 1.5: the value the
+      // animation is heading for follows the state, the painted one eases.
+      expect(scale(), 1);
+
+      await pointer.moveTo(nodeCenter(tester));
+      await tester.pump();
+
+      expect(scale(), 1.5);
+
+      final Transform painted = tester.widget<Transform>(
+        inNode(find.byType(Transform)).first,
+      );
+
+      expect(painted.transform.entry(0, 0), lessThan(1.5));
+
+      await tester.pumpAndSettle();
+
+      expect(
+        tester
+            .widget<Transform>(inNode(find.byType(Transform)).first)
+            .transform
+            .entry(0, 0),
+        closeTo(1.5, 1e-9),
+      );
+    });
+
+    testWidgets('fades a state that introduces an opacity', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          width: 60,
+          height: 40,
+          transition: core.BoxTransition(duration: Duration(milliseconds: 100)),
+          hoverStyle: core.BoxStyle(opacity: 0.5),
+        ),
+      );
+
+      final TestGesture pointer = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await pointer.addPointer(location: Offset.zero);
+      addTearDown(pointer.removePointer);
+      await pointer.moveTo(nodeCenter(tester));
+      await tester.pump();
+
+      expect(
+        tester
+            .widget<AnimatedOpacity>(inNode(find.byType(AnimatedOpacity)))
+            .opacity,
+        0.5,
+      );
+    });
+  });
+
   group('transitions', () {
     /// A box that eases from white to black while the pointer is over it.
     core.Box easingBox() {

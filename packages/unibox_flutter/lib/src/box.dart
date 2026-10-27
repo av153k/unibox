@@ -63,6 +63,7 @@ class _UniboxBoxState extends State<UniboxBox> {
     }
 
     content = _applyDimensions(content, style);
+    content = _applyLook(content, style, box);
     content = _applyInteractions(content, box);
 
     final core.BoxSpacing? margin = style.margin;
@@ -98,6 +99,102 @@ class _UniboxBoxState extends State<UniboxBox> {
       curve: toCurve(transition.curve),
       builder: (BuildContext context, Decoration value, Widget? inner) =>
           DecoratedBox(decoration: value, child: inner),
+      child: child,
+    );
+  }
+
+  /// Moves, turns, scales and fades the box, easing when the box asks for it.
+  ///
+  /// A transform and an opacity paint differently without taking different room,
+  /// which is what CSS does with `transform` and `opacity` and what Flutter does
+  /// with `Transform` (about the centre, like CSS's default origin) and `Opacity`.
+  ///
+  /// A box whose look can change — one with state styles — gets the animated
+  /// versions, so a state that *introduces* a scale or a fade eases in from the
+  /// identity instead of jumping, exactly as a CSS transition does when the resting
+  /// rule declares nothing. A box that is not animated and has nothing to paint
+  /// differently is left untouched.
+  Widget _applyLook(Widget child, core.BoxStyle style, core.Box box) {
+    final core.BoxTransform? transform = style.transform;
+    final double? opacity = style.opacity;
+
+    final core.BoxTransition? transition = style.transition;
+    final bool animated = transition != null && _canChange(box);
+
+    // A box that cannot change and has nothing to paint differently is left
+    // alone. A box that *can* change keeps the wrappers even while its resting
+    // look is identity, or the state that introduces a scale would insert them
+    // mid-life and start from the end value instead of easing into it.
+    if (transform == null && opacity == null && !animated) {
+      return child;
+    }
+    final core.BoxTransform value = transform ?? const core.BoxTransform();
+    final double alpha = (opacity ?? 1).clamp(0.0, 1.0);
+
+    Widget result = child;
+
+    if (!value.isIdentity || animated) {
+      result = _transformed(result, value, animated ? transition : null);
+    }
+    if (alpha < 1 || animated) {
+      result = _opacified(result, alpha, animated ? transition : null);
+    }
+
+    return result;
+  }
+
+  /// Whether the look of [box] can change while it is on screen.
+  ///
+  /// Only a box with state styles can change its look, so only that box needs the
+  /// animation machinery; a static box paints its transform once.
+  bool _canChange(core.Box box) {
+    final Map<core.BoxState, core.BoxStyle>? states = box.stateStyles;
+    return (states != null && states.isNotEmpty) || box.hoverStyle != null;
+  }
+
+  /// Applies [transform] to [child], animating it when [transition] is given.
+  Widget _transformed(
+    Widget child,
+    core.BoxTransform transform,
+    core.BoxTransition? transition,
+  ) {
+    if (transition == null) {
+      return Transform(
+        transform: toMatrix4(transform),
+        alignment: Alignment.center,
+        child: child,
+      );
+    }
+
+    return TweenAnimationBuilder<core.BoxTransform>(
+      tween: _BoxTransformTween(begin: transform, end: transform),
+      duration: transition.duration,
+      curve: toCurve(transition.curve),
+      builder:
+          (BuildContext context, core.BoxTransform animated, Widget? inner) =>
+              Transform(
+                transform: toMatrix4(animated),
+                alignment: Alignment.center,
+                child: inner,
+              ),
+      child: child,
+    );
+  }
+
+  /// Applies [opacity] to [child], animating it when [transition] is given.
+  Widget _opacified(
+    Widget child,
+    double opacity,
+    core.BoxTransition? transition,
+  ) {
+    if (transition == null) {
+      return Opacity(opacity: opacity, child: child);
+    }
+
+    return AnimatedOpacity(
+      opacity: opacity,
+      duration: transition.duration,
+      curve: toCurve(transition.curve),
       child: child,
     );
   }
@@ -415,4 +512,17 @@ class _UniboxBoxState extends State<UniboxBox> {
       _pressed = pressed;
     });
   }
+}
+
+/// Interpolates a [core.BoxTransform] part by part.
+///
+/// `Matrix4Tween` would interpolate the composed matrices, and a box that only
+/// turns would then shrink through the middle of the animation; CSS interpolates
+/// the transform functions one by one, and so does this.
+final class _BoxTransformTween extends Tween<core.BoxTransform> {
+  _BoxTransformTween({super.begin, super.end});
+
+  @override
+  core.BoxTransform lerp(double t) =>
+      core.BoxTransform.lerp(begin ?? end!, end ?? begin!, t);
 }

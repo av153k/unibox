@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
@@ -98,6 +100,18 @@ BoxShadow toBoxShadow(core.BoxShadow shadow) {
     blurRadius: shadow.blurRadius,
     spreadRadius: shadow.spreadRadius,
   );
+}
+
+/// Converts a Unibox [core.BoxTransform] to a Flutter [Matrix4].
+///
+/// Translate, then rotate, then scale — the order the model states, which is the
+/// order CSS composes `translate(...) rotate(...) scale(...)` in. The rotation is
+/// given in degrees because that is how CSS writes it; the matrix wants radians.
+Matrix4 toMatrix4(core.BoxTransform transform) {
+  return Matrix4.identity()
+    ..translateByDouble(transform.offsetX, transform.offsetY, 0, 1)
+    ..rotateZ(transform.rotation * math.pi / 180)
+    ..scaleByDouble(transform.scale, transform.scale, 1, 1);
 }
 
 /// Converts a Unibox [core.BoxCurve] to a Flutter [Curve].
