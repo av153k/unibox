@@ -110,6 +110,70 @@ Two tokens stay unset on purpose:
   the platform's UI font on both targets; an app that ships Roboto declares it on
   the box at the root of the tree, or merges it into the roles it uses.
 
+## Presets: values, not classes
+
+The roles above are the whole vocabulary, so a screen usually installs one on a
+box and only overrides what differs:
+
+```dart
+const Box(
+  textStyle: MaterialTypography.bodyMedium,
+  children: <UINode>[
+    TextNode('Order summary', style: MaterialTypography.titleLarge),
+    TextNode('Two nights, one room.'),
+  ],
+);
+```
+
+When a product needs its own names, those names belong to the product: a class of
+`const` values, not a node type per role. The example does exactly this with its
+`ExampleType`:
+
+```dart
+abstract final class AppType {
+  static const BoxTextStyle body = MaterialTypography.bodyMedium;
+  static const BoxTextStyle cardTitle = MaterialTypography.titleMedium;
+  static const BoxTextStyle price = MaterialTypography.labelLarge;
+}
+
+const card = Box(
+  textStyle: AppType.body, // every text inside inherits it
+  children: <UINode>[
+    TextNode('Order summary', style: AppType.cardTitle),
+    TextNode('EUR 120', style: AppType.price, color: BoxColor.white),
+  ],
+);
+```
+
+A `TitleText` class would be four lines, not forty — `TextNode` takes the whole
+look as one `style` field, so a preset repeats no typography token:
+
+```dart
+final class TitleText extends TextNode {
+  const TitleText(super.text, {super.key, super.headingLevel})
+    : super(style: MaterialTypography.titleLarge);
+}
+```
+
+It is still the wrong default for a shared package, and this one does not export
+one:
+
+- **It bakes a look into a type.** The tree has no context, so `TitleText` cannot
+  read a theme: a dark theme or a brand font can only change it by changing the
+  class, while `MaterialTypography.titleLarge.merge(...)` changes per call.
+- **It names a look like a structure.** `headingLevel` is the document level and
+  typography is the look; a class called `TitleText` invites hardcoding one or
+  forgetting the other, and a card title is not a heading at all.
+- **It costs a second vocabulary.** `titleLarge` already means what Material
+  means by it; `TitleText.medium` has to be mapped onto `titleMedium` or
+  `titleSmall` and kept in step.
+- **It freezes an implementation detail.** The renderers match `TextNode` by
+  subtype today, but nothing promises that subclassing a node is a supported
+  extension point; fifteen exported presets would make it one.
+
+Keep those four lines in the application that wants them; this package stays two
+names, and the day a preset needs a theme token it is a `BoxTextStyle` again.
+
 ## Line heights
 
 A `BoxTextStyle.lineHeight` is a multiple of the font size, because that is the

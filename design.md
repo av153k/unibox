@@ -310,4 +310,26 @@ never inherited (CSS does not inherit them either).
   scale. A second design system can be added as a second package without touching
   the core or a renderer, and an application that wants no system at all is not
   made to carry one.
+- A design system is values, not node types. A role enters a tree through
+  `Box.textStyle` or `TextNode.style`, and a product that wants its own names
+  writes a class of `const` values in its own package. No `TitleText`-shaped
+  wrapper is exported: a node subclass bakes a role into a type that cannot read
+  a theme (the tree has no context), names a look like a structure (`headingLevel`
+  is a separate token), duplicates Material's own vocabulary, and would turn
+  "renderers match a node by subtype" from an implementation detail into a
+  public extension point.
+- A text takes one `style`, not a list of them. Typography composes by
+  inheritance (`Box.textStyle`) and by `merge` at author time, so a
+  `TextNode.styles` list would add a second, node local cascade — the CSS cascade
+  §5.6 rules out.
+- `BoxStyle` and `BoxTextStyle` are `final` classes with structural equality and
+  a `merge` that returns the base type, so a preset is always a value and never a
+  subtype. A catalogue type (`TextStyles`, `BoxStyles`) would therefore be a
+  namespace of constants; since the core holds kinds rather than looks, that
+  namespace belongs to `unibox_material` or to the application.
+- The cost asymmetry fixes the order of work: a preset catalogue can be added to
+  an application at any time, or to a package as a minor release, while a
+  component layer inside the published API could only be withdrawn as a breaking
+  change. The token vocabulary is therefore the layer to stabilise, and every
+  convenience sits above it.
 
