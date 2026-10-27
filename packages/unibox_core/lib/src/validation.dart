@@ -4,6 +4,7 @@ import 'nodes/link_node.dart';
 import 'nodes/positioned_node.dart';
 import 'nodes/stack_node.dart';
 import 'nodes/ui_node.dart';
+import 'tokens/box_semantics.dart';
 import 'tokens/box_style.dart';
 
 /// How much a [TreeIssue] matters.
@@ -58,7 +59,9 @@ class TreeIssue {
 /// * a [LinkNode] nested inside another [LinkNode], which is invalid HTML and
 ///   navigates twice,
 /// * a box that scrolls along its main axis while distributing its children
-///   with [Box.mainAlign], which pushes overflowing children out of reach.
+///   with [Box.mainAlign], which pushes overflowing children out of reach,
+/// * a list item whose parent is not a list, which is invalid HTML and which no
+///   assistive technology can announce as a list.
 List<TreeIssue> validateTree(UINode root) {
   final List<TreeIssue> issues = <TreeIssue>[];
   _validate(root, parent: null, inLink: false, issues: issues);
@@ -117,6 +120,26 @@ void _validate(
               'children with mainAlign: ${mainAlign.name}. The children that '
               'overflow are pushed out of reach in CSS and out of the viewport '
               'in Flutter. Use MainAlign.start and let the children scroll.',
+        ),
+      );
+    }
+  }
+
+  if (node is Box && node.semantics?.element == BoxElement.li) {
+    final BoxElement? parentElement = parent is Box
+        ? parent.semantics?.element
+        : null;
+
+    if (parentElement != BoxElement.ul && parentElement != BoxElement.ol) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A box with BoxElement.li has to be a child of a box with '
+              'BoxElement.ul or BoxElement.ol, but its parent is '
+              '${parent?.runtimeType ?? 'the root'}. An <li> anywhere else is '
+              'invalid HTML and is not announced as an item of a list.',
         ),
       );
     }

@@ -22,6 +22,37 @@ void main() {
       expect(validateTree(tree), isEmpty);
     });
 
+    test('accepts a list item inside a list', () {
+      const Box tree = Box(
+        semantics: BoxSemantics(element: BoxElement.ul),
+        children: <UINode>[
+          Box(
+            semantics: BoxSemantics(element: BoxElement.li),
+            children: <UINode>[TextNode('One')],
+          ),
+        ],
+      );
+
+      expect(validateTree(tree), isEmpty);
+    });
+
+    test('reports a list item outside a list', () {
+      const Box tree = Box(
+        children: <UINode>[
+          Box(
+            semantics: BoxSemantics(element: BoxElement.li),
+            children: <UINode>[TextNode('One')],
+          ),
+        ],
+      );
+
+      final TreeIssue issue = validateTree(tree).single;
+
+      expect(issue.severity, TreeIssueSeverity.error);
+      expect(issue.message, contains('BoxElement.ul'));
+      expect(issue.message, contains('invalid HTML'));
+    });
+
     test('warns about a positioned node outside a stack', () {
       const Box tree = Box(
         children: <UINode>[PositionedNode(top: 8, child: TextNode('badge'))],

@@ -11,9 +11,13 @@ import 'ui_node.dart';
 /// what makes it different.
 class TextNode extends UINode {
   /// Creates a text node.
+  ///
+  /// [headingLevel] has to be between 1 and 6, the levels both HTML and the
+  /// platform accessibility trees know.
   const TextNode(
     this.text, {
     super.key,
+    this.headingLevel,
     this.fontSize,
     this.fontWeight,
     this.color,
@@ -24,10 +28,26 @@ class TextNode extends UINode {
     this.maxLines,
     this.overflow,
     this.style,
-  });
+  }) : assert(
+         headingLevel == null || (headingLevel >= 1 && headingLevel <= 6),
+         'headingLevel must be between 1 and 6.',
+       );
 
   /// The text content.
   final String text;
+
+  /// The level of the heading this text is, `1` to `6`, or `null` for body text.
+  ///
+  /// A heading is a text and not a container: it renders as `<h1>`–`<h6>` on the
+  /// web and as `Semantics(header: true, headingLevel: level)` in Flutter, so the
+  /// two targets state the same level. The element carries no look of its own —
+  /// the renderer cancels the user agent's heading styles — so a heading is
+  /// typeset by the tree like every other text, and a page that needs an outline
+  /// gets it without giving up its typography.
+  ///
+  /// [BoxRole.heading] is the other spelling, for a heading that is not one run of
+  /// text.
+  final int? headingLevel;
 
   /// The font size in logical pixels.
   final double? fontSize;

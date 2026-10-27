@@ -354,6 +354,69 @@ void main() {
       expect(BoxRole.link.isInteractive, isTrue);
     });
 
+    test('is a plain div unless it says otherwise', () {
+      const semantics = BoxSemantics();
+
+      expect(semantics.element, BoxElement.div);
+      expect(semantics.element.isLandmark, isFalse);
+      expect(semantics.hidden, isFalse);
+      expect(semantics.liveRegion, isFalse);
+      expect(semantics.expanded, isNull);
+      expect(semantics.selected, isNull);
+    });
+
+    test('knows which elements are landmarks of a page', () {
+      const Set<BoxElement> landmarks = <BoxElement>{
+        BoxElement.main,
+        BoxElement.nav,
+        BoxElement.header,
+        BoxElement.footer,
+      };
+
+      for (final BoxElement element in BoxElement.values) {
+        expect(
+          element.isLandmark,
+          landmarks.contains(element),
+          reason:
+              '${element.name} is ${element.isLandmark ? '' : 'not '}a '
+              'landmark.',
+        );
+      }
+    });
+
+    test('states the accessibility state both platforms expose', () {
+      const semantics = BoxSemantics(
+        element: BoxElement.nav,
+        expanded: true,
+        selected: false,
+        hidden: true,
+        liveRegion: true,
+      );
+
+      expect(semantics.element, BoxElement.nav);
+      expect(semantics.expanded, isTrue);
+      expect(semantics.selected, isFalse);
+      expect(semantics.hidden, isTrue);
+      expect(semantics.liveRegion, isTrue);
+    });
+
+    test('copies the element and the state it is given', () {
+      const semantics = BoxSemantics(role: BoxRole.button);
+
+      final copy = semantics.copyWith(
+        element: BoxElement.form,
+        expanded: false,
+        liveRegion: true,
+      );
+
+      expect(copy.element, BoxElement.form);
+      expect(copy.expanded, isFalse);
+      expect(copy.liveRegion, isTrue);
+      expect(copy.role, BoxRole.button);
+      expect(copy, isNot(semantics));
+      expect(copy.toString(), contains('element: BoxElement.form'));
+    });
+
     test('copyWith replaces only the given fields', () {
       const semantics = BoxSemantics(role: BoxRole.button, label: 'Submit');
 

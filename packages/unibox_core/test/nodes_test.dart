@@ -48,6 +48,25 @@ void main() {
       expect(node.letterSpacing, 0.4);
     });
 
+    test('stores the level of the heading it is', () {
+      const TextNode heading = TextNode('Title', headingLevel: 1);
+      const TextNode body = TextNode('Body');
+
+      expect(heading.headingLevel, 1);
+      expect(body.headingLevel, isNull);
+    });
+
+    test('rejects a heading level no platform knows', () {
+      expect(
+        () => TextNode('Title', headingLevel: 0),
+        throwsA(isA<AssertionError>()),
+      );
+      expect(
+        () => TextNode('Title', headingLevel: 7),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
     test('resolves its typography from the style and the flat tokens', () {
       const node = TextNode(
         'Hello',

@@ -34,6 +34,68 @@ enum BoxRole {
       this == button || this == checkbox || this == switch_ || this == link;
 }
 
+/// The element a box becomes on the web.
+///
+/// A box is a `div` unless it says otherwise. The elements here are the ones that
+/// give a page structure rather than a look — the landmarks (`main`, `nav`,
+/// `header`, `footer`), the sectioning content of HTML (`section`, `article`,
+/// `aside`, `figure`, `form`) and the list pair — so a tree can describe a
+/// document instead of a pile of layers.
+///
+/// The two targets are not equally expressive here, which is the reason this is a
+/// semantics token and not a style one: the web renderer emits the tag itself, and
+/// Flutter has no landmark concept at all (its screen readers work from headings
+/// and reading order). The three elements Flutter does have a role for become a
+/// `SemanticsRole`, and the rest stay a plain container there, so a landmark is
+/// structure a browser gets and a Flutter screen reader does not need.
+enum BoxElement {
+  /// A plain container, the default.
+  div,
+
+  /// The main content of the page: one per document, not inside another landmark.
+  main,
+
+  /// A navigation region.
+  nav,
+
+  /// The header of the page or of a section.
+  header,
+
+  /// The footer of the page or of a section.
+  footer,
+
+  /// Content beside the main content, which still makes sense on its own.
+  aside,
+
+  /// A section of related content, usually with a heading.
+  section,
+
+  /// A self contained composition, such as a card or a post.
+  article,
+
+  /// A form, as a landmark for assistive technologies.
+  form,
+
+  /// A picture with its caption; the renderer cancels the user agent margin.
+  figure,
+
+  /// An unordered list.
+  ul,
+
+  /// An ordered list.
+  ol,
+
+  /// One item of a [ul] or an [ol]; anywhere else it is invalid HTML and
+  /// `validateTree` reports it.
+  li;
+
+  /// Whether the element is a landmark of the page.
+  ///
+  /// Landmarks are what a screen reader lets a reader jump between.
+  bool get isLandmark =>
+      this == main || this == nav || this == header || this == footer;
+}
+
 /// The accessibility description of a box.
 ///
 /// A box without semantics is a plain container: screen readers announce its
@@ -45,10 +107,24 @@ enum BoxRole {
 ///   onTap: submit,
 ///   semantics: BoxSemantics(role: BoxRole.button, label: 'Create account'),
 /// );
+///
+/// const Page = Box(
+///   direction: Axis.vertical,
+///   semantics: BoxSemantics(element: BoxElement.main),
+/// );
 /// ```
 final class BoxSemantics {
   /// Creates a description for a box.
-  const BoxSemantics({this.role = BoxRole.none, this.label, this.checked});
+  const BoxSemantics({
+    this.role = BoxRole.none,
+    this.element = BoxElement.div,
+    this.label,
+    this.checked,
+    this.expanded,
+    this.selected,
+    this.hidden = false,
+    this.liveRegion = false,
+  });
 
   /// What the box means to assistive technologies.
   final BoxRole role;
@@ -59,18 +135,60 @@ final class BoxSemantics {
   /// label and the visible text cannot drift apart.
   final String? label;
 
+  /// The element the box is on the web, [BoxElement.div] by default.
+  ///
+  /// This is how a tree describes a page: `main` for what the page is about,
+  /// `nav` for the links, `ul` and `li` for a list. Flutter has no counterpart for
+  /// a landmark, so the element is structure the web gets and the Flutter tree
+  /// does not need; the state tokens below are where both targets agree.
+  final BoxElement element;
+
   /// Whether a checkbox or a switch is on.
   final bool? checked;
+
+  /// Whether the control this box is shows its content, as a disclosure does.
+  final bool? expanded;
+
+  /// Whether the item this box is is the selected one of a set, as a tab is.
+  final bool? selected;
+
+  /// Whether the box is hidden from assistive technologies.
+  ///
+  /// The content still paints: this hides a box from a screen reader and from the
+  /// reading order, and takes it out of the tab order, which is what a decorative
+  /// duplicate or a purely visual flourish needs. It is not `display: none` and
+  /// it does not remove the box from the layout.
+  final bool hidden;
+
+  /// Whether a screen reader should announce a change of this box.
+  ///
+  /// A live region is how a form tells a reader that a field is invalid without
+  /// moving the focus there.
+  final bool liveRegion;
 
   /// Whether a box with this description takes keyboard focus.
   bool get isFocusable => role.isInteractive;
 
   /// Creates a copy of this description with the given fields replaced.
-  BoxSemantics copyWith({BoxRole? role, String? label, bool? checked}) {
+  BoxSemantics copyWith({
+    BoxRole? role,
+    BoxElement? element,
+    String? label,
+    bool? checked,
+    bool? expanded,
+    bool? selected,
+    bool? hidden,
+    bool? liveRegion,
+  }) {
     return BoxSemantics(
       role: role ?? this.role,
+      element: element ?? this.element,
       label: label ?? this.label,
       checked: checked ?? this.checked,
+      expanded: expanded ?? this.expanded,
+      selected: selected ?? this.selected,
+      hidden: hidden ?? this.hidden,
+      liveRegion: liveRegion ?? this.liveRegion,
     );
   }
 
@@ -78,18 +196,37 @@ final class BoxSemantics {
   bool operator ==(Object other) =>
       other is BoxSemantics &&
       other.role == role &&
+      other.element == element &&
       other.label == label &&
-      other.checked == checked;
+      other.checked == checked &&
+      other.expanded == expanded &&
+      other.selected == selected &&
+      other.hidden == hidden &&
+      other.liveRegion == liveRegion;
 
   @override
-  int get hashCode => Object.hash(role, label, checked);
+  int get hashCode => Object.hash(
+    role,
+    element,
+    label,
+    checked,
+    expanded,
+    selected,
+    hidden,
+    liveRegion,
+  );
 
   @override
   String toString() {
     final fields = <String>[
       'role: $role',
+      if (element != BoxElement.div) 'element: $element',
       if (label != null) 'label: $label',
       if (checked != null) 'checked: $checked',
+      if (expanded != null) 'expanded: $expanded',
+      if (selected != null) 'selected: $selected',
+      if (hidden) 'hidden: $hidden',
+      if (liveRegion) 'liveRegion: $liveRegion',
     ];
     return 'BoxSemantics(${fields.join(', ')})';
   }
