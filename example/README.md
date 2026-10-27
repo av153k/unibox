@@ -122,17 +122,44 @@ blur, placeholder and focus colours, and hit testing. A browser and Flutter neve
 agree on those down to the pixel, and the goal is that the two renderings are
 recognisably the same page.
 
+## The static site
+
+`tool/site.sh` builds both renderings into `build/site`, a directory any static host
+can publish:
+
+```shell
+tool/site.sh --serve                        # http://localhost:8000/
+tool/site.sh --base=/unibox/ --url=https://cedvdb.github.io/unibox/
+```
+
+| Path | What it is |
+| --- | --- |
+| `/` | A landing page: the two renderings side by side in two frames |
+| `/showcase/` | The listings, rendered by Jaspr — HTML and CSS, no JavaScript |
+| `/showcase/signup/` | The same page with the sign-up dialog over it |
+| `/flutter/`, `/flutter/showcase/`, `/flutter/showcase/signup/` | The same three, rendered by Flutter |
+
+Being open is state, and a static page cannot be clicked into existence, so the
+export writes one document per destination and the Flutter app reads the path it was
+served at (`signupOpenFromUrl`) to start in the matching state. A static host has no
+rewrite rule either, which is why every Flutter route is a real `index.html`: the
+build writes one entry document and the script copies it to each route, with the
+absolute base href that lets the assets resolve from any depth.
+
+The deployment is `.github/workflows/pages.yml` — verify, build, publish — and it
+needs one setting a workflow cannot make: Settings → Pages → Source: **GitHub
+Actions**.
+
 ## Flutter app
 
 The host is `lib/main.dart`: a `MaterialApp` for the surface, an
 `FlutterLinkScope` for what following a link means, and a `LayoutBuilder` that
 passes the map or not. `FlutterStateful` keeps the store, so a width change
-redraws the page without losing the form. The app only needs the generated
-platform runner, which is not checked in:
+redraws the page without losing the form. The web runner is checked in
+(`web/index.html`), so a browser build needs no scaffolding step:
 
 ```shell
 cd example/unibox_example_flutter
-flutter create . --platforms=web   # once: adds the generated runner
 flutter run -d chrome
 ```
 
