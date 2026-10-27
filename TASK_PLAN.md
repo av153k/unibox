@@ -147,7 +147,7 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [ ] Task 101: `unibox_material` — `MaterialDialog` and `MaterialSheet` content trees (surface, radius, padding, max width, body type, scrim) so a component's overlay is a themed tree rather than hand-built boxes.
 - [ ] Task 102: Modality — `Escape`/back to close, focus containment and restore, the barrier's dismissal policy, and the exit animation: the runtime keeps an overlay mounted while its transition runs, so a leave is presence the host owns and not a token. This is the "what stays approximate" section of the material README on the web side.
 - [ ] Task 103: Example — the listings page becomes a `StatefulNode` (request, pending spinner, details overlay), hosted by the Flutter app; the Jaspr host keeps the static page until Task 104.
-- [ ] Task 104: Jaspr renderer — the same runtime as a `@client` component, blocked by the client build: server rendering draws `view(initial, store)` and the page becomes interactive only once the bundle is wired.
+- [ ] Task 104: Jaspr renderer — the client runtime, blocked by the client build: the server render is in place (it draws the state the store starts with and never calls `onMount`), and a `@client` component that constructs the node in the browser, subscribes, rebuilds and disposes it is what remains, so the page becomes interactive once the bundle is wired.
 - [x] Task 105: Docs and workspace — `design.md` §5.10 (a stateful node, what a store is, overlays are the runtime's, why `listen` and #149466), the package READMEs, `AGENTS.md`/`.clinerules` vocabulary (no bloc words: the library has stores and states, not cubits and events), `tool/verify.sh` and CI stay in step.
 
 ## Decisions

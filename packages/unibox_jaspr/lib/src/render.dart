@@ -8,6 +8,7 @@ import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
 import 'stack_node.dart';
+import 'stateful_node.dart';
 import 'text_input_node.dart';
 import 'text_node.dart';
 
@@ -72,10 +73,7 @@ Component renderNode(core.UINode node) {
       _renderEmbed(embed),
     ], key: toJasprKey(embed.key)),
     final core.StatefulNode<Object, core.Store<Object>> stateful =>
-      throw UnsupportedError(
-        'A StatefulNode needs a client runtime: this renderer writes the page '
-        'once and cannot react to a store yet (${stateful.runtimeType}).',
-      ),
+      statefulView(stateful),
     _ => throw UnsupportedError('No Jaspr renderer for ${node.runtimeType}.'),
   };
 }

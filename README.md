@@ -359,9 +359,11 @@ Flutter, on a server and in a browser. `onMount` is where an initial request
 starts, which is also why a server render can draw the first state without running
 it.
 
-The Flutter renderer draws a stateful node, including its overlays; the web
-renderer reports it until a client runtime exists, rather than rendering a page
-that silently does nothing.
+The Flutter renderer draws a stateful node and drives it, overlays included. The
+web renderer draws **the state the store starts with** — the tree and the overlays
+that state asks for — without calling `onMount`, so a page that loads is a page
+that says it is loading; reacting to a click needs a client runtime, which is the
+next step (`TASK_PLAN.md`, Phase 22).
 
 ### EmbedNode
 

@@ -447,11 +447,22 @@ cannot draw, or two of them, is reported by `renderJaspr` instead of being skipp
 
 ## Stateful nodes
 
-A `StatefulNode` is **reported**, not skipped: `renderJaspr` throws
-`UnsupportedError` for it, because a view that reacts to a store needs a client
-runtime, and this renderer writes a page once. Server rendering can still draw the
-first state by hand — `view(initial, store)` is an ordinary tree — but the page that
-changes on a click waits for the client build (`TASK_PLAN.md`, Phase 22).
+A `StatefulNode` is rendered as **the state its store starts with**. The renderer
+creates the store, reads its state, draws `view(state, store).tree` and the
+overlays that first state asks for, then releases the store.
+
+What it deliberately does not do: call `onMount`. A server render must not start
+the work a page starts when it appears — the request, the timer — so a node whose
+first state is *loading* produces a page that says it is loading. The useful
+static shape is one whose store starts with data the server already has, or one
+whose first state is the meaningful one.
+
+What it cannot do at all: **react**. There are no events in a server render, no
+store subscription and no DOM listeners wired to the store, so the callbacks the
+view hands out are inert until a client runtime rebuilds the node in the browser.
+That runtime is the next step (`TASK_PLAN.md`, Phase 22): it needs the Jaspr client
+build, and the node is constructed in the browser because its behaviour is Dart
+closures, which do not travel in markup.
 
 ## Testing
 

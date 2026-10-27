@@ -32,7 +32,7 @@ guide is [`README.md`](README.md).
 | `packages/unibox_jaspr/lib/src/` | the same for the web, plus `default_typography.dart` (the `:root` rule) | the web target has to change |
 | `packages/unibox_testing/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases` | a presentational token is added or changed |
 | `packages/unibox_material/lib/src/` | the Material 3 type scale: `MaterialTypography` (the fifteen roles as `const BoxTextStyle` values), `MaterialTypeRole`, and `MaterialCard` (a `Box` with the card's defaults) | a design-system role is added, a scale changes, or a component is added |
-| `packages/unibox_core/lib/src/state/` | `Store`, the state a `StatefulNode` draws and the lifecycle a renderer calls | a store member or a lifecycle rule changes |
+| `packages/unibox_core/lib/src/state/` | `Store` and `StateStore`: the state a `StatefulNode` draws and the lifecycle a renderer calls | a store member, the publish rule or a lifecycle rule changes |
 | `packages/*/test/support/` | the harnesses (`pumpNode`, `inNode`, `stylesOf`, ...) and `appearance.dart`, which reads the presentation back out of the output | a test needs a new fact |
 | `example/unibox_example_shared/` | the two pages as pure Dart trees, the form state, the palette | the example content changes |
 | `example/unibox_example_flutter/`, `example/unibox_example_jaspr/` | hosts: state and surface, never layout | state, navigation or the surface changes |
@@ -234,8 +234,9 @@ against it and CSS puts it in a media query.
 3. Flutter: `lib/src/stateful_node.dart` renders it once for every node; the suite
    needs a test in `test/stateful_node_test.dart` (a publish, an overlay, a
    dispose) rather than a renderer per component.
-4. Jaspr: it is reported until the client runtime exists; keep
-   `test/stateful_node_test.dart` expecting the report.
+4. Jaspr: the server render draws the state the store starts with and never calls
+   `onMount`; `test/stateful_node_test.dart` pins both. Reacting waits for the
+   client runtime.
 5. Docs: the state section of `README.md` and the core README, plus the changelogs.
 
 ## Definition of done

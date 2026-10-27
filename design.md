@@ -364,9 +364,13 @@ never inherited (CSS does not inherit them either).
   with one difference: its children come from a view the renderer builds at render
   time, so `validateTree` sees an empty child list and a renderer validates each
   view in debug builds.
-- The web runtime is a client component and waits for the client build. Until then
-  the web renderer reports a stateful node, in the same way it reports any node it
-  cannot draw, rather than rendering a page that cannot react.
+- The web renderer draws the state the store starts with: it creates the store,
+  reads its state, renders the tree and the overlays that state asks for, and never
+  calls `onMount`. Interactivity is a client component and waits for the client
+  build; the node is constructed in the browser because its behaviour is Dart
+  closures, which no markup can carry. A first state of "loading" therefore renders
+  a page that loads, and a store that starts with the server's data renders the page
+  as it should look.
 - The vocabulary is the model's: a node, a store, a state and a view. There are no
   events, no cubits and no blocs — those are one naming of a pattern this model
   describes in its own words, and borrowing them would promise an API the library
