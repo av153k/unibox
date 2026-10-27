@@ -24,11 +24,12 @@ void main() {
 
     final List<Object> exported = <Object>[
       ComponentNode,
+      UniboxStateful,
       renderJaspr,
       component,
     ];
 
-    expect(exported, hasLength(3));
+    expect(exported, hasLength(4));
     expect(component, isA<Component>());
     expect(renderJaspr, isNotNull);
   });

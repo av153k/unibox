@@ -459,10 +459,35 @@ whose first state is the meaningful one.
 
 What it cannot do at all: **react**. There are no events in a server render, no
 store subscription and no DOM listeners wired to the store, so the callbacks the
-view hands out are inert until a client runtime rebuilds the node in the browser.
-That runtime is the next step (`TASK_PLAN.md`, Phase 22): it needs the Jaspr client
-build, and the node is constructed in the browser because its behaviour is Dart
-closures, which do not travel in markup.
+view hands out are inert until a client component runs the same node in the
+browser.
+
+`UniboxStateful` is that component: it is the Jaspr mirror of the Flutter widget,
+with the two paths separated by `kIsWeb`. An application subclasses it once per
+island, marks the subclass `@client` and returns its node:
+
+```dart
+@client
+class ListingsIsland extends UniboxStateful {
+  const ListingsIsland({required this.apiBase, super.key});
+
+  final String apiBase;
+
+  @override
+  StatefulNode<Object, Store<Object>> createNode() =>
+      StoreFrontPageNode(api: HttpApi(apiBase));
+}
+```
+
+* in a browser: the store is created once, subscribed, `onMount` is called and a
+  notification rebuilds the tree;
+* on the server: the store is created only to read its first state, nothing
+  subscribes, `onMount` never runs, and the store is released.
+
+Reactivity needs the Jaspr client build — the island is Dart compiled to
+JavaScript, not a tree passed in markup, which is why the node is created by
+`createNode` and is not a constructor parameter (`@client` parameters have to be
+serialisable). That build is the next step (`TASK_PLAN.md`, Phase 22).
 
 ## Testing
 

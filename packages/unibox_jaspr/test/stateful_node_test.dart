@@ -54,6 +54,15 @@ final class _Node extends core.StatefulNode<int, _Store> {
   _Node() : super(create: _createStore, view: _view);
 }
 
+/// The island an application writes: a `@client` class in its own library that
+/// says which node to build.
+final class _Island extends UniboxStateful {
+  const _Island();
+
+  @override
+  core.StatefulNode<Object, core.Store<Object>> createNode() => _Node();
+}
+
 void main() {
   testComponents('renders the state the store starts with', (tester) async {
     pumpNode(tester, _Node());
@@ -70,6 +79,24 @@ void main() {
   test('releases the store once its state has been read', () {
     renderJaspr(_Node());
 
+    expect(_lastStore!.disposed, isTrue);
+  });
+
+  testComponents('an island renders the state its store starts with', (
+    tester,
+  ) async {
+    tester.pumpComponent(const _Island());
+
+    expect(find.text('Count: 0'), findsOneComponent);
+  });
+
+  testComponents('an island does not start the work on the server', (
+    tester,
+  ) async {
+    tester.pumpComponent(const _Island());
+
+    // kIsWeb is false under the VM, which is exactly the server path.
+    expect(_lastStore!.mounts, 0);
     expect(_lastStore!.disposed, isTrue);
   });
 }

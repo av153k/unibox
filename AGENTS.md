@@ -233,9 +233,10 @@ against it and CSS puts it in a media query.
 3. Flutter: `lib/src/stateful_node.dart` renders it once for every node; the suite
    needs a test in `test/stateful_node_test.dart` (a publish, a dispose) rather
    than a renderer per component.
-4. Jaspr: the server render draws the state the store starts with and never calls
-   `onMount`; `test/stateful_node_test.dart` pins both. Reacting waits for the
-   client runtime.
+4. Jaspr: `lib/src/stateful_component.dart` holds the runtime, split on `kIsWeb`;
+   the server path draws the state the store starts with and never calls `onMount`,
+   and `test/stateful_node_test.dart` pins both. Reacting in a browser waits for the
+   client build.
 5. Docs: the state section of `README.md` and the core README, plus the changelogs.
 
 ## Definition of done
