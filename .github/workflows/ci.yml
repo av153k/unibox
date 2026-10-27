@@ -50,6 +50,9 @@ jobs:
       - name: unibox_conformance
         working-directory: packages/unibox_conformance
         run: dart test
+      - name: unibox_material
+        working-directory: packages/unibox_material
+        run: dart test
       - name: unibox_jaspr
         working-directory: packages/unibox_jaspr
         run: dart test
@@ -94,6 +97,7 @@ jobs:
           done <<'PACKAGES'
           unibox_core
           unibox_conformance
+          unibox_material
           unibox_flutter
           unibox_jaspr
           PACKAGES
