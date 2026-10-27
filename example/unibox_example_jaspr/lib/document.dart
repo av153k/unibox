@@ -42,6 +42,12 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.apartments}) {
     // Without `lang` both a screen reader and a crawler have to guess which
     // language the page is in.
     lang: 'en',
+    // No `<base>` element: the document is served from a subdirectory of a static
+    // site, so the default `/` would resolve every relative link — the navigation
+    // to `../signup/` included — against the domain root, which is a 404. Without
+    // it the browser resolves against the document, which is what a page written
+    // for `/web/signup/` expects.
+    base: null,
     title: _titleOf(page),
     viewport: 'width=device-width, initial-scale=1',
     meta: <String, String>{'description': _descriptionOf(page)},

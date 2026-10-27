@@ -295,6 +295,22 @@ UINode _components(MaterialPalette palette) {
         ],
       ),
       Box(
+        width: 720,
+        children: <UINode>[
+          TextNode(
+            'Hover, focus or press a button: the state layer is a tint over the fill '
+            '— 8% of onSurface for a hover, 10% for a focus and a press — which is '
+            'why it reads clearly on the tonal and outlined buttons and only faintly '
+            "on the filled one. That is Material's value, not a weaker one. A ripple "
+            'is an effect the model does not have, and a plain click is inert here '
+            'until the client runtime arrives.',
+            style: MaterialTypography.labelSmall.copyWith(
+              color: palette.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+      Box(
         direction: Axis.horizontal,
         crossAlign: CrossAlign.start,
         gap: 24,
