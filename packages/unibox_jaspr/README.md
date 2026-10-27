@@ -462,14 +462,14 @@ store subscription and no DOM listeners wired to the store, so the callbacks the
 view hands out are inert until a client component runs the same node in the
 browser.
 
-`UniboxStateful` is that component: it is the Jaspr mirror of the Flutter widget,
-with the two paths separated by `kIsWeb`. An application subclasses it once per
-island, marks the subclass `@client` and returns its node:
+`UniboxStateful` is that component, and it is the Jaspr mirror of the Flutter
+widget: one class, with the two paths separated by `kIsWeb`. Write one subclass,
+mark it `@client` so Jaspr also compiles it for the browser, and return the node:
 
 ```dart
 @client
-class ListingsIsland extends UniboxStateful {
-  const ListingsIsland({required this.apiBase, super.key});
+class ListingsPage extends UniboxStateful {
+  const ListingsPage({required this.apiBase, super.key});
 
   final String apiBase;
 
@@ -479,15 +479,16 @@ class ListingsIsland extends UniboxStateful {
 }
 ```
 
-* in a browser: the store is created once, subscribed, `onMount` is called and a
-  notification rebuilds the tree;
 * on the server: the store is created only to read its first state, nothing
-  subscribes, `onMount` never runs, and the store is released.
+  subscribes, `onMount` never runs, and the store is released;
+* in a browser: the store is created once, subscribed, `onMount` is called and a
+  change redraws the tree.
 
-Reactivity needs the Jaspr client build — the island is Dart compiled to
-JavaScript, not a tree passed in markup, which is why the node is created by
-`createNode` and is not a constructor parameter (`@client` parameters have to be
-serialisable). That build is the next step (`TASK_PLAN.md`, Phase 22).
+Reacting needs the Jaspr client build, because a `@client` component is Dart
+compiled to JavaScript. That is also why the node is returned by `createNode`
+rather than passed in: a `@client` component may only receive simple values that
+survive being written into the page, and a node is a group of functions. The build
+is the next step (`TASK_PLAN.md`, Phase 22).
 
 ## Testing
 

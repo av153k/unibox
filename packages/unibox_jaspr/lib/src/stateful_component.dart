@@ -3,16 +3,21 @@ import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'render.dart';
 
-/// A Jaspr component that draws a [core.StatefulNode] and, in a browser, drives
-/// its store.
+/// A Jaspr component that draws a [core.StatefulNode].
 ///
-/// An application subclasses it once per island, marks the subclass `@client`
-/// and returns its node from [createNode]:
+/// A server draws the state the store starts with and stops there: nothing
+/// listens, `onMount` is not called, and the store is released, so rendering a
+/// page never starts a request. A browser does the whole job: it keeps the store,
+/// calls `onMount`, and redraws the tree whenever the store changes.
+///
+/// Use it for the part of a page that has to react. Write one subclass, mark it
+/// `@client` so that Jaspr also compiles it for the browser, and return the node
+/// from [createNode]:
 ///
 /// ```dart
 /// @client
-/// class ListingsIsland extends UniboxStateful {
-///   const ListingsIsland({required this.apiBase, super.key});
+/// class ListingsPage extends UniboxStateful {
+///   const ListingsPage({required this.apiBase, super.key});
 ///
 ///   final String apiBase;
 ///
@@ -22,24 +27,15 @@ import 'render.dart';
 /// }
 /// ```
 ///
-/// The difference between the two targets is [kIsWeb]:
-///
-/// * in a browser the store is created once, subscribed to, `onMount` is
-///   called, and a notification rebuilds the tree;
-/// * during a server render the store is created only to read its first state:
-///   nothing subscribes, `onMount` never runs, and the store is released — so a
-///   request is never started by a server render.
-///
-/// The markup a server writes is therefore the first state, which is what the
-/// client has to hydrate. Reacting in a browser needs the Jaspr client build:
-/// an island is Dart code compiled to JavaScript, not a tree passed in markup,
-/// which is why the node is created here and not handed over as a parameter.
+/// [createNode] is a method and not a constructor parameter because a `@client`
+/// component may only receive simple values — the ones Jaspr can write into the
+/// page and read back in the browser. A node is a group of functions, so each
+/// side builds it instead of passing it across.
 abstract class UniboxStateful extends StatefulComponent {
   /// Creates the component. A subclass passes its own serialisable parameters.
   const UniboxStateful({super.key});
 
-  /// The node this island draws, built in the browser when the component runs
-  /// there.
+  /// The node to draw. It is built on the server and in the browser.
   core.StatefulNode<Object, core.Store<Object>> createNode();
 
   @override

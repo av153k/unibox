@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- `UniboxStateful`, the Jaspr mirror of the Flutter runtime: an island subclass
+- `UniboxStateful`, the Jaspr mirror of the Flutter runtime: a `@client` subclass
   marked `@client` returns its node from `createNode`. In a browser the store is
   created, subscribed, `onMount` is called and a notification rebuilds the tree; on
   the server only the first state is read and the store is released. Reacting in a
