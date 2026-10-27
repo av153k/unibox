@@ -113,6 +113,11 @@
 - [x] Task 77: Tests — core (implementations, wrapped child, the deprecation, the empty-embed error), Flutter and Jaspr (a user defined embed node renders, a builder receives the child, both failure modes).
 - [x] Task 78: Docs — the three package READMEs state that the model names no platform and how a renderer picks its implementation, `design.md` §5.8 records that this escape hatch is outside the contract by construction, and the changelogs carry the breaking change.
 
+### Phase 18: The portable route to effects (the ink question)
+- [ ] Task 79: Core — `BoxStyle.transition` (duration and curve) as a token, animating the visual tokens a state can change (background, border, radius, shadow, opacity, transform) and never the layout ones: CSS writes the `transition` on the element, Flutter swaps in the implicit animation widgets, and the conformance package grows the case shape an animation needs.
+- [ ] Task 80: Core — `BoxStyle.opacity` and a static `transform` (scale, translate, rotate) so a press can shrink a control and a row can fade in; both are native on both targets, and together with Task 79 they are the whole of "an effect that is not an embed".
+- [ ] Task 81: Core — token keyframes with a semantic trigger (`press`, `hover`, `autoplay`): stops of the visual tokens, rendered as `@keyframes` plus `animation` and as a `TweenAnimationBuilder` keyed on the trigger. This is what lets a user build a ripple out of a clipped circle in a `Stack`; pointer-position-driven effects stay out of scope on purpose.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
