@@ -204,13 +204,19 @@ UINode _avatarChip() {
 /// The heading sets the title typography and the subtitle overrides the one
 /// token it changes, which is the whole point of inheritance: no node has to
 /// repeat what its box already says.
+///
+/// The title itself is marked as a heading, which a screen reader announces and a
+/// crawler reads as the structure of the page; the line under it stays plain text.
 UINode _heading() {
   return const Box(
     direction: Axis.vertical,
     gap: 4,
     textStyle: ExampleType.title,
     children: <UINode>[
-      TextNode('Join Unibox'),
+      Box(
+        semantics: BoxSemantics(role: BoxRole.heading),
+        children: <UINode>[TextNode('Join Unibox')],
+      ),
       TextNode('One description, two renderers.', style: ExampleType.muted),
     ],
   );

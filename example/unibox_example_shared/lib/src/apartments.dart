@@ -172,6 +172,11 @@ Box buildExampleMap() {
 }
 
 /// The title of the page and the line under it.
+///
+/// The title is marked as a heading, which is what a screen reader announces and
+/// what a crawler uses to read the structure of the page: the web renderer writes
+/// `role="heading"` and the Flutter one a `Semantics.header`. The line under it
+/// stays plain text, because a heading is a label and not a paragraph.
 UINode _heading() {
   return Box(
     direction: Axis.vertical,
@@ -179,7 +184,10 @@ UINode _heading() {
     width: double.infinity,
     textStyle: ExampleType.title,
     children: <UINode>[
-      const TextNode('Apartments'),
+      const Box(
+        semantics: BoxSemantics(role: BoxRole.heading),
+        children: <UINode>[TextNode('Apartments')],
+      ),
       TextNode(
         '${exampleApartments.length} listings in the old town. The map shows '
         'up when the window is wide enough to hold it.',
