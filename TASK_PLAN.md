@@ -142,13 +142,13 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 
 ### Phase 22: A node that owns its state
 - [x] Task 98: Core — `Store<S>` (`state`, `addListener`/`removeListener`, `onMount`/`onUnmount`, `dispose`) and `StatefulNode<S, C extends Store<S>>`: the node carries a factory for its store and a `NodeView` (`({UINode tree, List<UINode> overlays})`), never the store instance, so the tree stays a description; `createStore()` and `viewFor(state, store)` are the untyped boundary a renderer uses. A subclass with a narrower store type has to be reachable as `StatefulNode<Object, Store<Object>>`, which a test pins.
-- [x] Task 99: `packages/unibox_state` — pure Dart `StateStore<S>`, a `listen.ChangeNotifier` with a guarded `state` setter (an equal state notifies nothing) and `onMount`/`onUnmount` hooks. `listen` is flutter.dev's pure-Dart extraction of foundation's listenable (flutter/flutter#149466), so one store serves Flutter, the server and the browser; the package depends on `unibox_core` and `listen` only, with a purity test.
+- [x] Task 99: Core — `StateStore<S>`, the ready made `Store`: one immutable state value, a guarded `state` setter (an equal state notifies nothing, and a disposed store ignores a late publish), its own listener list, and the `onMount`/`onUnmount` hooks a renderer calls. It stays in the model rather than in a package of its own: core keeps its no-dependency rule, and one store still runs in Flutter, on the server and in the browser. Tests cover the notification rule, self-removal during a notification and the lifecycle defaults.
 - [x] Task 100: Flutter renderer — `UniboxStateful`: create the store on mount, subscribe, call `onMount`, rebuild on a notification, `onUnmount` and dispose on unmount, render `view.tree` through `renderNode` and each `view.overlays` entry in an overlay layer that escapes ancestor clipping (an `OverlayPortal` on `OverlayChildLocation.rootOverlay`) behind a barrier. Tests: a tap publishes a state and the tree changes; a tap starts a request and the pending tree is replaced by the result; an overlay opens and closes; the store is disposed and unsubscribed.
 - [ ] Task 101: `unibox_material` — `MaterialDialog` and `MaterialSheet` content trees (surface, radius, padding, max width, body type, scrim) so a component's overlay is a themed tree rather than hand-built boxes.
 - [ ] Task 102: Modality — `Escape`/back to close, focus containment and restore, the barrier's dismissal policy, and the exit animation: the runtime keeps an overlay mounted while its transition runs, so a leave is presence the host owns and not a token. This is the "what stays approximate" section of the material README on the web side.
 - [ ] Task 103: Example — the listings page becomes a `StatefulNode` (request, pending spinner, details overlay), hosted by the Flutter app; the Jaspr host keeps the static page until Task 104.
 - [ ] Task 104: Jaspr renderer — the same runtime as a `@client` component, blocked by the client build: server rendering draws `view(initial, store)` and the page becomes interactive only once the bundle is wired.
-- [x] Task 105: Docs and workspace — `design.md` §5.10 (a stateful node, what a store is, overlays are the runtime's, why `listen` and #149466), the package READMEs, `AGENTS.md`/`.clinerules` vocabulary (no bloc words: the library has stores and states, not cubits and events), `tool/verify.sh` and CI for the new package.
+- [x] Task 105: Docs and workspace — `design.md` §5.10 (a stateful node, what a store is, overlays are the runtime's, why `listen` and #149466), the package READMEs, `AGENTS.md`/`.clinerules` vocabulary (no bloc words: the library has stores and states, not cubits and events), `tool/verify.sh` and CI stay in step.
 
 ## Decisions
 
@@ -187,9 +187,10 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
   belong to the renderer — focus, the barrier, `Escape` and the leave animation —
   which is why there is no dialog node and why the same view can be presented by a
   Flutter overlay and by a browser dialog. The vocabulary is the model's: a node, a
-  store, a state and a view, with no events, cubits or blocs. The store is pure Dart
-  on `package:listen` (flutter/flutter#149466), because a state layer per target is
-  the drift this project exists to remove.
+  store, a state and a view, with no events, cubits or blocs. The store is pure Dart in the core:
+  `StateStore` keeps its own listener list, so the model keeps its no-dependency
+  rule, and a state layer per target — the drift this project exists to remove —
+  never appears.
 - **Design systems are packages:** the Material 3 type scale lives in
   `unibox_material`, not in `unibox_core` and not in a renderer. The core keeps
   one neutral default and no brand, a package of `const` tokens is what an

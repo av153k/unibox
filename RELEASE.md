@@ -1,9 +1,9 @@
 # Releasing Unibox
 
-Six packages live in this workspace. Five are meant for pub.dev — `unibox_core`,
-`unibox_flutter`, `unibox_jaspr`, `unibox_material` and `unibox_state` — and
-`unibox_testing` stays development only, because it is the test contract and
-nothing an application needs.
+Five packages live in this workspace. Four are meant for pub.dev — `unibox_core`,
+`unibox_flutter`, `unibox_jaspr` and `unibox_material` — and `unibox_testing`
+stays development only, because it is the test contract and nothing an application
+needs.
 
 Every package carries `publish_to: none` on purpose: it keeps an accidental
 `dart pub publish` from leaving the workspace. Cutting a release therefore starts
@@ -21,7 +21,6 @@ dart analyze
 (cd packages/unibox_core && dart test)
 (cd packages/unibox_testing && dart test)
 (cd packages/unibox_material && dart test)
-(cd packages/unibox_state && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
 (cd example/unibox_example_shared && dart test)
@@ -29,23 +28,22 @@ dart analyze
 (cd example/unibox_example_flutter && flutter test)
 (cd packages/unibox_core && dart doc --output=/tmp/doc-core)
 (cd packages/unibox_material && dart doc --output=/tmp/doc-material)
-(cd packages/unibox_state && dart doc --output=/tmp/doc-state)
 (cd packages/unibox_flutter && dart doc --output=/tmp/doc-flutter)
 (cd packages/unibox_jaspr && dart doc --output=/tmp/doc-jaspr)
 ```
 
 ## The steps
 
-1. **Pick the version.** The five packages move together: `unibox_flutter`,
-   `unibox_jaspr`, `unibox_material` and `unibox_state` depend on `unibox_core`, and
-   their `^0.1.0` constraints have to admit the new number.
+1. **Pick the version.** The four packages move together: `unibox_flutter`,
+   `unibox_jaspr` and `unibox_material` depend on `unibox_core`, and their `^0.1.0`
+   constraints have to admit the new number.
 2. **Bump `version:`** in `packages/unibox_core/pubspec.yaml`,
    `packages/unibox_flutter/pubspec.yaml`, `packages/unibox_jaspr/pubspec.yaml` and
-   `packages/unibox_material/pubspec.yaml` and `packages/unibox_state/pubspec.yaml`,
-   and the matching `unibox_core: ^x.y.z` constraints in the four dependants.
+   `packages/unibox_material/pubspec.yaml`, and the matching `unibox_core: ^x.y.z`
+   constraints in the three dependants.
 3. **Close the changelogs.** Every package has an `## Unreleased` section; rename it
    to `## x.y.z` and add a fresh `## Unreleased` above it.
-4. **Remove `publish_to: none`** from the five packages being published. Leave it
+4. **Remove `publish_to: none`** from the four packages being published. Leave it
    in `unibox_testing`.
 5. **Dry run each package**, in dependency order:
 
@@ -54,7 +52,6 @@ dart analyze
    (cd packages/unibox_flutter && dart pub publish --dry-run)
    (cd packages/unibox_jaspr && dart pub publish --dry-run)
    (cd packages/unibox_material && dart pub publish --dry-run)
-   (cd packages/unibox_state && dart pub publish --dry-run)
    ```
 
    The dry run is also the only check that the published archive holds what it
@@ -66,10 +63,10 @@ dart analyze
 
 ## What this repository does not do
 
-- **CI never publishes.** The workflow checks formatting, analysis, the nine test
+- **CI never publishes.** The workflow checks formatting, analysis, the eight test
   suites and the documentation; publishing is a human running the steps above.
 - **`unibox_testing` is not released.** It is a dev dependency of the two
-  renderer packages and would only add a sixth name to keep in step.
+  renderer packages and would only add a fifth name to keep in step.
 - **The example is not released.** It is a workspace application, not a package.
 
 ## Version policy

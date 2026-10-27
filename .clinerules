@@ -19,7 +19,7 @@ What is not negotiable:
 4. **Defaults belong to the model, not to a host.** An unset token resolves in core
    (`BoxStyle.resolvedDirection`, `BoxTextStyle.defaults`, `ImageNode.resolvedFit`).
 5. **Verify before every commit.** `tool/verify.sh` runs the format check,
-   `dart analyze` and the nine test suites; `--docs` adds `dart doc`, which fails
+   `dart analyze` and the eight test suites; `--docs` adds `dart doc`, which fails
    on a warning.
 6. **Conventional Commits**, one verified change per commit
    (`feat(core): ...`, `fix(flutter): ...`, `test(conformance): ...`, `docs: ...`).
@@ -31,7 +31,7 @@ What is not negotiable:
    alone and adds no renderer code: a look is a value, and a component is a node
    that extends the node already drawn for it, never a new node type.
 9. **State lives in a store, not in a node.** `StatefulNode` creates a `Store`
-   (`unibox_state` holds the ready-made one) and draws a `NodeView` of its state;
+   (`StateStore` in the core is the ready-made one) and draws a `NodeView` of its state;
    overlays are the renderer's, so there is no dialog node. The vocabulary is the
    model's: a store, a state, a view — no events, cubits or blocs.
 

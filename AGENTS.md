@@ -33,7 +33,6 @@ guide is [`README.md`](README.md).
 | `packages/unibox_testing/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases` | a presentational token is added or changed |
 | `packages/unibox_material/lib/src/` | the Material 3 type scale: `MaterialTypography` (the fifteen roles as `const BoxTextStyle` values), `MaterialTypeRole`, and `MaterialCard` (a `Box` with the card's defaults) | a design-system role is added, a scale changes, or a component is added |
 | `packages/unibox_core/lib/src/state/` | `Store`, the state a `StatefulNode` draws and the lifecycle a renderer calls | a store member or a lifecycle rule changes |
-| `packages/unibox_state/lib/src/` | `StateStore`, a `Store` on `package:listen` | the publish rule, the lifecycle hooks or the dependency changes |
 | `packages/*/test/support/` | the harnesses (`pumpNode`, `inNode`, `stylesOf`, ...) and `appearance.dart`, which reads the presentation back out of the output | a test needs a new fact |
 | `example/unibox_example_shared/` | the two pages as pure Dart trees, the form state, the palette | the example content changes |
 | `example/unibox_example_flutter/`, `example/unibox_example_jaspr/` | hosts: state and surface, never layout | state, navigation or the surface changes |
@@ -56,13 +55,12 @@ so the packages share one resolution.
 | Also build the API docs | `tool/verify.sh --docs` |
 | One suite, the fast loop | `(cd packages/unibox_jaspr && dart test)` |
 
-The nine suites, exactly as CI runs them:
+The eight suites, exactly as CI runs them:
 
 ```shell
 (cd packages/unibox_core && dart test)
 (cd packages/unibox_testing && dart test)
 (cd packages/unibox_material && dart test)
-(cd packages/unibox_state && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
 (cd example/unibox_example_shared && dart test)
@@ -231,8 +229,8 @@ against it and CSS puts it in a media query.
 1. `packages/unibox_core/lib/src/nodes/stateful_node.dart` decides what the node
    receives; an application extends it (`class X extends StatefulNode<S, C>`) and
    never changes it.
-2. The store implements `Store<S>`, or extends `StateStore` from
-   `packages/unibox_state`; its publish rule is tested there.
+2. The store implements `Store<S>`, or extends `StateStore` from `unibox_core`;
+   its publish rule is tested in `packages/unibox_core/test/state_store_test.dart`.
 3. Flutter: `lib/src/stateful_node.dart` renders it once for every node; the suite
    needs a test in `test/stateful_node_test.dart` (a publish, an overlay, a
    dispose) rather than a renderer per component.
@@ -314,7 +312,7 @@ and two when each side is independently reviewable.
 | What does a token do on Flutter? | [`packages/unibox_flutter/README.md`](packages/unibox_flutter/README.md) |
 | What does a token do on the web? | [`packages/unibox_jaspr/README.md`](packages/unibox_jaspr/README.md) |
 | What is the model's default? | [`packages/unibox_core/README.md`](packages/unibox_core/README.md) |
-| How does a node own state? | [`packages/unibox_state/README.md`](packages/unibox_state/README.md) |
+| How does a node own state? | [`packages/unibox_core/README.md#state`](packages/unibox_core/README.md#state) |
 | Which Material type role should I use? | [`packages/unibox_material/README.md`](packages/unibox_material/README.md) |
 | What has to look the same on both? | [`packages/unibox_testing/README.md`](packages/unibox_testing/README.md) |
 | What is built, and what was deferred? | [`TASK_PLAN.md`](TASK_PLAN.md) |

@@ -8,7 +8,6 @@ Unibox provides pure Dart layout primitives that compile natively to both Flutte
   - `packages/unibox_flutter`: Depends on `unibox_core` + Flutter SDK.
   - `packages/unibox_jaspr`: Depends on `unibox_core` + `jaspr: ^0.24.0`.
   - `packages/unibox_material`: Optional design-system tokens and one component (the Material 3 type scale and `MaterialCard`). Depends on `unibox_core` only; no renderer depends on it.
-  - `packages/unibox_state`: Optional state stores (`StateStore`) for `StatefulNode`. Pure Dart, on `package:listen`; no renderer depends on it.
 - **Engineering Agency:** You have permission to diverge, adjust signatures, or simplify types where it makes sense, as long as the packages remain decoupled and work seamlessly across both platforms.
 
 ---
@@ -355,10 +354,10 @@ never inherited (CSS does not inherit them either).
   owns the modal mechanism — focus containment, the barrier, `Escape`, the leave
   animation. That is why the model has no dialog node and no presence token, and
   why the same view can be shown by Flutter's overlay and by a browser dialog.
-- A store is pure Dart. `unibox_state`'s `StateStore` is built on `package:listen`,
-  flutter.dev's extraction of Flutter's listenable family
-  (flutter/flutter#149466), so one store runs in Flutter, in a browser and in a
-  `dart test`; `flutter/foundation` cannot, because core and the web renderer may
+- A store is pure Dart, in the core. `StateStore` keeps its own listener list and
+  a guarded `state` setter, so the model keeps its promise of no package
+  dependencies and one store still runs in Flutter, in a browser and in a
+  `dart test`. `flutter/foundation` cannot be used: core and the web renderer may
   not import Flutter, and a state layer per target is the drift this project
   exists to remove.
 - `StatefulNode` is a component in the sense of §5.9 — a node built from nodes —
