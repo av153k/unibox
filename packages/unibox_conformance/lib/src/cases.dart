@@ -134,6 +134,24 @@ const List<BoxCase> boxCases = <BoxCase>[
     expected: BoxAppearance(borderWidth: 2, borderColor: _line),
   ),
   BoxCase(
+    description: 'eases a look change over a duration with a curve',
+    // A transition eases paint, so the case paints something: a box with nothing
+    // to change has nothing to ease on either target.
+    box: core.Box(
+      backgroundColor: _blue,
+      transition: core.BoxTransition(
+        duration: Duration(milliseconds: 150),
+        curve: core.BoxCurve.easeOut,
+      ),
+      children: _children,
+    ),
+    expected: BoxAppearance(
+      backgroundColor: _blue,
+      transitionDuration: Duration(milliseconds: 150),
+      transitionCurve: core.BoxCurve.easeOut,
+    ),
+  ),
+  BoxCase(
     description: 'presents every token at once',
     box: core.Box(
       direction: core.Axis.horizontal,
@@ -147,6 +165,10 @@ const List<BoxCase> boxCases = <BoxCase>[
       backgroundColor: core.BoxColor.white,
       borderRadius: 10,
       border: core.BoxBorder(color: _line),
+      transition: core.BoxTransition(
+        duration: Duration(milliseconds: 120),
+        curve: core.BoxCurve.easeIn,
+      ),
       children: _children,
     ),
     expected: BoxAppearance(
@@ -162,6 +184,8 @@ const List<BoxCase> boxCases = <BoxCase>[
       borderRadius: 10,
       borderWidth: 1,
       borderColor: _line,
+      transitionDuration: Duration(milliseconds: 120),
+      transitionCurve: core.BoxCurve.easeIn,
     ),
   ),
 ];

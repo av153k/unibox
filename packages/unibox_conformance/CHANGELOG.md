@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `BoxAppearance` carries `transitionDuration` and `transitionCurve`, and the box
+  table gains a case for them: both renderers have to state the same duration and
+  the same curve for the same transition.
 - `TextAppearance` describes the typography of a rendered text node, and
   `textCases` is the table both renderers are checked against: one case per token,
   one for the precedence of a `BoxTextStyle` and its flat overrides, and one with

@@ -39,6 +39,8 @@ final class BoxAppearance {
     this.borderRadius,
     this.borderWidth,
     this.borderColor,
+    this.transitionDuration,
+    this.transitionCurve,
   });
 
   /// The axis the children of the box are laid out on.
@@ -82,6 +84,17 @@ final class BoxAppearance {
   /// occupies no space is not painted, on either target.
   final core.BoxColor? borderColor;
 
+  /// How long a change of look takes, or `null` when the box swaps instantly.
+  ///
+  /// A transition is the one part of a box that is about time rather than about
+  /// paint, and it is expressible exactly on both targets — a duration and one of
+  /// the five curves CSS and Flutter share the control points of — so the contract
+  /// can pin it like any other token.
+  final Duration? transitionDuration;
+
+  /// The easing applied over [transitionDuration].
+  final core.BoxCurve? transitionCurve;
+
   /// Whether [borderWidth] draws a line at all.
   bool get _hasBorder => (borderWidth ?? 0) > 0;
 
@@ -120,6 +133,12 @@ final class BoxAppearance {
     compare('borderRadius', borderRadius ?? 0, expected.borderRadius ?? 0);
     compare('borderWidth', borderWidth ?? 0, expected.borderWidth ?? 0);
     compare(
+      'transitionDuration',
+      transitionDuration,
+      expected.transitionDuration,
+    );
+    compare('transitionCurve', transitionCurve, expected.transitionCurve);
+    compare(
       'borderColor',
       _hasBorder ? borderColor : null,
       expected._hasBorder ? expected.borderColor : null,
@@ -146,6 +165,8 @@ final class BoxAppearance {
     borderRadius ?? 0,
     borderWidth ?? 0,
     _hasBorder ? borderColor : null,
+    transitionDuration,
+    transitionCurve,
   );
 
   @override
@@ -162,7 +183,9 @@ final class BoxAppearance {
         'backgroundColor: $backgroundColor, '
         'borderRadius: $borderRadius, '
         'borderWidth: $borderWidth, '
-        'borderColor: $borderColor'
+        'borderColor: $borderColor, '
+        'transitionDuration: $transitionDuration, '
+        'transitionCurve: $transitionCurve'
         ')';
   }
 }

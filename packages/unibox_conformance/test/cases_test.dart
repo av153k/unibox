@@ -69,6 +69,11 @@ void main() {
             actual: core.BoxColor.rgb(0xE5, 0xE7, 0xEB),
             expected: null,
           ),
+          'transitionDuration': (
+            actual: const Duration(milliseconds: 120),
+            expected: null,
+          ),
+          'transitionCurve': (actual: core.BoxCurve.easeIn, expected: null),
         },
       );
     });
