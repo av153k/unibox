@@ -20,7 +20,8 @@ on the server and readable without a client bundle.
 - Every look is written once, as a class rule in a single `<style>` element, and the
   element carries the class instead of an inline style: the CSS grows with the number
   of distinct looks on a page rather than with the number of elements, and a host can
-  override any of it with a stylesheet or a custom property.
+  override any of it with a stylesheet or a custom property. A state-styled element
+  used to carry its own `<style>`, so identical cards repeated their rules once each.
 - An `ImageNode` becomes an `<img>` with everything a browser can use: `srcset`,
   `sizes`, `loading` and `fetchpriority`, and a finite `width`/`height` written both
   as CSS and as the element's attributes, so the browser reserves the right box

@@ -399,6 +399,11 @@ of elements instead of with the number of *distinct* looks. The web renderer
 collects them: every distinct set of declarations becomes one class rule in a single
 `<style>` element, and the element carries the class (`UniboxStylesheet`).
 
+A class name shared between two elements was not enough, which is what the earlier
+shape got wrong: a box that styled an interaction state emitted its own `<style>`
+element next to itself, so the *name* was deduplicated while the *rules* were written
+once per instance — six identical cards, six identical blocks.
+
 Two consequences are the reason for the rule, and neither is about size:
 
 - **A host keeps the last word.** An inline style outranks every stylesheet, so a

@@ -1,5 +1,7 @@
+import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_test/jaspr_test.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
+import 'package:unibox_jaspr/unibox_jaspr.dart';
 
 import 'support/harness.dart';
 
@@ -97,6 +99,60 @@ void main() {
       // Everything the tree paints is in the one stylesheet instead.
       expect(allCss(), contains('background-color: #ffffff;'));
     });
+
+    testComponents('writes six identical state-styled boxes once', (
+      tester,
+    ) async {
+      const core.Box card = core.Box(
+        backgroundColor: core.BoxColor.white,
+        hoverStyle: core.BoxStyle(backgroundColor: core.BoxColor.black),
+        stateStyles: <core.BoxState, core.BoxStyle>{
+          core.BoxState.focus: core.BoxStyle(borderRadius: 4),
+          core.BoxState.pressed: core.BoxStyle(borderRadius: 8),
+        },
+      );
+
+      pumpNode(
+        tester,
+        const core.Box(
+          children: <core.UINode>[card, card, card, card, card, card],
+        ),
+      );
+
+      // One stylesheet for the tree, and the typography of the model beside it.
+      expect(elementsOf(find.tag('style')), hasLength(2));
+
+      final String cardClass = elementsOf(find.tag('div'))[1].classes!;
+      expect(<String>[
+        for (final TestRenderElement e in elementsOf(find.tag('div')))
+          if (e.classes == cardClass) cardClass,
+      ], hasLength(6));
+
+      // The resting rule and each state are written once for the six cards.
+      expect(_ruleCount('.$cardClass {'), 1);
+      expect(_ruleCount('.$cardClass:hover'), 1);
+      expect(_ruleCount('.$cardClass:focus-visible'), 1);
+      expect(_ruleCount('.$cardClass:active'), 1);
+    });
+
+    testComponents(
+      'repeats a rule per instance only when a node is rendered alone',
+      (tester) async {
+        const core.Box card = core.Box(
+          hoverStyle: core.BoxStyle(backgroundColor: core.BoxColor.black),
+        );
+
+        // No sheet in scope: this is what a host that renders components itself
+        // gets, and what the renderer did for every box before the sheet existed.
+        tester.pumpComponent(
+          Component.fragment(<Component>[
+            for (int i = 0; i < 6; i++) JasprBox(box: card),
+          ]),
+        );
+
+        expect(elementsOf(find.tag('style')), hasLength(6));
+      },
+    );
 
     testComponents('names a class after the node it draws', (tester) async {
       pumpNode(tester, const core.TextNode('Unibox'));

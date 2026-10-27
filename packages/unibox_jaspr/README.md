@@ -88,8 +88,13 @@ paints a focus ring.
 
 The class name is a hash of the resolved styles and of every state, which keeps
 the output deterministic: server rendered markup and the hydrated client agree
-without any extra state, and boxes that share a style share a class. That shape is
-not special to states — every look in the tree is written this way; see
+without any extra state, and boxes that share a style share a class.
+
+Sharing a *name* is not the same as writing the rules once, and that is what the
+stylesheet settled: a state-styled box used to carry its own `<style>` element, so
+six identical cards emitted six identical blocks. The example's listings page came
+to twelve `<style>` elements for three distinct classes, one of them restated twelve
+times. Every look in the tree is now written once; see
 [The stylesheet](#the-stylesheet).
 
 ## The stylesheet
