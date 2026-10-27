@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:unibox_flutter/unibox_flutter.dart';
 
 import 'support/harness.dart';
 
@@ -23,6 +24,20 @@ void main() {
       expect(find.text('Create account'), findsOneWidget);
       expect(find.text('Read the docs'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('fills the surface the window gives it', (tester) async {
+      // The page box of the tree fills the viewport on the web, so the Flutter
+      // box fills the window instead of shrinking to the card: same tree, same
+      // surface, on both targets.
+      await pumpApp(tester);
+
+      final Rect page = tester.getRect(find.byType(UniboxBox).first);
+
+      expect(
+        page,
+        Offset.zero & tester.view.physicalSize / tester.view.devicePixelRatio,
+      );
     });
 
     testWidgets('keeps the entered values and reports the form as complete', (

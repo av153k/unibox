@@ -5,5 +5,4 @@
 /// `unibox_example_jaspr`.
 library;
 
-export 'src/parity.dart';
 export 'src/signup_card.dart';
