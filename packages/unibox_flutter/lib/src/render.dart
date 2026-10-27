@@ -97,17 +97,60 @@ Widget renderNode(core.UINode node) {
       node: input,
       key: toFlutterKey(input.key),
     ),
-    final WidgetNode embed => KeyedSubtree(
+    final core.EmbedNode embed => KeyedSubtree(
       key: toFlutterKey(embed.key),
-      child: embed.widget,
-    ),
-    final core.EmbedNode embed => throw UnsupportedError(
-      'No Flutter renderer for ${embed.runtimeType}: it carries a '
-      '${embed.payload.runtimeType}, and only a WidgetNode can be rendered by '
-      'this package.',
+      child: _renderEmbed(embed),
     ),
     _ => throw UnsupportedError('No Flutter renderer for ${node.runtimeType}.'),
   };
+}
+
+/// Renders the implementation of [embed] this target can draw.
+///
+/// The model keeps the payloads opaque, so the choice is made here: the first
+/// payload that is a [Widget] is drawn as it is, and the first that is a
+/// [WidgetEmbedBuilder] receives the rendered child, because an effect that wraps
+/// content needs the content. A node whose implementations this target cannot
+/// draw, or that carries two of them, is reported instead of silently skipped —
+/// a class the library has never seen renders here as long as it brings one of
+/// these two shapes.
+Widget _renderEmbed(core.EmbedNode embed) {
+  final List<Object> implementations = embed.implementations;
+  final List<Object> drawable = implementations
+      .where((Object it) => it is Widget || it is WidgetEmbedBuilder)
+      .toList(growable: false);
+
+  if (drawable.isEmpty) {
+    throw UnsupportedError(
+      'No Flutter renderer for ${embed.runtimeType}: this target draws a Widget '
+      'or a WidgetEmbedBuilder, and the node carries '
+      '${implementations.map((Object it) => it.runtimeType).join(', ')}.',
+    );
+  }
+
+  if (drawable.length > 1) {
+    throw StateError(
+      '${embed.runtimeType} carries ${drawable.length} implementations this '
+      'target can draw, so the tree is ambiguous: keep one payload per renderer.',
+    );
+  }
+
+  final Object implementation = drawable.single;
+
+  if (implementation is Widget) {
+    return implementation;
+  }
+
+  final core.UINode? child = embed.child;
+
+  if (child == null) {
+    throw StateError(
+      '${embed.runtimeType} is drawn by a WidgetEmbedBuilder, which wraps the '
+      'child of the embed, but the node has no child.',
+    );
+  }
+
+  return (implementation as WidgetEmbedBuilder)(renderNode(child));
 }
 
 /// Reports the tree issues of [node], in debug builds only.

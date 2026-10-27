@@ -20,7 +20,24 @@ final class _ForeignEmbed extends core.EmbedNode {
   const _ForeignEmbed();
 
   @override
-  Object get payload => 42;
+  List<Object> get implementations => const <Object>[42];
+}
+
+/// The embed a user writes for themselves, with one implementation per renderer.
+///
+/// The class is unknown to both the model and this package: all that makes it
+/// render is the payload shapes it brings.
+final class _Badge extends core.EmbedNode {
+  const _Badge({required super.child});
+
+  @override
+  List<Object> get implementations => <Object>[
+    (Widget child) => DecoratedBox(
+      decoration: const BoxDecoration(color: Color(0xFFEEEEEE)),
+      child: child,
+    ),
+    'the web implementation, which this target never looks at',
+  ];
 }
 
 void main() {
@@ -51,14 +68,16 @@ void main() {
       expect(find.byKey(const ValueKey<Object>('chart')), findsOneWidget);
     });
 
-    testWidgets('exposes the widget as its payload', (tester) async {
+    testWidgets('exposes the widget as its implementation', (tester) async {
       const WidgetNode node = WidgetNode(_Marker('chart'));
 
-      expect(node.payload, isA<_Marker>());
+      expect(node.implementations.single, isA<_Marker>());
       expect(node.children, isEmpty);
     });
 
-    testWidgets('reports an embed of another target', (tester) async {
+    testWidgets('reports an embed without an implementation of this target', (
+      tester,
+    ) async {
       expect(
         () => renderFlutter(const _ForeignEmbed()),
         throwsA(
@@ -71,4 +90,71 @@ void main() {
       );
     });
   });
+
+  group('an embed of the user\'s own', () {
+    testWidgets('wraps its child with the implementation this target draws', (
+      tester,
+    ) async {
+      await pumpNode(tester, const _Badge(child: core.TextNode('New')));
+
+      // The node class is unknown here; the builder received the rendered child
+      // and wrapped it, which is what an ink ripple or a hover glow needs.
+      final Finder badge = find.byType(DecoratedBox);
+
+      expect(badge, findsOneWidget);
+      expect(
+        find.descendant(of: badge, matching: find.text('New')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('reports a builder that has no child to wrap', (tester) async {
+      const _OrphanBuilder node = _OrphanBuilder();
+
+      expect(
+        () => renderFlutter(node),
+        throwsA(
+          isA<StateError>().having(
+            (StateError error) => error.message,
+            'message',
+            contains('no child'),
+          ),
+        ),
+      );
+    });
+
+    testWidgets('reports two implementations of this target', (tester) async {
+      const _Ambiguous node = _Ambiguous();
+
+      expect(
+        () => renderFlutter(node),
+        throwsA(
+          isA<StateError>().having(
+            (StateError error) => error.message,
+            'message',
+            contains('ambiguous'),
+          ),
+        ),
+      );
+    });
+  });
+}
+
+/// A builder with nothing to wrap.
+final class _OrphanBuilder extends core.EmbedNode {
+  const _OrphanBuilder();
+
+  @override
+  List<Object> get implementations => <Object>[(Widget child) => child];
+}
+
+/// Two implementations this target could draw, which is a mistake.
+final class _Ambiguous extends core.EmbedNode {
+  const _Ambiguous();
+
+  @override
+  List<Object> get implementations => const <Object>[
+    _Marker('one'),
+    _Marker('two'),
+  ];
 }

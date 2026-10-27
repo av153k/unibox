@@ -20,7 +20,7 @@
 library;
 
 export 'src/box.dart' show UniboxBox;
-export 'src/embed_node.dart' show WidgetNode;
+export 'src/embed_node.dart' show WidgetEmbedBuilder, WidgetNode;
 export 'src/image_node.dart' show UniboxImage;
 export 'src/link_node.dart' show LinkOpener, UniboxLink, UniboxLinkScope;
 export 'src/render.dart';

@@ -1,6 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
+/// The signature of an embed implementation that wraps the child of its node.
+///
+/// An effect that needs the content it decorates — an ink ripple, a hover glow, a
+/// hero transition — is a wrapper and not a leaf, so its implementation receives
+/// the rendered child instead of standing next to it.
+typedef WidgetEmbedBuilder = Widget Function(Widget child);
+
 /// Renders a Flutter [Widget] inside a Unibox tree.
 ///
 /// The escape hatch for content Unibox does not model: a chart from a package, a
@@ -16,9 +23,9 @@ import 'package:unibox_core/unibox_core.dart' as core;
 /// );
 /// ```
 ///
-/// A node whose payload is not a [Widget] is reported by
-/// [renderFlutter] instead of being skipped, so a tree that was built for
-/// another target fails loudly.
+/// A node with no implementation this target can draw is reported by
+/// [renderFlutter] instead of being skipped, so a tree that was built for another
+/// target fails loudly.
 final class WidgetNode extends core.EmbedNode {
   /// Wraps [widget] as a node.
   const WidgetNode(this.widget, {super.key});
@@ -27,5 +34,5 @@ final class WidgetNode extends core.EmbedNode {
   final Widget widget;
 
   @override
-  Object get payload => widget;
+  List<Object> get implementations => <Object>[widget];
 }
