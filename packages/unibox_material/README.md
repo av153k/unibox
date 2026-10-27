@@ -1,6 +1,7 @@
 # unibox_material
 
-The Material Design 3 type scale as Unibox typography tokens.
+Material Design 3 for Unibox: the type scale, the colour roles and the components
+built from them.
 
 This package is pure Dart: it depends on `unibox_core` and nothing else. It does
 not import Flutter, `dart:ui` or Material, so the same scale is available to a
@@ -310,6 +311,91 @@ The three things a colour scheme would fill in are constants for now —
 is not: no ripple, no tonal surface, no `titleTextStyle` overrides beyond the two
 style parameters. A `Box` around it remains the escape hatch.
 
+## The ink well
+
+A region that reads as tappable: `MaterialInkWell` is a `Box` around one child, whose
+hover, focus and press layers are the palette's, over Material's short fade.
+
+```dart
+MaterialInkWell(
+  onTap: openContact,
+  borderRadius: 12,
+  child: const TextNode('Ada Lovelace'),
+)
+```
+
+| | |
+| --- | --- |
+| layers | `hoverLayer` (8%), `focusLayer` (10%), `pressedLayer` (10%) of `onSurface` |
+| easing | 100 ms |
+| role | `button` when `onTap` is given, so a resting region is not focusable |
+
+There is no ripple: a splash starts at the pointer and grows over a timeline of its
+own, which needs a triggered animation the model does not have. A press is a tint.
+
+## The text field
+
+`MaterialTextField` is a label, an outlined `Box` and a message, with a
+`TextInputNode` inside the outline.
+
+```dart
+MaterialTextField(
+  label: 'Email',
+  value: state.email,
+  onChanged: store.setEmail,
+  onFocusChanged: store.setEmailFocus,
+  invalid: state.emailInvalid,
+  message: state.emailInvalid ? 'Enter an address with an @' : null,
+)
+```
+
+| State | Outline |
+| --- | --- |
+| resting | `outline` |
+| `focused: true` | `primary` |
+| `invalid: true` | `error`, and the label and message with it |
+
+The label sits above the field and the message below it. Material floats the label
+onto the border once the field has a value, and that is an animation the model has no
+timeline for. The caret, the selection, the IME and autofill are the platform's,
+because the input node delegates them — so a dark app passes `palette:
+MaterialPalette.dark` here *and* a matching `ColorScheme` to `MaterialApp`.
+
+`focused` is the host's: it is the value `onFocusChanged` last reported.
+
+## The dialog and the bottom sheet
+
+Both are `OverlayNode`s, so they sit in the tree where the state says they belong, and
+no renderer knows their names.
+
+```dart
+MaterialDialog(
+  title: 'Delete listing?',
+  content: const TextNode('The listing and its photos are removed.'),
+  actions: <UINode>[Cancel(onTap: store.close), Delete(onTap: store.delete)],
+  onDismiss: store.close,
+)
+
+MaterialBottomSheet(
+  title: 'Filter listings',
+  content: FilterForm(state: state, store: store),
+  actions: <UINode>[Apply(onTap: store.applyFilters)],
+  onDismiss: store.closeFilters,
+)
+```
+
+| | Dialog | Sheet |
+| --- | --- | --- |
+| alignment | centre | bottom |
+| surface | `surfaceContainerHigh` | `surfaceContainerLow` |
+| width | 280 to 560 | up to 640 |
+| barrier | `scrim`, dismissible by default | the same |
+| title | `headlineSmall` in `onSurface` | the same |
+| actions | a row against the end | the same |
+
+Material's modal entrance and exit transitions are not here, and the sheet's four
+corners are rounded because the model has one radius per box.
+
 ## Line heights
 
 A `BoxTextStyle.lineHeight` is a multiple of the font size, because that is the
@@ -349,10 +435,18 @@ them knowing its name.
 
 ## Scope
 
-Typography and one component, for now. Material's colour scheme, its elevation
-tones, its three official card variants and its other components are separate
-axes, and each one needs a decision about how it maps onto a model that has no
-theme layer yet — so they are not pretended to be here.
+The type scale, the colour roles, and six components. What is deliberately not here
+is written on the class that lacks it, and it is all platform behaviour rather than a
+value the model could carry:
+
+| Left out | Why |
+| --- | --- |
+| the ripple | a splash starts at the pointer and grows over its own timeline; a press here is a tint |
+| the floating label | an animation the model has no triggered timeline for |
+| the caret, the selection and the focus ring | the platform draws them for the input node |
+| modal entrance and exit transitions | the same missing timeline |
+| `ColorScheme`, CSS custom properties, dynamic colour | the two wirings an application owns, described in Task 96 of `TASK_PLAN.md` |
+| Material's three card variants, chips, menus, navigation | not built; each is a component, not a decision |
 
 ## License
 

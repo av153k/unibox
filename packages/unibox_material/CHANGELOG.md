@@ -9,18 +9,25 @@ has to know this package exists.
 - `MaterialTypography`: the fifteen roles of the Material 3 type scale as `const`
   `BoxTextStyle` values, with `MaterialTypeRole` to name one in a table or a test and
   `MaterialTypography.of` to look one up.
-- `MaterialPalette`: the Material 3 colour roles as `const` `BoxColor` values, with
-a baseline light and dark instance, and the three state layers Material derives from
-`onSurface`. The palette is a value a tree wears, not a theme that resolves at render
-time.
+- `MaterialPalette`: the colour roles as `const` `BoxColor` values, with a baseline
+  light and dark instance and the state layers Material derives from `onSurface` —
+  8% hover, 10% focus and press, 16% dragged, and the 32% scrim. A palette is a value
+  a tree wears, not a theme that resolves at render time.
 - `MaterialCard`: a card as a node that extends `Box` — 16 of padding, a white
   surface, a 12 pixel radius, the shade of elevation level one and `bodyMedium` for
   the texts inside, every one of them a parameter.
 - `MaterialListTile`: the list row — a leading node, a title with an optional
   subtitle and a trailing node, 16 between its parts, the one and two line heights
   Material gives a tile (and their dense pair), `bodyLarge` for the title,
-  `bodyMedium` in `onSurfaceVariant` for the subtitle, the 8% and 12% hover and press
+  `bodyMedium` in `onSurfaceVariant` for the subtitle, the 8% and 10% hover and press
   layers, and the button role when the tile can be tapped.
+- `MaterialInkWell`: a state layer around one child, easing its tint over 100 ms.
+- `MaterialTextField`: a label, an outlined box and a message around a
+  `TextInputNode`, its outline taking the accent on focus and the error colour when
+  invalid.
+- `MaterialDialog` and `MaterialBottomSheet`: `OverlayNode`s with the policy they
+  need — scrim, dismissal, alignment — and a raised surface with a title and a row of
+  actions.
 
-Material's colour scheme, its tonal surfaces and a ripple are not in this release:
-the values a scheme would carry are documented constants until a palette exists.
+What the components leave to the platform is written on each of them: the ripple, the
+floating label, the caret and selection colours, and Material's modal transitions.
