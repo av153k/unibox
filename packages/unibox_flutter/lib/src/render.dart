@@ -9,6 +9,7 @@ import 'link_node.dart';
 import 'overlay_node.dart';
 import 'stack_node.dart';
 import 'stateful_node.dart';
+import 'theme_scope.dart';
 import 'text_input_node.dart';
 import 'text_node.dart';
 import 'text_style_scope.dart';
@@ -39,10 +40,17 @@ import 'values.dart';
 /// Every widget is created with the key of its node, so reordering a list of
 /// nodes preserves the state of each child instead of moving it to the node
 /// that took over the position.
-Widget renderFlutter(core.UINode node) {
-  _reportTreeIssues(node);
+/// [theme] answers the colour roles the tree names. A tree that uses none renders
+/// without one; a tree that names one and is given none fails with the role in the
+/// message instead of painting nothing.
+Widget renderFlutter(core.UINode node, {core.UniboxTheme? theme}) {
+  _reportTreeIssues(node, theme);
 
-  return _withDefaultTypography(renderNode(node));
+  final Widget tree = renderNode(node);
+
+  return _withDefaultTypography(
+    theme == null ? tree : UniboxThemeScope(theme: theme, child: tree),
+  );
 }
 
 /// Wraps [child] in the typography of the model, `BoxTextStyle.defaults`.
@@ -165,9 +173,9 @@ Widget _renderEmbed(core.EmbedNode embed) {
 ///
 /// Warnings are printed, errors throw: a tree that no target can render has to
 /// fail loudly while it is being built, not silently in production.
-void _reportTreeIssues(core.UINode node) {
+void _reportTreeIssues(core.UINode node, core.UniboxTheme? theme) {
   assert(() {
-    final List<core.TreeIssue> issues = core.validateTree(node);
+    final List<core.TreeIssue> issues = core.validateTree(node, theme: theme);
     final List<core.TreeIssue> errors = issues
         .where((core.TreeIssue issue) => issue.isError)
         .toList(growable: false);

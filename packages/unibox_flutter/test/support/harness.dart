@@ -15,10 +15,11 @@ Future<void> pumpNode(
   WidgetTester tester,
   core.UINode node, {
   Widget Function(Widget child)? wrap,
+  core.UniboxTheme? theme,
 }) async {
   final Widget rendered = KeyedSubtree(
     key: nodeKey,
-    child: renderFlutter(node),
+    child: renderFlutter(node, theme: theme),
   );
 
   await tester.pumpWidget(

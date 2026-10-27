@@ -6,6 +6,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'render.dart';
 import 'text_style_scope.dart';
+import 'theme_scope.dart';
 import 'values.dart';
 
 /// Renders a [core.Box] as a Flutter widget tree.
@@ -31,7 +32,8 @@ class FlutterBoxState extends State<FlutterBox> {
   @override
   Widget build(BuildContext context) {
     final core.Box box = widget.box;
-    final core.BoxStyle style = _resolvedStyle(box);
+    final core.BoxStyle style = _resolvedStyle(box)
+        .resolve(UniboxThemeScope.of(context) ?? core.UniboxTheme.none);
 
     Widget content = _buildContent(box, style);
 

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
+import 'theme_scope.dart';
 import 'values.dart';
 
 /// Renders a [core.TextNode] as a Flutter [Text].
@@ -27,7 +28,11 @@ class FlutterText extends StatelessWidget {
 
     final Widget text = Text(
       node.text,
-      style: toTextStyle(node.computedStyle),
+      style: toTextStyle(
+        node.computedStyle.resolve(
+          UniboxThemeScope.of(context) ?? core.UniboxTheme.none,
+        ),
+      ),
       textAlign: align == null ? null : toTextAlign(align),
       maxLines: node.maxLines,
       overflow: overflow == null ? null : toTextOverflow(overflow),
