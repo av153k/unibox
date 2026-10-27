@@ -169,6 +169,21 @@ void main() {
       );
     });
 
+    test('carries the transition that makes a change ease', () {
+      const transition = BoxTransition(duration: Duration(milliseconds: 200));
+      const style = BoxStyle(transition: transition);
+
+      expect(style.transition, transition);
+      expect(style.copyWith().transition, transition);
+      expect(style, const BoxStyle(transition: transition));
+      expect(style.toString(), contains('transition'));
+
+      // The overlay wins, like every other token.
+      const other = BoxTransition(duration: Duration(milliseconds: 80));
+      expect(style.merge(const BoxStyle(transition: other)).transition, other);
+      expect(const BoxStyle().merge(style).transition, transition);
+    });
+
     test('merge lets the overlay win', () {
       const base = BoxStyle(
         padding: BoxSpacing.all(16),
@@ -319,6 +334,35 @@ void main() {
       expect(style, isNot(style.copyWith(fontSize: 18)));
       expect(style.toString(), contains('fontSize: 16.0'));
       expect(style.toString(), contains('fontFamily: Inter'));
+    });
+  });
+
+  group('BoxTransition', () {
+    test('eases over a duration', () {
+      const transition = BoxTransition(duration: Duration(milliseconds: 150));
+
+      expect(transition.duration, const Duration(milliseconds: 150));
+      expect(transition.curve, BoxCurve.ease);
+    });
+
+    test('implements value equality and copyWith', () {
+      const transition = BoxTransition(
+        duration: Duration(milliseconds: 150),
+        curve: BoxCurve.linear,
+      );
+
+      expect(transition.copyWith(), transition);
+      expect(transition.hashCode, transition.copyWith().hashCode);
+      expect(transition.copyWith(curve: BoxCurve.easeOut), isNot(transition));
+      expect(transition.toString(), contains('0:00:00.150000'));
+    });
+
+    test('keeps the duration it is given, negative included', () {
+      // A `Duration` cannot be checked in a const constructor, so a meaningless
+      // one is reported by `validateTree` rather than thrown here.
+      const transition = BoxTransition(duration: Duration(milliseconds: -1));
+
+      expect(transition.duration, const Duration(milliseconds: -1));
     });
   });
 

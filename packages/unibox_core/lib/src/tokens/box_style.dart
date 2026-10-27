@@ -4,6 +4,7 @@ import 'box_color.dart';
 import 'box_shadow.dart';
 import 'box_spacing.dart';
 import 'box_text_style.dart';
+import 'box_transition.dart';
 
 /// A reusable, immutable bundle of box tokens.
 ///
@@ -45,6 +46,7 @@ final class BoxStyle {
     this.border,
     this.shadow,
     this.textStyle,
+    this.transition,
   });
 
   // Layout.
@@ -128,6 +130,13 @@ final class BoxStyle {
   /// change a single font token of an inherited style.
   final BoxTextStyle? textStyle;
 
+  /// How one look of this box becomes another.
+  ///
+  /// The resting style declares it and a `BoxState` style only names the tokens
+  /// that change, so the transition applies to the change itself. Unset means the
+  /// look swaps instantly.
+  final BoxTransition? transition;
+
   /// Whether no token is set.
   bool get isEmpty => this == const BoxStyle();
 
@@ -155,6 +164,7 @@ final class BoxStyle {
     BoxBorder? border,
     BoxShadow? shadow,
     BoxTextStyle? textStyle,
+    BoxTransition? transition,
   }) {
     return BoxStyle(
       direction: direction ?? this.direction,
@@ -176,6 +186,7 @@ final class BoxStyle {
       border: border ?? this.border,
       shadow: shadow ?? this.shadow,
       textStyle: textStyle ?? this.textStyle,
+      transition: transition ?? this.transition,
     );
   }
 
@@ -212,6 +223,7 @@ final class BoxStyle {
       border: other.border ?? border,
       shadow: other.shadow ?? shadow,
       textStyle: textStyle?.merge(other.textStyle) ?? other.textStyle,
+      transition: other.transition ?? transition,
     );
   }
 
@@ -236,7 +248,8 @@ final class BoxStyle {
       other.borderRadius == borderRadius &&
       other.border == border &&
       other.shadow == shadow &&
-      other.textStyle == textStyle;
+      other.textStyle == textStyle &&
+      other.transition == transition;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -259,6 +272,7 @@ final class BoxStyle {
     border,
     shadow,
     textStyle,
+    transition,
   ]);
 
   @override
@@ -283,6 +297,7 @@ final class BoxStyle {
       if (border != null) 'border: $border',
       if (shadow != null) 'shadow: $shadow',
       if (textStyle != null) 'textStyle: $textStyle',
+      if (transition != null) 'transition: $transition',
     ];
     return 'BoxStyle(${tokens.join(', ')})';
   }

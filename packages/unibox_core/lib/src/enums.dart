@@ -43,6 +43,29 @@ enum CrossAlign {
   stretch,
 }
 
+/// The easing of a [BoxTransition].
+///
+/// These five are the curves CSS and Flutter define with the same control points,
+/// so a transition that declares one of them eases identically on both targets:
+/// `ease` is `cubic-bezier(0.25, 0.1, 0.25, 1)` in CSS and `Curves.ease` in
+/// Flutter, and the other four match the same way.
+enum BoxCurve {
+  /// Constant speed from start to end.
+  linear,
+
+  /// Slow at the ends, faster in the middle: the CSS default.
+  ease,
+
+  /// Slow at the start, then accelerate.
+  easeIn,
+
+  /// Fast at the start, then decelerate.
+  easeOut,
+
+  /// Slow at both ends.
+  easeInOut,
+}
+
 /// A state a box can be styled for.
 ///
 /// Only states that a pointer, a keyboard and a touch screen all have are part

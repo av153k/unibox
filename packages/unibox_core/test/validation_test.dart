@@ -53,6 +53,31 @@ void main() {
       expect(issue.message, contains('invalid HTML'));
     });
 
+    test('reports a transition declared in a state style', () {
+      const Box tree = Box(
+        stateStyles: <BoxState, BoxStyle>{
+          BoxState.hover: BoxStyle(
+            backgroundColor: BoxColor.black,
+            transition: BoxTransition(duration: Duration(milliseconds: 150)),
+          ),
+        },
+      );
+
+      final TreeIssue issue = validateTree(tree).single;
+
+      expect(issue.severity, TreeIssueSeverity.warning);
+      expect(issue.message, contains('hover'));
+      expect(issue.message, contains('transition'));
+    });
+
+    test('reports a transition that changes nothing', () {
+      const Box tree = Box(transition: BoxTransition(duration: Duration.zero));
+
+      final TreeIssue issue = validateTree(tree).single;
+
+      expect(issue.message, contains('positive duration'));
+    });
+
     test('reports an embed without an implementation', () {
       const Box tree = Box(children: <UINode>[_EmptyEmbed()]);
 

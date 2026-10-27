@@ -7,6 +7,7 @@ import '../tokens/box_shadow.dart';
 import '../tokens/box_spacing.dart';
 import '../tokens/box_style.dart';
 import '../tokens/box_text_style.dart';
+import '../tokens/box_transition.dart';
 import 'ui_node.dart';
 
 /// A flex container and the primary building block of Unibox.
@@ -57,6 +58,7 @@ class Box extends UINode {
     this.border,
     this.shadow,
     this.textStyle,
+    this.transition,
     this.style,
     this.hoverStyle,
     this.stateStyles,
@@ -145,6 +147,12 @@ class Box extends UINode {
   /// `DefaultTextStyle`. It never affects layout.
   final BoxTextStyle? textStyle;
 
+  /// How one look of this box becomes another.
+  ///
+  /// A state style names the tokens that change; this says how long the
+  /// change takes and how it eases. Unset means the look swaps instantly.
+  final BoxTransition? transition;
+
   // Style tokens.
 
   /// A reusable bundle of tokens, overridden by the flat parameters above.
@@ -211,6 +219,7 @@ class Box extends UINode {
     border: border,
     shadow: shadow,
     textStyle: textStyle,
+    transition: transition,
   );
 
   /// The resolved style of this box in its resting state.

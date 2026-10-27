@@ -7,6 +7,7 @@ import 'nodes/stack_node.dart';
 import 'nodes/ui_node.dart';
 import 'tokens/box_semantics.dart';
 import 'tokens/box_style.dart';
+import 'tokens/box_transition.dart';
 
 /// How much a [TreeIssue] matters.
 enum TreeIssueSeverity {
@@ -64,7 +65,10 @@ class TreeIssue {
 /// * a list item whose parent is not a list, which is invalid HTML and which no
 ///   assistive technology can announce as a list,
 /// * an embed that carries no implementation at all, which no renderer can draw
-///   and which would otherwise vanish from the page.
+///   and which would otherwise vanish from the page,
+/// * a transition declared on a state style instead of the resting one, which no
+///   renderer applies,
+/// * a transition with a duration that changes nothing.
 List<TreeIssue> validateTree(UINode root) {
   final List<TreeIssue> issues = <TreeIssue>[];
   _validate(root, parent: null, inLink: false, issues: issues);
@@ -145,6 +149,36 @@ void _validate(
               'invalid HTML and is not announced as an item of a list.',
         ),
       );
+    }
+  }
+
+  if (node is Box) {
+    final BoxTransition? transition = node.computedStyle.transition;
+
+    if (transition != null && transition.duration <= Duration.zero) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          message:
+              'A box declares a transition of ${transition.duration}, which '
+              'changes nothing: a transition needs a positive duration.',
+        ),
+      );
+    }
+
+    for (final BoxState state in BoxState.values) {
+      if (node.stateStyle(state)?.transition != null) {
+        issues.add(
+          TreeIssue(
+            node: node,
+            message:
+                'A box declares its transition in the ${state.name} style instead '
+                'of the resting one, so no renderer applies it: a transition says '
+                'how a change eases, and the change belongs to the state, not the '
+                'duration.',
+          ),
+        );
+      }
     }
   }
 
