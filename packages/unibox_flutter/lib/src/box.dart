@@ -55,7 +55,7 @@ class _UniboxBoxState extends State<UniboxBox> {
 
     final BoxDecoration? decoration = toDecoration(style);
     if (decoration != null) {
-      content = DecoratedBox(decoration: decoration, child: content);
+      content = _decorated(decoration, style.transition, content);
     }
 
     if (style.overflow == core.Overflow.hidden) {
@@ -71,6 +71,35 @@ class _UniboxBoxState extends State<UniboxBox> {
     }
 
     return content;
+  }
+
+  /// Paints [decoration] behind [child], interpolating when the box asks for it.
+  ///
+  /// A `DecoratedBox` cannot animate itself, so a box with a transition hands its
+  /// decoration to a `TweenAnimationBuilder`: on the next rebuild the widget tweens
+  /// from the decoration it painted last to the one the new state asks for, which
+  /// is exactly the set `BoxDecoration.lerp` covers — background, border colour,
+  /// corner radius and shadow. Layout never animates, matching the CSS side.
+  Widget _decorated(
+    BoxDecoration decoration,
+    core.BoxTransition? transition,
+    Widget child,
+  ) {
+    if (transition == null) {
+      return DecoratedBox(decoration: decoration, child: child);
+    }
+
+    return TweenAnimationBuilder<Decoration>(
+      // The first build paints the decoration as it is; every later one starts
+      // from whatever the animation had reached, so a fast hover in and out of a
+      // box does not snap back to the old look.
+      tween: DecorationTween(begin: decoration, end: decoration),
+      duration: transition.duration,
+      curve: toCurve(transition.curve),
+      builder: (BuildContext context, Decoration value, Widget? inner) =>
+          DecoratedBox(decoration: value, child: inner),
+      child: child,
+    );
   }
 
   /// Passes the typography of the box down to its descendants.

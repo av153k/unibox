@@ -30,6 +30,72 @@ core.Box statedBox(
 }
 
 void main() {
+  group('transitions', () {
+    /// A box that eases from white to black while the pointer is over it.
+    core.Box easingBox() {
+      return core.Box(
+        width: 120,
+        height: 48,
+        backgroundColor: core.BoxColor.white,
+        transition: const core.BoxTransition(
+          duration: Duration(milliseconds: 100),
+        ),
+        hoverStyle: const core.BoxStyle(backgroundColor: core.BoxColor.black),
+      );
+    }
+
+    testWidgets('eases from one state to the next', (tester) async {
+      await pumpNode(tester, easingBox());
+
+      final TestGesture pointer = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await pointer.addPointer(location: Offset.zero);
+      addTearDown(pointer.removePointer);
+
+      expect(decorationOf(tester)?.color, const Color(0xFFFFFFFF));
+
+      await pointer.moveTo(nodeCenter(tester));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      final Color middle = decorationOf(tester)!.color!;
+
+      // Halfway through, the box is neither colour: the change is interpolated
+      // rather than swapped.
+      expect(middle, isNot(const Color(0xFFFFFFFF)));
+      expect(middle, isNot(const Color(0xFF000000)));
+
+      await tester.pumpAndSettle();
+
+      expect(decorationOf(tester)?.color, const Color(0xFF000000));
+    });
+
+    testWidgets('swaps the look instantly without a transition', (
+      tester,
+    ) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          width: 120,
+          height: 48,
+          backgroundColor: core.BoxColor.white,
+          hoverStyle: core.BoxStyle(backgroundColor: core.BoxColor.black),
+        ),
+      );
+
+      final TestGesture pointer = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await pointer.addPointer(location: Offset.zero);
+      addTearDown(pointer.removePointer);
+      await pointer.moveTo(nodeCenter(tester));
+      await tester.pump();
+
+      expect(decorationOf(tester)?.color, const Color(0xFF000000));
+    });
+  });
+
   group('BoxState.hover', () {
     testWidgets('applies the hover style while the pointer is over the box', (
       tester,

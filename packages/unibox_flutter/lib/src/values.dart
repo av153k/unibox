@@ -100,6 +100,20 @@ BoxShadow toBoxShadow(core.BoxShadow shadow) {
   );
 }
 
+/// Converts a Unibox [core.BoxCurve] to a Flutter [Curve].
+///
+/// The five curves are the ones CSS and Flutter share the control points of, so a
+/// transition eases the same way on both targets.
+Curve toCurve(core.BoxCurve curve) {
+  return switch (curve) {
+    core.BoxCurve.linear => Curves.linear,
+    core.BoxCurve.ease => Curves.ease,
+    core.BoxCurve.easeIn => Curves.easeIn,
+    core.BoxCurve.easeOut => Curves.easeOut,
+    core.BoxCurve.easeInOut => Curves.easeInOut,
+  };
+}
+
 /// Converts a Unibox [core.ImageFit] to a Flutter [BoxFit].
 ///
 /// Every value of the model has an exact counterpart, `scaleDown` included: both
