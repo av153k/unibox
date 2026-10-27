@@ -184,9 +184,18 @@ never inherited (CSS does not inherit them either).
   viewport exists. Both answers reduce to the same two layouts as long as a
   hidden element is equivalent to an absent one — a `display: none` box takes no
   room, like a node that was never added.
+- No node may inherit a *look* from its platform. Whatever the tree does not
+  declare is decided by the model and written into the output, because the two
+  hosts answer differently and both answers would be visible: a box without a
+  direction is a column, a text without typography gets
+  `BoxTextStyle.defaults`, an image without a fit scales down, a text area
+  without `maxLines` is one row tall with no resize grip, and a stack child that
+  is not positioned keeps its own size instead of stretching to the cell. Each of
+  those was a divergence before it was a default, and none of them is a token: the
+  tree still says nothing, the renderers just stop asking the user agent.
 - Approximate is allowed where the platforms genuinely differ: font face, line
-  breaking, shadow blur, placeholder and focus colours, hit testing. Similar, not
-  identical.
+  breaking, shadow blur, placeholder, caret and selection colours, scrollbars, hit
+  testing. Similar, not identical.
 
 ### 5.5 Interaction
 - A box reacts to tap, long press, hover, focus and press. These five states
