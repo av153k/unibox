@@ -71,6 +71,11 @@ Component renderNode(core.UINode node) {
     final core.EmbedNode embed => Component.fragment(<Component>[
       _renderEmbed(embed),
     ], key: toJasprKey(embed.key)),
+    final core.StatefulNode<Object, core.Store<Object>> stateful =>
+      throw UnsupportedError(
+        'A StatefulNode needs a client runtime: this renderer writes the page '
+        'once and cannot react to a store yet (${stateful.runtimeType}).',
+      ),
     _ => throw UnsupportedError('No Jaspr renderer for ${node.runtimeType}.'),
   };
 }

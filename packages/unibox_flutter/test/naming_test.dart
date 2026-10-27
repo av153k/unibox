@@ -40,6 +40,7 @@ void main() {
       UniboxLink,
       UniboxLinkScope,
       UniboxStack,
+      UniboxStateful,
       UniboxTextInput,
       UniboxText,
       UniboxTextStyleScope,
@@ -48,7 +49,7 @@ void main() {
       noHook,
     ];
 
-    expect(exported, hasLength(12));
+    expect(exported, hasLength(13));
     expect(widget, isNotNull);
     expect(renderFlutter, isNotNull);
   });

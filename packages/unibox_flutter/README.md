@@ -284,6 +284,27 @@ an effect that wraps content needs. `WidgetNode` is the convenience for a single
 widget payload with no child; a node carrying an implementation this target cannot
 draw, or two of them, is reported by `renderFlutter` instead of being skipped.
 
+## Stateful nodes
+
+A [`StatefulNode`](../unibox_core/README.md#state) is rendered by `UniboxStateful`,
+written once for every node an application defines:
+
+- the store is created when the widget mounts, subscribed to, and `onMount` is
+  called; a rebuild with a node of the same type and key keeps the state, and a
+  different key starts again;
+- every notification rebuilds the view, and unmounting calls `onUnmount` and then
+  `dispose` on the store;
+- the view's tree is rendered in place, so it inherits the typography and the
+  layout of the boxes around it;
+- each `NodeView.overlays` entry is rendered through `renderFlutter` into the root
+  `Overlay`, above a barrier, which is what lets an overlay escape the clipping and
+  the scrolling of the boxes around it. A view that emits an overlay needs an
+  `Overlay` above the tree — every `MaterialApp` or `WidgetsApp` provides one.
+
+What this layer does not do yet: focus containment, `Escape` and the back button,
+and the leave animation. They are the next step in `TASK_PLAN.md` (Phase 22), so an
+overlay currently closes when the store says so, not when the user presses `Escape`.
+
 ## Testing
 
 ```sh

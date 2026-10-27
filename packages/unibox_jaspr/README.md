@@ -445,6 +445,14 @@ adds is where the CSS lives. `ComponentNode` is the convenience for a single
 component payload with no child; a node carrying an implementation this target
 cannot draw, or two of them, is reported by `renderJaspr` instead of being skipped.
 
+## Stateful nodes
+
+A `StatefulNode` is **reported**, not skipped: `renderJaspr` throws
+`UnsupportedError` for it, because a view that reacts to a store needs a client
+runtime, and this renderer writes a page once. Server rendering can still draw the
+first state by hand — `view(initial, store)` is an ordinary tree — but the page that
+changes on a click waits for the client build (`TASK_PLAN.md`, Phase 22).
+
 ## Testing
 
 ```sh

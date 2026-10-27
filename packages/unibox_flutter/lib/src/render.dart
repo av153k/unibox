@@ -7,6 +7,7 @@ import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
 import 'stack_node.dart';
+import 'stateful_node.dart';
 import 'text_input_node.dart';
 import 'text_node.dart';
 import 'text_style_scope.dart';
@@ -101,6 +102,8 @@ Widget renderNode(core.UINode node) {
       key: toFlutterKey(embed.key),
       child: _renderEmbed(embed),
     ),
+    final core.StatefulNode<Object, core.Store<Object>> stateful =>
+      UniboxStateful(node: stateful, key: toFlutterKey(stateful.key)),
     _ => throw UnsupportedError('No Flutter renderer for ${node.runtimeType}.'),
   };
 }

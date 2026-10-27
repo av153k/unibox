@@ -25,6 +25,7 @@ export 'src/image_node.dart' show UniboxImage;
 export 'src/link_node.dart' show LinkOpener, UniboxLink, UniboxLinkScope;
 export 'src/render.dart';
 export 'src/stack_node.dart' show UniboxStack;
+export 'src/stateful_node.dart' show UniboxStateful;
 export 'src/text_input_node.dart' show UniboxTextInput;
 export 'src/text_node.dart' show UniboxText;
 export 'src/text_style_scope.dart' show UniboxTextStyleScope;
