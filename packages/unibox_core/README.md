@@ -15,6 +15,8 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `LinkNode`        | a link wrapping one child                                     |
 | `StackNode`       | layered children, with `PositionedNode` placing them           |
 | `TextInputNode`   | a single line or multiline field                              |
+| `StatefulNode`    | a subtree that owns a `Store` and draws a `NodeView`           |
+| `Store`           | the state contract a `StatefulNode` draws                     |
 | `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |
 | `BoxStyle`        | a bundle of every layout and visual token                     |
 | `BoxTextStyle`    | a bundle of typography tokens                                 |
@@ -144,6 +146,34 @@ The payloads are platform values, which is the honest cost of the hatch: the nod
 has to be built either in a package that can see both types or, more usually, with
 the host injecting its own half — the same shape the example uses for the map.
 `validateTree` reports an embed that carries nothing at all.
+
+## State
+
+`StatefulNode` is the one node with a lifecycle. It carries a factory for a
+`Store` and a view function; a renderer creates the store once, subscribes,
+calls `onMount`, and disposes it on unmount. The state is a value the store
+publishes, so the view is a pure function of it:
+
+```dart
+final class SignupNode extends StatefulNode<SignupState, SignupStore> {
+  SignupNode() : super(create: SignupStore.new, view: signupView);
+}
+
+NodeView signupView(SignupState state, SignupStore store) => (
+  tree: TextNode(state.pending ? 'Joining…' : 'Join'),
+  overlays: const <UINode>[],
+);
+```
+
+`NodeView` is a record: `tree` is the content in flow, `overlays` are trees the
+renderer shows above it — a dialog, a sheet. The renderer owns how an overlay is
+shown (focus, the barrier, `Escape`, the leave animation), which is why the
+model has no dialog node and no presence token.
+
+`Store` names no platform. `unibox_state` ships `StateStore` on top of pure Dart
+listeners, so one store runs in Flutter, on a server and in a browser; `onMount`
+is where an initial request starts, which is why a server render can draw the
+first state without starting one.
 
 ## Inheritance
 

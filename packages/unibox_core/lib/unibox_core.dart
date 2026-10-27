@@ -10,9 +10,11 @@
 /// * layout enums ([Axis], [MainAlign], [CrossAlign], [Overflow], [ImageFit],
 ///   [FontWeight], [TextAlign], [TextOverflow]),
 /// * the immutable node tree rooted in [UINode]: [Box], [TextNode],
-///   [ImageNode], [LinkNode], [StackNode], [PositionedNode] and
-///   [TextInputNode],
-/// * [validateTree], which reports nodes that a renderer cannot honour.
+///   [ImageNode], [LinkNode], [StackNode], [PositionedNode],
+///   [TextInputNode] and [StatefulNode], which adds a subtree that owns its
+///   state,
+/// * [Store], the state a [StatefulNode] draws, and [validateTree], which
+///   reports nodes that a renderer cannot honour.
 library;
 
 export 'src/callbacks.dart';
@@ -23,9 +25,11 @@ export 'src/nodes/image_node.dart';
 export 'src/nodes/link_node.dart';
 export 'src/nodes/positioned_node.dart';
 export 'src/nodes/stack_node.dart';
+export 'src/nodes/stateful_node.dart';
 export 'src/nodes/text_input_node.dart';
 export 'src/nodes/text_node.dart';
 export 'src/nodes/ui_node.dart';
+export 'src/state/store.dart';
 export 'src/tokens/box_border.dart';
 export 'src/tokens/box_color.dart';
 export 'src/tokens/box_colors.dart';
