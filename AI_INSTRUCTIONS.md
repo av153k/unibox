@@ -50,11 +50,13 @@ host that renders it.
   Never reach for the host's default.
 - `unibox_material` is optional: the fifteen Material type roles as `const`
   `BoxTextStyle` values, the colour roles as `MaterialPalette` (`light` and `dark`,
-  each a `const` set of `BoxColor`s), and two components (`MaterialCard`,
-  `MaterialListTile`) that are `Box` subclasses. The palette is a value the tree
-  wears — pass the roles into the builders; there is no `Theme` lookup at render
-  time. Wiring the same roles into the platform (`ColorScheme`, CSS custom
-  properties) is the application's job.
+  each a `const` set of `BoxColor`s), and six components built on nodes the renderers
+  already draw — `MaterialCard`, `MaterialListTile`, `MaterialInkWell` and
+  `MaterialTextField` are `Box` subclasses, `MaterialDialog` and
+  `MaterialBottomSheet` are `OverlayNode`s. The palette is a value the tree wears —
+  pass the roles into the builders; there is no `Theme` lookup at render time.
+  Wiring the same roles into the platform (`ColorScheme`, CSS custom properties) is
+  the application's job.
 
 
 ## The rules that make generated code run
@@ -140,9 +142,10 @@ host that renders it.
 | `SingleChildScrollView` | `Box(overflow: Overflow.scroll)` |
 | `Stack` + `Positioned` | `StackNode` + `PositionedNode` |
 | `Semantics(button: true, label:)` | `semantics: BoxSemantics(role: BoxRole.button, label: …)` |
-| `TextField` | `TextInputNode(value:, placeholder:, inputType:, onChanged:)` |
-| `showDialog`, `Dialog` | `OverlayNode(child: …)` — a node, not a call |
-| `showModalBottomSheet` | `OverlayNode(alignment: OverlayAlignment.bottom, …)` |
+| `TextField` | `TextInputNode(value:, placeholder:, inputType:, onChanged:)`, or `MaterialTextField` for Material's frame and states |
+| `showDialog`, `Dialog` | `MaterialDialog(title:, content:, actions:, onDismiss:)` — an `OverlayNode`, not a call |
+| `showModalBottomSheet` | `MaterialBottomSheet(title:, content:, actions:)` — the same overlay at the bottom |
+| `InkWell`, `InkResponse` | `MaterialInkWell(child:, onTap:)` — a box with Material's state layers |
 | `StatefulWidget` + `setState` around a tree | `StatefulNode` + a `StateStore` |
 | `Card` | `MaterialCard` (from `unibox_material`) |
 | `ListTile` | `MaterialListTile` (from `unibox_material`) |
