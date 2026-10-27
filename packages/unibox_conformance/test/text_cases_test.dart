@@ -77,6 +77,40 @@ void main() {
     });
   });
 
+  group('defaultTextAppearance', () {
+    test('describes the typography the model declares as its default', () {
+      // The constant is written out by hand so that it reads as a statement about
+      // what a page looks like; this test is what keeps it true.
+      final core.BoxTextStyle defaults = core.BoxTextStyle.defaults;
+
+      expect(defaultTextAppearance.fontSize, defaults.fontSize);
+      expect(defaultTextAppearance.fontWeight, defaults.fontWeight);
+      expect(defaultTextAppearance.color, defaults.color);
+      expect(defaultTextAppearance.lineHeight, defaults.lineHeight);
+      expect(defaultTextAppearance.letterSpacing, defaults.letterSpacing);
+
+      // The model leaves the family unnamed: it means the platform's UI font,
+      // which is the one thing no description can pin down.
+      expect(defaultTextAppearance.fontFamily, defaults.fontFamily);
+      expect(defaultTextAppearance.fontFamily, isNull);
+
+      // Nothing defaults the layout of the text itself.
+      expect(defaultTextAppearance.textAlign, isNull);
+      expect(defaultTextAppearance.maxLines, isNull);
+      expect(defaultTextAppearance.overflow, isNull);
+    });
+
+    test('is not what a text node declares', () {
+      // The table compares the tokens a node states; the default is what neither
+      // the node nor an enclosing box states. They are different questions, so a
+      // case that expects plain text still expects no tokens at all.
+      expect(
+        defaultTextAppearance.differencesFrom(const TextAppearance()),
+        isNotEmpty,
+      );
+    });
+  });
+
   group('TextAppearance', () {
     test('names the tokens that differ', () {
       const TextAppearance actual = TextAppearance(
@@ -106,6 +140,20 @@ void main() {
         declared.differencesFrom(const TextAppearance()),
         <String, TokenDifference>{'fontSize': (actual: 16.0, expected: null)},
       );
+    });
+
+    test('copies with the tokens it is given', () {
+      final TextAppearance copy = defaultTextAppearance.copyWith(
+        fontSize: 20,
+        color: core.BoxColor.white,
+        maxLines: 2,
+      );
+
+      expect(copy.fontSize, 20);
+      expect(copy.color, core.BoxColor.white);
+      expect(copy.maxLines, 2);
+      expect(copy.lineHeight, defaultTextAppearance.lineHeight);
+      expect(copy.letterSpacing, defaultTextAppearance.letterSpacing);
     });
 
     test('compares equal descriptions as equal', () {

@@ -29,6 +29,25 @@ final class TextCase {
   String toString() => 'TextCase($description)';
 }
 
+/// The typography a text node is typeset in when nothing in the tree overrides
+/// it, as both renderers have to produce it.
+///
+/// It is written out rather than derived from [core.BoxTextStyle.defaults] so that
+/// this stays a statement about what a page looks like: the two are held together
+/// by a test in this package, and a change to either has to be made twice on
+/// purpose.
+///
+/// The family is absent because the model names none — unset means the platform's
+/// UI font, which CSS spells `system-ui` and Flutter leaves to the engine, and
+/// which this description can therefore only observe as "no family chosen".
+const TextAppearance defaultTextAppearance = TextAppearance(
+  fontSize: 16,
+  fontWeight: core.FontWeight.normal,
+  color: core.BoxColor.black,
+  lineHeight: 1.5,
+  letterSpacing: 0,
+);
+
 /// The text nodes every renderer is checked against.
 ///
 /// The table takes the tokens a text node can carry one by one — each case sets a

@@ -16,7 +16,8 @@ output *does* with the same node. This package writes that down once:
   alignment and truncation.
 - [`textCases`](lib/src/text_cases.dart) is the text table: one case per token,
   one for the precedence of a `BoxTextStyle` and its flat overrides, and one with
-  every token at once.
+  every token at once. It also holds `defaultTextAppearance`, the typography of a
+  text node that declares nothing, which both renderers have to produce.
 
 The package holds the contract, not the tests. A renderer suite renders each
 case, reads the appearance back from its own output and compares it with the
@@ -50,16 +51,16 @@ it does. The line runs between what a renderer *declares* and what a text engine
 | Same                                                              | Why |
 | ----------------------------------------------------------------- | --- |
 | the tokens a node declares                                        | one table, read back from each output |
+| the typography nobody declares                                    | yes: `BoxTextStyle.defaults` is the model's, and both renderers install it at the root — a `DefaultTextStyle` around the widget tree, a `:root` rule on the page |
 | the height of a line box                                          | `fontSize * lineHeight` on both: CSS multiplies the unitless `line-height`, `TextStyle.height` does the same |
 | the layout of the boxes                                           | flexbox on one side, `Flex`/`Row`/`Column` on the other, with the same rules |
 | the glyphs                                                        | **no**: Skia and the browser each rasterise text with their own engine |
 | where a line wraps                                                | **no**: two engines measure the same string differently, so the break can fall elsewhere |
-| a font that the app ships to both hosts                           | only then; a family installed on one side only falls back, and the fallback changes the metrics |
-| the typography nobody declared                                    | only if the tree declares it: Flutter falls back to 14 logical pixels of black, a browser to 16 pixels of `canvastext` |
+| a font family                                                     | only if the app ships the font to both hosts, which is why the model leaves that token out of its default |
 
-Which is why a tree that has to be pixel-stable declares its typography and its
-`lineHeight`, and ships the same font file to both hosts. Set the two, and
-everything above the glyphs is identical; leave them out, and the host decides.
+Which is why a tree that has to be pixel-stable declares its `lineHeight` and
+ships the same font file to both hosts. Do the two, and everything above the
+glyphs is identical; leave the family out, and each platform uses its own UI font.
 
 What stays approximate on purpose, and is therefore outside the contract
 altogether: the font face, line breaking, shadow blur, placeholder and focus

@@ -112,6 +112,34 @@ final class TextAppearance {
     return differences;
   }
 
+  /// A copy of this description with the given tokens replaced.
+  ///
+  /// Passing `null` keeps the current value, the same way
+  /// [core.BoxTextStyle.copyWith] does; build a fresh appearance to clear one.
+  TextAppearance copyWith({
+    double? fontSize,
+    core.FontWeight? fontWeight,
+    core.BoxColor? color,
+    double? lineHeight,
+    String? fontFamily,
+    double? letterSpacing,
+    core.TextAlign? textAlign,
+    int? maxLines,
+    core.TextOverflow? overflow,
+  }) {
+    return TextAppearance(
+      fontSize: fontSize ?? this.fontSize,
+      fontWeight: fontWeight ?? this.fontWeight,
+      color: color ?? this.color,
+      lineHeight: lineHeight ?? this.lineHeight,
+      fontFamily: fontFamily ?? this.fontFamily,
+      letterSpacing: letterSpacing ?? this.letterSpacing,
+      textAlign: textAlign ?? this.textAlign,
+      maxLines: maxLines ?? this.maxLines,
+      overflow: overflow ?? this.overflow,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       other is TextAppearance && differencesFrom(other).isEmpty;
