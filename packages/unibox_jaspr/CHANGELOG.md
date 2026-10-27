@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- A field writes `aria-required`, `aria-invalid` and `aria-description`, the last one
+  carrying the text itself rather than pointing at an element by id.
+- A box with `BoxSemantics.current` writes `aria-current` with the kind of current
+  it is.
 - A transition with parts writes one `transition` entry per look, each with its own
   duration, curve and `transition-delay`, in paint-first order.
 - `opacity` is written as the property of the same name and `transform` as

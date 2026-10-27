@@ -129,6 +129,10 @@ Box buildSignupCard({
         TextInputNode(
           value: state.name,
           placeholder: 'Ada Lovelace',
+          required: true,
+          // The tree does not validate: the host does, and rebuilds with the flag.
+          invalid: state.isDirty && state.name.trim().isEmpty,
+          description: 'The name we should greet you by.',
           onChanged: onNameChanged,
           onSubmitted: (_) => onSubmit(),
         ),
@@ -137,6 +141,9 @@ Box buildSignupCard({
         TextInputNode(
           value: state.email,
           placeholder: 'ada@example.com',
+          required: true,
+          invalid: state.isDirty && !state.email.contains('@'),
+          description: 'We only use it to send the release notes.',
           onChanged: onEmailChanged,
           onSubmitted: (_) => onSubmit(),
         ),

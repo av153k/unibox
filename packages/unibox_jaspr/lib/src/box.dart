@@ -198,6 +198,13 @@ class UniboxBox extends StatelessComponent {
       attributes['aria-live'] = 'polite';
     }
 
+    final core.BoxCurrent? current = semantics?.current;
+    if (current != null) {
+      // Which kind of current this is, not just that it is current: a nav item
+      // announces "current page", a step of a flow something else.
+      attributes['aria-current'] = current.name;
+    }
+
     return attributes.isEmpty ? null : attributes;
   }
 

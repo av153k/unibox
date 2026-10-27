@@ -21,6 +21,7 @@ void main() {
       expect(node.textAlign, TextAlign.center);
       expect(node.maxLines, 2);
       expect(node.overflow, TextOverflow.ellipsis);
+
       expect(node.children, isEmpty);
     });
 
@@ -212,6 +213,26 @@ void main() {
       expect(node.onSubmitted, isNull);
       expect(node.onFocusChanged, isNull);
       expect(node.children, isEmpty);
+    });
+
+    test('states what the form needs from the field', () {
+      const node = TextInputNode(
+        required: true,
+        invalid: true,
+        description: 'Use the address we can reach you at.',
+      );
+
+      expect(node.required, isTrue);
+      expect(node.invalid, isTrue);
+      expect(node.description, 'Use the address we can reach you at.');
+    });
+
+    test('assumes a field is neither required nor wrong', () {
+      const node = TextInputNode();
+
+      expect(node.required, isFalse);
+      expect(node.invalid, isFalse);
+      expect(node.description, isNull);
     });
 
     test('stores input configuration and handlers', () {

@@ -34,6 +34,27 @@ enum BoxRole {
       this == button || this == checkbox || this == switch_ || this == link;
 }
 
+/// Which item of a set a box currently is, for a navigation.
+///
+/// The three values are the ones ARIA allows for `aria-current` and that mean
+/// something in an interface: the page the reader is on, the step of a flow, and
+/// the place in a map or a list. `null` — no value at all — means the box is not
+/// the current one.
+///
+/// Flutter has no `aria-current`; the closest thing it can say is that this box is
+/// the selected item of a set, which is what a screen reader on a phone announces.
+/// The web says precisely which kind of current it is.
+enum BoxCurrent {
+  /// The page being displayed.
+  page,
+
+  /// The step of a process being displayed.
+  step,
+
+  /// The location being displayed, in a map or a list of places.
+  location,
+}
+
 /// The element a box becomes on the web.
 ///
 /// A box is a `div` unless it says otherwise. The elements here are the ones that
@@ -124,6 +145,7 @@ final class BoxSemantics {
     this.selected,
     this.hidden = false,
     this.liveRegion = false,
+    this.current,
   });
 
   /// What the box means to assistive technologies.
@@ -166,6 +188,12 @@ final class BoxSemantics {
   /// moving the focus there.
   final bool liveRegion;
 
+  /// Which item of a set this box currently is, or `null` for none.
+  ///
+  /// This is what tells a reader that the nav item it just read is the page it is
+  /// on: `aria-current` on the web, the selected state of a set in Flutter.
+  final BoxCurrent? current;
+
   /// Whether a box with this description takes keyboard focus.
   ///
   /// A hidden box never does: a control that a screen reader cannot see must not
@@ -184,6 +212,7 @@ final class BoxSemantics {
     bool? selected,
     bool? hidden,
     bool? liveRegion,
+    BoxCurrent? current,
   }) {
     return BoxSemantics(
       role: role ?? this.role,
@@ -194,6 +223,7 @@ final class BoxSemantics {
       selected: selected ?? this.selected,
       hidden: hidden ?? this.hidden,
       liveRegion: liveRegion ?? this.liveRegion,
+      current: current ?? this.current,
     );
   }
 
@@ -207,7 +237,8 @@ final class BoxSemantics {
       other.expanded == expanded &&
       other.selected == selected &&
       other.hidden == hidden &&
-      other.liveRegion == liveRegion;
+      other.liveRegion == liveRegion &&
+      other.current == current;
 
   @override
   int get hashCode => Object.hash(
@@ -219,6 +250,7 @@ final class BoxSemantics {
     selected,
     hidden,
     liveRegion,
+    current,
   );
 
   @override
@@ -232,6 +264,7 @@ final class BoxSemantics {
       if (selected != null) 'selected: $selected',
       if (hidden) 'hidden: $hidden',
       if (liveRegion) 'liveRegion: $liveRegion',
+      if (current != null) 'current: $current',
     ];
     return 'BoxSemantics(${fields.join(', ')})';
   }

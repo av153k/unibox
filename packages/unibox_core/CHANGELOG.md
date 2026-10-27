@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `TextInputNode.required`, `.invalid` and `.description`: what the form needs from a
+  field, whether the value is wrong, and what the field expects — the three things
+  that let a reader hear the problem at the field instead of in a status message.
+- `BoxSemantics.current` (`BoxCurrent.page`, `.step`, `.location`): the item of a set
+  the reader is on, for a navigation.
 - `BoxLook` and `BoxTransitionPart`: a transition can ease one part of a look before
   another. `BoxTransition.parts` overrides the base duration and curve per look,
   `timingOf` resolves one look, `totalDuration` is the longest `delay + duration` and

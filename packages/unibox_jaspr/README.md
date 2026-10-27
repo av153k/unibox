@@ -144,6 +144,10 @@ Flutter counterpart has it.
 | `BoxSemantics.liveRegion` | `aria-live="polite"` |
 | `BoxSemantics.hidden` | `aria-hidden="true"`, and no `tabindex` |
 | `Box.enabled` | `aria-disabled="true"`, and no listeners |
+| `BoxSemantics.current` | `aria-current="page"`, `"step"` or `"location"` |
+| `TextInputNode.required` | `aria-required="true"` |
+| `TextInputNode.invalid` | `aria-invalid="true"` |
+| `TextInputNode.description` | `aria-description`, carrying the text itself so no element has to be referenced by an id |
 
 ## Text mapping
 

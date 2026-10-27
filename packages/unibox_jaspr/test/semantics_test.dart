@@ -157,6 +157,67 @@ void main() {
     });
   });
 
+  group('form fields', () {
+    testComponents('says a field is required, wrong and why', (tester) async {
+      pumpNode(
+        tester,
+        const core.TextInputNode(
+          required: true,
+          invalid: true,
+          description: 'Use the address we can reach you at.',
+        ),
+      );
+
+      final Map<String, String> attributes = attributesOf(find.tag('input'));
+
+      // `aria-description` carries the text itself, so no element has to be
+      // referenced by an id and the Flutter side can hand the same string to
+      // `Semantics.hint`.
+      expect(attributes['aria-required'], 'true');
+      expect(attributes['aria-invalid'], 'true');
+      expect(
+        attributes['aria-description'],
+        'Use the address we can reach you at.',
+      );
+    });
+
+    testComponents('says nothing about a plain field', (tester) async {
+      pumpNode(tester, const core.TextInputNode());
+
+      final Map<String, String> attributes = attributesOf(find.tag('input'));
+
+      expect(attributes.containsKey('aria-required'), isFalse);
+      expect(attributes.containsKey('aria-invalid'), isFalse);
+      expect(attributes.containsKey('aria-description'), isFalse);
+    });
+  });
+
+  group('current item', () {
+    testComponents('says which kind of current the item is', (tester) async {
+      pumpNode(
+        tester,
+        const core.Box(
+          semantics: core.BoxSemantics(
+            role: core.BoxRole.link,
+            current: core.BoxCurrent.page,
+          ),
+          children: <core.UINode>[core.TextNode('Sign up')],
+        ),
+      );
+
+      expect(attributesOf(find.tag('div'))['aria-current'], 'page');
+    });
+
+    testComponents('says nothing current about a plain box', (tester) async {
+      pumpNode(tester, const core.Box());
+
+      expect(
+        attributesOf(find.tag('div')).containsKey('aria-current'),
+        isFalse,
+      );
+    });
+  });
+
   group('accessibility state', () {
     testComponents('writes the state both platforms expose', (tester) async {
       pumpNode(

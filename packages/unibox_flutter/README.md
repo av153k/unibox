@@ -65,6 +65,9 @@ it. Nothing in this section changes a pixel.
 | `BoxSemantics.hidden` | `Semantics.hidden`, and the box is never focusable |
 | `BoxSemantics.liveRegion` | `Semantics.liveRegion` |
 | `BoxSemantics.label` | `Semantics.label`, with the contents excluded so the two cannot drift |
+| `BoxSemantics.current` | `selected: true`: Flutter has no `aria-current`, so the current item is announced as the selected item of a set |
+| `TextInputNode.required` / `.invalid` | `Semantics.isRequired` / `Semantics.validationResult` |
+| `TextInputNode.description` | `Semantics.hint`, announced after the label |
 
 ## Text mapping
 

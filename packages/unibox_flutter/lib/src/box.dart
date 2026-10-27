@@ -499,7 +499,10 @@ class _UniboxBoxState extends State<UniboxBox> {
       focused: focusable ? _focused : null,
       role: _semanticsRole(semantics?.element ?? core.BoxElement.div),
       expanded: semantics?.expanded,
-      selected: semantics?.selected,
+      // `aria-current` has no Flutter counterpart; the closest thing a phone
+      // reader understands is that this box is the selected item of a set.
+      selected:
+          semantics?.selected ?? (semantics?.current == null ? null : true),
       hidden: semantics?.hidden ?? false,
       liveRegion: semantics?.liveRegion ?? false,
       child: content,

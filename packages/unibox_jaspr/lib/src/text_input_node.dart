@@ -78,6 +78,17 @@ class UniboxTextInput extends StatelessComponent {
     if (placeholder != null) {
       attributes['placeholder'] = placeholder;
     }
+    if (node.required) {
+      attributes['aria-required'] = 'true';
+    }
+    if (node.invalid) {
+      attributes['aria-invalid'] = 'true';
+    }
+    if (node.description != null) {
+      // A description needs no element to point at: `aria-description` carries the
+      // text itself, which is also what the Flutter side hands to `Semantics.hint`.
+      attributes['aria-description'] = node.description!;
+    }
     if (label != null) {
       attributes['aria-label'] = label;
     }

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- A field announces `required`, `invalid` and its description through
+  `Semantics.isRequired`, `Semantics.validationResult` and `Semantics.hint`, and the
+  wrapper only appears when the node said something to announce.
+- `BoxSemantics.current` is announced as `selected`, which is the closest thing
+  Flutter has to `aria-current`.
 - A transition with parts gives each look group its own timing, and a delay becomes
   an `Interval` of the longest timeline, so an implicit animation can wait without an
   `AnimationController` of its own.

@@ -573,6 +573,17 @@ void main() {
       expect(semantics.liveRegion, isTrue);
     });
 
+    test('says which item of a set the box currently is', () {
+      const BoxSemantics semantics = BoxSemantics(current: BoxCurrent.page);
+
+      expect(semantics.current, BoxCurrent.page);
+      expect(semantics.copyWith().current, BoxCurrent.page);
+      expect(semantics, const BoxSemantics(current: BoxCurrent.page));
+      expect(semantics, isNot(const BoxSemantics(current: BoxCurrent.step)));
+      expect(semantics.toString(), contains('current: BoxCurrent.page'));
+      expect(const BoxSemantics().current, isNull);
+    });
+
     test('copies the element and the state it is given', () {
       const semantics = BoxSemantics(role: BoxRole.button);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'text_style_scope.dart';
@@ -94,7 +95,12 @@ class _UniboxTextInputState extends State<UniboxTextInput> {
       decoration: InputDecoration.collapsed(hintText: node.placeholder),
     );
 
-    if (semanticsLabel == null) {
+    // A field states what the form needs from it as well as its name, so the
+    // wrapper is there whenever the node said anything a reader should hear.
+    if (semanticsLabel == null &&
+        !node.required &&
+        !node.invalid &&
+        node.description == null) {
       return field;
     }
 
@@ -103,6 +109,11 @@ class _UniboxTextInputState extends State<UniboxTextInput> {
       label: semanticsLabel,
       enabled: node.enabled,
       readOnly: node.readOnly,
+      isRequired: node.required ? true : null,
+      validationResult: node.invalid
+          ? SemanticsValidationResult.invalid
+          : SemanticsValidationResult.none,
+      hint: node.description,
       child: field,
     );
   }

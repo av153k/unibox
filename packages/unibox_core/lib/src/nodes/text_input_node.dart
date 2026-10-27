@@ -21,6 +21,9 @@ class TextInputNode extends UINode {
     this.readOnly = false,
     this.autofocus = false,
     this.semanticsLabel,
+    this.required = false,
+    this.invalid = false,
+    this.description,
     this.onChanged,
     this.onSubmitted,
     this.onFocusChanged,
@@ -65,6 +68,29 @@ class TextInputNode extends UINode {
   /// A [placeholder] is only a hint and disappears once the user types, so a
   /// field that needs an accessible name should carry one.
   final String? semanticsLabel;
+
+  /// Whether the form needs a value here.
+  ///
+  /// A required field says so before it is submitted: `aria-required` on the web
+  /// and `Semantics.isRequired` in Flutter, both of which a screen reader reads out
+  /// with the label instead of after a failed submission.
+  final bool required;
+
+  /// Whether the value in the field is wrong.
+  ///
+  /// The tree does not decide what "wrong" means — the host validates and rebuilds
+  /// with this flag — but it does report it in the same two places: `aria-invalid`
+  /// and `Semantics.validationResult`.
+  final bool invalid;
+
+  /// A line that describes what the field expects: a format, or why the value was
+  /// rejected.
+  ///
+  /// This is the accessible description of the field and not a visible message: the
+  /// tree draws what the host asks it to draw, so a message that should also be seen
+  /// stays a `TextNode` next to the field. The two targets attach it the same way —
+  /// `aria-description` on the web, `Semantics.hint` in Flutter.
+  final String? description;
 
   /// Called whenever the value of the input changes.
   final TextChangedCallback? onChanged;

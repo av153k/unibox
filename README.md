@@ -302,6 +302,9 @@ TextInputNode(
 | `enabled` | `bool` | `true` | Disabled fields keep their value and layout and leave the tab order. |
 | `readOnly` | `bool` | `false` | Selectable and copyable, not editable. |
 | `autofocus` | `bool` | `false` | Takes focus as soon as it is drawn. |
+| `required` | `bool` | `false` | The form needs a value here: `aria-required`, and announced with the label in Flutter. |
+| `invalid` | `bool` | `false` | The value is wrong, decided by the host: `aria-invalid`, and the invalid state of the field in Flutter. |
+| `description` | `String?` | none | What the field expects, or why it was rejected. It is the accessible description (`aria-description`, `Semantics.hint`), not a drawn message: that stays a text node. |
 | `semanticsLabel` | `String?` | none | The name a screen reader announces. |
 | `onChanged` | `TextChangedCallback?` | none | Fires on every change, with the current text. |
 | `onSubmitted` | `TextSubmittedCallback?` | none | Fires on `Enter` (or `Ctrl`/`Cmd`+`Enter` in a text area). |
@@ -466,6 +469,7 @@ Box(
 | `checked`, `expanded`, `selected` | `aria-checked`, `aria-expanded`, `aria-selected`, and the same state in Flutter. |
 | `hidden` | `aria-hidden`: the box keeps its look but leaves the accessibility tree and the tab order. |
 | `liveRegion` | `aria-live`: a change inside is announced, which is how a form reports a result without moving the focus. |
+| `current` | `aria-current` (`page`, `step`, `location`): the item of a navigation the reader is on. Flutter has no counterpart, so it announces the box as the selected item of a set. |
 
 `TextNode.headingLevel` is the heading spelling for text: `<h1>`–`<h6>` on the web,
 the same level announced in Flutter. Landmarks (`main`, `nav`, ...) exist only on the

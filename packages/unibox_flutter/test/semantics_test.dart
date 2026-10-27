@@ -2,6 +2,7 @@ import 'dart:ui' show Tristate;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/material.dart' show TextField;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
@@ -93,6 +94,75 @@ void main() {
       // Flutter's accessibility tree has no landmarks; the box is still a
       // container, and the web renderer is where `main` means something.
       expect(dataOf(tester, find.byKey(nodeKey)).role, SemanticsRole.none);
+
+      handle.dispose();
+    });
+  });
+
+  group('form fields', () {
+    testWidgets('says a field is required and wrong', (tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(
+          required: true,
+          invalid: true,
+          description: 'Use the address we can reach you at.',
+          semanticsLabel: 'Email',
+        ),
+      );
+
+      final SemanticsData data = dataOf(tester, find.byType(TextField));
+
+      expect(data.flagsCollection.isRequired, Tristate.isTrue);
+      expect(data.validationResult, SemanticsValidationResult.invalid);
+      // The description is the field's hint, which a reader announces after the
+      // label; a message that should also be seen stays a text node.
+      expect(data.hint, 'Use the address we can reach you at.');
+
+      handle.dispose();
+    });
+
+    testWidgets('leaves a plain field alone', (tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpMaterialNode(tester, const core.TextInputNode());
+
+      // Nothing to announce, so the field keeps its own semantics untouched.
+      final SemanticsData data = dataOf(tester, find.byType(TextField));
+
+      expect(data.flagsCollection.isRequired, isNot(Tristate.isTrue));
+      expect(data.validationResult, SemanticsValidationResult.none);
+      expect(data.hint, isEmpty);
+
+      handle.dispose();
+    });
+  });
+
+  group('current item', () {
+    testWidgets('reports the current item of a set as selected', (
+      tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await pumpNode(
+        tester,
+        const core.Box(
+          semantics: core.BoxSemantics(
+            role: core.BoxRole.link,
+            current: core.BoxCurrent.page,
+          ),
+          children: <core.UINode>[core.TextNode('Sign up')],
+        ),
+      );
+
+      // Flutter has no `aria-current`; the selected state of a set is what a phone
+      // reader announces for the item that is the current one.
+      expect(
+        dataOf(tester, find.byKey(nodeKey)).flagsCollection.isSelected,
+        Tristate.isTrue,
+      );
 
       handle.dispose();
     });

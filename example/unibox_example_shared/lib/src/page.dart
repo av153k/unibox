@@ -123,7 +123,12 @@ UINode _navigationItem(
     borderRadius: 8,
     backgroundColor: current ? ExamplePalette.accentSurface : null,
     textStyle: current ? ExampleType.navCurrent : ExampleType.nav,
-    semantics: const BoxSemantics(role: BoxRole.link),
+    semantics: BoxSemantics(
+      role: BoxRole.link,
+      // The item of the page the reader is on: `aria-current` on the web, the
+      // selected item of a set in Flutter.
+      current: current ? BoxCurrent.page : null,
+    ),
     stateStyles: const <BoxState, BoxStyle>{
       BoxState.hover: BoxStyle(backgroundColor: ExamplePalette.accentSurface),
     },
