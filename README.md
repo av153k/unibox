@@ -25,6 +25,7 @@ called. Those belong to the host — see [what the host owns](#what-the-host-own
 
 - [Quick start](#quick-start)
 - [The nodes](#the-nodes)
+- [Colours](#colours)
 - [Typography](#typography)
 - [Motion](#motion)
 - [Semantics](#semantics)
@@ -353,6 +354,46 @@ is outside the tests that hold the targets together: use it last, not first. A n
 with no implementation this target can draw — or with two of them — throws a message
 naming what the renderer accepts and what the node carries, so a mistake is loud
 instead of blank.
+
+## Colours
+
+A colour is a `BoxColor`: a 32-bit ARGB value, which both renderers paint the same
+way. A tree either states one or names one from the palette:
+
+```dart
+BoxColor.rgb(0x2D, 0x6C, 0xF3)         // #2D6CF3, opaque
+BoxColor.rgba(0x2D, 0x6C, 0xF3, 0x80)  // the same colour at half alpha
+BoxColor(0xFF2D6CF3)                   // a raw 0xAARRGGBB value
+BoxColors.blue.withOpacity(0.5)        // a palette name, faded
+```
+
+`BoxColors` holds the names an interface reaches for before it has a palette of its
+own, and each carries the value Flutter's `Colors` gives the same name — so a tree
+that names `BoxColors.grey` matches the `Colors.grey` of the widgets around it, and
+the web renderer writes the same hex.
+
+| Neutral | | Hue | |
+| --- | --- | --- | --- |
+| `white` | `#FFFFFF` | `red` | `#F44336` |
+| `lightGrey` | `#E0E0E0` | `orange` | `#FF9800` |
+| `grey` | `#9E9E9E` | `yellow` | `#FFEB3B` |
+| `darkGrey` | `#616161` | `green` | `#4CAF50` |
+| `blueGrey` | `#607D8B` | `teal` | `#009688` |
+| `black` | `#000000` | `blue` | `#2196F3` |
+| `transparent` | `#00000000` | `indigo` | `#3F51B5` |
+| | | `purple` | `#9C27B0` |
+| | | `pink` | `#E91E63` |
+| | | `brown` | `#795548` |
+
+`BoxColor` keeps `white`, `black` and `transparent` next to its constructors; the
+other names live on `BoxColors`, because `red`, `green` and `blue` are the channel
+getters of a `BoxColor` and a preset cannot take those names.
+
+They are conveniences, not a design system. A screen with a palette of its own
+states it in Dart and passes it around, the way
+[`ExamplePalette`](example/unibox_example_shared/lib/src/theme.dart) does, so the
+same colours are used by both hosts. Typography carries colour as well: `color` on
+a text, or `color` in a `BoxTextStyle` that a box passes down.
 
 ## Typography
 

@@ -33,9 +33,9 @@ Return the tree, and separately the host code that owns its state.
 - A node describes *what* is on screen, never which framework draws it. There is no
   `Text`, `Row`, `Column`, `Container`, `Colors`, `EdgeInsets`, `TextStyle` or
   `BoxFit` in the tree.
-- Styling is tokens — `BoxColor`, `BoxSpacing`, `BoxBorder`, `BoxShadow`,
-  `BoxTextStyle`, `BoxTransform`, `BoxTransition`, `BoxSemantics` — collected in
-  reusable `BoxStyle` bags.
+- Styling is tokens — `BoxColor` and the `BoxColors` palette, `BoxSpacing`,
+  `BoxBorder`, `BoxShadow`, `BoxTextStyle`, `BoxTransform`, `BoxTransition`,
+  `BoxSemantics` — collected in reusable `BoxStyle` bags.
 - Everything that changes over time — form values, the open page, the window size —
   belongs to the **host** and is passed into the tree as a value and a callback.
   Nodes are immutable, their constructors are `const`, and they hold no state.
@@ -96,6 +96,7 @@ Return the tree, and separately the host code that owns its state.
 | `Expanded(child: …)` | `flex: 1` on the child box |
 | `SizedBox(height: 8)` between children | `gap: 8` on the parent |
 | `Colors.white`, `Color(0xFF112233)` | `BoxColor.white`, `BoxColor(0xFF112233)` |
+| `Colors.grey`, `Colors.red`, `Colors.blueGrey` | `BoxColors.grey`, `BoxColors.red`, `BoxColors.blueGrey` — the same values |
 | `Color.fromRGBO(r, g, b, opacity)` | `BoxColor.rgba(r, g, b, alpha)` — its alpha is `0`–`255`, or `BoxColor.rgb(r, g, b).withOpacity(0.5)` |
 | `EdgeInsets.all(16)` | `BoxSpacing.all(16)` (`.symmetric`, `.only`, `.zero`) |
 | `BoxDecoration(color:, border:, borderRadius:)` | `backgroundColor`, `border`, `borderRadius` |

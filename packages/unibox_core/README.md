@@ -15,7 +15,7 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `LinkNode`        | a link wrapping one child                                     |
 | `StackNode`       | layered children, with `PositionedNode` placing them           |
 | `TextInputNode`   | a single line or multiline field                              |
-| `BoxColor`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |
+| `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |
 | `BoxStyle`        | a bundle of every layout and visual token                     |
 | `BoxTextStyle`    | a bundle of typography tokens                                 |
 

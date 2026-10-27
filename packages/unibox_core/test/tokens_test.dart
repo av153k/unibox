@@ -40,6 +40,45 @@ void main() {
       expect(BoxColor.transparent.isTransparent, isTrue);
     });
 
+    test('names the common colors the way Flutter does', () {
+      // A map rather than a list of pairs: it also checks that no two presets
+      // name the same colour, because the second one would collapse into the
+      // first and the length below would come up short. The values are the ones
+      // Flutter's `Colors` gives the same names, which is what makes a preset
+      // look like the widgets around it on both targets.
+      final Map<BoxColor, int> presets = <BoxColor, int>{
+        BoxColors.lightGrey: 0xFFE0E0E0,
+        BoxColors.grey: 0xFF9E9E9E,
+        BoxColors.darkGrey: 0xFF616161,
+        BoxColors.blueGrey: 0xFF607D8B,
+        BoxColors.red: 0xFFF44336,
+        BoxColors.orange: 0xFFFF9800,
+        BoxColors.yellow: 0xFFFFEB3B,
+        BoxColors.green: 0xFF4CAF50,
+        BoxColors.teal: 0xFF009688,
+        BoxColors.blue: 0xFF2196F3,
+        BoxColors.indigo: 0xFF3F51B5,
+        BoxColors.purple: 0xFF9C27B0,
+        BoxColors.pink: 0xFFE91E63,
+        BoxColors.brown: 0xFF795548,
+      };
+
+      expect(presets, hasLength(14));
+
+      for (final MapEntry<BoxColor, int> preset in presets.entries) {
+        expect(preset.key.value, preset.value, reason: preset.key.toString());
+        expect(preset.key.isOpaque, isTrue, reason: preset.key.toString());
+      }
+    });
+
+    test('keeps the three colors BoxColor declares next to its constructors', () {
+      // The palette is the one place to look for a name, but these three stay on
+      // the value because a colour is usually written next to its constructor.
+      expect(BoxColor.white, BoxColors.white);
+      expect(BoxColor.black, BoxColors.black);
+      expect(BoxColor.transparent, BoxColors.transparent);
+    });
+
     test('withOpacity scales the alpha channel', () {
       const color = BoxColor.rgb(10, 20, 30);
 

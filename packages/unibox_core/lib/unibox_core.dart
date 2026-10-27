@@ -5,8 +5,8 @@
 /// tools, servers and both UI targets alike.
 ///
 /// The public API is composed of:
-/// * style tokens ([BoxColor], [BoxSpacing], [BoxStyle], [BoxBorder],
-///   [BoxShadow]),
+/// * style tokens ([BoxColor], [BoxColors], [BoxSpacing], [BoxStyle],
+///   [BoxBorder], [BoxShadow]),
 /// * layout enums ([Axis], [MainAlign], [CrossAlign], [Overflow], [ImageFit],
 ///   [FontWeight], [TextAlign], [TextOverflow]),
 /// * the immutable node tree rooted in [UINode]: [Box], [TextNode],
@@ -28,6 +28,7 @@ export 'src/nodes/text_node.dart';
 export 'src/nodes/ui_node.dart';
 export 'src/tokens/box_border.dart';
 export 'src/tokens/box_color.dart';
+export 'src/tokens/box_colors.dart';
 export 'src/tokens/box_semantics.dart';
 export 'src/tokens/box_shadow.dart';
 export 'src/tokens/box_spacing.dart';

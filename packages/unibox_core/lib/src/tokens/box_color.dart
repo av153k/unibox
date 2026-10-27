@@ -7,6 +7,9 @@
 /// const brand = BoxColor.rgb(0x2D, 0x6C, 0xF3);
 /// final overlay = brand.withOpacity(0.5);
 /// ```
+///
+/// This class is one color. The palette of common names lives next door in
+/// [BoxColors]; anything else is [BoxColor.rgb], [BoxColor.rgba] or a raw value.
 final class BoxColor {
   /// Creates a color from a raw `0xAARRGGBB` value.
   const BoxColor(this.value)

@@ -13,7 +13,7 @@ Unibox provides pure Dart layout primitives that compile natively to both Flutte
 
 ## 2. Shared Types & Tokens (`unibox_core`)
 
-- **`BoxColor`**: Encapsulates 32-bit ARGB (`0xAARRGGBB`) with `.rgb()`, `.rgba()`, and presets (`black`, `white`, `transparent`).
+- **`BoxColor`**: Encapsulates 32-bit ARGB (`0xAARRGGBB`) with `.rgb()`, `.rgba()` and `white`, `black`, `transparent` next to the constructors. **`BoxColors`** is the palette an interface reaches for before it has one of its own (the grey ladder and the common hues, at the values Flutter's `Colors` uses for the same names); the hues cannot sit on `BoxColor` itself, where `red`, `green` and `blue` are the channel getters.
 - **`BoxSpacing`**: Represents margin/padding (`all`, `symmetric`, `only`, `zero`).
 - **Dimensions**: Standard `double?` for width, height, min/max dimensions.
   - Standard numbers (`width: 250`) represent logical pixels / px.
