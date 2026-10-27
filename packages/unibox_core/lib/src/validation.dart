@@ -68,7 +68,8 @@ class TreeIssue {
 ///   and which would otherwise vanish from the page,
 /// * a transition declared on a state style instead of the resting one, which no
 ///   renderer applies,
-/// * a transition with a duration that changes nothing.
+/// * a transition with a duration that changes nothing,
+/// * an opacity outside the `0` to `1` that both targets accept.
 List<TreeIssue> validateTree(UINode root) {
   final List<TreeIssue> issues = <TreeIssue>[];
   _validate(root, parent: null, inLink: false, issues: issues);
@@ -154,6 +155,19 @@ void _validate(
 
   if (node is Box) {
     final BoxTransition? transition = node.computedStyle.transition;
+    final double? opacity = node.computedStyle.opacity;
+
+    if (opacity != null && (opacity < 0 || opacity > 1)) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          message:
+              'A box declares an opacity of $opacity, which is outside the 0 to 1 '
+              'range both targets accept. Below 0 paints nothing visible and '
+              'above 1 is the same as solid.',
+        ),
+      );
+    }
 
     if (transition != null && transition.duration <= Duration.zero) {
       issues.add(

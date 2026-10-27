@@ -4,6 +4,7 @@ import 'box_color.dart';
 import 'box_shadow.dart';
 import 'box_spacing.dart';
 import 'box_text_style.dart';
+import 'box_transform.dart';
 import 'box_transition.dart';
 
 /// A reusable, immutable bundle of box tokens.
@@ -47,6 +48,8 @@ final class BoxStyle {
     this.shadow,
     this.textStyle,
     this.transition,
+    this.opacity,
+    this.transform,
   });
 
   // Layout.
@@ -137,6 +140,18 @@ final class BoxStyle {
   /// look swaps instantly.
   final BoxTransition? transition;
 
+  /// How opaque the box is, from `0` (invisible) to `1` (solid).
+  ///
+  /// Unset means solid. The space the box occupies stays the same: an invisible
+  /// box paints nothing rather than leaving the layout.
+  final double? opacity;
+
+  /// How the box is moved, turned or scaled, about its centre.
+  ///
+  /// Unset means untransformed. Like a `Transform` in Flutter, this paints the
+  /// box differently without changing the room it takes.
+  final BoxTransform? transform;
+
   /// Whether no token is set.
   bool get isEmpty => this == const BoxStyle();
 
@@ -165,6 +180,8 @@ final class BoxStyle {
     BoxShadow? shadow,
     BoxTextStyle? textStyle,
     BoxTransition? transition,
+    double? opacity,
+    BoxTransform? transform,
   }) {
     return BoxStyle(
       direction: direction ?? this.direction,
@@ -187,6 +204,8 @@ final class BoxStyle {
       shadow: shadow ?? this.shadow,
       textStyle: textStyle ?? this.textStyle,
       transition: transition ?? this.transition,
+      opacity: opacity ?? this.opacity,
+      transform: transform ?? this.transform,
     );
   }
 
@@ -224,6 +243,8 @@ final class BoxStyle {
       shadow: other.shadow ?? shadow,
       textStyle: textStyle?.merge(other.textStyle) ?? other.textStyle,
       transition: other.transition ?? transition,
+      opacity: other.opacity ?? opacity,
+      transform: other.transform ?? transform,
     );
   }
 
@@ -249,7 +270,9 @@ final class BoxStyle {
       other.border == border &&
       other.shadow == shadow &&
       other.textStyle == textStyle &&
-      other.transition == transition;
+      other.transition == transition &&
+      other.opacity == opacity &&
+      other.transform == transform;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -273,6 +296,8 @@ final class BoxStyle {
     shadow,
     textStyle,
     transition,
+    opacity,
+    transform,
   ]);
 
   @override
@@ -298,6 +323,8 @@ final class BoxStyle {
       if (shadow != null) 'shadow: $shadow',
       if (textStyle != null) 'textStyle: $textStyle',
       if (transition != null) 'transition: $transition',
+      if (opacity != null) 'opacity: $opacity',
+      if (transform != null) 'transform: $transform',
     ];
     return 'BoxStyle(${tokens.join(', ')})';
   }

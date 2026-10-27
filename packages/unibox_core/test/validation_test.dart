@@ -78,6 +78,15 @@ void main() {
       expect(issue.message, contains('positive duration'));
     });
 
+    test('reports an opacity outside the visible range', () {
+      const Box tree = Box(opacity: 1.5);
+
+      final TreeIssue issue = validateTree(tree).single;
+
+      expect(issue.message, contains('opacity of 1.5'));
+      expect(issue.message, contains('0 to 1'));
+    });
+
     test('reports an embed without an implementation', () {
       const Box tree = Box(children: <UINode>[_EmptyEmbed()]);
 

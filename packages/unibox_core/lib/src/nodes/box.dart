@@ -7,6 +7,7 @@ import '../tokens/box_shadow.dart';
 import '../tokens/box_spacing.dart';
 import '../tokens/box_style.dart';
 import '../tokens/box_text_style.dart';
+import '../tokens/box_transform.dart';
 import '../tokens/box_transition.dart';
 import 'ui_node.dart';
 
@@ -59,6 +60,8 @@ class Box extends UINode {
     this.shadow,
     this.textStyle,
     this.transition,
+    this.opacity,
+    this.transform,
     this.style,
     this.hoverStyle,
     this.stateStyles,
@@ -153,6 +156,15 @@ class Box extends UINode {
   /// change takes and how it eases. Unset means the look swaps instantly.
   final BoxTransition? transition;
 
+  /// How opaque the box is, `0` to `1`. Unset means solid.
+  final double? opacity;
+
+  /// How the box is moved, turned or scaled about its centre.
+  ///
+  /// The box paints differently without taking a different amount of room, so
+  /// scaling never makes the text inside reflow.
+  final BoxTransform? transform;
+
   // Style tokens.
 
   /// A reusable bundle of tokens, overridden by the flat parameters above.
@@ -220,6 +232,8 @@ class Box extends UINode {
     shadow: shadow,
     textStyle: textStyle,
     transition: transition,
+    opacity: opacity,
+    transform: transform,
   );
 
   /// The resolved style of this box in its resting state.

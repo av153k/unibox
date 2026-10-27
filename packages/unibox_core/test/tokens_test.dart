@@ -169,6 +169,23 @@ void main() {
       );
     });
 
+    test('carries the opacity and the transform of a box', () {
+      const style = BoxStyle(opacity: 0.5, transform: BoxTransform(scale: 1.1));
+
+      expect(style.opacity, 0.5);
+      expect(style.transform, const BoxTransform(scale: 1.1));
+      expect(style.copyWith().opacity, 0.5);
+      expect(
+        style,
+        const BoxStyle(opacity: 0.5, transform: BoxTransform(scale: 1.1)),
+      );
+      expect(style.toString(), contains('opacity: 0.5'));
+
+      // The overlay wins, like every other token.
+      expect(style.merge(const BoxStyle(opacity: 1)).opacity, 1);
+      expect(const BoxStyle().merge(style).opacity, 0.5);
+    });
+
     test('carries the transition that makes a change ease', () {
       const transition = BoxTransition(duration: Duration(milliseconds: 200));
       const style = BoxStyle(transition: transition);
@@ -363,6 +380,43 @@ void main() {
       const transition = BoxTransition(duration: Duration(milliseconds: -1));
 
       expect(transition.duration, const Duration(milliseconds: -1));
+    });
+  });
+
+  group('BoxTransform', () {
+    test('leaves a box alone by default', () {
+      const transform = BoxTransform();
+
+      expect(transform.scale, 1);
+      expect(transform.rotation, 0);
+      expect(transform.offsetX, 0);
+      expect(transform.offsetY, 0);
+      expect(transform.isIdentity, isTrue);
+      expect(const BoxTransform(scale: 1.1).isIdentity, isFalse);
+    });
+
+    test('interpolates every part on its own', () {
+      const begin = BoxTransform(scale: 1, rotation: 0, offsetY: 0);
+      const end = BoxTransform(scale: 2, rotation: 90, offsetY: -20);
+
+      final BoxTransform half = BoxTransform.lerp(begin, end, 0.5);
+
+      // Interpolating the parts is what CSS does with matching transform
+      // functions; interpolating the composed matrix would shrink a turning box.
+      expect(half.scale, 1.5);
+      expect(half.rotation, 45);
+      expect(half.offsetY, -10);
+      expect(BoxTransform.lerp(begin, end, 0), begin);
+      expect(BoxTransform.lerp(begin, end, 1), end);
+    });
+
+    test('implements value equality and copyWith', () {
+      const transform = BoxTransform(scale: 1.2, offsetX: 8);
+
+      expect(transform.copyWith(), transform);
+      expect(transform.hashCode, transform.copyWith().hashCode);
+      expect(transform.copyWith(rotation: 15), isNot(transform));
+      expect(transform.toString(), contains('scale: 1.2'));
     });
   });
 
