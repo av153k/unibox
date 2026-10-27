@@ -147,6 +147,11 @@ An `ellipsis` without `maxLines` truncates the single line instead
 (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis`), while `clip`
 only hides the overflow.
 
+A unitless `line-height` makes a line box `fontSize * lineHeight` tall, which is
+exactly the box `TextStyle.height` produces in Flutter. Without a `lineHeight`
+the browser uses the font's own metrics (`normal`), which is a length Skia does
+not have to agree on — so declare it if a layout has to line up.
+
 ## Typography mapping
 
 A `Box.textStyle` (or `BoxStyle.textStyle`) is emitted on the `<div>` as the font

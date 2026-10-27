@@ -150,11 +150,24 @@ never inherited (CSS does not inherit them either).
   `:hover` over the resting rule exactly like the Flutter renderer merges a
   state style, so a state rule that restated the layout would reset it.
 - Parity is *tested*, not assumed: `unibox_conformance` lists the boxes every
-  renderer has to present the same way, and each renderer suite reads the
-  appearance back out of its own output — the Flutter one from the widget tree,
-  the web one from the emitted CSS. A renderer that drops a token therefore fails
-  its own suite, and because both answer the same entry, one target cannot be
-  relaxed without the other failing.
+  renderer has to present the same way and the texts every renderer has to
+  typeset the same way, and each renderer suite reads the appearance back out of
+  its own output — the Flutter one from the widget tree, the web one from the
+  emitted CSS. A renderer that drops a token therefore fails its own suite, and
+  because both answer the same entry, one target cannot be relaxed without the
+  other failing.
+- The contract stops where the two platforms stop agreeing, and it says so: what
+  is compared is what a renderer *declares* — layout, spacing, paint, the six
+  typography tokens, alignment and truncation — never what a text engine makes of
+  it. Glyph rasterisation, hinting and line breaking belong to the engine, and
+  `unibox_conformance/README.md` has the table that says which is which. One
+  length is exempt from that, because both sides compute it the same way: a line
+  box is `fontSize * lineHeight` on both. Two consequences follow, and both are
+  the application's business rather than the renderer's: a tree that has to be
+  pixel-stable declares its typography, because the ambient defaults differ
+  (Flutter falls back to 14 logical pixels of black, a browser to 16 pixels of
+  `canvastext`), and it ships the same font file to both hosts, because a family
+  installed on one side only falls back with different metrics.
 - The surface a tree is drawn on is host business: a `100%` box needs a root with
   a height, and a font needs a host that has one. An application declares both in
   its own idiom (`MaterialApp`, a Jaspr `Document`) and the renderer stays out of

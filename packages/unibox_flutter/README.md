@@ -64,6 +64,12 @@ like a tight infinite `SizedBox` in plain Flutter.
 Typography tokens that are left unset are not passed to Flutter, so the ambient
 `DefaultTextStyle` keeps providing them.
 
+A line box is `fontSize * lineHeight` tall, which is the same length a unitless
+CSS `line-height` gives on the web: that is the one measurement the two renderers
+agree on exactly. Without a `lineHeight` the box is as tall as the font's own
+metrics instead, which the browser and Skia do not have to compute the same way —
+so declare it if a layout has to line up.
+
 ## Typography mapping
 
 A `Box.textStyle` (or `BoxStyle.textStyle`) becomes a `DefaultTextStyle` around

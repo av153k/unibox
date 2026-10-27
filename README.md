@@ -52,10 +52,11 @@ What both renderers agree on:
 - **Mistakes fail loudly.** `validateTree` reports trees no renderer can honour,
   and an embed that belongs to another target throws instead of vanishing.
 - **One contract, two renderers.** `unibox_conformance` lists boxes and the
-  appearance each one has to produce. Both suites read that appearance back out
-  of the output they produced — the widget tree on one side, the emitted CSS on
-  the other — so a token a renderer stops rendering fails its own test instead
-  of quietly making the two targets look different.
+  appearance each one has to produce, and the texts and the typography each one
+  has to be given. Both suites read that appearance back out of the output they
+  produced — the widget tree on one side, the emitted CSS on the other — so a
+  token a renderer stops rendering fails its own test instead of quietly making
+  the two targets look different.
 
 ## Packages
 
@@ -112,6 +113,18 @@ A value is resolved in this order, and the first match wins:
 | 3     | the typography inherited from the closest ancestor box    |
 | 4     | the ambient style of the host (`DefaultTextStyle`, page CSS) |
 | 5     | the renderer default                                      |
+
+**Fidelity.** The two renderings are meant to look the same, and what "the same"
+means is written down and tested: the same layout, spacing and paint for a box,
+and the same font size, weight, colour, line height, letter spacing, family,
+alignment and truncation for a text. What is *not* promised is the pixels. A
+line box is the one length both sides compute identically — `fontSize *
+lineHeight`, on both — while glyph rasterisation, hinting and line breaking
+belong to the text engine, and Skia is not a browser. Two things make an
+application pixel-stable: declare its typography in the tree rather than relying
+on the host (Flutter falls back to 14 logical pixels of black, a browser to 16
+pixels of `canvastext`), and ship the same font file to both hosts, because a
+family installed on one side only falls back with different metrics.
 
 **Dimensions.** Numbers are logical pixels (`px` on the web). `double.infinity`
 means "fill the available space": `100%` in CSS, an `Expanded` or an
