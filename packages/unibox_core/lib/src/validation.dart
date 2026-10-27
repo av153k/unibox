@@ -2,6 +2,7 @@ import 'enums.dart';
 import 'nodes/box.dart';
 import 'nodes/embed_node.dart';
 import 'nodes/link_node.dart';
+import 'nodes/overlay_node.dart';
 import 'nodes/positioned_node.dart';
 import 'nodes/stack_node.dart';
 import 'nodes/ui_node.dart';
@@ -91,6 +92,20 @@ void _validate(
             'A PositionedNode is only placed by a StackNode, but its parent is '
             '${parent?.runtimeType ?? 'the root'}. Its offsets are ignored and '
             'the child renders at its natural position.',
+      ),
+    );
+  }
+
+  if (node is OverlayNode &&
+      node.barrierDismissible &&
+      node.onDismiss == null) {
+    issues.add(
+      TreeIssue(
+        node: node,
+        message:
+            'An OverlayNode with a dismissible barrier has no onDismiss, so the '
+            'barrier cannot dismiss anything. Give the node an onDismiss, or set '
+            'barrierDismissible to false.',
       ),
     );
   }

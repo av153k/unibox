@@ -11,8 +11,8 @@
 ///   [FontWeight], [TextAlign], [TextOverflow]),
 /// * the immutable node tree rooted in [UINode]: [Box], [TextNode],
 ///   [ImageNode], [LinkNode], [StackNode], [PositionedNode],
-///   [TextInputNode] and [StatefulNode], which adds a subtree that owns its
-///   state,
+///   [TextInputNode], [OverlayNode] and [StatefulNode], which adds a subtree
+///   that owns its state,
 /// * [Store], the state a [StatefulNode] draws, and [validateTree], which
 ///   reports nodes that a renderer cannot honour.
 library;
@@ -23,6 +23,7 @@ export 'src/nodes/box.dart';
 export 'src/nodes/embed_node.dart';
 export 'src/nodes/image_node.dart';
 export 'src/nodes/link_node.dart';
+export 'src/nodes/overlay_node.dart';
 export 'src/nodes/positioned_node.dart';
 export 'src/nodes/stack_node.dart';
 export 'src/nodes/stateful_node.dart';

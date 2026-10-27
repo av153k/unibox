@@ -16,6 +16,7 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `StackNode`       | layered children, with `PositionedNode` placing them           |
 | `TextInputNode`   | a single line or multiline field                              |
 | `StatefulNode`    | a subtree that owns a `Store` and draws the tree of its state |
+| `OverlayNode`     | content drawn above the page, with a barrier and a dismissal |
 | `Store`           | the state contract a `StatefulNode` draws                     |
 | `StateStore`      | the ready made `Store`: one state value and its listeners     |
 | `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |
@@ -173,6 +174,25 @@ value, a listener list that belongs to this package, and a guarded setter, so a
 store runs in Flutter, on a server and in a browser without a dependency.
 `onMount` is where an initial request starts, which is why a server render can
 draw the first state without starting one.
+
+## Overlays
+
+An `OverlayNode` is content drawn above the page instead of in the layout of its
+parent. It is a node like any other: it is in the tree where the state says it
+should be, so there is no `open` flag and no overlay slot on a view.
+
+```dart
+if (state.details != null)
+  OverlayNode(
+    onDismiss: store.closeDetails,
+    child: TextNode(state.details!.name),
+  ),
+```
+
+The node states the policy — `onDismiss`, `barrierDismissible`, `barrierColor`
+and `alignment` — and the renderer presents it: Flutter through an `OverlayPortal`
+on the root overlay, the web as a fixed layer. `validateTree` reports the one
+combination that does nothing: a dismissible barrier with no `onDismiss`.
 
 ## Inheritance
 

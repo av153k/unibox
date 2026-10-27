@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `OverlayNode` and `OverlayAlignment`: content drawn above the page. The node is
+  in the tree where the state says it belongs, and states the policy a modal needs
+  — `onDismiss`, `barrierDismissible`, `barrierColor`, `alignment` — while each
+  renderer presents it. `validateTree` reports a dismissible barrier with no
+  `onDismiss`, which could not dismiss anything.
 - `Store<S>` and `StateStore<S>`: a node can own state without a dependency. A
   store holds one immutable state value, notifies a listener when that value is
   replaced, drops a publish equal to the current state and ignores one after it is
