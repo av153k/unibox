@@ -4,8 +4,8 @@ import 'theme.dart';
 
 /// The values entered in the signup card.
 ///
-/// Plain data, so both hosts can keep it in whatever state container they
-/// already use: a `StatefulWidget` in Flutter, a `StatefulComponent` in Jaspr.
+/// Plain data, kept by the example's store: the card holds no state, and a host
+/// never sees these values except inside `ExampleState`.
 final class SignupFormState {
   /// Creates the state of the form.
   const SignupFormState({
@@ -47,6 +47,28 @@ final class SignupFormState {
       submitted: submitted ?? this.submitted,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SignupFormState &&
+        other.name == name &&
+        other.email == email &&
+        other.newsletter == newsletter &&
+        other.submitted == submitted;
+  }
+
+  /// Two states with equal values hash alike.
+  ///
+  /// The store skips a rebuild when a publish is equal to the current state, so
+  /// typing a character and deleting it again costs nothing.
+  @override
+  int get hashCode => Object.hash(name, email, newsletter, submitted);
+
+  @override
+  String toString() {
+    return 'SignupFormState(name: $name, email: $email, '
+        'newsletter: $newsletter, submitted: $submitted)';
+  }
 }
 
 /// Applies a submission to [state].
@@ -58,36 +80,29 @@ SignupFormState submitSignupForm(SignupFormState state) {
   return state.isComplete ? state.copyWith(submitted: true) : state;
 }
 
-/// Centers the signup card on the space the navigation leaves.
+/// Builds the sign-up card as the dialog the frame shows over the page.
 ///
-/// The page takes the room the frame gives it (`flex: 1`) instead of the whole
-/// surface, because the navigation bar above it is part of the page frame now:
-/// the card is centred in what is left, which is what both hosts show.
-Box buildSignupPage({
+/// Presence is the host's: it builds this node while the form is open and leaves
+/// it out when the form is closed. The node states the policy — `Escape` and a
+/// press on the barrier dismiss — and each renderer presents it: a modal in
+/// Flutter, a fixed layer on the web.
+OverlayNode buildSignupDialog({
   required SignupFormState state,
   required TextChangedCallback onNameChanged,
   required TextChangedCallback onEmailChanged,
   required TapCallback onNewsletterToggled,
   required TapCallback onSubmit,
+  required TapCallback onDismiss,
 }) {
-  return Box(
-    flex: 1,
-    direction: Axis.vertical,
-    mainAlign: MainAlign.center,
-    crossAlign: CrossAlign.center,
-    width: double.infinity,
-    padding: const BoxSpacing.all(24),
-    // The page box is what the page is about, so it is the `<main>` landmark.
-    semantics: const BoxSemantics(element: BoxElement.main),
-    children: <UINode>[
-      buildSignupCard(
-        state: state,
-        onNameChanged: onNameChanged,
-        onEmailChanged: onEmailChanged,
-        onNewsletterToggled: onNewsletterToggled,
-        onSubmit: onSubmit,
-      ),
-    ],
+  return OverlayNode(
+    onDismiss: onDismiss,
+    child: buildSignupCard(
+      state: state,
+      onNameChanged: onNameChanged,
+      onEmailChanged: onEmailChanged,
+      onNewsletterToggled: onNewsletterToggled,
+      onSubmit: onSubmit,
+    ),
   );
 }
 

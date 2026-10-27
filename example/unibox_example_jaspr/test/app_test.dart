@@ -1,13 +1,18 @@
 import 'package:jaspr_test/jaspr_test.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
-import 'package:unibox_example_jaspr/app.dart';
+import 'package:unibox_example_jaspr/main.dart';
 
 import 'support/harness.dart';
 
+/// The app as `build/signup.html` renders it: the dialog over the listings.
+ExampleApp signupApp({SignupFormState state = const SignupFormState()}) {
+  return ExampleApp(initialForm: state, openSignup: true);
+}
+
 void main() {
-  group('UniboxExampleApp', () {
+  group('ExampleApp', () {
     testComponents('renders the shared node tree', (tester) async {
-      tester.pumpComponent(const UniboxExampleApp());
+      tester.pumpComponent(signupApp());
 
       expect(find.text('Join Unibox'), findsOneComponent);
       expect(find.text('One description, two renderers.'), findsOneComponent);
@@ -22,7 +27,7 @@ void main() {
     });
 
     testComponents('fills the viewport', (tester) async {
-      tester.pumpComponent(const UniboxExampleApp());
+      tester.pumpComponent(signupApp());
 
       final Map<String, String> page = stylesOf(find.tag('div').first);
 
@@ -31,7 +36,7 @@ void main() {
     });
 
     testComponents('wires both fields to the host', (tester) async {
-      tester.pumpComponent(const UniboxExampleApp());
+      tester.pumpComponent(signupApp());
 
       final List<TestRenderElement> fields = elementsOf(find.tag('input'));
 
@@ -52,7 +57,7 @@ void main() {
     testComponents(
       'registers a click listener on the navigation and the opt-in',
       (tester) async {
-        tester.pumpComponent(const UniboxExampleApp());
+        tester.pumpComponent(signupApp());
 
         final List<TestRenderElement> clickable = elementsOf(find.tag('div'))
             .where(
@@ -65,7 +70,9 @@ void main() {
         // the form is complete.
         expect(clickable, hasLength(3));
 
-        final TestRenderElement button = elementsOf(find.tag('div')).firstWhere(
+        // The bar's sign-up trigger is a button too, and it comes first; the
+        // submit button is the last one in the tree.
+        final TestRenderElement button = elementsOf(find.tag('div')).lastWhere(
           (TestRenderElement element) =>
               element.attributes?['role'] == 'button',
         );
@@ -78,8 +85,8 @@ void main() {
       tester,
     ) async {
       tester.pumpComponent(
-        const UniboxExampleApp(
-          initialState: SignupFormState(name: 'Ada', email: 'ada@example.com'),
+        signupApp(
+          state: const SignupFormState(name: 'Ada', email: 'ada@example.com'),
         ),
       );
 
@@ -92,7 +99,7 @@ void main() {
 
       expect(clickable, hasLength(4));
 
-      final TestRenderElement button = elementsOf(find.tag('div')).firstWhere(
+      final TestRenderElement button = elementsOf(find.tag('div')).lastWhere(
         (TestRenderElement element) => element.attributes?['role'] == 'button',
       );
       expect(button.attributes?['aria-disabled'], isNull);
@@ -104,7 +111,7 @@ void main() {
       tester,
     ) async {
       tester.pumpComponent(
-        const UniboxExampleApp(initialState: SignupFormState(newsletter: true)),
+        signupApp(state: const SignupFormState(newsletter: true)),
       );
 
       expect(find.text('✓'), findsOneComponent);
@@ -114,8 +121,8 @@ void main() {
       tester,
     ) async {
       tester.pumpComponent(
-        const UniboxExampleApp(
-          initialState: SignupFormState(
+        signupApp(
+          state: const SignupFormState(
             name: 'Ada',
             email: 'ada@example.com',
             submitted: true,
@@ -131,10 +138,11 @@ void main() {
     });
 
     testComponents('offers a navigation item per page', (tester) async {
-      tester.pumpComponent(const UniboxExampleApp());
+      tester.pumpComponent(signupApp());
 
       expect(find.text('Sign up'), findsOneComponent);
-      expect(find.text('Apartments'), findsOneComponent);
+      // The item and the heading of the page behind the dialog.
+      expect(find.text('Apartments'), findsNComponents(2));
 
       final TestRenderElement item = elementsOf(find.tag('div')).firstWhere(
         (TestRenderElement element) => element.attributes?['role'] == 'link',
@@ -147,9 +155,7 @@ void main() {
 
   group('apartments page', () {
     testComponents('renders the listings of the shared page', (tester) async {
-      tester.pumpComponent(
-        const UniboxExampleApp(initialPage: ExamplePage.apartments),
-      );
+      tester.pumpComponent(const ExampleApp());
 
       // The heading and the navigation item carry the same label.
       expect(find.text('Apartments'), findsNComponents(2));
@@ -160,9 +166,7 @@ void main() {
     });
 
     testComponents('scrolls the listings inside the page', (tester) async {
-      tester.pumpComponent(
-        const UniboxExampleApp(initialPage: ExamplePage.apartments),
-      );
+      tester.pumpComponent(const ExampleApp());
 
       // The page is the `<main>` landmark and the scrolling box in one: it is
       // the part of the frame that takes the room the navigation leaves.
@@ -179,9 +183,7 @@ void main() {
     });
 
     testComponents('shows the map from the breakpoint up', (tester) async {
-      tester.pumpComponent(
-        const UniboxExampleApp(initialPage: ExamplePage.apartments),
-      );
+      tester.pumpComponent(const ExampleApp());
 
       expect(find.text('Map'), findsOneComponent);
 
@@ -197,11 +199,17 @@ void main() {
       expect(css, contains('@media screen and (min-width: 900px)'));
     });
 
-    testComponents('leaves the map out of the card page', (tester) async {
-      tester.pumpComponent(const UniboxExampleApp());
+    testComponents('shows the listings behind the sign-up dialog', (
+      tester,
+    ) async {
+      // The form is a layer over the page, not a page of its own: the static
+      // export of the sign-up document still carries the listings and their map.
+      tester.pumpComponent(signupApp());
 
-      expect(find.text('Map'), findsNothing);
-      expect(allCss(), isNot(contains('@media screen and (min-width: 900px)')));
+      expect(find.text('Join Unibox'), findsOneComponent);
+      expect(find.text('Via Bellavista 12'), findsOneComponent);
+      expect(find.text('Map'), findsOneComponent);
+      expect(allCss(), contains('@media screen and (min-width: 900px)'));
     });
   });
 }

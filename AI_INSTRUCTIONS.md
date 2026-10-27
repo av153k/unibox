@@ -12,8 +12,9 @@ parameters that do not exist. Hand it three things:
 2. **[`README.md`](README.md)** — the reference: every node, every token, every
    default. It is the ground truth when the two disagree.
 3. **If the assistant can read files**, `packages/unibox_core/lib/src/` (the source is
-   documented member by member) and `example/unibox_example_shared/lib/src/` (two
-   complete pages, a form and a navigation bar, as plain Dart).
+   documented member by member) and `example/unibox_example_shared/lib/src/` (a
+   complete page as one `StatefulNode`, with a form, a dialog and a navigation
+   bar, in plain Dart).
 
 A prompt that works:
 

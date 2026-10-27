@@ -1,24 +1,64 @@
 # Unibox examples
 
-These packages render **the same node trees** with both renderers: one
-description, two host applications. The example has two pages behind one
-navigation bar — a signup card with two controlled text inputs, a hand drawn
-checkbox, a hover aware button, a link and a status line, and a list of
-apartments that scrolls under the bar and shows a map beside it when the window
-is wide enough.
+These packages render **the same node tree** with both renderers: one description,
+two host applications. The description is a single page component —
+`ExamplePageNode`, a `StatefulNode` — that draws a list of apartments behind a
+navigation bar and a sign-up form the bar opens as a dialog over it: two
+controlled text inputs, a hand drawn checkbox, a hover aware button, a link and a
+status line, in a card that a barrier and `Escape` dismiss. The list scrolls under
+the bar and shows a map beside it when the window is wide enough.
 
 | Package | Role |
 | --- | --- |
-| `unibox_example_shared` | The node trees (`buildExamplePage(...)`, `buildSignupPage(...)`, `buildApartmentsPage(...)`), the form state and the callbacks. Pure Dart, no renderer. |
-| `unibox_example_flutter` | Flutter host: a `StatefulWidget` owns a `SignupFormState` and the open `ExamplePage`, and renders `.toWidget()`. |
-| `unibox_example_jaspr` | Jaspr host: a `StatefulComponent` owns the same two values and renders `.toComponent()`. |
+| `unibox_example_shared` | The page as one node (`ExamplePageNode`, with `ExampleState` and `ExampleStore`) and the parts it is built from (`buildExamplePage`, `buildApartmentsPage`, `buildSignupDialog`), plus the palette. Pure Dart, no renderer. |
+| `unibox_example_flutter` | Flutter host: one file (`lib/main.dart`) — the surface, the link policy and the width the map needs. |
+| `unibox_example_jaspr` | Jaspr host: one component file (`lib/main.dart`) — the node in a document — plus `wide_only.dart`, the CSS gate of the panel. |
 
-Neither host lays anything out. They hold state and hand the tree the values and
-the callbacks (`onNameChanged`, `onEmailChanged`, `onNewsletterToggled`,
-`onSubmit`, `onNavigate`), which is what keeps the Flutter and the web result
-identical.
+Neither host holds state. The page owns it in `ExampleStore`; the host renders the
+node through `FlutterStateful`, which creates the store, subscribes to it and
+disposes it. What a host still supplies is what a node cannot know — the surface
+the tree is drawn on, how a link opens, whether there is room for the map — which
+is why each one is a single small file.
 
-## The second page, and what makes it responsive
+## One component, two small hosts
+
+`ExamplePageNode` is a `StatefulNode<ExampleState, ExampleStore>`. Its state is
+the form and whether the dialog is open, and its view is the frame, the listings
+and the dialog as one tree. A field reports a value, the bar reports a
+destination, the dialog reports a dismissal; each publishes a new `ExampleState`
+and the renderer draws the view again. No host wires a callback, so the whole
+application moves between the two targets as one node.
+
+Flutter renders it with `FlutterStateful(node: ExamplePageNode(panel: ...))` inside
+its `MaterialApp`; Jaspr renders the same node through `FlutterStateful` inside a
+`Document`, which draws the first state on the server. The client build (Task 104)
+is what makes a browser subscribe to the same store; until then the export is the
+first frame, which is why a static document has to be told which state to start
+in.
+
+## The sign-up form is a dialog
+
+`buildSignupDialog(...)` wraps the card in an `OverlayNode`: the node carries the
+policy (`onDismiss`, the barrier, `Escape`) and sits in the tree where the view
+says it belongs, above the page. Being open is therefore state of the page —
+`ExampleState.signupOpen` — and `exampleView` includes the node while it is open
+and leaves it out when it closes, so no view needs an overlay slot and the tree
+stays immutable.
+
+Each renderer presents it in its own idiom. Flutter puts the card in a modal on
+the root overlay, with a scrim over the page, a barrier press and `Escape` both
+calling `onDismiss`, and the focus it had before the dialog opened restored on
+exit. The web renderer draws a fixed layer with `role="dialog"` and
+`aria-modal="true"`; the barrier and `Escape` wait for the client build (Task
+104), so the static export is a snapshot of the layer rather than an interactive
+modal.
+
+That is what the two documents are: `build/index.html` is the listings, and
+`build/signup.html` is the same page with the dialog over it. A browser without
+the client bundle can only be shown one of the two — so the entry document is the
+one that can be read without dismissing anything, and the form is its own url.
+
+## The listings page, and what makes it responsive
 
 `buildApartmentsPage({UINode? map})` describes one row: the listings on the left,
 the map on the right. Whether the map is there is a question about the *surface*
@@ -60,7 +100,7 @@ suites render that table and read the appearance back out of their own output �
 the Flutter suite from the widget tree, the Jaspr suite from the emitted CSS.
 
 A renderer that drops a token, or starts wrapping a node in something that paints
-differently, therefore fails its own suite instead of making the two pages drift
+differently, therefore fails its own suite instead of making the two renderings drift
 apart. The apps themselves only check that the page they draw is the page the
 shared tree describes: the title, the two fields, the button, the link, the
 confirmation, the listings, the map on a wide surface, a page box that fills the
@@ -84,7 +124,11 @@ recognisably the same page.
 
 ## Flutter app
 
-The app only needs the generated platform runner, which is not checked in:
+The host is `lib/main.dart`: a `MaterialApp` for the surface, an
+`FlutterLinkScope` for what following a link means, and a `LayoutBuilder` that
+passes the map or not. `FlutterStateful` keeps the store, so a width change
+redraws the page without losing the form. The app only needs the generated
+platform runner, which is not checked in:
 
 ```shell
 cd example/unibox_example_flutter
@@ -101,19 +145,21 @@ flutter test
 
 ## Jaspr app
 
-`bin/build.dart` renders the component trees to static pages, one per page of the
-example:
+The host is `lib/main.dart` as well: `ExampleApp` renders the shared node, and
+`buildExampleDocument` puts it in the document (language, title, description, the
+`html, body` height and the font stack). `bin/build.dart` renders that document
+once per destination:
 
 ```shell
 cd example/unibox_example_jaspr
-dart run bin/build.dart   # writes build/index.html and build/apartments.html
-open build/apartments.html
+dart run bin/build.dart   # writes build/index.html and build/signup.html
+open build/index.html
 ```
 
-Resize the window on `build/apartments.html`: the map appears beside the listings
+Resize the window on `build/index.html`: the map appears beside the listings
 from nine hundred pixels on and is gone below that, with no JavaScript involved.
-There is one file per page because navigation is state, and a static export
-cannot keep state — open the page you want.
+There is one file per destination because being open is state, and a static
+export cannot keep state — open the document you want.
 
 Each page is a document before it is a picture: the bar is a `<nav>`, the page box
 is a `<main>`, the card an `<article>`, the listings a `<ul>` of `<li>`s, the map a
@@ -127,9 +173,10 @@ Each page also arrives with what a search engine reads before any script runs:
 a `robots.txt` next to the two documents. A sitemap would need the address the
 pages are served from, so it is left to the deployment.
 
-What cannot be crawled is the navigation between the two files: the bar switches
-the open page in host state (`onTap`), and a box with `BoxRole.link` has no
-`href`, so a crawler sees two documents and no link between them. A page that has
+What cannot be crawled is the navigation between the two files: the bar opens the
+dialog and switches the page in host state (`onTap`), and a box with
+`BoxRole.link` has no `href`, so a crawler sees two documents and no link between
+them. A page that has
 to be found makes sense as a `LinkNode` with a real url — which is the router work
 `TASK_PLAN.md` lists as deferred.
 

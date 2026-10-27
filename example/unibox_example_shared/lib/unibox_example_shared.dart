@@ -1,15 +1,19 @@
-/// The pages of the Unibox example.
+/// The Unibox example, as one page component.
 ///
-/// The trees are plain Dart: the same [buildExamplePage] description renders as
-/// Flutter widgets in `unibox_example_flutter` and as HTML/CSS in
-/// `unibox_example_jaspr`.
+/// [ExamplePageNode] is the whole application: a [StatefulNode] whose store holds
+/// the form and whether the sign-up dialog is open, and whose view draws the
+/// navigation bar, the listings and the dialog. The tree is plain Dart, so the
+/// same node renders as Flutter widgets in `unibox_example_flutter` and as
+/// HTML/CSS in `unibox_example_jaspr`.
 ///
-/// The example has two pages behind one navigation bar — a signup card and a
-/// list of apartments — and both hosts keep the open page in their own state,
-/// exactly like they keep the values of the form.
+/// The host is what a node cannot be: a surface, the way a link opens, and the
+/// width the map needs. Each host of the example is one small file for exactly
+/// that reason.
 library;
 
 export 'src/apartments.dart';
+export 'src/page_node.dart';
 export 'src/page.dart';
+export 'src/page_state.dart';
 export 'src/signup_card.dart';
 export 'src/theme.dart';

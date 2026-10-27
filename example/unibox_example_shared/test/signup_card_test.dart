@@ -197,24 +197,21 @@ void main() {
     });
   });
 
-  group('buildSignupPage', () {
-    test('fills the space the navigation leaves', () {
-      final Box page = RecordingHost().signupPage();
+  group('buildSignupDialog', () {
+    test('wraps the card in an overlay that can be dismissed', () {
+      final OverlayNode dialog = RecordingHost().dialog();
 
-      expect(page.flex, 1);
-      expect(page.width, double.infinity);
-      expect(page.mainAlign, MainAlign.center);
-      expect(page.crossAlign, CrossAlign.center);
-      expect(page.children.single, isA<Box>());
+      expect(dialog.children.single, isA<Box>());
+      expect(dialog.onDismiss, isNotNull);
+      expect(textsIn(dialog), contains('Join Unibox'));
     });
 
-    test('centres the card the host describes', () {
-      final Box page = RecordingHost().signupPage(
+    test('shows the values the host describes', () {
+      final OverlayNode dialog = RecordingHost().dialog(
         const SignupFormState(name: 'Ada'),
       );
 
-      expect(textsIn(page), contains('Join Unibox'));
-      expect(flatten(page).whereType<TextInputNode>().first.value, 'Ada');
+      expect(flatten(dialog).whereType<TextInputNode>().first.value, 'Ada');
     });
   });
 }

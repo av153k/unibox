@@ -5,16 +5,16 @@ import 'package:unibox_example_shared/unibox_example_shared.dart';
 import 'support/tree.dart';
 
 /// The box of the navigation item labelled [label].
+///
+/// An item that changes the page is a link and the one that opens the sign-up
+/// dialog is a button, so the role is not part of the search: the tap is.
 Box navItem(UINode page, String label) => flatten(page)
     .whereType<Box>()
-    .firstWhere(
-      (Box box) =>
-          box.semantics?.role == BoxRole.link && textsIn(box).contains(label),
-    );
+    .firstWhere((Box box) => box.onTap != null && textsIn(box).contains(label));
 
 void main() {
   group('ExamplePage', () {
-    test('names the pages of the example', () {
+    test('names the destinations of the example', () {
       expect(ExamplePage.values, hasLength(2));
       expect(ExamplePage.signup.label, 'Sign up');
       expect(ExamplePage.apartments.label, 'Apartments');
@@ -42,14 +42,14 @@ void main() {
       expect(children.last, same(content));
     });
 
-    test('offers one item per page', () {
+    test('offers one item per destination', () {
       final Box page = RecordingHost().frame();
 
       expect(navItem(page, 'Sign up'), isA<Box>());
       expect(navItem(page, 'Apartments'), isA<Box>());
     });
 
-    test('reports the page an item asks for', () {
+    test('reports the destination an item asks for', () {
       final RecordingHost host = RecordingHost();
       final Box page = host.frame();
 
@@ -82,6 +82,35 @@ void main() {
       expect(item.semantics?.role, BoxRole.link);
       expect(item.isFocusable, isTrue);
       expect(item.stateStyle(BoxState.hover), isNotNull);
+    });
+
+    test('opens the sign-up form as a dialog, not a page', () {
+      final Box page = RecordingHost().frame();
+
+      final Box trigger = navItem(page, 'Sign up');
+
+      expect(trigger.semantics?.role, BoxRole.button);
+      // A dialog is not a document, so the trigger never claims to be current.
+      expect(trigger.semantics?.current, isNull);
+    });
+
+    test('puts the dialog above the page when the host has one', () {
+      final OverlayNode dialog = RecordingHost().dialog();
+
+      final List<UINode> children = RecordingHost()
+          .frame(dialog: dialog)
+          .children;
+
+      expect(children, hasLength(3));
+      expect(children.last, same(dialog));
+    });
+
+    test('reports a dismissal of the dialog', () {
+      final RecordingHost host = RecordingHost();
+
+      host.dialog().onDismiss!();
+
+      expect(host.dismissals, 1);
     });
   });
 

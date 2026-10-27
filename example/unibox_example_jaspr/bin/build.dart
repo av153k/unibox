@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:jaspr/server.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
-import 'package:unibox_example_jaspr/document.dart';
+import 'package:unibox_example_jaspr/main.dart';
 
 /// Renders the example to one static HTML file per page, plus a `robots.txt`.
 ///
@@ -13,11 +13,12 @@ import 'package:unibox_example_jaspr/document.dart';
 /// dart run unibox_example_jaspr:build
 /// ```
 ///
-/// and open `build/index.html`. Navigation is host state, which a static export
-/// cannot keep, so every page is written on its own — `build/apartments.html` is
-/// the second page, and resizing the window there is what the breakpoint does:
-/// the map is beside the listings on a wide window and gone on a narrow one,
-/// with no JavaScript involved.
+/// and open `build/index.html`. Being open is host state, which a static export
+/// cannot keep, so every destination is written on its own — `index.html` is the
+/// listings, `build/signup.html` is the same page with the sign-up dialog over it
+/// — and resizing the window is what the breakpoint does: the map is beside the
+/// listings on a wide window and gone on a narrow one, with no JavaScript
+/// involved.
 ///
 /// What a crawler can read is the export itself: the text, the `<img alt>` texts,
 /// the real `<a href>` of a `LinkNode`, the `role` attributes of the semantics
@@ -48,5 +49,5 @@ Future<void> main() async {
 
 /// The file the static export writes [page] to.
 String _fileNameOf(ExamplePage page) {
-  return page == ExamplePage.signup ? 'index.html' : '${page.name}.html';
+  return page == ExamplePage.apartments ? 'index.html' : '${page.name}.html';
 }

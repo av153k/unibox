@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:jaspr/server.dart';
 import 'package:jaspr_test/jaspr_test.dart';
-import 'package:unibox_example_jaspr/document.dart';
+import 'package:unibox_example_jaspr/main.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
 
 void main() {
@@ -12,7 +12,9 @@ void main() {
     late String html;
 
     setUpAll(() async {
-      final ResponseLike page = await renderComponent(buildExampleDocument());
+      final ResponseLike page = await renderComponent(
+        buildExampleDocument(page: ExamplePage.signup),
+      );
       html = utf8.decode(page.body);
     });
 
@@ -44,6 +46,15 @@ void main() {
       expect(html, contains('One description, two renderers.'));
     });
 
+    test('starts with the sign-up dialog over the listings', () {
+      // Being open is state, and a static document has nothing to click: the
+      // sign-up document is rendered with the dialog already in the tree, over
+      // the page it belongs to.
+      expect(html, contains('role="dialog"'));
+      expect(html, contains('aria-modal="true"'));
+      expect(html, contains('Via Bellavista 12'));
+    });
+
     test('declares the language of the page', () {
       // A crawler and a screen reader both guess the language when the document
       // does not state it.
@@ -65,6 +76,19 @@ void main() {
       expect(html, contains('Join Unibox'));
     });
 
+    test('writes the listings as the entry document', () async {
+      // The form is reached from the bar, so the document that opens the site is
+      // the page it belongs to: a browser without the client bundle cannot
+      // dismiss a dialog.
+      final ResponseLike page = await renderComponent(buildExampleDocument());
+      final String listings = utf8.decode(page.body);
+
+      expect(listings, contains('<title>Apartments — Unibox</title>'));
+      expect(listings, contains('Via Bellavista 12'));
+      expect(listings, isNot(contains('Join Unibox')));
+      expect(listings, isNot(contains('role="dialog"')));
+    });
+
     test('writes the apartments page on request', () async {
       // Navigation is state, so a static export cannot switch pages by itself:
       // the second page is written next to the first one, and the breakpoint is
@@ -78,6 +102,7 @@ void main() {
       expect(apartments, contains('overflow: auto'));
       expect(apartments, contains('@media screen and (min-width: 900px)'));
       expect(apartments, contains('display: none;'));
+      expect(apartments, isNot(contains('role="dialog"')));
     });
 
     test('gives the apartments page its own title and description', () async {

@@ -52,23 +52,41 @@ final class RecordingHost {
     );
   }
 
-  /// Builds the signup page for [state] with recording callbacks.
-  Box signupPage([SignupFormState state = const SignupFormState()]) {
-    return buildSignupPage(
+  /// How often the dialog asked to be dismissed.
+  int dismissals = 0;
+
+  /// Builds the sign-up dialog for [state] with recording callbacks.
+  OverlayNode dialog([SignupFormState state = const SignupFormState()]) {
+    return buildSignupDialog(
       state: state,
       onNameChanged: names.add,
       onEmailChanged: emails.add,
       onNewsletterToggled: () => newsletterToggles++,
       onSubmit: () => submissions++,
+      onDismiss: () => dismissals++,
     );
   }
 
   /// Wraps [page] in the example frame with a recording navigation.
-  Box frame({ExamplePage current = ExamplePage.signup, UINode? page}) {
+  Box frame({
+    ExamplePage current = ExamplePage.apartments,
+    UINode? page,
+    OverlayNode? dialog,
+  }) {
     return buildExamplePage(
       current: current,
       onNavigate: navigations.add,
-      page: page ?? signupPage(),
+      page: page ?? buildApartmentsPage(),
+      dialog: dialog,
     );
   }
+}
+
+/// The tree [node] draws for the state its store starts with.
+///
+/// Creating the store is what a renderer does when it mounts the node, so this is
+/// the first frame of the page without a host or a widget in the way.
+UINode viewOf(ExamplePageNode node) {
+  final ExampleStore store = node.create();
+  return node.viewFor(store.state, store);
 }

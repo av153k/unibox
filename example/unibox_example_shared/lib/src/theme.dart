@@ -14,7 +14,7 @@ abstract final class ExamplePalette {
   /// The accent while the button is pressed.
   static const BoxColor accentPressed = BoxColor.rgb(0x16, 0x3E, 0xB0);
 
-  /// The tint behind the item of the page that is open.
+  /// The tint behind the navigation item that is open.
   static const BoxColor accentSurface = BoxColor.rgb(0xE8, 0xEF, 0xFD);
 
   /// The background of the card and of the navigation bar.
@@ -115,14 +115,14 @@ abstract final class ExampleType {
     color: ExamplePalette.text,
   );
 
-  /// A navigation item that is not the page that is open.
+  /// A navigation item that is not open.
   static const BoxTextStyle nav = BoxTextStyle(
     fontSize: 14,
     fontWeight: FontWeight.medium,
     color: ExamplePalette.muted,
   );
 
-  /// The navigation item of the page that is open.
+  /// The navigation item that is open.
   static const BoxTextStyle navCurrent = BoxTextStyle(
     fontSize: 14,
     fontWeight: FontWeight.semiBold,

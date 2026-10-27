@@ -59,8 +59,9 @@ Document(title: 'My page', body: renderJaspr(tree));
 
 Keep the tree in a package of its own that imports `unibox_core` and neither
 renderer, so both hosts can use it and neither has to know which target draws it.
-[`example/`](example/README.md) is that arrangement in full: two pages, a form and
-a navigation bar shared by a Flutter app and a static site.
+[`example/`](example/README.md) is that arrangement in full: one page node — a
+listings page, a navigation bar and a sign-up dialog — shared by a Flutter app and
+a static site, each host a single small file.
 
 ## The nodes
 
@@ -733,8 +734,8 @@ Where to read more:
   left out.
 - [RELEASE.md](RELEASE.md) — the checklist for cutting a release, including the one
   step that is a human decision (`publish_to: none` off).
-- [example/README.md](example/README.md) — the two pages, how they are hosted, and
-  what the static export contains.
+- [example/README.md](example/README.md) — the page, the dialog, how they are
+  hosted, and what the static export contains.
 - The package READMEs hold the mapping tables, target by target:
   [core](packages/unibox_core/README.md),
   [material](packages/unibox_material/README.md),

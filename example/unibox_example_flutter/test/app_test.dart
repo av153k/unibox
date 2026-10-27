@@ -12,9 +12,22 @@ Future<void> fillForm(WidgetTester tester) async {
 }
 
 void main() {
-  group('UniboxExampleApp', () {
-    testWidgets('renders the shared node tree', (tester) async {
+  group('ExampleApp', () {
+    testWidgets('renders the shared page with the dialog closed', (
+      tester,
+    ) async {
       await pumpApp(tester);
+
+      expect(find.text('Via Bellavista 12'), findsOneWidget);
+      expect(find.text('Join Unibox'), findsNothing);
+      expect(find.byType(TextField), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('opens the sign-up dialog from the bar', (tester) async {
+      await pumpApp(tester);
+
+      await openPage(tester, 'Sign up');
 
       expect(find.text('Join Unibox'), findsOneWidget);
       expect(find.text('One description, two renderers.'), findsOneWidget);
@@ -23,7 +36,36 @@ void main() {
       expect(find.text('ada@example.com'), findsOneWidget);
       expect(find.text('Create account'), findsOneWidget);
       expect(find.text('Read the docs'), findsOneWidget);
-      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('closes the dialog when the barrier is pressed', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await openPage(tester, 'Sign up');
+
+      // The top left corner is the barrier: the card is centred in the window.
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pump();
+
+      expect(find.text('Join Unibox'), findsNothing);
+      expect(find.text('Via Bellavista 12'), findsOneWidget);
+    });
+
+    testWidgets('keeps the form when the window crosses the breakpoint', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await openPage(tester, 'Sign up');
+      await fillForm(tester);
+
+      // The host passes a new node (without the panel) and the renderer keeps the
+      // store, which is why the page can lose its map without losing the form.
+      tester.view.physicalSize = const Size(700, 900);
+      await tester.pump();
+
+      expect(find.text('Map'), findsNothing);
+      expect(tester.widget<TextField>(nameField()).controller!.text, 'Ada');
     });
 
     testWidgets('fills the surface the window gives it', (tester) async {
@@ -44,6 +86,7 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester);
+      await openPage(tester, 'Sign up');
 
       await fillForm(tester);
 
@@ -57,6 +100,7 @@ void main() {
 
     testWidgets('shows the confirmation after submitting', (tester) async {
       await pumpApp(tester);
+      await openPage(tester, 'Sign up');
       await fillForm(tester);
 
       await tester.tap(find.text('Create account'));
@@ -72,6 +116,7 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester);
+      await openPage(tester, 'Sign up');
 
       await tester.tap(find.text('Create account'));
       await tester.pump();
@@ -84,6 +129,7 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester);
+      await openPage(tester, 'Sign up');
       await fillForm(tester);
 
       await tester.testTextInput.receiveAction(TextInputAction.done);
@@ -97,6 +143,7 @@ void main() {
 
     testWidgets('toggles the newsletter opt-in', (tester) async {
       await pumpApp(tester);
+      await openPage(tester, 'Sign up');
 
       expect(find.text('✓'), findsNothing);
 
@@ -112,10 +159,11 @@ void main() {
     });
 
     group('navigation', () {
-      testWidgets('opens the apartments page from the bar', (tester) async {
+      testWidgets('dismisses the dialog onto the listings', (tester) async {
         await pumpApp(tester);
+        await openPage(tester, 'Sign up');
 
-        await openPage(tester, 'Apartments');
+        await closeDialog(tester);
 
         expect(find.text('Join Unibox'), findsNothing);
         expect(find.text('Via Bellavista 12'), findsOneWidget);
@@ -126,9 +174,10 @@ void main() {
         tester,
       ) async {
         await pumpApp(tester);
+        await openPage(tester, 'Sign up');
         await fillForm(tester);
 
-        await openPage(tester, 'Apartments');
+        await closeDialog(tester);
         await openPage(tester, 'Sign up');
 
         expect(find.text('Join Unibox'), findsOneWidget);
@@ -140,8 +189,6 @@ void main() {
         tester,
       ) async {
         await pumpApp(tester);
-
-        await openPage(tester, 'Apartments');
 
         // The two columns of the row: the listings take three parts of the
         // width, the map two, and the map sits to the right of the list.
@@ -157,8 +204,6 @@ void main() {
         // the list is the whole page.
         await pumpApp(tester, surface: const Size(700, 900));
 
-        await openPage(tester, 'Apartments');
-
         expect(find.text('Map'), findsNothing);
         expect(find.text('Via Bellavista 12'), findsOneWidget);
       });
@@ -169,8 +214,6 @@ void main() {
         // The card is a row whose text column takes what is left, so the name, the
         // summary and the rent wrap inside the card instead of widening it.
         await pumpApp(tester, surface: const Size(500, 800));
-
-        await openPage(tester, 'Apartments');
 
         expect(tester.takeException(), isNull);
         expect(find.text('Via Bellavista 12'), findsOneWidget);
@@ -191,7 +234,6 @@ void main() {
         // Short enough that the six listings do not fit, which is the case the
         // scroll view exists for.
         await pumpApp(tester, surface: const Size(900, 700));
-        await openPage(tester, 'Apartments');
 
         final double bar = tester.getTopLeft(find.text('Unibox')).dy;
         final double before = tester

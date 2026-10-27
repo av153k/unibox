@@ -2,13 +2,16 @@ import 'package:unibox_core/unibox_core.dart';
 
 import 'theme.dart';
 
-/// The pages of the example.
+/// The destinations of the navigation bar.
 ///
-/// The pages are named here rather than in a host, because both hosts navigate
-/// the same way: they keep the open page in their own state and pass the page
+/// The names live here rather than in a host, because both hosts navigate the
+/// same way: they keep what is open in their own state and pass the destination
 /// that was asked for back into [buildExamplePage].
+///
+/// [signup] is not a page: it is the sign-up form, which the frame shows as a
+/// dialog over the listings. [apartments] is the page itself.
 enum ExamplePage {
-  /// The signup card.
+  /// The sign-up form, shown as a dialog over the page.
   signup('Sign up'),
 
   /// The list of apartments, with the map beside it when there is room.
@@ -16,7 +19,7 @@ enum ExamplePage {
 
   const ExamplePage(this.label);
 
-  /// The label of the page in the navigation bar.
+  /// The label of the destination in the navigation bar.
   final String label;
 }
 
@@ -33,20 +36,27 @@ abstract final class ExampleLayout {
   static const double wideBreakpoint = 900;
 }
 
-/// The frame every page is drawn in: the canvas, the navigation bar and [page].
+/// The frame every page is drawn in: the canvas, the navigation bar, [page] and,
+/// when it is open, [dialog].
+///
+/// [dialog] is an [OverlayNode] — `exampleView` builds it from `buildSignupDialog`
+/// while the form is open and leaves it out when it is closed. Presence is
+/// therefore the state of the page, exactly like the listings it is drawn over,
+/// and the frame only places it.
 ///
 /// The bar is part of the tree, not of a host. It is boxes and text like
-/// everything else, and it switches pages through `onTap`, exactly like the
-/// newsletter opt-in toggles the form: the host owns the value, the tree asks
-/// for a new one. That is what keeps the navigation identical in Flutter and on
+/// everything else, and it changes what is open through `onTap`, exactly like the
+/// newsletter opt-in toggles the form: the host owns the value, the tree asks for
+/// a new one. That is what keeps the navigation identical in Flutter and on
 /// the web instead of being a router on one side and a widget on the other.
 ///
-/// [page] is expected to fill the space below the bar, which is what the pages
-/// of the example do with `flex: 1`.
+/// [page] is expected to fill the space below the bar, which is what the listings
+/// page does with `flex: 1`.
 Box buildExamplePage({
   required ExamplePage current,
   required void Function(ExamplePage page) onNavigate,
   required UINode page,
+  OverlayNode? dialog,
 }) {
   return Box(
     direction: Axis.vertical,
@@ -56,11 +66,13 @@ Box buildExamplePage({
     children: <UINode>[
       _navigationBar(current: current, onNavigate: onNavigate),
       page,
+      ?dialog,
     ],
   );
 }
 
-/// The bar above every page: the name of the example and one item per page.
+/// The bar above every page: the name of the example and one item per
+/// destination.
 ///
 /// The bar is a row that pushes its two ends apart, and the shadow with no blur
 /// is the hairline under it: a `BoxBorder` draws on all four sides, while one
@@ -104,12 +116,15 @@ UINode _navigationBar({
   );
 }
 
-/// One item of the navigation: a label, highlighted while its page is open.
+/// One item of the navigation: a label, highlighted while its destination is
+/// open.
 ///
-/// The role is [BoxRole.link] rather than [BoxRole.button], because the item
-/// takes the reader to another page. The label is left out of the semantics on
-/// purpose: the visible text already says where the item goes, and a second copy
-/// could only drift away from it.
+/// An item that changes the page is a [BoxRole.link]; the one that opens the
+/// sign-up dialog is a [BoxRole.button], because it does not take the reader
+/// anywhere — it asks for a form. Only the page can be the current document, so
+/// `aria-current` is left off the dialog's trigger. The label is left out of the
+/// semantics on purpose: the visible text already says where the item goes, and a
+/// second copy could only drift away from it.
 UINode _navigationItem(
   ExamplePage page, {
   required bool current,
@@ -124,10 +139,12 @@ UINode _navigationItem(
     backgroundColor: current ? ExamplePalette.accentSurface : null,
     textStyle: current ? ExampleType.navCurrent : ExampleType.nav,
     semantics: BoxSemantics(
-      role: BoxRole.link,
+      role: page == ExamplePage.signup ? BoxRole.button : BoxRole.link,
       // The item of the page the reader is on: `aria-current` on the web, the
-      // selected item of a set in Flutter.
-      current: current ? BoxCurrent.page : null,
+      // selected item of a set in Flutter. A dialog is not a document.
+      current: current && page == ExamplePage.apartments
+          ? BoxCurrent.page
+          : null,
     ),
     stateStyles: const <BoxState, BoxStyle>{
       BoxState.hover: BoxStyle(backgroundColor: ExamplePalette.accentSurface),
