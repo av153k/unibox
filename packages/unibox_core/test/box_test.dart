@@ -266,6 +266,52 @@ void main() {
       );
     });
   });
+
+  group('style bags', () {
+    test('merges the bags in the order they are given', () {
+      const BoxStyle base = BoxStyle(
+        padding: BoxSpacing.all(16),
+        backgroundColor: BoxColor.white,
+      );
+      const BoxStyle selected = BoxStyle(backgroundColor: BoxColor.black);
+      const BoxStyle compact = BoxStyle(padding: BoxSpacing.all(4));
+
+      const Box box = Box(styles: <BoxStyle>[base, selected, compact]);
+      final BoxStyle style = box.computedStyle;
+
+      // Later bags win: the last background and the last padding.
+      expect(style.backgroundColor, BoxColor.black);
+      expect(style.padding, BoxSpacing.all(4));
+    });
+
+    test('lets a flat parameter win over every bag', () {
+      const Box box = Box(
+        styles: <BoxStyle>[
+          BoxStyle(backgroundColor: BoxColor.white),
+          BoxStyle(backgroundColor: BoxColor.black),
+        ],
+        backgroundColor: BoxColor.transparent,
+      );
+
+      expect(box.computedStyle.backgroundColor, BoxColor.transparent);
+    });
+
+    test('merges the older single bag before the list', () {
+      // ignore: deprecated_member_use_from_same_package
+      const Box box = Box(
+        style: BoxStyle(backgroundColor: BoxColor.white),
+        styles: <BoxStyle>[BoxStyle(backgroundColor: BoxColor.black)],
+      );
+
+      expect(box.styles, hasLength(1));
+      expect(box.computedStyle.backgroundColor, BoxColor.black);
+    });
+
+    test('takes no look at all from an empty list', () {
+      expect(const Box(styles: <BoxStyle>[]).computedStyle.isEmpty, isTrue);
+    });
+  });
 }
 
+/// A callback that does nothing.
 void _noop() {}

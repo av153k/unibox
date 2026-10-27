@@ -62,7 +62,9 @@ class Box extends UINode {
     this.transition,
     this.opacity,
     this.transform,
-    this.style,
+    this.styles = const <BoxStyle>[],
+    // ignore: deprecated_member_use_from_same_package
+    @Deprecated('Use styles: a list of bags, merged in order.') this._style,
     this.hoverStyle,
     this.stateStyles,
     this.enabled = true,
@@ -167,8 +169,29 @@ class Box extends UINode {
 
   // Style tokens.
 
-  /// A reusable bundle of tokens, overridden by the flat parameters above.
-  final BoxStyle? style;
+  /// The bags of tokens this box wears, merged in the order they are given.
+  ///
+  /// The last bag wins a token over an earlier one, a flat parameter wins over
+  /// every bag, and `computedStyle` is the result. It is how a look is composed out
+  /// of reusable pieces — a base, a variant, a state — without a name registry and
+  /// without leaving a `const` tree:
+  ///
+  /// ```dart
+  /// Box(
+  ///   styles: <BoxStyle>[
+  ///     Card.base,
+  ///     if (selected) Card.selected,
+  ///     if (compact) Card.compact,
+  ///   ],
+  /// );
+  /// ```
+  final List<BoxStyle> styles;
+
+  /// A single bag, merged before [styles].
+  @Deprecated('Use styles: a list of bags, merged in order.')
+  BoxStyle? get style => _style;
+
+  final BoxStyle? _style;
 
   /// Tokens applied while the box is hovered, overriding the base style.
   ///
@@ -240,7 +263,15 @@ class Box extends UINode {
   ///
   /// [style] provides the defaults, every flat parameter that is not `null`
   /// overrides the matching token.
-  BoxStyle get computedStyle => (style ?? const BoxStyle()).merge(_flatStyle);
+  BoxStyle get computedStyle {
+    BoxStyle result = _style ?? const BoxStyle();
+
+    for (final BoxStyle bag in styles) {
+      result = result.merge(bag);
+    }
+
+    return result.merge(_flatStyle);
+  }
 
   /// The tokens that apply in [state], or `null` when the state adds nothing.
   BoxStyle? stateStyle(BoxState state) {

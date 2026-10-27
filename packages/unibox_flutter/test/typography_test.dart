@@ -116,7 +116,9 @@ void main() {
       await pumpNode(
         tester,
         const core.Box(
-          style: core.BoxStyle(textStyle: core.BoxTextStyle(fontSize: 18)),
+          styles: <core.BoxStyle>[
+            core.BoxStyle(textStyle: core.BoxTextStyle(fontSize: 18)),
+          ],
           children: <core.UINode>[core.TextNode('Hello')],
         ),
       );

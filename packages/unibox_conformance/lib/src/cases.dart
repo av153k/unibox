@@ -177,6 +177,28 @@ const List<BoxCase> boxCases = <BoxCase>[
     ),
   ),
   BoxCase(
+    description: 'merges the style bags in the order they are given',
+    box: core.Box(
+      styles: <core.BoxStyle>[
+        core.BoxStyle(
+          gap: 8,
+          padding: core.BoxSpacing.all(4),
+          backgroundColor: _blue,
+        ),
+        core.BoxStyle(padding: core.BoxSpacing.all(12), borderRadius: 6),
+      ],
+      children: _children,
+    ),
+    // The second bag wins the padding and adds a radius; the first keeps the gap
+    // and the colour it is the only one to name.
+    expected: BoxAppearance(
+      gap: 8,
+      padding: core.BoxSpacing.all(12),
+      backgroundColor: _blue,
+      borderRadius: 6,
+    ),
+  ),
+  BoxCase(
     description: 'presents every token at once',
     box: core.Box(
       direction: core.Axis.horizontal,

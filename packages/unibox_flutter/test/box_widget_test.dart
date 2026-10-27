@@ -303,10 +303,12 @@ void main() {
         const core.Box(
           width: 50,
           height: 50,
-          style: core.BoxStyle(
-            backgroundColor: core.BoxColor.white,
-            borderRadius: 4,
-          ),
+          styles: <core.BoxStyle>[
+            core.BoxStyle(
+              backgroundColor: core.BoxColor.white,
+              borderRadius: 4,
+            ),
+          ],
           backgroundColor: core.BoxColor.black,
         ),
       );

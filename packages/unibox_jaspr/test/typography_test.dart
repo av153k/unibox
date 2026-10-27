@@ -51,7 +51,9 @@ void main() {
       final Map<String, String> styles = boxStyles(
         tester,
         const core.Box(
-          style: core.BoxStyle(textStyle: core.BoxTextStyle(fontSize: 18)),
+          styles: <core.BoxStyle>[
+            core.BoxStyle(textStyle: core.BoxTextStyle(fontSize: 18)),
+          ],
         ),
       );
 
