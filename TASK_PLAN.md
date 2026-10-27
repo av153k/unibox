@@ -79,6 +79,15 @@
 - [x] Task 52: Docs and CI — record the contract in the package, renderer and example READMEs, the CHANGELOGs, `design.md` and the workflow, alongside `dart test` for every package.
 
 
+### Phase 14: A second page behind a navigation bar
+- [x] Task 53: Example shared — split the palette and the typography out of the card into `theme.dart`, and add the tokens the second page needs (nav item, listing, price, map panel).
+- [x] Task 54: Example shared — `ExamplePage` (`signup`, `apartments`), `ExampleLayout.wideBreakpoint` and `buildExamplePage({current, onNavigate, page})`: one frame with a navigation bar of boxes, one item per page, highlighted while its page is open and wired through `onTap` exactly like the form's opt-in.
+- [x] Task 55: Example shared — `buildApartmentsPage({UINode? map})`: the listings in a three-part column, the map in a two-part column beside it, the page itself scrolling under the bar (`Overflow.scroll`, padding one level in so both renderers scroll the same content) and `buildExampleMap()` as a coloured panel.
+- [x] Task 56: Example hosts — both keep the open `ExamplePage` next to the form state. Flutter answers the breakpoint with `MediaQuery.sizeOf` and passes the map or `null`; the Jaspr host always passes it inside a `WideOnly` component whose base rule is `display: none` and whose `@media screen and (min-width: 900px)` rule is `display: contents`, because a static render runs before a viewport exists and a hidden panel has to take the whole column with it. Neither rule is inline, or it would beat the media query.
+- [x] Task 57: Example Jaspr — `buildExampleDocument({page})` and `bin/build.dart` write one static file per page (`index.html`, `apartments.html`), since a static export cannot keep the navigation state; resizing `apartments.html` is what exercises the breakpoint without a client bundle.
+- [x] Task 58: Tests — shared (`page_test`, `apartments_test`, the signup page in `signup_card_test`, a shared `test/support/tree.dart` with the recording host), Flutter (navigate, come back with the form intact, map beside the list, no map on a narrow surface, scroll under the bar) and Jaspr (listings, one scroll region, media query, no map on the card page, `role="link"` items, the export's second file).
+- [x] Task 59: Docs — `example/README.md`, the root `README.md` (which still described a fixture the example no longer carries), `design.md` §5.4 and §5.6: the size of the surface is host business, so a breakpoint is not a token.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
@@ -99,6 +108,16 @@
   `CHANGELOG.md`, a `LICENSE` and the repository metadata, while `publish_to:
   none` keeps `dart pub publish` from leaving the workspace by accident. Cutting
   a release means removing that one line per package.
+- **Navigation:** a page switch is a `Box.onTap` in the tree and state in the
+  host, like every other interaction. A router per target would have been the
+  alternative, and it would have made the two navigations two different things —
+  the tree would describe a page and the hosts would disagree about where it
+  lives. The cost is that a static export cannot switch pages, which is why the
+  example writes one file per page.
+- **Responsiveness:** the breakpoint is host state, not a token. The tree takes
+  the map as a parameter and each host decides whether to pass it — Flutter by
+  measuring the window, the web host by asking CSS. The breakpoint constant lives
+  in the shared example so the two answers cannot drift apart.
 
 ## Deferred
 
@@ -121,6 +140,7 @@ Deliberately out of scope for this pass, with the reason they were left:
   25.
 - `UniboxTheme`: typography inheritance covers today's needs, and a theme layer
   needs a decision about token overrides first.
-- Wiring the Jaspr client build into the workspace: the example only needs server
-  rendering today.
+- Wiring the Jaspr client build into the workspace: the example renders on the
+  server and writes one file per page, so the only thing missing without a client
+  bundle is the click that switches pages (the media query needs no JavaScript).
 

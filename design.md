@@ -144,6 +144,14 @@ never inherited (CSS does not inherit them either).
   a height, and a font needs a host that has one. An application declares both in
   its own idiom (`MaterialApp`, a Jaspr `Document`) and the renderer stays out of
   it.
+- The *size* of that surface is host business too, which is why a breakpoint is
+  not a token. A box cannot ask how wide the window is, so a page that has to
+  know takes the answer as a parameter and each host produces it the way its
+  medium allows: Flutter measures the window before it builds, the web host hands
+  the question to CSS as a media query, because a static render happens before a
+  viewport exists. Both answers reduce to the same two layouts as long as a
+  hidden element is equivalent to an absent one — a `display: none` box takes no
+  room, like a node that was never added.
 - Approximate is allowed where the platforms genuinely differ: font face, line
   breaking, shadow blur, placeholder and focus colours, hit testing. Similar, not
   identical.
@@ -164,6 +172,8 @@ never inherited (CSS does not inherit them either).
   `!important`. Typography is the single inherited axis.
 - No style sheet abstraction with class names; shared looks are expressed as
   `const BoxStyle` values.
+- No breakpoint, no `Visibility` and no conditional node: the model describes one
+  layout, and how wide the surface is belongs to the host (see 5.4).
 - No widget/component wrapper API: renderers only translate nodes. `EmbedNode`
   is the single, explicit exception: host content enters the tree as an opaque
   payload that only its own renderer accepts, and any other renderer throws.

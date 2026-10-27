@@ -106,17 +106,23 @@ infinite constraint in Flutter.
 specificity and no `!important`; every node owns its own layout and visual
 tokens. Interaction is limited to states a pointer, a keyboard and a touch
 screen all have: tap, long press, hover, focus and press. Dragging is out of
-scope.
+scope, and so are breakpoints: a viewport is a fact about the surface a tree is
+drawn on, not about the description, so a responsive page takes the answer as a
+parameter and each host measures its own surface — the Flutter app its window,
+the web app a CSS media query.
 
 ## Examples
 
-[`example/`](example/README.md) contains a signup card described once and
-rendered by both targets: `unibox_example_flutter` hosts it in a
-`StatefulWidget`, `unibox_example_jaspr` in a `StatefulComponent`, and
-`unibox_example_shared` holds the node tree and the form state they share. The
-two apps are asserted to *look* the same: both compare the applied presentation
-of every box, read back from their own rendered output, against one fixture in
-`unibox_example_shared`.
+[`example/`](example/README.md) contains two pages described once and rendered by
+both targets: a signup card and a list of apartments with a map beside it on a
+wide surface. `unibox_example_flutter` hosts them in a `StatefulWidget`,
+`unibox_example_jaspr` in a `StatefulComponent`, and `unibox_example_shared`
+holds the node trees, the form state and the navigation they share.
+
+The navigation, the responsive breakpoint and the scrolling list each show the
+same split of responsibilities: the tree describes the page, and the host answers
+the questions only a host can answer — what the surface is, and what happens when
+the user picks another page.
 
 ```shell
 (cd example/unibox_example_shared && dart test)
