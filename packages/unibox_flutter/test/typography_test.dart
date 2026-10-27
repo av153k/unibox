@@ -94,6 +94,24 @@ void main() {
       expect(style.fontFamily, 'Inter');
     });
 
+    testWidgets(
+      'makes a line box as tall as the font size times the line height',
+      (tester) async {
+        // A unitless CSS `line-height` and `TextStyle.height` mean the same thing,
+        // so this is the one measurement the two targets can agree on without a
+        // browser: the line box is `fontSize * lineHeight` on both. It is also why
+        // a layout that has to line up should set `lineHeight`: without it the box
+        // is as tall as the font's own metrics, which is 1em for the test font and
+        // `normal` (a little over 1em, from the font's own table) in a browser.
+        await pumpNode(
+          tester,
+          const core.TextNode('Hello', fontSize: 24, lineHeight: 1.5),
+        );
+
+        expect(tester.getSize(find.text('Hello')).height, 36);
+      },
+    );
+
     testWidgets('takes the typography from a style token', (tester) async {
       await pumpNode(
         tester,

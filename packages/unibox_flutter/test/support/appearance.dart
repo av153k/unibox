@@ -64,6 +64,77 @@ BoxAppearance appearanceOf(WidgetTester tester) {
   );
 }
 
+/// The typesetting this renderer gave the text node of [pumpNode].
+///
+/// The facts are read from the `Text` widget the renderer built — the `TextStyle`
+/// it declared, the alignment, the line limit and the truncation it asked for —
+/// and never from the node tree. That is what makes the answer comparable with the
+/// CSS the Jaspr renderer emitted: only what this target *said* is compared, not
+/// what a font engine made of it.
+///
+/// `Text.style` holds the tokens the renderer declared and nothing else, so a
+/// token the node left unset reads back as `null` even though Flutter's
+/// `DefaultTextStyle` fills it in at paint time.
+TextAppearance textAppearanceOf(WidgetTester tester) {
+  final Text text = tester.widget<Text>(inNode(find.byType(Text)).first);
+  final TextStyle? style = text.style;
+  final FontWeight? weight = style?.fontWeight;
+  final Color? color = style?.color;
+  final TextAlign? align = text.textAlign;
+  final TextOverflow? overflow = text.overflow;
+
+  return TextAppearance(
+    fontSize: style?.fontSize,
+    fontWeight: weight == null ? null : _fontWeightOf(weight),
+    color: color == null ? null : core.BoxColor(color.toARGB32()),
+    lineHeight: style?.height,
+    fontFamily: style?.fontFamily,
+    letterSpacing: style?.letterSpacing,
+    textAlign: align == null ? null : _textAlignOf(align),
+    maxLines: text.maxLines,
+    overflow: overflow == null ? null : _overflowOf(overflow),
+  );
+}
+
+/// The characters the renderer put into the text widget it built.
+String renderedTextOf(WidgetTester tester) {
+  return tester.widget<Text>(inNode(find.byType(Text)).first).data ?? '';
+}
+
+/// The core weight of a Flutter font weight.
+///
+/// The model has four weights, so a renderer that passed a finer one to Flutter
+/// described something the other target cannot express.
+core.FontWeight _fontWeightOf(FontWeight weight) {
+  return switch (weight) {
+    FontWeight.w400 => core.FontWeight.normal,
+    FontWeight.w500 => core.FontWeight.medium,
+    FontWeight.w600 => core.FontWeight.semiBold,
+    FontWeight.w700 => core.FontWeight.bold,
+    _ => throw StateError('The model has no font weight for $weight.'),
+  };
+}
+
+/// The core alignment of a Flutter text alignment.
+core.TextAlign _textAlignOf(TextAlign align) {
+  return switch (align) {
+    TextAlign.left => core.TextAlign.left,
+    TextAlign.center => core.TextAlign.center,
+    TextAlign.right => core.TextAlign.right,
+    TextAlign.justify => core.TextAlign.justify,
+    _ => throw StateError('The model has no text alignment for $align.'),
+  };
+}
+
+/// The core truncation of a Flutter text overflow.
+core.TextOverflow _overflowOf(TextOverflow overflow) {
+  return switch (overflow) {
+    TextOverflow.clip => core.TextOverflow.clip,
+    TextOverflow.ellipsis => core.TextOverflow.ellipsis,
+    _ => throw StateError('The model has no truncation for $overflow.'),
+  };
+}
+
 /// Every element of the subtree of [box], up to but excluding the widgets of the
 /// nodes below it.
 ///
