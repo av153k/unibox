@@ -14,19 +14,19 @@
 /// Widget widget = card.toWidget();
 /// ```
 ///
-/// Every node type also exposes the widget it renders to (`UniboxBox` for a
-/// `Box`, `UniboxText` for a `TextNode`, ...), which is what a host or a test
+/// Every node type also exposes the widget it renders to (`FlutterBox` for a
+/// `Box`, `FlutterText` for a `TextNode`, ...), which is what a host or a test
 /// needs to address a rendered node without depending on its position.
 library;
 
-export 'src/box.dart' show UniboxBox;
+export 'src/box.dart' show FlutterBox;
 export 'src/embed_node.dart' show WidgetEmbedBuilder, WidgetNode;
-export 'src/image_node.dart' show UniboxImage;
-export 'src/link_node.dart' show LinkOpener, UniboxLink, UniboxLinkScope;
-export 'src/overlay_node.dart' show UniboxOverlay;
+export 'src/image_node.dart' show FlutterImage;
+export 'src/link_node.dart' show LinkOpener, FlutterLink, FlutterLinkScope;
+export 'src/overlay_node.dart' show FlutterOverlay;
 export 'src/render.dart';
-export 'src/stack_node.dart' show UniboxStack;
-export 'src/stateful_node.dart' show UniboxStateful;
-export 'src/text_input_node.dart' show UniboxTextInput;
-export 'src/text_node.dart' show UniboxText;
-export 'src/text_style_scope.dart' show UniboxTextStyleScope;
+export 'src/stack_node.dart' show FlutterStack;
+export 'src/stateful_node.dart' show FlutterStateful;
+export 'src/text_input_node.dart' show FlutterTextInput;
+export 'src/text_node.dart' show FlutterText;
+export 'src/text_style_scope.dart' show FlutterTextStyleScope;

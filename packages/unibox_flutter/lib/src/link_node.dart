@@ -14,7 +14,7 @@ typedef LinkOpener = FutureOr<void> Function(String url);
 /// following a link means, e.g. with `url_launcher`:
 ///
 /// ```dart
-/// UniboxLinkScope(
+/// FlutterLinkScope(
 ///   open: (String url) => launchUrl(Uri.parse(url)),
 ///   child: renderFlutter(node),
 /// );
@@ -25,39 +25,39 @@ typedef LinkOpener = FutureOr<void> Function(String url);
 /// tap, so rendering one is reported as a host configuration error in debug
 /// builds.
 /// [core.LinkNode.newTab] only affects the web renderer.
-class UniboxLinkScope extends InheritedWidget {
+class FlutterLinkScope extends InheritedWidget {
   /// Creates a scope that opens links with [open].
-  const UniboxLinkScope({required this.open, required super.child, super.key});
+  const FlutterLinkScope({required this.open, required super.child, super.key});
 
   /// Follows the url a link points at, the way the host application navigates.
   final LinkOpener open;
 
   /// The opener of the closest enclosing scope, or `null` when there is none.
   static LinkOpener? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<UniboxLinkScope>()?.open;
+    return context.dependOnInheritedWidgetOfExactType<FlutterLinkScope>()?.open;
   }
 
   @override
-  bool updateShouldNotify(UniboxLinkScope oldWidget) => open != oldWidget.open;
+  bool updateShouldNotify(FlutterLinkScope oldWidget) => open != oldWidget.open;
 }
 
 /// Renders a [core.LinkNode] as a tappable region around its child.
-class UniboxLink extends StatelessWidget {
+class FlutterLink extends StatelessWidget {
   /// Creates a renderer for [node].
-  const UniboxLink({required this.node, super.key});
+  const FlutterLink({required this.node, super.key});
 
   /// The node being rendered.
   final core.LinkNode node;
 
   @override
   Widget build(BuildContext context) {
-    final LinkOpener? open = UniboxLinkScope.maybeOf(context);
+    final LinkOpener? open = FlutterLinkScope.maybeOf(context);
 
     assert(
       open != null || node.onTap != null,
-      'Unibox: "${node.url}" is rendered as a link, but no UniboxLinkScope is '
+      'Unibox: "${node.url}" is rendered as a link, but no FlutterLinkScope is '
       'above it and the node has no onTap, so tapping it does nothing. Wrap '
-      'the tree in an UniboxLinkScope(open: ...) or give the LinkNode an '
+      'the tree in an FlutterLinkScope(open: ...) or give the LinkNode an '
       'onTap callback.',
     );
 

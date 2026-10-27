@@ -20,7 +20,7 @@ import 'harness.dart';
 /// else is asking the wrong question.
 BoxAppearance appearanceOf(WidgetTester tester) {
   final Element box = inNode(
-    find.byWidgetPredicate((Widget widget) => widget is UniboxBox),
+    find.byWidgetPredicate((Widget widget) => widget is FlutterBox),
   ).evaluate().first;
 
   final List<Element> parts = _ownParts(box);
@@ -204,12 +204,12 @@ List<Element> _ownParts(Element box) {
 
 /// Whether [widget] renders a node of the tree, and therefore starts a new fact.
 bool _isNodeRenderer(Widget widget) {
-  return widget is UniboxBox ||
-      widget is UniboxText ||
-      widget is UniboxTextInput ||
-      widget is UniboxLink ||
-      widget is UniboxImage ||
-      widget is UniboxStack;
+  return widget is FlutterBox ||
+      widget is FlutterText ||
+      widget is FlutterTextInput ||
+      widget is FlutterLink ||
+      widget is FlutterImage ||
+      widget is FlutterStack;
 }
 
 /// The transition the renderer applied to this node, if it applied one.

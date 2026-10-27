@@ -13,18 +13,18 @@ import 'render.dart';
 /// The view is rendered in place, so it inherits the typography and the layout
 /// of the boxes around it. A view draws one tree; an overlay is not part of the
 /// model yet.
-class UniboxStateful extends StatefulWidget {
+class FlutterStateful extends StatefulWidget {
   /// Creates a renderer for [node].
-  const UniboxStateful({required this.node, super.key});
+  const FlutterStateful({required this.node, super.key});
 
   /// The node being rendered.
   final core.StatefulNode<Object, core.Store<Object>> node;
 
   @override
-  State<UniboxStateful> createState() => _UniboxStatefulState();
+  State<FlutterStateful> createState() => FlutterStatefulState();
 }
 
-class _UniboxStatefulState extends State<UniboxStateful> {
+class FlutterStatefulState extends State<FlutterStateful> {
   late core.Store<Object> _store;
 
   @override

@@ -35,7 +35,7 @@ Component renderJaspr(core.UINode node) {
   _reportTreeIssues(node);
 
   return Component.fragment(<Component>[
-    const DefaultTypography(),
+    const JasprDefaultTypography(),
     renderNode(node),
   ]);
 }
@@ -46,27 +46,27 @@ Component renderJaspr(core.UINode node) {
 /// their caller rendered. Prefer [renderJaspr].
 Component renderNode(core.UINode node) {
   return switch (node) {
-    final core.Box box => UniboxBox(box: box, key: toJasprKey(box.key)),
-    final core.ImageNode image => UniboxImage(
+    final core.Box box => JasprBox(box: box, key: toJasprKey(box.key)),
+    final core.ImageNode image => JasprImage(
       node: image,
       key: toJasprKey(image.key),
     ),
-    final core.LinkNode link => UniboxLink(
+    final core.LinkNode link => JasprLink(
       node: link,
       key: toJasprKey(link.key),
     ),
-    final core.StackNode stack => UniboxStack(
+    final core.StackNode stack => JasprStack(
       node: stack,
       key: toJasprKey(stack.key),
     ),
     final core.PositionedNode positioned => Component.fragment(<Component>[
       renderNode(positioned.child),
     ], key: toJasprKey(positioned.key)),
-    final core.TextInputNode textInput => UniboxTextInput(
+    final core.TextInputNode textInput => JasprTextInput(
       node: textInput,
       key: toJasprKey(textInput.key),
     ),
-    final core.TextNode text => UniboxText(
+    final core.TextNode text => JasprText(
       node: text,
       key: toJasprKey(text.key),
     ),

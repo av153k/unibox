@@ -9,9 +9,9 @@ import 'render.dart';
 /// Children are painted in order, so the last child ends up on top. Children
 /// that are not [core.PositionedNode]s keep their natural size in the top start
 /// corner. Like CSS `overflow: visible`, the stack does not clip its content.
-class UniboxStack extends StatelessWidget {
+class FlutterStack extends StatelessWidget {
   /// Creates a renderer for [node].
-  const UniboxStack({required this.node, super.key});
+  const FlutterStack({required this.node, super.key});
 
   /// The node being rendered.
   final core.StackNode node;

@@ -7,7 +7,7 @@ import 'support/harness.dart';
 
 /// The scope a host application is expected to provide around its tree.
 Widget scope(Widget child) =>
-    UniboxLinkScope(open: (String url) {}, child: child);
+    FlutterLinkScope(open: (String url) {}, child: child);
 
 void main() {
   group('LinkNode', () {
@@ -48,7 +48,7 @@ void main() {
           'https://unibox.dev/guide',
           child: core.TextNode('Guide'),
         ),
-        wrap: (Widget child) => UniboxLinkScope(
+        wrap: (Widget child) => FlutterLinkScope(
           open: (String url) => opened.add(url),
           child: child,
         ),
@@ -68,7 +68,7 @@ void main() {
           child: const core.TextNode('Docs'),
           onTap: () => events.add('onTap'),
         ),
-        wrap: (Widget child) => UniboxLinkScope(
+        wrap: (Widget child) => FlutterLinkScope(
           open: (String url) => events.add('open:$url'),
           child: child,
         ),

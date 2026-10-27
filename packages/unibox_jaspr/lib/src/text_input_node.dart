@@ -25,9 +25,9 @@ import 'values.dart';
 /// on `Ctrl`/`Cmd` + `Enter` for a text area, because a plain `Enter` inserts a
 /// newline there. That is the same split a Flutter `TextField` has, where the
 /// multiline keyboard type only offers a newline action.
-class UniboxTextInput extends StatelessComponent {
+class JasprTextInput extends StatelessComponent {
   /// Creates a renderer for [node].
-  const UniboxTextInput({required this.node, super.key});
+  const JasprTextInput({required this.node, super.key});
 
   /// The node being rendered.
   final core.TextInputNode node;

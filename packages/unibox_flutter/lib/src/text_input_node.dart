@@ -20,18 +20,18 @@ import 'text_style_scope.dart';
 /// padding — so it looks like the `<input>` the web renderer emits: a box that
 /// wants a field to look like a field draws the border and the padding around
 /// it, which is what keeps the two targets showing the same form.
-class UniboxTextInput extends StatefulWidget {
+class FlutterTextInput extends StatefulWidget {
   /// Creates a renderer for [node].
-  const UniboxTextInput({required this.node, super.key});
+  const FlutterTextInput({required this.node, super.key});
 
   /// The node being rendered.
   final core.TextInputNode node;
 
   @override
-  State<UniboxTextInput> createState() => _UniboxTextInputState();
+  State<FlutterTextInput> createState() => FlutterTextInputState();
 }
 
-class _UniboxTextInputState extends State<UniboxTextInput> {
+class FlutterTextInputState extends State<FlutterTextInput> {
   late final TextEditingController _controller = TextEditingController(
     text: widget.node.value ?? '',
   );
@@ -39,7 +39,7 @@ class _UniboxTextInputState extends State<UniboxTextInput> {
     ..addListener(_handleFocusChanged);
 
   @override
-  void didUpdateWidget(UniboxTextInput oldWidget) {
+  void didUpdateWidget(FlutterTextInput oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     final String? value = widget.node.value;
@@ -68,7 +68,7 @@ class _UniboxTextInputState extends State<UniboxTextInput> {
     // the ambient text style; `renderFlutter` installs the model's typography at
     // the root of every tree, so inside a tree there is always one to adopt.
     final bool inheritsTypography =
-        UniboxTextStyleScope.maybeOf(context) != null;
+        FlutterTextStyleScope.maybeOf(context) != null;
     final String? semanticsLabel = node.semanticsLabel;
 
     final Widget field = TextField(

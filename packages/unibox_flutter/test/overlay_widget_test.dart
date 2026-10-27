@@ -52,7 +52,7 @@ core.UINode overlay({
 void main() {
   setUp(() => dismissals = 0);
 
-  group('UniboxOverlay', () {
+  group('FlutterOverlay', () {
     testWidgets('shows its content above a barrier of its own colour', (
       tester,
     ) async {

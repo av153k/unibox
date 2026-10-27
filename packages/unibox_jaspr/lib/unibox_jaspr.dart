@@ -15,8 +15,21 @@
 ///
 /// void main() => runApp(card.toComponent());
 /// ```
+///
+/// Every node type also exposes the component it renders to (`JasprBox` for a
+/// `Box`, `JasprText` for a `TextNode`, ...), which is what a test needs to address
+/// a rendered node without depending on its position. The two renderer packages
+/// export the same shape: the entry point, the extension, the embed, and one class
+/// per node, named after its target.
 library;
 
+export 'src/box.dart' show JasprBox;
+export 'src/default_typography.dart' show JasprDefaultTypography;
 export 'src/embed_node.dart' show ComponentEmbedBuilder, ComponentNode;
+export 'src/image_node.dart' show JasprImage;
+export 'src/link_node.dart' show JasprLink;
 export 'src/render.dart';
-export 'src/stateful_component.dart' show UniboxStateful;
+export 'src/stack_node.dart' show JasprPositioned, JasprStack;
+export 'src/stateful_component.dart' show JasprStateful;
+export 'src/text_input_node.dart' show JasprTextInput;
+export 'src/text_node.dart' show JasprText;

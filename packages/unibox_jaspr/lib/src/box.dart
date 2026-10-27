@@ -30,9 +30,9 @@ const Duration _longPressDuration = Duration(milliseconds: 500);
 /// The semantics of the box become attributes: `role`, `aria-label`,
 /// `aria-checked`, `aria-disabled` and `tabindex`, which is what makes a hand
 /// drawn control a real control on the web.
-class UniboxBox extends StatelessComponent {
+class JasprBox extends StatelessComponent {
   /// Creates a renderer for [box].
-  const UniboxBox({required this.box, super.key});
+  const JasprBox({required this.box, super.key});
 
   /// The node being rendered.
   final core.Box box;

@@ -280,7 +280,7 @@ underline — so leaving the user agent styles in place would make the same tree
 look different on the two targets.
 
 Relative destinations need no rewriting, and the Flutter renderer delegates the
-actual navigation to the host through `UniboxLinkScope`.
+actual navigation to the host through `FlutterLinkScope`.
 
 ## Stack mapping
 
@@ -462,13 +462,13 @@ store subscription and no DOM listeners wired to the store, so the callbacks the
 view hands out are inert until a client component runs the same node in the
 browser.
 
-`UniboxStateful` is that component, and it is the Jaspr mirror of the Flutter
+`JasprStateful` is that component, and it is the Jaspr mirror of the Flutter
 widget: one class, with the two paths separated by `kIsWeb`. Write one subclass,
 mark it `@client` so Jaspr also compiles it for the browser, and return the node:
 
 ```dart
 @client
-class ListingsPage extends UniboxStateful {
+class ListingsPage extends JasprStateful {
   const ListingsPage({required this.apiBase, super.key});
 
   final String apiBase;

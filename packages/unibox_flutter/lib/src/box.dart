@@ -12,18 +12,18 @@ import 'values.dart';
 ///
 /// The box is built bottom-up: children, scroll viewport, padding, decoration,
 /// clipping, dimensions, interactions and finally margin.
-class UniboxBox extends StatefulWidget {
+class FlutterBox extends StatefulWidget {
   /// Creates a renderer for [box].
-  const UniboxBox({required this.box, super.key});
+  const FlutterBox({required this.box, super.key});
 
   /// The node being rendered.
   final core.Box box;
 
   @override
-  State<UniboxBox> createState() => _UniboxBoxState();
+  State<FlutterBox> createState() => FlutterBoxState();
 }
 
-class _UniboxBoxState extends State<UniboxBox> {
+class FlutterBoxState extends State<FlutterBox> {
   bool _hovered = false;
   bool _focused = false;
   bool _pressed = false;
@@ -260,12 +260,12 @@ class _UniboxBoxState extends State<UniboxBox> {
     Widget child,
     core.BoxTextStyle textStyle,
   ) {
-    final core.BoxTextStyle inherited = UniboxTextStyleScope.of(context)
+    final core.BoxTextStyle inherited = FlutterTextStyleScope.of(context)
         .merge(textStyle);
 
     return DefaultTextStyle.merge(
       style: toTextStyle(textStyle),
-      child: UniboxTextStyleScope(style: inherited, child: child),
+      child: FlutterTextStyleScope(style: inherited, child: child),
     );
   }
 

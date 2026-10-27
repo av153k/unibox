@@ -16,9 +16,9 @@ import 'values.dart';
 /// A [core.TextNode.maxLines] is rendered with the `-webkit-line-clamp` box,
 /// which is the only way to truncate after a number of lines in CSS. Without
 /// `maxLines` a [core.TextOverflow.ellipsis] truncates the single line instead.
-class UniboxText extends StatelessComponent {
+class JasprText extends StatelessComponent {
   /// Creates a renderer for [node].
-  const UniboxText({required this.node, super.key});
+  const JasprText({required this.node, super.key});
 
   /// The node being rendered.
   final core.TextNode node;

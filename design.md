@@ -91,12 +91,18 @@ breaking change even when it compiles.
   is better off uniform. `Box` has no Flutter counterpart and stays unsuffixed.
 - Tokens are prefixed with `Box` (`BoxColor`, `BoxSpacing`, `BoxBorder`,
   `BoxShadow`, `BoxStyle`), enums are unprefixed (`Axis`, `MainAlign`, ...).
-- Renderer side classes are prefixed with `Unibox` (`UniboxBox`, `UniboxText`)
-  and are internal: consumers see `renderFlutter`/`renderJaspr` and the
-  `toWidget`/`toComponent` extensions. A renderer package exports only those
-  names and **never** re-exports `unibox_core`, so a host file can import it next
-  to `flutter/material.dart`; the `naming_test.dart` of each renderer package
-  writes every export out beside that import to keep it true.
+- Renderer side classes are prefixed with their target (`FlutterBox`, `FlutterText`,
+  `JasprBox`, `JasprText`, ...). The platform is the *package's* job, so the class
+  says which one it belongs to and the model keeps one vocabulary: a `Box` is a
+  `Box` in the tree, and each target names the thing that draws it. Both packages
+  export the same shape — the entry point, the extension, the embed node and one
+  class per node, all public, so a host or a test can address a rendered node
+  without depending on its position. What the web renderer does not export is the
+  link scope, because the web needs no hook: a `<a href>` navigates itself. A
+  renderer package exports only those names and **never** re-exports
+  `unibox_core`, so a host file can import it next to `flutter/material.dart`;
+  the `naming_test.dart` of each renderer package writes every export out
+  beside that import to keep it true.
 - `unibox_core` itself does not stay out of Flutter's way, and a host that needs
   both imports the tree with a prefix:
   `import 'package:unibox_core/unibox_core.dart' as core;`.
@@ -367,7 +373,7 @@ never inherited (CSS does not inherit them either).
   view in debug builds.
 - The web renderer draws the state the store starts with: it creates the store,
   reads its state, renders the tree and never calls `onMount`. Its runtime,
-  `UniboxStateful`, is the mirror of the Flutter widget with the two paths split by
+  `JasprStateful`, is the mirror of the Flutter widget with the two paths split by
   `kIsWeb`: the same class drives the store in a browser and only reads it on the
   server. Interactivity still waits for the client build, and the node is constructed
   in the browser because its behaviour is Dart closures, which no markup can carry. A

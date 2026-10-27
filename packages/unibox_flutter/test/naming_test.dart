@@ -29,28 +29,30 @@ void main() {
     );
     final Widget widget = tree.toWidget();
 
-    // The typedef a host implements to follow a link is written out like the
-    // classes are; nothing in this list has to be called.
+    // The typedefs are written out like the classes are; nothing in this list has
+    // to be called.
     const LinkOpener? noHook = null;
+    const WidgetEmbedBuilder? noBuilder = null;
 
     final List<Object?> exported = <Object?>[
-      UniboxBox,
+      FlutterBox,
+      FlutterImage,
+      FlutterLink,
+      FlutterLinkScope,
+      FlutterOverlay,
+      FlutterStack,
+      FlutterStateful,
+      FlutterText,
+      FlutterTextInput,
+      FlutterTextStyleScope,
       WidgetNode,
-      UniboxImage,
-      UniboxLink,
-      UniboxLinkScope,
-      UniboxOverlay,
-      UniboxStack,
-      UniboxStateful,
-      UniboxTextInput,
-      UniboxText,
-      UniboxTextStyleScope,
       renderFlutter,
       widget,
       noHook,
+      noBuilder,
     ];
 
-    expect(exported, hasLength(14));
+    expect(exported, hasLength(15));
     expect(widget, isNotNull);
     expect(renderFlutter, isNotNull);
   });

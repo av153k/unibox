@@ -12,9 +12,9 @@ import 'values.dart';
 /// A node with a [core.TextNode.headingLevel] is wrapped in a `Semantics` with the
 /// same level: Flutter has no heading element, so the level is the whole of what
 /// the platform can say about it, and the text looks the same either way.
-class UniboxText extends StatelessWidget {
+class FlutterText extends StatelessWidget {
   /// Creates a renderer for [node].
-  const UniboxText({required this.node, super.key});
+  const FlutterText({required this.node, super.key});
 
   /// The node being rendered.
   final core.TextNode node;

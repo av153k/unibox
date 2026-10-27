@@ -55,7 +55,7 @@ final class _Node extends core.StatefulNode<int, _Store> {
 }
 
 /// What an application writes: one subclass that says which node to build.
-final class _CounterPage extends UniboxStateful {
+final class _CounterPage extends JasprStateful {
   const _CounterPage();
 
   @override

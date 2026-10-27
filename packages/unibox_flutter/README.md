@@ -19,10 +19,12 @@ Widget widget = renderFlutter(card);
 Widget widget = card.toWidget();
 ```
 
-Every node type also exports the widget it renders to — `UniboxBox`,
-`UniboxText`, `UniboxTextInput`, `UniboxLink`, `UniboxImage`, `UniboxStack` — so
-a host or a test can address a rendered node without depending on its position
-in the tree.
+Every node type also exports the widget it renders to — `FlutterBox`,
+`FlutterText`, `FlutterTextInput`, `FlutterLink`, `FlutterImage`, `FlutterStack`,
+`FlutterOverlay`, `FlutterStateful` — so a host or a test can address a rendered
+node without depending on its position in the tree. The Jaspr package exports the
+same shape under its own prefix, which is the rule: a renderer's classes are named
+with their target.
 
 ## Box mapping
 
@@ -115,7 +117,7 @@ const card = Box(
 `TextInputNode` inside a box that sets typography takes its style from the
 ambient text style explicitly. A field without such a box keeps Material's input
 style, which is what a plain `TextField` does. The box records the resolved
-typography in a `UniboxTextStyleScope`, the inherited widget the field looks for.
+typography in a `FlutterTextStyleScope`, the inherited widget the field looks for.
 
 Precedence, from strongest to weakest: the tokens of the node, the tokens of its
 `style`, the typography of the closest enclosing box, the `DefaultTextStyle` of
@@ -181,14 +183,14 @@ instead of throwing, so a broken image never breaks the layout.
 | -------- | ---------------------------------------------- |
 | `child`  | the rendered child                             |
 | `onTap`  | `GestureDetector.onTap`                        |
-| `url`    | followed through `UniboxLinkScope`             |
+| `url`    | followed through `FlutterLinkScope`             |
 | `newTab` | web only, ignored by the Flutter renderer      |
 
 Flutter has no browser of its own, so the host application decides what
 following a link means and the renderer only reports the destination:
 
 ```dart
-UniboxLinkScope(
+FlutterLinkScope(
   open: (String url) => launchUrl(Uri.parse(url)),
   child: renderFlutter(page),
 );
@@ -233,7 +235,7 @@ and no 48 pixel minimum height, so it occupies exactly its line box. That is wha
 a plain `<input>` does on the web, and it is what lets one node tree look the
 same on both targets — a box that wants a field to look like a field draws the
 border, the background and the padding around it. The field does adopt the
-typography of its box, line height included, through `UniboxTextStyleScope`; that
+typography of its box, line height included, through `FlutterTextStyleScope`; that
 is what sizes it.
 
 ## Motion
@@ -286,7 +288,7 @@ draw, or two of them, is reported by `renderFlutter` instead of being skipped.
 
 ## Stateful nodes
 
-A [`StatefulNode`](../unibox_core/README.md#state) is rendered by `UniboxStateful`,
+A [`StatefulNode`](../unibox_core/README.md#state) is rendered by `FlutterStateful`,
 written once for every node an application defines:
 
 - the store is created when the widget mounts, subscribed to, and `onMount` is

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- The classes that draw a node are named after their target: `UniboxBox` is
+  `FlutterBox`, and `UniboxText`, `UniboxImage`, `FlutterLink`, `FlutterStack`,
+  `FlutterTextInput`, `FlutterOverlay`, `FlutterStateful`, `FlutterLinkScope` and
+  `FlutterTextStyleScope` follow the same rule. Nothing else about them changed.
 - An `OverlayNode` is presented by `UniboxOverlay` through an `OverlayPortal` on
   the root overlay: a barrier in the node's colour, `Escape` and a barrier press
   calling `onDismiss`, focus kept inside and handed back on exit, and the layer

@@ -22,9 +22,9 @@ import 'render.dart';
 /// and Flutter's link renderer draws its child as it is — no underline, no link
 /// colour — so leaving the user agent styles in place would make the same tree
 /// look different on the two targets.
-class UniboxLink extends StatelessComponent {
+class JasprLink extends StatelessComponent {
   /// Creates a renderer for [node].
-  const UniboxLink({required this.node, super.key});
+  const JasprLink({required this.node, super.key});
 
   /// The node being rendered.
   final core.LinkNode node;

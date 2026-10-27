@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- The classes that draw a node are named after their target: `JasprBox`, `JasprText`,
+  `JasprImage`, `JasprLink`, `JasprStack`, `JasprPositioned`, `JasprTextInput`,
+  `JasprStateful` and `JasprDefaultTypography`. They are exported now, so the two
+  renderer packages have the same public shape: the entry point, the extension, the
+  embed node and one class per node.
 - An `OverlayNode` is drawn as a fixed layer with the barrier in the node's colour
   and the content aligned where the node asks, never in the flow of its parent.
   `Escape`, a barrier press and moving focus need the client runtime, so a static

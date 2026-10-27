@@ -10,7 +10,7 @@ const Key nodeKey = ValueKey<String>('unibox-node');
 ///
 /// The [Center] hands loose constraints to the node, which mirrors how a node
 /// is usually embedded and keeps fixed sizes measurable. [wrap] injects
-/// inherited configuration, such as a [UniboxLinkScope], around the node.
+/// inherited configuration, such as a [FlutterLinkScope], around the node.
 Future<void> pumpNode(
   WidgetTester tester,
   core.UINode node, {

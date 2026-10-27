@@ -15,9 +15,9 @@ import 'values.dart';
 ///
 /// A child that is not a [core.PositionedNode] is wrapped in a grid cell, which
 /// is the CSS equivalent of placing it at the top start corner of the stack.
-class UniboxStack extends StatelessComponent {
+class JasprStack extends StatelessComponent {
   /// Creates a renderer for [node].
-  const UniboxStack({required this.node, super.key});
+  const JasprStack({required this.node, super.key});
 
   /// The node being rendered.
   final core.StackNode node;
@@ -36,9 +36,9 @@ class UniboxStack extends StatelessComponent {
 /// `Positioned` widget that was never needed: it is rendered as a regular stack
 /// child. Rendering the node on its own falls back to its child, since there is
 /// no stack to position it in.
-class UniboxPositioned extends StatelessComponent {
+class JasprPositioned extends StatelessComponent {
   /// Creates a renderer for [node].
-  const UniboxPositioned({required this.node, super.key});
+  const JasprPositioned({required this.node, super.key});
 
   /// The node being rendered.
   final core.PositionedNode node;
@@ -58,7 +58,7 @@ class UniboxPositioned extends StatelessComponent {
 /// Renders [node] as a child of a stack.
 Component _stackChild(core.UINode node) {
   if (node is core.PositionedNode) {
-    return UniboxPositioned(node: node, key: toJasprKey(node.key));
+    return JasprPositioned(node: node, key: toJasprKey(node.key));
   }
 
   return div(

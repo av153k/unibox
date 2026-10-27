@@ -16,7 +16,7 @@ import 'render.dart';
 ///
 /// ```dart
 /// @client
-/// class ListingsPage extends UniboxStateful {
+/// class ListingsPage extends JasprStateful {
 ///   const ListingsPage({required this.apiBase, super.key});
 ///
 ///   final String apiBase;
@@ -31,18 +31,18 @@ import 'render.dart';
 /// component may only receive simple values — the ones Jaspr can write into the
 /// page and read back in the browser. A node is a group of functions, so each
 /// side builds it instead of passing it across.
-abstract class UniboxStateful extends StatefulComponent {
+abstract class JasprStateful extends StatefulComponent {
   /// Creates the component. A subclass passes its own serialisable parameters.
-  const UniboxStateful({super.key});
+  const JasprStateful({super.key});
 
   /// The node to draw. It is built on the server and in the browser.
   core.StatefulNode<Object, core.Store<Object>> createNode();
 
   @override
-  State<UniboxStateful> createState() => _UniboxStatefulState();
+  State<JasprStateful> createState() => JasprStatefulState();
 }
 
-class _UniboxStatefulState extends State<UniboxStateful> {
+class JasprStatefulState extends State<JasprStateful> {
   late final core.StatefulNode<Object, core.Store<Object>> _node = component
       .createNode();
 

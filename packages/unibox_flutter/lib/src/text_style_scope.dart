@@ -7,9 +7,9 @@ import 'package:unibox_core/unibox_core.dart' as core;
 /// the default text style and uses the Material input style instead. This scope
 /// is the explicit marker that a box set typography, so the field only adopts
 /// the ambient style when a Unibox box actually asked for it.
-class UniboxTextStyleScope extends InheritedWidget {
+class FlutterTextStyleScope extends InheritedWidget {
   /// Creates a scope that provides [style] to its descendants.
-  const UniboxTextStyleScope({
+  const FlutterTextStyleScope({
     required this.style,
     required super.child,
     super.key,
@@ -25,11 +25,11 @@ class UniboxTextStyleScope extends InheritedWidget {
   /// The typography of the closest enclosing box, or `null` when there is none.
   static core.BoxTextStyle? maybeOf(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<UniboxTextStyleScope>()
+        .dependOnInheritedWidgetOfExactType<FlutterTextStyleScope>()
         ?.style;
   }
 
   @override
-  bool updateShouldNotify(UniboxTextStyleScope oldWidget) =>
+  bool updateShouldNotify(FlutterTextStyleScope oldWidget) =>
       style != oldWidget.style;
 }

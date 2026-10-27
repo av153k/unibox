@@ -18,25 +18,25 @@ import 'values.dart';
 ///
 /// A widget tree that contains one needs an [Overlay] above it — every
 /// `MaterialApp` or `WidgetsApp` provides one.
-class UniboxOverlay extends StatefulWidget {
+class FlutterOverlay extends StatefulWidget {
   /// Creates the presentation of [node].
-  const UniboxOverlay({required this.node, super.key});
+  const FlutterOverlay({required this.node, super.key});
 
   /// The overlay being presented.
   final core.OverlayNode node;
 
   @override
-  State<UniboxOverlay> createState() => _UniboxOverlayState();
+  State<FlutterOverlay> createState() => FlutterOverlayState();
 }
 
-class _UniboxOverlayState extends State<UniboxOverlay> {
+class FlutterOverlayState extends State<FlutterOverlay> {
   final OverlayPortalController _portal = OverlayPortalController(
-    debugLabel: 'UniboxOverlay',
+    debugLabel: 'FlutterOverlay',
   );
 
   // A closed loop keeps Tab inside the content instead of walking the page.
   final FocusScopeNode _scope = FocusScopeNode(
-    debugLabel: 'UniboxOverlay',
+    debugLabel: 'FlutterOverlay',
     traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
   );
 

@@ -242,7 +242,7 @@ LinkNode('https://unibox.dev', child: TextNode('Read the docs'));
 | `onTap` | `TapCallback?` | none | Runs alongside the navigation, e.g. to track the click. |
 
 **Worth knowing.** In Flutter there is no browser, so the host decides what
-following a link means: wrap the tree in `UniboxLinkScope(open: (url) => ...)` and
+following a link means: wrap the tree in `FlutterLinkScope(open: (url) => ...)` and
 every link calls it. A link with neither a scope nor an `onTap` is reported in debug
 builds, because tapping it would do nothing. The browser's own link styling —
 underline and blue — is turned off, so a link looks exactly like the text the tree
@@ -356,8 +356,8 @@ Flutter, on a server and in a browser. `onMount` is where an initial request
 starts, which is also why a server render can draw the first state without running
 it.
 
-Both renderers have a runtime for it: `UniboxStateful` in Flutter, and the class of
-the same name in Jaspr, which splits the two paths on `kIsWeb`. On the web a server
+Both renderers have a runtime for it — `FlutterStateful` and `JasprStateful`, the
+same class under each target's name, and Jaspr splits the two paths on `kIsWeb`. On the web a server
 render draws **the state the store starts with** without calling `onMount`, so a
 page that loads is a page that says it is loading; reacting to a click needs a
 client build, which is the next step (`TASK_PLAN.md`, Phase 22).

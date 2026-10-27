@@ -17,7 +17,7 @@ import 'values.dart';
 /// Renders [node] as a Flutter [Widget].
 ///
 /// ```dart
-/// runApp(UniboxApp(child: renderFlutter(myNode)));
+/// runApp(renderFlutter(myNode));
 /// ```
 ///
 /// In debug builds the tree is validated first: a tree that a renderer cannot
@@ -55,13 +55,13 @@ Widget renderFlutter(core.UINode node) {
 /// the application owns which font it is.
 ///
 /// A `TextField` ignores the default text style and reads
-/// [UniboxTextStyleScope] instead, so the default is installed in both: without
+/// [FlutterTextStyleScope] instead, so the default is installed in both: without
 /// it a field would fall back to the Material input style while the `<input>` of
 /// the web renderer inherits the tree's typography.
 Widget _withDefaultTypography(Widget child) {
   return DefaultTextStyle.merge(
     style: toTextStyle(core.BoxTextStyle.defaults),
-    child: UniboxTextStyleScope(
+    child: FlutterTextStyleScope(
       style: core.BoxTextStyle.defaults,
       child: child,
     ),
@@ -74,20 +74,20 @@ Widget _withDefaultTypography(Widget child) {
 /// their caller rendered. Prefer [renderFlutter].
 Widget renderNode(core.UINode node) {
   return switch (node) {
-    final core.Box box => UniboxBox(box: box, key: toFlutterKey(box.key)),
-    final core.TextNode text => UniboxText(
+    final core.Box box => FlutterBox(box: box, key: toFlutterKey(box.key)),
+    final core.TextNode text => FlutterText(
       node: text,
       key: toFlutterKey(text.key),
     ),
-    final core.ImageNode image => UniboxImage(
+    final core.ImageNode image => FlutterImage(
       node: image,
       key: toFlutterKey(image.key),
     ),
-    final core.LinkNode link => UniboxLink(
+    final core.LinkNode link => FlutterLink(
       node: link,
       key: toFlutterKey(link.key),
     ),
-    final core.StackNode stack => UniboxStack(
+    final core.StackNode stack => FlutterStack(
       node: stack,
       key: toFlutterKey(stack.key),
     ),
@@ -95,7 +95,7 @@ Widget renderNode(core.UINode node) {
       key: toFlutterKey(positioned.key),
       child: renderNode(positioned.child),
     ),
-    final core.TextInputNode input => UniboxTextInput(
+    final core.TextInputNode input => FlutterTextInput(
       node: input,
       key: toFlutterKey(input.key),
     ),
@@ -103,12 +103,12 @@ Widget renderNode(core.UINode node) {
       key: toFlutterKey(embed.key),
       child: _renderEmbed(embed),
     ),
-    final core.OverlayNode overlay => UniboxOverlay(
+    final core.OverlayNode overlay => FlutterOverlay(
       node: overlay,
       key: toFlutterKey(overlay.key),
     ),
     final core.StatefulNode<Object, core.Store<Object>> stateful =>
-      UniboxStateful(node: stateful, key: toFlutterKey(stateful.key)),
+      FlutterStateful(node: stateful, key: toFlutterKey(stateful.key)),
     _ => throw UnsupportedError('No Flutter renderer for ${node.runtimeType}.'),
   };
 }

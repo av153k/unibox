@@ -15,9 +15,9 @@ import 'values.dart';
 /// In Flutter an image is a leaf box, so the element is rendered as a block
 /// rather than the default inline image: the picture then occupies exactly its
 /// bounds instead of adding a line box with a baseline gap around it.
-class UniboxImage extends StatelessComponent {
+class JasprImage extends StatelessComponent {
   /// Creates a renderer for [node].
-  const UniboxImage({required this.node, super.key});
+  const JasprImage({required this.node, super.key});
 
   /// The node being rendered.
   final core.ImageNode node;

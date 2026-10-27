@@ -12,9 +12,9 @@ import 'values.dart';
 /// The fit is always passed, even when the node names none: the renderer would
 /// otherwise leave the question to `Image`, whose answer is its own, while the
 /// web renderer would leave it to the browser's `object-fit: fill`.
-class UniboxImage extends StatelessWidget {
+class FlutterImage extends StatelessWidget {
   /// Creates a renderer for [node].
-  const UniboxImage({required this.node, super.key});
+  const FlutterImage({required this.node, super.key});
 
   /// The node being rendered.
   final core.ImageNode node;

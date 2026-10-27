@@ -113,7 +113,7 @@ final class _RequestNode extends core.StatefulNode<String, _RequestStore> {
 }
 
 void main() {
-  group('UniboxStateful', () {
+  group('FlutterStateful', () {
     testWidgets('draws the view of the state the store starts with', (
       tester,
     ) async {

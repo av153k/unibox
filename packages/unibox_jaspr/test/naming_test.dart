@@ -22,14 +22,25 @@ void main() {
     );
     final Component component = tree.toComponent();
 
-    final List<Object> exported = <Object>[
+    const ComponentEmbedBuilder? noBuilder = null;
+
+    final List<Object?> exported = <Object?>[
+      JasprBox,
+      JasprDefaultTypography,
       ComponentNode,
-      UniboxStateful,
+      JasprImage,
+      JasprLink,
+      JasprPositioned,
+      JasprStack,
+      JasprStateful,
+      JasprText,
+      JasprTextInput,
       renderJaspr,
       component,
+      noBuilder,
     ];
 
-    expect(exported, hasLength(4));
+    expect(exported, hasLength(13));
     expect(component, isA<Component>());
     expect(renderJaspr, isNotNull);
   });

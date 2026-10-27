@@ -11,7 +11,7 @@ import 'package:unibox_flutter/unibox_flutter.dart';
 /// the values of the form and the page that is open.
 ///
 /// The tree contains a link, so the host has to decide what following one
-/// means: the [UniboxLinkScope] is that hook, and a real application would open
+/// means: the [FlutterLinkScope] is that hook, and a real application would open
 /// the url with `url_launcher` instead of printing it.
 ///
 /// The map on the apartments page is the host's answer to a question the tree
@@ -69,7 +69,7 @@ class _UniboxExampleAppState extends State<UniboxExampleApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Builder(
-          builder: (BuildContext context) => UniboxLinkScope(
+          builder: (BuildContext context) => FlutterLinkScope(
             open: (String url) => debugPrint('Following $url'),
             child: buildExamplePage(
               current: _page,

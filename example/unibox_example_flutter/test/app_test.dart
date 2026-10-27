@@ -32,7 +32,7 @@ void main() {
       // surface, on both targets.
       await pumpApp(tester);
 
-      final Rect page = tester.getRect(find.byType(UniboxBox).first);
+      final Rect page = tester.getRect(find.byType(FlutterBox).first);
 
       expect(
         page,
@@ -180,7 +180,7 @@ void main() {
           find
               .ancestor(
                 of: find.text('Via Bellavista 12'),
-                matching: find.byType(UniboxBox),
+                matching: find.byType(FlutterBox),
               )
               .last,
         );

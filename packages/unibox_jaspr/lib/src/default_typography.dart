@@ -18,9 +18,9 @@ import 'values.dart';
 /// renders other content next to the tree can restyle what it owns, and a host
 /// that wants a font family states one: the model leaves the family to the
 /// application, because a font file is an asset.
-class DefaultTypography extends StatelessComponent {
+class JasprDefaultTypography extends StatelessComponent {
   /// Creates the rule.
-  const DefaultTypography({super.key});
+  const JasprDefaultTypography({super.key});
 
   @override
   Component build(BuildContext context) {
