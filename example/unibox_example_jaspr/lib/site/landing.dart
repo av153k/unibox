@@ -41,6 +41,13 @@ UINode buildLanding() {
           ),
         ],
       ),
+      ImageNode(
+        'assets/hero.svg',
+        alt:
+            'One immutable Dart node tree on the left, a fork into two panels '
+            'showing the same card drawn by Flutter and by Jaspr.',
+        width: double.infinity,
+      ),
       Box(
         direction: Axis.horizontal,
         crossAlign: CrossAlign.stretch,

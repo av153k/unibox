@@ -19,6 +19,10 @@ One description, two renderers. Layout, spacing, colours, typography and the
 accessibility tree are written once; each target draws them with its own
 primitives, and a test suite holds both to the same expected result.
 
+<p align="center">
+  <img src="docs/hero.svg" alt="One immutable Dart node tree on the left, a fork into two panels showing the same card drawn by Flutter's widget tree and by Jaspr as HTML and CSS." width="900">
+</p>
+
 What the description does *not* contain is what only a host can know: how big the
 window is, what happens when the user taps, and what the surrounding document is
 called. Those belong to the host — see [what the host owns](#what-the-host-owns).
