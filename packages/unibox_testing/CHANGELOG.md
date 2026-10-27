@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `OverlayAppearance` describes how a rendered overlay is presented — the colour
+  of its barrier and where its content sits — and `overlayCases` is the table both
+  renderers are checked against: one case per token and one with both.
 - A box case for the merge order of `Box.styles`, so both renderers are held to the
   same left-to-right result.
 - `BoxAppearance` carries `opacity` and `transform`, with cases for both and both

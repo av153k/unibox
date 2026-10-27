@@ -18,6 +18,10 @@ output *does* with the same node. This package writes that down once:
 - [`TextAppearance`](lib/src/text_appearance.dart) describes how a text node is
   typeset: font size, weight, colour, line height, letter spacing, family,
   alignment and truncation.
+- [`OverlayAppearance`](lib/src/overlay_appearance.dart) describes how an overlay
+  is presented: the colour of its barrier and where its content sits.
+- [`overlayCases`](lib/src/overlay_cases.dart) is the overlay table: one case per
+  token, and one with both.
 - [`textCases`](lib/src/text_cases.dart) is the text table: one case per token,
   one for the precedence of a `BoxTextStyle` and its flat overrides, and one with
   every token at once. It also holds `defaultTextAppearance`, the typography of a
