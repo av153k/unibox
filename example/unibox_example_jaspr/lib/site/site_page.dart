@@ -5,6 +5,7 @@ import 'package:unibox_jaspr/unibox_jaspr.dart';
 import 'package:unibox_material/unibox_material.dart';
 
 import 'gallery.dart';
+import 'landing.dart';
 import 'showcase.dart';
 
 /// The pages the site publishes.
@@ -14,8 +15,11 @@ import 'showcase.dart';
 /// links to another one by walking up its own depth, which is why the depth is part
 /// of the entry rather than a number written into each page.
 enum SitePage {
+  /// What the library is, and the two places to go next.
+  home('Unibox', '', 0),
+
   /// The Material library: the type scale, the palette and the components.
-  material('Material', '', 0),
+  material('Material', 'material/', 1),
 
   /// The same node tree drawn by both renderers, side by side.
   showcase('Showcase', 'showcase/', 1);
@@ -85,7 +89,7 @@ UINode _bar(SitePage current, MaterialPalette palette) {
     shadow: BoxShadow(color: palette.outlineVariant, offsetY: 1, blurRadius: 0),
     children: <UINode>[
       LinkNode(
-        SitePage.material.hrefFrom(current),
+        SitePage.home.hrefFrom(current),
         child: TextNode('Unibox', style: MaterialTypography.titleMedium),
       ),
       Box(
@@ -94,12 +98,13 @@ UINode _bar(SitePage current, MaterialPalette palette) {
         gap: 4,
         children: <UINode>[
           for (final SitePage page in SitePage.values)
-            _navigationItem(
-              page,
-              current: page == current,
-              from: current,
-              palette: palette,
-            ),
+            if (page != SitePage.home)
+              _navigationItem(
+                page,
+                current: page == current,
+                from: current,
+                palette: palette,
+              ),
         ],
       ),
     ],
@@ -142,17 +147,30 @@ Document buildSiteDocument({required SitePage page}) {
 
   return Document(
     lang: 'en',
-    title: page == SitePage.material
-        ? 'Unibox — Material 3, as values and nodes'
-        : 'Unibox — the same tree, drawn twice',
+    // The site is served from a subdirectory — `/unibox/` — so the default base
+    // href of `/` would resolve every relative link, and both frames, against the
+    // domain root: a page of 404s. No base element makes the browser resolve
+    // against the document, which is what a page that links with `../` expects.
+    base: null,
+    title: switch (page) {
+      SitePage.home => 'Unibox — one tree, two renderers',
+      SitePage.material => 'Unibox — Material 3, as values and nodes',
+      SitePage.showcase => 'Unibox — the same tree, drawn twice',
+    },
     viewport: 'width=device-width, initial-scale=1',
     meta: <String, String>{
-      'description': page == SitePage.material
-          ? 'The Material 3 type scale, the colour roles and the components of '
-                'Unibox, written as values and nodes that render the same on both '
-                'targets.'
-          : 'One Unibox node tree, drawn by Jaspr as HTML and CSS on the left and by '
-                'Flutter on the right.',
+      'description': switch (page) {
+        SitePage.home =>
+          'Describe a screen once, in plain Dart, and draw it twice: Flutter '
+              'widgets in an app and HTML with CSS in a browser.',
+        SitePage.material =>
+          'The Material 3 type scale, the colour roles and the components of '
+              'Unibox, written as values and nodes that render the same on both '
+              'targets.',
+        SitePage.showcase =>
+          'One Unibox node tree, drawn by Jaspr as HTML and CSS on the left and by '
+              'Flutter on the right.',
+      },
     },
     styles: <StyleRule>[
       StyleRule(
@@ -175,6 +193,7 @@ Document buildSiteDocument({required SitePage page}) {
         current: page,
         fill: page == SitePage.showcase,
         page: switch (page) {
+          SitePage.home => buildLanding(),
           SitePage.material => buildMaterialGallery(),
           SitePage.showcase => buildShowcase(),
         },

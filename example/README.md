@@ -110,11 +110,16 @@ tool/site.sh --base=/unibox/ --url=https://cedvdb.github.io/unibox/
 
 | Path | What it is |
 | --- | --- |
-| `/` | The Material library: the type scale, the colour roles and the components |
+| `/` | What the library is, and the two ways in |
+| `/material/` | The Material library: the type scale, the colour roles and the components |
 | `/showcase/` | The example drawn by both renderers, side by side in two frames |
 | `/web/` | The example's listings, rendered by Jaspr — HTML and CSS, no JavaScript |
 | `/web/signup/` | The same page with the sign-up dialog over it |
 | `/flutter/`, `/flutter/signup/` | The same two pages, rendered by Flutter |
+
+The pages link with paths relative to their own depth and the documents carry **no
+`<base>` element**, so the same build works at `/` and at `/unibox/`: a base href of
+`/` would send every relative link, and both frames, to the domain root.
 
 The gallery and the showcase are node trees as well, so the site is built with the
 library it documents. The one thing the model cannot describe is an `<iframe>`, and

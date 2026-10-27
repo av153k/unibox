@@ -12,11 +12,12 @@ import 'package:unibox_example_shared/unibox_example_shared.dart';
 /// dart run bin/build_site.dart --out=build/site
 /// ```
 ///
-/// The site is three kinds of document. The **gallery** is a node tree of the
-/// Material package, the **showcase** is a node tree with two frames in it, and the
-/// example is the app itself: `/web/` is the listings and `/web/signup/` is the same
-/// page with the sign-up dialog open, because being open is state and a document
-/// cannot be clicked into existence.
+/// The site is four kinds of document. The **front page** says what the library is
+/// and offers the two ways in; the **gallery** is a node tree of the Material
+/// package; the **showcase** is a node tree with two frames in it; and the example
+/// is the app itself: `/web/` is the listings and `/web/signup/` is the same page
+/// with the sign-up dialog open, because being open is state and a document cannot
+/// be clicked into existence.
 ///
 /// Nothing here decides a URL the build script does not also write: `tool/site.sh`
 /// adds the Flutter build beside these files and the robots and sitemap that name
@@ -26,7 +27,12 @@ Future<void> main(List<String> arguments) async {
 
   final Directory out = Directory(_option(arguments, 'out') ?? 'build/site');
 
-  await _write(out, 'index.html', buildSiteDocument(page: SitePage.material));
+  await _write(out, 'index.html', buildSiteDocument(page: SitePage.home));
+  await _write(
+    out,
+    'material/index.html',
+    buildSiteDocument(page: SitePage.material),
+  );
   await _write(
     out,
     'showcase/index.html',

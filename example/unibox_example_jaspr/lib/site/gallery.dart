@@ -161,12 +161,17 @@ UINode _palette(MaterialPalette palette) {
 }
 
 /// One palette entry: the colour, its role and its value.
+///
+/// The swatch fills the cell: a box with a height and no width is a column's child
+/// with no cross size, which is a colour nobody can see. That is exactly what
+/// happened the first time this page was published.
 UINode _swatch(String name, BoxColor color, MaterialPalette palette) {
   return Box(
     width: 150,
     gap: 6,
     children: <UINode>[
       Box(
+        width: double.infinity,
         height: 56,
         borderRadius: 8,
         backgroundColor: color,
@@ -183,35 +188,36 @@ UINode _swatch(String name, BoxColor color, MaterialPalette palette) {
   );
 }
 
-/// A Material button: a tinted region around a label.
+/// A Material button: a filled surface whose state layer is an ink well.
 ///
-/// The callback is empty and the tint is inert on a static page — a state layer is a
-/// hover, a focus and a press, and those need the client runtime. What the page
-/// shows is the shape, the role and the palette.
+/// The tint has to sit *inside* the fill, because a state layer paints above the
+/// surface it belongs to; wrapped the other way round, the button's own background
+/// would hide it. The callback is empty and the tint is inert on a static page —
+/// what the page shows is the shape, the role and the palette.
 UINode _button(
   String label,
   BoxColor background,
   BoxColor foreground,
   MaterialPalette palette,
 ) {
-  return MaterialInkWell(
-    palette: palette,
+  return Box(
     borderRadius: 20,
-    onTap: () {},
-    child: Box(
-      padding: const BoxSpacing.symmetric(horizontal: 20, vertical: 10),
-      borderRadius: 20,
-      backgroundColor: background,
-      border: background == palette.surface
-          ? BoxBorder(color: palette.outline)
-          : null,
-      children: <UINode>[
-        TextNode(
+    backgroundColor: background,
+    border: background == palette.surface
+        ? BoxBorder(color: palette.outline)
+        : null,
+    children: <UINode>[
+      MaterialInkWell(
+        palette: palette,
+        borderRadius: 20,
+        padding: const BoxSpacing.symmetric(horizontal: 20, vertical: 10),
+        onTap: () {},
+        child: TextNode(
           label,
           style: MaterialTypography.labelLarge.copyWith(color: foreground),
         ),
-      ],
-    ),
+      ),
+    ],
   );
 }
 
@@ -226,8 +232,8 @@ UINode _overlays(MaterialPalette palette) {
       direction: Axis.horizontal,
       gap: 24,
       children: <UINode>[
-        _linkCard('Open the sign-up dialog', 'web/signup/', palette),
-        _linkCard('Compare both renderings', 'showcase/', palette),
+        _linkCard('Open the sign-up dialog', '../web/signup/', palette),
+        _linkCard('Compare both renderings', '../showcase/', palette),
       ],
     ),
   );
