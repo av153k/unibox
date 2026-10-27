@@ -117,6 +117,8 @@ Box buildApartmentsPage({UINode? map}) {
     direction: Axis.vertical,
     width: double.infinity,
     overflow: Overflow.scroll,
+    // The page is the `<main>` landmark; the scrolling box is the page itself.
+    semantics: const BoxSemantics(element: BoxElement.main),
     children: <UINode>[
       Box(
         direction: Axis.vertical,
@@ -136,6 +138,9 @@ Box buildApartmentsPage({UINode? map}) {
                 direction: Axis.vertical,
                 flex: 3,
                 gap: 12,
+                // A list of listings: the web gets `<ul>` and `<li>`, and a
+                // screen reader announces how many items there are.
+                semantics: const BoxSemantics(element: BoxElement.ul),
                 children: <UINode>[
                   for (final Apartment apartment in exampleApartments)
                     _listing(apartment),
@@ -167,6 +172,8 @@ Box buildExampleMap() {
     backgroundColor: ExamplePalette.mapSurface,
     border: const BoxBorder(color: ExamplePalette.mapLine),
     textStyle: ExampleType.map,
+    // A picture with a label is a figure, not a plain panel.
+    semantics: const BoxSemantics(element: BoxElement.figure),
     children: <UINode>[const TextNode('Map')],
   );
 }
@@ -184,10 +191,7 @@ UINode _heading() {
     width: double.infinity,
     textStyle: ExampleType.title,
     children: <UINode>[
-      const Box(
-        semantics: BoxSemantics(role: BoxRole.heading),
-        children: <UINode>[TextNode('Apartments')],
-      ),
+      const TextNode('Apartments', headingLevel: 1),
       TextNode(
         '${exampleApartments.length} listings in the old town. The map shows '
         'up when the window is wide enough to hold it.',
@@ -209,6 +213,9 @@ UINode _listing(Apartment apartment) {
     gap: 14,
     crossAlign: CrossAlign.center,
     padding: const BoxSpacing.all(14),
+    // One item of the list above: `<li>` inside the `<ul>`, which is the only
+    // place `validateTree` accepts one.
+    semantics: const BoxSemantics(element: BoxElement.li),
     borderRadius: 14,
     backgroundColor: ExamplePalette.surface,
     border: const BoxBorder(color: ExamplePalette.border),

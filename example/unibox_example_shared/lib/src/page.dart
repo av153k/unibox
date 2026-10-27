@@ -76,6 +76,8 @@ UINode _navigationBar({
     crossAlign: CrossAlign.center,
     width: double.infinity,
     padding: const BoxSpacing.symmetric(horizontal: 24, vertical: 12),
+    // The bar is the navigation of the page, so the web renders a `<nav>`.
+    semantics: const BoxSemantics(element: BoxElement.nav),
     backgroundColor: ExamplePalette.surface,
     shadow: const BoxShadow(
       color: BoxColor(0x14000000),

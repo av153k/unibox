@@ -77,6 +77,8 @@ Box buildSignupPage({
     crossAlign: CrossAlign.center,
     width: double.infinity,
     padding: const BoxSpacing.all(24),
+    // The page box is what the page is about, so it is the `<main>` landmark.
+    semantics: const BoxSemantics(element: BoxElement.main),
     children: <UINode>[
       buildSignupCard(
         state: state,
@@ -107,6 +109,9 @@ Box buildSignupCard({
     direction: Axis.vertical,
     gap: 16,
     width: 380,
+    // The card is a self contained composition, which is what an `<article>` is:
+    // it makes sense on its own, next to anything else on the page.
+    semantics: const BoxSemantics(element: BoxElement.article),
     textStyle: ExampleType.body,
     padding: const BoxSpacing.all(24),
     backgroundColor: ExamplePalette.surface,
@@ -205,18 +210,16 @@ UINode _avatarChip() {
 /// token it changes, which is the whole point of inheritance: no node has to
 /// repeat what its box already says.
 ///
-/// The title itself is marked as a heading, which a screen reader announces and a
-/// crawler reads as the structure of the page; the line under it stays plain text.
+/// The title is a level one heading: the web renders an `<h1>` and Flutter marks
+/// the text as a header, which is the outline a crawler and a screen reader build
+/// the page from. The line under it stays plain text.
 UINode _heading() {
   return const Box(
     direction: Axis.vertical,
     gap: 4,
     textStyle: ExampleType.title,
     children: <UINode>[
-      Box(
-        semantics: BoxSemantics(role: BoxRole.heading),
-        children: <UINode>[TextNode('Join Unibox')],
-      ),
+      TextNode('Join Unibox', headingLevel: 1),
       TextNode('One description, two renderers.', style: ExampleType.muted),
     ],
   );
@@ -330,6 +333,9 @@ UINode? _status(SignupFormState state) {
       padding: const BoxSpacing.all(12),
       backgroundColor: ExamplePalette.successSurface,
       borderRadius: 10,
+      // A live region, so a screen reader announces the confirmation when it
+      // appears instead of leaving the reader to go looking for it.
+      semantics: const BoxSemantics(liveRegion: true),
       textStyle: const BoxTextStyle(
         fontSize: 13,
         color: ExamplePalette.success,
