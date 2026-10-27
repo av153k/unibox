@@ -58,8 +58,16 @@ class _UniboxBoxState extends State<UniboxBox> {
       content = _decorated(decoration, style.transition, content);
     }
 
-    if (style.overflow == core.Overflow.hidden) {
-      content = ClipRect(child: content);
+    // A scrolling box already clips its own viewport, but squarely: it needs an
+    // explicit clip only when the box is rounded, so that the content is cut to
+    // the radius the way CSS cuts it.
+    final double radius = style.borderRadius ?? 0;
+    final bool clipsContent =
+        style.overflow == core.Overflow.hidden ||
+        (style.overflow == core.Overflow.scroll && radius > 0);
+
+    if (clipsContent) {
+      content = _clipTo(content, style);
     }
 
     content = _applyDimensions(content, style);
@@ -101,6 +109,22 @@ class _UniboxBoxState extends State<UniboxBox> {
           DecoratedBox(decoration: value, child: inner),
       child: child,
     );
+  }
+
+  /// Clips [child] to the box, rounded when the box has a corner radius.
+  ///
+  /// A plain `ClipRect` cuts square corners, while CSS clips an element with
+  /// `overflow` to its `border-radius`: a rounded card that hides what sticks out
+  /// would be rounded in the browser and square in Flutter. The radius is the one
+  /// the box paints with, so the clip and the decoration can never disagree.
+  Widget _clipTo(Widget child, core.BoxStyle style) {
+    final double? radius = style.borderRadius;
+
+    if (radius == null || radius <= 0) {
+      return ClipRect(child: child);
+    }
+
+    return ClipRRect(borderRadius: BorderRadius.circular(radius), child: child);
   }
 
   /// Moves, turns, scales and fades the box, easing when the box asks for it.

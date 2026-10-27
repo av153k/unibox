@@ -418,6 +418,44 @@ void main() {
       expect(tester.getSize(find.byKey(nodeKey)), const Size(50, 20));
     });
 
+    testWidgets('clips a rounded box to its radius', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          width: 50,
+          height: 20,
+          borderRadius: 12,
+          overflow: core.Overflow.hidden,
+          children: [core.Box(width: 200, height: 10)],
+        ),
+      );
+
+      // A browser clips an element with `overflow` to its `border-radius`; a plain
+      // ClipRect would cut square corners on one target only.
+      expect(
+        tester.widget<ClipRRect>(inNode(find.byType(ClipRRect))).borderRadius,
+        BorderRadius.circular(12),
+      );
+      expect(inNode(find.byType(ClipRect)), findsNothing);
+    });
+
+    testWidgets('clips a rounded scrolling box to its radius', (tester) async {
+      await pumpNode(
+        tester,
+        const core.Box(
+          height: 100,
+          borderRadius: 8,
+          overflow: core.Overflow.scroll,
+          children: [core.Box(width: 10, height: 400)],
+        ),
+      );
+
+      expect(
+        tester.widget<ClipRRect>(inNode(find.byType(ClipRRect))).borderRadius,
+        BorderRadius.circular(8),
+      );
+    });
+
     testWidgets('scrolls overflowing content vertically', (tester) async {
       await pumpNode(
         tester,
