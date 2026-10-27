@@ -68,16 +68,59 @@ Component renderNode(core.UINode node) {
       node: text,
       key: toJasprKey(text.key),
     ),
-    final ComponentNode embed => Component.fragment(<Component>[
-      embed.component,
+    final core.EmbedNode embed => Component.fragment(<Component>[
+      _renderEmbed(embed),
     ], key: toJasprKey(embed.key)),
-    final core.EmbedNode embed => throw UnsupportedError(
-      'No Jaspr renderer for ${embed.runtimeType}: it carries a '
-      '${embed.payload.runtimeType}, and only a ComponentNode can be rendered '
-      'by this package.',
-    ),
     _ => throw UnsupportedError('No Jaspr renderer for ${node.runtimeType}.'),
   };
+}
+
+/// Renders the implementation of [embed] this target can draw.
+///
+/// The model keeps the payloads opaque, so the choice is made here: the first
+/// payload that is a [Component] is rendered as it is, and the first that is a
+/// [ComponentEmbedBuilder] receives the rendered child, because an effect that
+/// wraps content needs the content. A node whose implementations this target
+/// cannot draw, or that carries two of them, is reported instead of silently
+/// skipped — a class the library has never seen renders here as long as it brings
+/// one of these two shapes.
+Component _renderEmbed(core.EmbedNode embed) {
+  final List<Object> implementations = embed.implementations;
+  final List<Object> drawable = implementations
+      .where((Object it) => it is Component || it is ComponentEmbedBuilder)
+      .toList(growable: false);
+
+  if (drawable.isEmpty) {
+    throw UnsupportedError(
+      'No Jaspr renderer for ${embed.runtimeType}: this target draws a Component '
+      'or a ComponentEmbedBuilder, and the node carries '
+      '${implementations.map((Object it) => it.runtimeType).join(', ')}.',
+    );
+  }
+
+  if (drawable.length > 1) {
+    throw StateError(
+      '${embed.runtimeType} carries ${drawable.length} implementations this '
+      'target can draw, so the tree is ambiguous: keep one payload per renderer.',
+    );
+  }
+
+  final Object implementation = drawable.single;
+
+  if (implementation is Component) {
+    return implementation;
+  }
+
+  final core.UINode? child = embed.child;
+
+  if (child == null) {
+    throw StateError(
+      '${embed.runtimeType} is drawn by a ComponentEmbedBuilder, which wraps the '
+      'child of the embed, but the node has no child.',
+    );
+  }
+
+  return (implementation as ComponentEmbedBuilder)(renderNode(child));
 }
 
 /// Reports the tree issues of [node], in debug builds only.

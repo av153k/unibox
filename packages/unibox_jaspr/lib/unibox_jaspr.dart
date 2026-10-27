@@ -17,5 +17,5 @@
 /// ```
 library;
 
-export 'src/embed_node.dart' show ComponentNode;
+export 'src/embed_node.dart' show ComponentEmbedBuilder, ComponentNode;
 export 'src/render.dart';

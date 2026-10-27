@@ -1,6 +1,13 @@
 import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
+/// The signature of an embed implementation that wraps the child of its node.
+///
+/// An effect that needs the content it decorates — a ripple, a hover glow, a
+/// transition — is a wrapper and not a leaf, so its implementation receives the
+/// rendered child instead of standing next to it.
+typedef ComponentEmbedBuilder = Component Function(Component child);
+
 /// Renders a Jaspr [Component] inside a Unibox tree.
 ///
 /// The escape hatch for content Unibox does not model: a chart component, a
@@ -15,7 +22,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 /// );
 /// ```
 ///
-/// A node whose payload is not a [Component] is reported by [renderJaspr]
+/// A node with no implementation this target can draw is reported by [renderJaspr]
 /// instead of being skipped, so a tree that was built for another target fails
 /// loudly.
 final class ComponentNode extends core.EmbedNode {
@@ -26,5 +33,5 @@ final class ComponentNode extends core.EmbedNode {
   final Component component;
 
   @override
-  Object get payload => component;
+  List<Object> get implementations => <Object>[component];
 }
