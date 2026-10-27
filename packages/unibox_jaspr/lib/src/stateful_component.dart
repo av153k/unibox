@@ -2,6 +2,7 @@ import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'render.dart';
+import 'stylesheet.dart';
 
 /// A Jaspr component that draws a [core.StatefulNode].
 ///
@@ -85,6 +86,8 @@ class JasprStatefulState extends State<JasprStateful> {
       store.dispose();
     }
 
-    return tree;
+    // A host may use this component as the root of a page, in which case nothing
+    // above it opened a stylesheet.
+    return withStylesheet(context, tree);
   }
 }

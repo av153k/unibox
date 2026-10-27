@@ -10,6 +10,7 @@ import 'link_node.dart';
 import 'overlay_node.dart';
 import 'stack_node.dart';
 import 'stateful_node.dart';
+import 'stylesheet.dart';
 import 'text_input_node.dart';
 import 'text_node.dart';
 
@@ -31,12 +32,25 @@ import 'text_node.dart';
 /// Every component is created with the key of its node, so reordering a list of
 /// nodes keeps each element (and the DOM state it owns) attached to the node it
 /// belongs to.
+///
+/// The declarations of the whole tree are collected into one stylesheet
+/// (`UniboxStylesheet`): an element carries a class, never an inline style, so a
+/// page repeats a look once however many elements wear it, and a host can
+/// override any of it — with a CSS custom property, a `@media` block or a
+/// stylesheet of its own. Rendering a component on its own, without
+/// [renderJaspr], writes the declarations inline instead.
 Component renderJaspr(core.UINode node) {
   _reportTreeIssues(node);
 
+  final UniboxStylesheet sheet = UniboxStylesheet();
+
   return Component.fragment(<Component>[
     const JasprDefaultTypography(),
-    renderNode(node),
+    UniboxStylesheetScope(sheet: sheet, child: renderNode(node)),
+    // After the tree: every component has registered its class by the time this
+    // is built. CSS applies wherever the element sits, so the `<style>` is one
+    // element regardless of the page it lands in.
+    JasprStylesheet(sheet: sheet),
   ]);
 }
 
@@ -73,7 +87,10 @@ Component renderNode(core.UINode node) {
     final core.EmbedNode embed => Component.fragment(<Component>[
       _renderEmbed(embed),
     ], key: toJasprKey(embed.key)),
-    final core.OverlayNode overlay => overlayView(overlay),
+    final core.OverlayNode overlay => JasprOverlay(
+      node: overlay,
+      key: toJasprKey(overlay.key),
+    ),
     final core.StatefulNode<Object, core.Store<Object>> stateful =>
       statefulView(stateful),
     _ => throw UnsupportedError('No Jaspr renderer for ${node.runtimeType}.'),

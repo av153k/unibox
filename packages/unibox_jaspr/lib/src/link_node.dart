@@ -3,6 +3,7 @@ import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'render.dart';
+import 'stylesheet.dart';
 
 /// Renders a [core.LinkNode] as a semantic `<a>` element.
 ///
@@ -34,12 +35,21 @@ class JasprLink extends StatelessComponent {
     final core.TapCallback? onTap = node.onTap;
     final bool newTab = node.newTab;
 
+    final String? className = UniboxStylesheetScope.of(context)?.classFor(
+      'link',
+      declarationsOf(_anchorStyles),
+      (String name) => <StyleRule>[
+        StyleRule(selector: Selector.className(name), styles: _anchorStyles),
+      ],
+    );
+
     return a(
       <Component>[renderNode(node.child)],
       href: node.url,
       target: newTab ? Target.blank : null,
       attributes: newTab ? _newTabAttributes : null,
-      styles: _anchorStyles,
+      classes: className,
+      styles: className == null ? _anchorStyles : null,
       events: onTap == null
           ? null
           : <String, EventCallback>{'click': (event) => onTap()},

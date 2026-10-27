@@ -17,6 +17,10 @@ on the server and readable without a client bundle.
 - Typography becomes the inherited CSS font properties, and `renderJaspr` emits the
   model's default typography in a `:root` rule so an undeclared text is typeset the
   same way the Flutter renderer typesets it.
+- Every look is written once, as a class rule in a single `<style>` element, and the
+  element carries the class instead of an inline style: the CSS grows with the number
+  of distinct looks on a page rather than with the number of elements, and a host can
+  override any of it with a stylesheet or a custom property.
 - An `ImageNode` becomes an `<img>` with everything a browser can use: `srcset`,
   `sizes`, `loading` and `fetchpriority`, and a finite `width`/`height` written both
   as CSS and as the element's attributes, so the browser reserves the right box

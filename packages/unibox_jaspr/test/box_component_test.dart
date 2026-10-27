@@ -339,7 +339,7 @@ void main() {
         ),
       );
 
-      expect(stylesOf(find.tag('div')), isEmpty);
+      expect(elementOf(find.tag('div')).styles, isNull);
 
       final String className = classesOf(find.tag('div'))!;
       expect(className, matches(RegExp(r'^unibox-box-[0-9a-f]{8}$')));

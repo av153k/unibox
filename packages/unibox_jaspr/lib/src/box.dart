@@ -6,6 +6,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 import 'package:universal_web/web.dart' as web;
 
 import 'render.dart';
+import 'stylesheet.dart';
 import 'values.dart';
 
 /// Delay after which a pressed box counts as a long press.
@@ -51,10 +52,32 @@ class JasprBox extends StatelessComponent {
       interactive: box.isInteractive,
       element: element,
     );
-    final String className = 'unibox-box-${_hashOf(box, restingStyles)}';
-    final List<StyleRule> stateRules = _stateRules(className);
+    final UniboxStylesheet? sheet = UniboxStylesheetScope.of(context);
 
-    if (stateRules.isEmpty) {
+    // Inside a rendering every look becomes a class, so six listings with one look
+    // declare it once and no element carries an inline style a host cannot
+    // override.
+    if (sheet != null) {
+      final String className = sheet.classFor(
+        'box',
+        _declarationsKey(restingStyles),
+        (String name) => <StyleRule>[
+          StyleRule(selector: Selector.className(name), styles: restingStyles),
+          ..._stateRules(name),
+        ],
+      );
+
+      return _element(
+        element,
+        children,
+        classes: className,
+        attributes: attributes,
+        events: events,
+      );
+    }
+
+    // A box rendered on its own has no sheet to register in.
+    if (!_hasStateStyles) {
       return _element(
         element,
         children,
@@ -64,6 +87,9 @@ class JasprBox extends StatelessComponent {
       );
     }
 
+    final String className =
+        'unibox-box-${fnv1a(declarationsOf(restingStyles))}';
+
     return Component.fragment(<Component>[
       Style(
         styles: <StyleRule>[
@@ -71,7 +97,7 @@ class JasprBox extends StatelessComponent {
             selector: Selector.className(className),
             styles: restingStyles,
           ),
-          ...stateRules,
+          ..._stateRules(className),
         ],
       ),
       _element(
@@ -83,6 +109,29 @@ class JasprBox extends StatelessComponent {
       ),
     ]);
   }
+
+  /// Everything the box paints, as text: the key a class is deduplicated on.
+  ///
+  /// Both the resting look and every state the box styles are part of it, so two
+  /// boxes only share a class when they render identically in every state.
+  String _declarationsKey(Styles resting) {
+    final StringBuffer seed = StringBuffer(declarationsOf(resting));
+
+    for (final core.BoxState state in core.BoxState.values) {
+      final Styles? styles = _stateStyles(state);
+
+      if (styles != null) {
+        seed.write('|${state.name}:${declarationsOf(styles)}');
+      }
+    }
+
+    return seed.toString();
+  }
+
+  /// Whether the box styles any interaction state at all.
+  bool get _hasStateStyles => core.BoxState.values.any(
+    (core.BoxState state) => box.stateStyle(state) != null,
+  );
 
   /// The pseudo class rules of the box, in cascade order.
   ///
@@ -303,29 +352,6 @@ Map<String, EventCallback> _buildEvents(core.Box box) {
   return events;
 }
 
-/// Derives a stable class name suffix from [box] and its resting [restingStyles].
-///
-/// Every state the box styles is part of the seed, so two boxes only share a
-/// class when they render identically. FNV-1a is used because it is tiny,
-/// deterministic and dependency free, so the server and the client agree on the
-/// class name without any coordination.
-String _hashOf(core.Box box, Styles restingStyles) {
-  final StringBuffer seed = StringBuffer(_serializeStyles(restingStyles));
-
-  for (final core.BoxState state in core.BoxState.values) {
-    final core.BoxStyle? style = box.stateStyle(state);
-    if (style != null) {
-      seed.write('|${state.name}:${_serializeStyles(toBoxStyles(style))}');
-    }
-  }
-
-  var hash = 0x811C9DC5;
-  for (final int codeUnit in seed.toString().codeUnits) {
-    hash = ((hash ^ codeUnit) * 0x01000193) & 0xFFFFFFFF;
-  }
-  return hash.toRadixString(16).padLeft(8, '0');
-}
-
 /// Builds the element [element] of a box, or a `<div>` when it is a plain one.
 ///
 /// Everything the box needs — styles, classes, attributes and listeners — goes on
@@ -398,8 +424,3 @@ String? _htmlRole(core.BoxRole role) {
 bool _isActivationKey(String key) => key == 'Enter' || key == ' ';
 
 /// Flattens [styles] into a stable `property:value;` string.
-String _serializeStyles(Styles styles) {
-  return styles.properties.entries
-      .map((MapEntry<String, String> entry) => '${entry.key}:${entry.value}')
-      .join(';');
-}

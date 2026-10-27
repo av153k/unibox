@@ -54,8 +54,8 @@ Opaque colors render as `#rrggbb`, translucent colors as `rgba(…)`.
 
 ### State styles
 
-Inline styles always beat a pseudo class, so a box with state styles is rendered
-as a class plus a small `<style>` element right before it:
+A state is a pseudo class, and a pseudo class cannot reach an inline style, so a
+box with states is rendered as a class:
 
 ```html
 <style>
@@ -88,7 +88,47 @@ paints a focus ring.
 
 The class name is a hash of the resolved styles and of every state, which keeps
 the output deterministic: server rendered markup and the hydrated client agree
-without any extra state, and boxes that share a style share a class.
+without any extra state, and boxes that share a style share a class. That shape is
+not special to states — every look in the tree is written this way; see
+[The stylesheet](#the-stylesheet).
+
+## The stylesheet
+
+Nothing in the tree is written inline. Every distinct set of declarations becomes
+one class rule — `unibox-box-…`, `unibox-text-…`, `unibox-image-…`, `unibox-field-…`,
+`unibox-stack-…`, `unibox-link-…`, `unibox-overlay-…` — and the element carries
+that class instead:
+
+```html
+<style>
+  .unibox-box-1f3c9a7b { display: flex; … }
+  .unibox-text-6c1d0e2f { color: #111827; font-size: 16px; font-weight: 600; }
+</style>
+<div class="unibox-box-1f3c9a7b">
+  <span class="unibox-text-6c1d0e2f">€1850 / month</span>
+  <span class="unibox-text-6c1d0e2f">€1240 / month</span>
+</div>
+```
+
+Three things follow, and they are the reason it is done this way:
+
+- **A look is written once.** Six listings with the same look declare it once and
+  wear the same class, so the CSS grows with the number of *distinct* looks on a
+  page rather than with the number of elements. On this repository's own site, 224
+  elements share 73 rules.
+- **A host can override anything.** An inline style beats every stylesheet, so a
+  page that carried one per element could not be themed — not with a custom
+  property, not with `@media (prefers-color-scheme: dark)`, not with a rule of its
+  own. A class can be outranked by a stylesheet the host controls.
+- **The markup says what an element is, not how it looks**, which keeps the
+  response small once it is compressed and lets the CSS be cached next to the HTML
+  instead of being rebuilt inside it.
+
+The rules are emitted as a single `<style>` element after the tree, so a page has
+that element once however many components registered a class; CSS applies wherever
+that element sits. A component rendered on its own — `JasprBox(box: box)` in a
+test, or `renderNode` called directly — finds no stylesheet in scope and writes its
+declarations inline, which is what a single node can still do correctly.
 
 ### Semantics
 

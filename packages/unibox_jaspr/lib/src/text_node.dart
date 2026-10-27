@@ -2,6 +2,7 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
+import 'stylesheet.dart';
 import 'values.dart';
 
 /// Renders a [core.TextNode] as a styled `<span>`.
@@ -28,9 +29,14 @@ class JasprText extends StatelessComponent {
     final int? level = node.headingLevel;
     final List<Component> children = <Component>[Component.text(node.text)];
     final Styles styles = toTextStyles(node);
+    final String? className = _className(context, styles);
 
     if (level == null) {
-      return span(children, styles: styles);
+      return span(
+        children,
+        classes: className,
+        styles: className == null ? styles : null,
+      );
     }
 
     // A heading is an element here and a `Semantics` level in Flutter, which is
@@ -39,7 +45,20 @@ class JasprText extends StatelessComponent {
     return Component.element(
       tag: 'h$level',
       children: children,
-      styles: styles,
+      classes: className,
+      styles: className == null ? styles : null,
+    );
+  }
+
+  /// The class of [styles] in the rendering in progress, or `null` when the text
+  /// is rendered on its own.
+  String? _className(BuildContext context, Styles styles) {
+    return UniboxStylesheetScope.of(context)?.classFor(
+      'text',
+      declarationsOf(styles),
+      (String name) => <StyleRule>[
+        StyleRule(selector: Selector.className(name), styles: styles),
+      ],
     );
   }
 }

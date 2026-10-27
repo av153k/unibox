@@ -40,9 +40,22 @@ TestRenderElement _domElementOf(Element match) {
   return domElement!.renderObject as TestRenderElement;
 }
 
-/// The inline styles of the element matched by [finder].
+/// The declarations that apply to the element matched by [finder].
+///
+/// The renderer writes a look once, as a class rule, and puts only the class on
+/// the element — so a test reads the class's declarations and then the element's
+/// own inline ones on top, which is the order a browser applies them in.
 Map<String, String> stylesOf(Finder finder) {
-  return elementOf(finder).styles ?? const <String, String>{};
+  final TestRenderElement element = elementOf(finder);
+  final Map<String, String> declarations = <String, String>{};
+
+  for (final String name in classNamesOf(finder)) {
+    declarations.addAll(declarationsOf('.$name'));
+  }
+
+  declarations.addAll(element.styles ?? const <String, String>{});
+
+  return declarations;
 }
 
 /// The raw CSS rendered by the `<style>` element matched by [finder].
@@ -56,9 +69,9 @@ String _cssText(TestRenderElement element) => element.children
 
 /// Every style rule the rendered component carries, in document order.
 ///
-/// The renderer emits a `<style>` element for the typography of the model and
-/// another one per box that needs a state rule, so a test that asks "is this rule
-/// there?" has to look at all of them instead of at the first one it finds.
+/// The renderer emits a `<style>` element for the typography of the model and one
+/// for the classes of the tree, so a test that asks "is this rule there?" has to
+/// look at all of them instead of at the first one it finds.
 String allCss() => elementsOf(find.tag('style')).map(_cssText).join('\n');
 
 /// The declarations of the rule with [selector].
@@ -93,6 +106,12 @@ Map<String, String> declarationsOf(String selector) {
 
 /// The `class` attribute of the element matched by [finder].
 String? classesOf(Finder finder) => elementOf(finder).classes;
+
+/// The single class names of the element matched by [finder].
+List<String> classNamesOf(Finder finder) => (classesOf(finder) ?? '')
+    .split(RegExp(r'\s+'))
+    .where((String name) => name.isNotEmpty)
+    .toList(growable: false);
 
 /// The HTML attributes of the element matched by [finder].
 Map<String, String> attributesOf(Finder finder) {

@@ -2,6 +2,7 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
+import 'stylesheet.dart';
 import 'values.dart';
 
 /// Renders a [core.ImageNode] as an `<img>`.
@@ -31,6 +32,15 @@ class JasprImage extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final Styles styles = toImageStyles(node);
+    final String? className = UniboxStylesheetScope.of(context)?.classFor(
+      'image',
+      declarationsOf(styles),
+      (String name) => <StyleRule>[
+        StyleRule(selector: Selector.className(name), styles: styles),
+      ],
+    );
+
     return img(
       src: node.src,
       alt: node.alt,
@@ -42,7 +52,8 @@ class JasprImage extends StatelessComponent {
         'loading': node.loading.name,
         'fetchpriority': node.fetchPriority.name,
       },
-      styles: toImageStyles(node),
+      classes: className,
+      styles: className == null ? styles : null,
     );
   }
 

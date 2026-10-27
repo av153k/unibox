@@ -3,6 +3,7 @@ import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 import 'package:universal_web/web.dart' as web;
 
+import 'stylesheet.dart';
 import 'values.dart';
 
 /// Renders a [core.TextInputNode] as an `<input>` or a `<textarea>`.
@@ -36,6 +37,14 @@ class JasprTextInput extends StatelessComponent {
   Component build(BuildContext context) {
     final String? placeholder = node.placeholder;
     final Map<String, EventCallback>? listeners = _events();
+    final Styles styles = toTextInputStyles();
+    final String? className = UniboxStylesheetScope.of(context)?.classFor(
+      'field',
+      declarationsOf(styles),
+      (String name) => <StyleRule>[
+        StyleRule(selector: Selector.className(name), styles: styles),
+      ],
+    );
 
     if (node.multiline) {
       final String? value = node.value;
@@ -48,7 +57,8 @@ class JasprTextInput extends StatelessComponent {
         readonly: node.readOnly,
         autofocus: node.autofocus,
         attributes: _attributes(),
-        styles: toTextInputStyles(),
+        classes: className,
+        styles: className == null ? styles : null,
         events: listeners,
       );
     }
@@ -58,7 +68,8 @@ class JasprTextInput extends StatelessComponent {
       value: node.value,
       disabled: !node.enabled,
       attributes: _attributes(includeBooleanFlags: true),
-      styles: toTextInputStyles(),
+      classes: className,
+      styles: className == null ? styles : null,
       events: listeners,
     );
   }

@@ -4,6 +4,7 @@ import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'keys.dart';
 import 'render.dart';
+import 'stylesheet.dart';
 import 'values.dart';
 
 /// Renders a [core.StackNode] as a layering container.
@@ -24,10 +25,27 @@ class JasprStack extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return div(<Component>[
-      for (final core.UINode child in node.children) _stackChild(child),
-    ], styles: toStackStyles(node));
+    final Styles styles = toStackStyles(node);
+    final String? className = _className(context, styles);
+
+    return div(
+      <Component>[
+        for (final core.UINode child in node.children) _stackChild(child),
+      ],
+      classes: className,
+      styles: className == null ? styles : null,
+    );
   }
+
+  /// The class of [styles] in the rendering in progress, or `null` without one.
+  String? _className(BuildContext context, Styles styles) =>
+      UniboxStylesheetScope.of(context)?.classFor(
+        'stack',
+        declarationsOf(styles),
+        (String name) => <StyleRule>[
+          StyleRule(selector: Selector.className(name), styles: styles),
+        ],
+      );
 }
 
 /// Renders a [core.PositionedNode] as an absolutely positioned element.
@@ -47,11 +65,49 @@ class JasprPositioned extends StatelessComponent {
   Component build(BuildContext context) {
     final Component child = renderNode(node.child);
 
-    if (node.isUnpositioned) {
-      return div(<Component>[child], styles: toStackChildStyles());
-    }
+    final Styles styles = node.isUnpositioned
+        ? toStackChildStyles()
+        : toPositionedStyles(node);
+    final String? className = UniboxStylesheetScope.of(context)?.classFor(
+      'stack-child',
+      declarationsOf(styles),
+      (String name) => <StyleRule>[
+        StyleRule(selector: Selector.className(name), styles: styles),
+      ],
+    );
 
-    return div(<Component>[child], styles: toPositionedStyles(node));
+    return div(
+      <Component>[child],
+      classes: className,
+      styles: className == null ? styles : null,
+    );
+  }
+}
+
+/// Renders a plain child of a stack: the cell wrapper that keeps its own size.
+class JasprStackChild extends StatelessComponent {
+  /// Creates the wrapper around [child].
+  const JasprStackChild({required this.child, super.key});
+
+  /// The rendered child.
+  final Component child;
+
+  @override
+  Component build(BuildContext context) {
+    final Styles styles = toStackChildStyles();
+    final String? className = UniboxStylesheetScope.of(context)?.classFor(
+      'stack-child',
+      declarationsOf(styles),
+      (String name) => <StyleRule>[
+        StyleRule(selector: Selector.className(name), styles: styles),
+      ],
+    );
+
+    return div(
+      <Component>[child],
+      classes: className,
+      styles: className == null ? styles : null,
+    );
   }
 }
 
@@ -61,9 +117,5 @@ Component _stackChild(core.UINode node) {
     return JasprPositioned(node: node, key: toJasprKey(node.key));
   }
 
-  return div(
-    <Component>[renderNode(node)],
-    key: toJasprKey(node.key),
-    styles: toStackChildStyles(),
-  );
+  return JasprStackChild(child: renderNode(node), key: toJasprKey(node.key));
 }

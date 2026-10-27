@@ -391,7 +391,34 @@ never inherited (CSS does not inherit them either).
   does not have.
 
 
-### 5.11 Overlays are nodes
+### 5.11 Presentation is written once
+
+A tree repeats itself. Six listings share a look, a label appears in two places, and
+writing the declarations on each element makes the output cost grow with the number
+of elements instead of with the number of *distinct* looks. The web renderer
+collects them: every distinct set of declarations becomes one class rule in a single
+`<style>` element, and the element carries the class (`UniboxStylesheet`).
+
+Two consequences are the reason for the rule, and neither is about size:
+
+- **A host keeps the last word.** An inline style outranks every stylesheet, so a
+  page with one per element cannot be themed by a custom property, a
+  `@media (prefers-color-scheme: dark)` block or a rule of the host's own. A class
+  can be outranked, which is what makes a design system a value the host supplies
+  rather than a copy of the host's values in the markup.
+- **The markup says what, not how.** An element reads as its structure and carries
+  one class; the CSS next to it can be cached and read.
+
+Flutter needs no equivalent: a widget tree has no serialised output, and the
+allocation cost of a decoration is a profiled concern rather than a correctness one.
+The parity of the two renderings is unaffected — the conformance table compares
+resolved values, and where a value lives is invisible to it.
+
+A component rendered outside a rendering — `renderNode` called directly, or a node's
+renderer used in a test — still writes its declarations inline, because there is no
+sheet in scope to register them in.
+
+### 5.12 Overlays are nodes
 - Content above the page is a node, not a mode: `OverlayNode` wraps the content,
   sits in the tree where the state says it belongs, and disappears from the tree
   when the state says so. Presence is the tree's answer; there is no `open` flag

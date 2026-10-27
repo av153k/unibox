@@ -12,9 +12,8 @@ TestRenderElement elementOf(Finder finder) => elementsOf(finder).single;
 /// The CSS an element ends up with once inheritance is resolved.
 ///
 /// Only the properties CSS inherits are collected, and the closest declaration
-/// wins, which is exactly what a browser does for typography. A box that is
-/// styled through a scoped class rule is skipped, since its declarations live in
-/// a `<style>` block rather than on the element. A value of `inherit` is skipped
+/// wins, which is exactly what a browser does for typography. A box's declarations
+/// come from its class rule as well as its inline style. A value of `inherit` is skipped
 /// as well: it is not a value but the instruction to keep looking up the tree,
 /// which is what a renderer writes when it cancels a user agent default.
 Map<String, String> inheritedStylesOf(Finder finder) {
@@ -33,7 +32,7 @@ Map<String, String> inheritedStylesOf(Finder finder) {
 
   while (current != null) {
     final Map<String, String>? styles = current is TestRenderElement
-        ? current.styles
+        ? stylesOfElement(current)
         : null;
 
     if (styles != null) {
@@ -69,9 +68,60 @@ TestRenderElement _domElementOf(Element element) {
   return domElement!.renderObject as TestRenderElement;
 }
 
-/// The inline styles of the element matched by [finder].
-Map<String, String> stylesOf(Finder finder) {
-  return elementOf(finder).styles ?? const <String, String>{};
+/// The declarations that apply to the element matched by [finder].
+Map<String, String> stylesOf(Finder finder) =>
+    stylesOfElement(elementOf(finder));
+
+/// The declarations that apply to [element]: the rules of its classes, then its
+/// own inline ones on top.
+///
+/// The renderer writes a look once as a class rule, so a test that read only the
+/// `style` attribute would see nothing at all.
+Map<String, String> stylesOfElement(TestRenderElement element) {
+  final Map<String, String> declarations = <String, String>{};
+
+  for (final String name
+      in (element.classes ?? '')
+          .split(RegExp(r'\s+'))
+          .where((String name) => name.isNotEmpty)) {
+    declarations.addAll(declarationsOf('.$name'));
+  }
+
+  declarations.addAll(element.styles ?? const <String, String>{});
+
+  return declarations;
+}
+
+/// The declarations of the rule with [selector].
+Map<String, String> declarationsOf(String selector) {
+  final String css = allCss();
+  final int start = css.indexOf('$selector {');
+
+  if (start == -1) {
+    throw StateError(
+      'No rule for $selector in:'
+      '\n'
+      '$css',
+    );
+  }
+
+  final int end = css.indexOf('}', start);
+  final Map<String, String> declarations = <String, String>{};
+
+  for (final String declaration
+      in css.substring(start + selector.length + 2, end).split(';')) {
+    final int colon = declaration.indexOf(':');
+
+    if (colon == -1) {
+      continue;
+    }
+
+    declarations[declaration.substring(0, colon).trim()] = declaration
+        .substring(colon + 1)
+        .trim();
+  }
+
+  return declarations;
 }
 
 /// The HTML attributes of the element matched by [finder].
@@ -88,9 +138,9 @@ String cssOf(Finder finder) => _cssText(elementOf(finder));
 
 /// Every style rule the rendered document carries, in document order.
 ///
-/// The renderer emits one `<style>` element per box that needs a rule, so a test
-/// that asks "does the page carry this rule at all?" has to look at all of them
-/// instead of at the first one it finds.
+/// The renderer emits a `<style>` element for the typography of the model and one
+/// for the classes of the page, so a test that asks "does the page carry this rule
+/// at all?" has to look at all of them instead of at the first one it finds.
 String allCss() => elementsOf(find.tag('style')).map(_cssText).join('\n');
 
 /// The text content of a rendered `<style>` element.

@@ -157,7 +157,9 @@ void main() {
         ),
       );
 
-      expect(stylesOf(find.tag('div')), isEmpty);
+      // The look is in a class rule, so the element itself carries no inline
+      // style a host could not override.
+      expect(elementOf(find.tag('div')).styles, isNull);
       final String className = classesOf(find.tag('div'))!;
       final String css = allCss();
 
@@ -171,7 +173,7 @@ void main() {
       expect(css, contains('border-radius: 8px;'));
     });
 
-    testComponents('renders inline styles when no state is styled', (
+    testComponents('writes a class even when no state is styled', (
       tester,
     ) async {
       pumpNode(
@@ -182,11 +184,13 @@ void main() {
         ),
       );
 
-      // The only rule on the page is the typography of the model, so nothing
-      // scoped a state here.
-      expect(allCss(), isNot(contains('.unibox-box-')));
-      expect(stylesOf(find.tag('div'))['background-color'], '#ffffff');
-      expect(classesOf(find.tag('div')), isNull);
+      final String className = classesOf(find.tag('div'))!;
+
+      expect(className, matches(RegExp(r'^unibox-box-[0-9a-f]{8}$')));
+      expect(elementOf(find.tag('div')).styles, isNull);
+      expect(declarationsOf('.$className')['background-color'], '#ffffff');
+      // Only the resting rule: no state to scope.
+      expect(allCss(), isNot(contains('.$className:hover')));
     });
 
     testComponents('gives boxes with different states different classes', (
