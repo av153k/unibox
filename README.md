@@ -682,8 +682,9 @@ complete component — and it is written to be pasted into the context:
 ```text
 Read AI_INSTRUCTIONS.md and README.md from the Unibox repository before writing any
 code. Build <the component> as a Unibox node tree in a file that imports only
-package:unibox_core/unibox_core.dart. Do not use Flutter, Jaspr or HTML widgets.
-Return the tree, and separately the host code that owns its state.
+package:unibox_core, plus package:unibox_material when it uses the Material roles.
+Do not use Flutter, Jaspr or HTML widgets. Return the tree, and separately the small
+host that renders it.
 ```
 
 This page is the second file: the parameter tables an assistant needs when the

@@ -21,14 +21,16 @@ A prompt that works:
 ```text
 Read AI_INSTRUCTIONS.md and README.md from the Unibox repository before writing any
 code. Build <the component> as a Unibox node tree in a file that imports only
-package:unibox_core/unibox_core.dart. Do not use Flutter, Jaspr or HTML widgets.
-Return the tree, and separately the host code that owns its state.
+package:unibox_core, plus package:unibox_material when it uses the Material roles.
+Do not use Flutter, Jaspr or HTML widgets. Return the tree, and separately the small
+host that renders it.
 ```
 
-## The model in six lines
+## The model in eight lines
 
 - A screen is an immutable Dart tree of nodes: `Box`, `TextNode`, `ImageNode`,
-  `LinkNode`, `StackNode` + `PositionedNode`, `TextInputNode`, `EmbedNode`.
+  `LinkNode`, `StackNode` + `PositionedNode`, `TextInputNode`, `StatefulNode`,
+  `OverlayNode`, `EmbedNode`.
 - One tree, two renderers: `renderFlutter(tree)` or `tree.toWidget()` in a Flutter
   app, `renderJaspr(tree)` or `tree.toComponent()` in a Jaspr one.
 - A node describes *what* is on screen, never which framework draws it. There is no
@@ -37,12 +39,20 @@ Return the tree, and separately the host code that owns its state.
 - Styling is tokens — `BoxColor` and the `BoxColors` palette, `BoxSpacing`,
   `BoxBorder`, `BoxShadow`, `BoxTextStyle`, `BoxTransform`, `BoxTransition`,
   `BoxSemantics` — collected in reusable `BoxStyle` bags.
-- Everything that changes over time — form values, the open page, the window size —
-  belongs to the **host** and is passed into the tree as a value and a callback.
-  Nodes are immutable, their constructors are `const`, and they hold no state.
+- State that changes while the page is up belongs to the tree through a node that
+  owns it: `StatefulNode` creates a `Store`, the store holds one immutable state
+  value, and the view draws one tree per state. What stays with the **host** is what
+  a node cannot know: the surface, the fonts, the document, how a link opens.
+- An overlay is a node too. `OverlayNode` sits in the tree where the state says it
+  belongs — a dialog is in the tree while it is open, and absent while it is closed.
 - A token that is unset has a default in the model (a box is a column, text is 16px
   black at a line height of 1.5, an image scales down), and both renderers apply it.
   Never reach for the host's default.
+- `unibox_material` is optional: the fifteen Material type roles as `const`
+  `BoxTextStyle` values, and two components (`MaterialCard`, `MaterialListTile`) that
+  are `Box` subclasses. It has no colour scheme yet, so a themed Material screen
+  still states its colours itself.
+
 
 ## The rules that make generated code run
 
@@ -75,12 +85,24 @@ Return the tree, and separately the host code that owns its state.
 7. **Callbacks are `void Function()`.** `onTap`, `onLongPress`, `onHover`,
    `onChanged`, `onSubmitted`, `onFocusChanged`. The host supplies the function, and a
    node that captures a closure cannot be `const`.
-8. **Give an interactive box semantics.** A box with `onTap` and no `semantics` is
-   not announced as a button and is not keyboard reachable. Add
-   `semantics: BoxSemantics(role: BoxRole.button, label: '…')`.
-9. **Key a list.** Children of a list that can reorder take `key:` — the id of the
-   model they describe — or typed text follows the position instead of the row.
-10. **Do not invent a parameter.** If it is not in the README tables or in
+8. **A dialog is an overlay node.** `OverlayNode` carries the policy — `onDismiss`,
+   `barrierDismissible`, `barrierColor`, `alignment` — and sits in the tree where the
+   state says it belongs; being in the tree is what makes it show. Do not build one
+   out of a `StackNode` and a positioned box, and do not reach for `showDialog`: no
+   node has a modal slot and no view has an overlay slot. On a page that is rendered
+   without a click (a static export, a screenshot, a test), render the state the
+   dialog should start in.
+9. **State belongs to a store, not to a view.** A tree that reacts is a
+   `StatefulNode`: it creates a `Store` (`StateStore` is the ready-made one), the
+   store holds one immutable state value and publishes when it is replaced, and the
+   view is a function of state that returns one tree. No `setState`, controller or
+   stream inside the tree, and no field on the node.
+10. **Give an interactive box semantics.** A box with `onTap` and no `semantics` is
+    not announced as a button and is not keyboard reachable. Add
+    `semantics: BoxSemantics(role: BoxRole.button, label: '…')`.
+11. **Key a list.** Children of a list that can reorder take `key:` — the id of the
+    model they describe — or typed text follows the position instead of the row.
+12. **Do not invent a parameter.** If it is not in the README tables or in
     `packages/unibox_core/lib/src/`, it does not exist. For anything the model cannot
     express, use an `EmbedNode` with one implementation per renderer, or ask.
 
@@ -116,6 +138,12 @@ Return the tree, and separately the host code that owns its state.
 | `Stack` + `Positioned` | `StackNode` + `PositionedNode` |
 | `Semantics(button: true, label:)` | `semantics: BoxSemantics(role: BoxRole.button, label: …)` |
 | `TextField` | `TextInputNode(value:, placeholder:, inputType:, onChanged:)` |
+| `showDialog`, `Dialog` | `OverlayNode(child: …)` — a node, not a call |
+| `showModalBottomSheet` | `OverlayNode(alignment: OverlayAlignment.bottom, …)` |
+| `StatefulWidget` + `setState` around a tree | `StatefulNode` + a `StateStore` |
+| `Card` | `MaterialCard` (from `unibox_material`) |
+| `ListTile` | `MaterialListTile` (from `unibox_material`) |
+| `Theme.of(context).textTheme.titleLarge` | `MaterialTypography.titleLarge` |
 | `MediaQuery`, `LayoutBuilder` | host work: measure there and pass the answer in |
 | a third party widget | an `EmbedNode` that carries that `Widget` in `implementations` |
 
@@ -204,59 +232,147 @@ once on the parent, a button built from a box that gains a hover look through a
 state style, a transition that eases the change, and semantics that make the button
 announce itself and take keyboard focus.
 
-## The host owns state
+## State lives in a store
 
-The same tree has to be rebuilt with new values when the user types. That is host
-code and it stays out of the tree file:
+A tree that reacts needs state, and the model keeps that state in the tree without
+making the tree mutable: a `StatefulNode` creates a store, the store holds one
+immutable value, and the view is a plain function of that value.
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:unibox_core/unibox_core.dart' as core;
-import 'package:unibox_flutter/unibox_flutter.dart';
+import 'package:unibox_core/unibox_core.dart';
+import 'package:unibox_material/unibox_material.dart';
 
-/// The host owns the value; the tree only describes the field.
-class EmailField extends StatefulWidget {
-  const EmailField({super.key});
+/// What the page shows: the typed address and whether the dialog is open.
+final class SignupState {
+  const SignupState({this.email = '', this.open = false});
+
+  final String email;
+  final bool open;
+
+  SignupState copyWith({String? email, bool? open}) =>
+      SignupState(email: email ?? this.email, open: open ?? this.open);
 
   @override
-  State<EmailField> createState() => _EmailFieldState();
+  bool operator ==(Object other) =>
+      other is SignupState && other.email == email && other.open == open;
+
+  @override
+  int get hashCode => Object.hash(email, open);
 }
 
-class _EmailFieldState extends State<EmailField> {
-  String _email = '';
+/// Every interaction of the page as one assignment.
+final class SignupStore extends StateStore<SignupState> {
+  SignupStore({bool open = false}) : super(SignupState(open: open));
 
-  @override
-  Widget build(BuildContext context) {
-    return renderFlutter(
-      core.Box(
-        padding: core.BoxSpacing.all(12),
-        children: <core.UINode>[
-          core.TextInputNode(
-            value: _email,
-            placeholder: 'you@example.com',
-            inputType: core.InputType.email,
-            onChanged: (String value) => setState(() => _email = value),
-          ),
-        ],
-      ),
-    );
-  }
+  void setEmail(String value) => state = state.copyWith(email: value);
+  void openDialog() => state = state.copyWith(open: true);
+  void closeDialog() => state = state.copyWith(open: false);
+}
+
+/// The page as one node: the field, the trigger and, while it is open, the dialog.
+final class SignupNode extends StatefulNode<SignupState, SignupStore> {
+  SignupNode({bool open = false})
+    : super(
+        create: () => SignupStore(open: open),
+        view: (SignupState state, SignupStore store) => Box(
+          padding: BoxSpacing.all(24),
+          gap: 12,
+          children: <UINode>[
+            TextInputNode(
+              value: state.email,
+              placeholder: 'you@example.com',
+              inputType: InputType.email,
+              onChanged: store.setEmail,
+            ),
+            Box(
+              padding: BoxSpacing.symmetric(horizontal: 16, vertical: 10),
+              backgroundColor: BoxColors.blue,
+              borderRadius: 10,
+              semantics: const BoxSemantics(
+                role: BoxRole.button,
+                label: 'Sign up',
+              ),
+              onTap: store.openDialog,
+              children: const <UINode>[
+                TextNode('Sign up', color: BoxColors.white),
+              ],
+            ),
+            if (state.open)
+              OverlayNode(
+                onDismiss: store.closeDialog,
+                child: MaterialCard(
+                  width: 360,
+                  gap: 8,
+                  children: <UINode>[
+                    const TextNode(
+                      'Join Unibox',
+                      style: MaterialTypography.headlineSmall,
+                    ),
+                    TextNode('We will email ${state.email}.'),
+                    Box(
+                      padding: BoxSpacing.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      backgroundColor: BoxColors.blue,
+                      borderRadius: 10,
+                      semantics: const BoxSemantics(
+                        role: BoxRole.button,
+                        label: 'Confirm',
+                      ),
+                      onTap: store.closeDialog,
+                      children: const <UINode>[
+                        TextNode('Confirm', color: BoxColors.white),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      );
 }
 ```
 
-The Jaspr host is the same shape: a `StatefulComponent`, the same values, the same
-tree, rendered through `renderJaspr`. The full pair is in
-[`example/`](example/README.md).
+What it shows: the state is one value, every callback is an assignment on the store,
+and the dialog is simply absent while `open` is false. There is no `setState`, no
+modal call and no overlay slot anywhere.
+
+The host is then small, because it only supplies what a node cannot know:
+
+```dart
+// Flutter: the node owns the state, the host owns the surface.
+MaterialApp(
+  home: Scaffold(body: FlutterStateful(node: SignupNode())),
+);
+```
+
+The Jaspr host is the same shape: subclass `JasprStateful`, return the node from
+`createNode()`, and let the document own the `html`/`body` height and the font. Both
+hosts of the example are one small file each, and
+[`example/unibox_example_shared/lib/src/page_node.dart`](example/unibox_example_shared/lib/src/page_node.dart)
+is the long form of the node above.
+
+When a host really has to own a value — the route, the window width, something that
+outlives every node — it passes it into the node as a parameter, the way the example
+passes the map panel. What it must not do is keep a value the tree could have kept:
+that is the drift the model exists to prevent.
 
 ## Before you return the code
 
-- The file that holds the tree imports `package:unibox_core/unibox_core.dart` and
-  nothing else — no Flutter, no Jaspr, no `dart:ui`.
+- The file that holds the tree imports `package:unibox_core/unibox_core.dart` — and
+  `package:unibox_material/unibox_material.dart` when it uses the Material roles or
+  components — and nothing else. No Flutter, no Jaspr, no `dart:ui`.
 - `dart analyze` is clean, and `core.validateTree(tree)` reports no errors. It
   catches a positioned node outside a stack, a link inside a link, a scrolling box
-  that also distributes its children, and a transition that changes nothing.
+  that also distributes its children, a transition that changes nothing, and a
+  dismissible barrier with no `onDismiss`.
 - Every list and map is typed — `<UINode>[...]`, `<BoxState, BoxStyle>{...}` — because
   a mixed literal otherwise infers an element type that is not the one the node takes.
+- A dialog is an `OverlayNode` in the tree, not a `StackNode` with a positioned box
+  and not a call on a host: absent while it is closed, present while it is open.
+- A tree that reacts is a `StatefulNode` with a store — no `setState`, no controller,
+  no mutable field on a node, and the view returns one tree.
 - Nothing in the tree reads a clock, a window, a theme or global state.
 - Buttons and links carry `semantics`; images carry `alt`; headings use
   `headingLevel` rather than a larger font.
@@ -272,6 +388,10 @@ tree, rendered through `renderJaspr`. The full pair is in
 | Every `Box` parameter and its default | [`README.md#box`](README.md#box) |
 | Text, typography and inheritance | [`README.md#textnode`](README.md#textnode), [`#typography`](README.md#typography) |
 | Images, links, stacks, inputs, embeds | [`#imagenode`](README.md#imagenode), [`#linknode`](README.md#linknode), [`#stacknode-and-positionednode`](README.md#stacknode-and-positionednode), [`#textinputnode`](README.md#textinputnode), [`#embednode`](README.md#embednode) |
+| A dialog, a sheet, a banner | [`#overlaynode`](README.md#overlaynode), and the policy in [`packages/unibox_core/README.md#overlays`](packages/unibox_core/README.md#overlays) |
+| State, a store and a lifecycle | [`#statefulnode`](README.md#statefulnode), and the rules in [`packages/unibox_core/README.md#state`](packages/unibox_core/README.md#state) |
+| Material type roles and components | [`packages/unibox_material/README.md`](packages/unibox_material/README.md) |
+| What has to look the same on both | [`packages/unibox_testing/README.md`](packages/unibox_testing/README.md) |
 | Motion, states and semantics | [`#motion`](README.md#motion), [`#semantics`](README.md#semantics) |
 | What the tree leaves to the host | [`#what-the-host-owns`](README.md#what-the-host-owns) |
 | The model's defaults, and why | [`packages/unibox_core/README.md`](packages/unibox_core/README.md) |

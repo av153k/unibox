@@ -102,14 +102,14 @@ before a commit, and `dart analyze` is strict here (`strict-casts`,
    `unibox_material`.
 8. **A design system is a package of values, plus nodes built from nodes.**
    `unibox_material` holds the Material 3 type scale as `const` `BoxTextStyle`
-   values and `MaterialCard`, a `Box` with the card's defaults. It depends on
-   `unibox_core` alone and adds no renderer code: a look is a value, and a
-   component is a node that extends the node already drawn for it, never a new node
-   type.
+   values and the components built from `Box` (`MaterialCard`,
+   `MaterialListTile`). It depends on `unibox_core` alone and adds no renderer code:
+   a look is a value, and a component is a node that extends the node already drawn
+   for it, never a new node type.
 9. **State lives in a store, not in a node.** `StatefulNode` carries a factory
    and a view; the renderer creates the store, calls `onMount`, rebuilds and
-   disposes it. The tree stays immutable, and the view returns one tree — a view has
-   no overlay yet.
+   disposes it. The tree stays immutable, the view returns one tree, and an overlay
+   is a node inside that tree rather than a second slot on the view.
 
 ## How a change lands
 

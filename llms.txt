@@ -28,8 +28,9 @@ assumes you have read the README's node sections.
 ## Building an app with Unibox
 
 - [AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md): the condensed model, a Flutter/CSS →
-  Unibox translation table, a complete component and a checklist, written to be
-  pasted into an assistant's context by someone writing application code.
+  Unibox translation table, a complete component, a stateful page with a dialog and
+  a checklist, written to be pasted into an assistant's context by someone writing
+  application code.
 
 ## Packages
 
