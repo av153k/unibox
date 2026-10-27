@@ -244,10 +244,16 @@ onto `Curves.linear`, `Curves.ease`, `Curves.easeIn`, `Curves.easeOut` and
 `Curves.easeInOut` — the five curves whose control points CSS shares, so both
 targets ease the same way.
 
-Layout never animates, and neither does the border width: the implicit animation
-is of the decoration, and a state that moves the box changes the widget tree
-instead, which is what both targets do when a layout change has to be animated by
-the host.
+An `opacity` becomes an `Opacity` and a `transform` a `Transform` about the centre,
+which is where CSS puts a transform by default; when the box can change its look, the
+animated versions take over (`TweenAnimationBuilder` over `BoxTransform`,
+`AnimatedOpacity`) and stay in the tree while the resting look is the identity, or a
+state that introduces a scale would start from the end value instead of easing.
+
+The parts of a transform are interpolated one by one, not as one matrix: a matrix lerp
+would shrink a box that only turns. Layout never animates, and neither does the border
+width: a state that moves the box changes the widget tree instead, which is what both
+targets do when a layout change has to be animated by the host.
 
 ## Your own component
 

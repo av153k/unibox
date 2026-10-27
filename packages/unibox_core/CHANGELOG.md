@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- `BoxStyle.opacity` and `BoxStyle.transform` (`BoxTransform`: `scale`, `rotation`
+  in degrees, `offsetX`, `offsetY`), plus the flat `Box.opacity` and
+  `Box.transform`. Both paint the box without giving it different room, and both are
+  covered by a `BoxTransition`, so a state can shrink a control or fade a row and
+  have it ease.
+- A transform is applied about the centre in one fixed order — translate, rotate,
+  scale — because CSS and Flutter both compose matrices left to right;
+  `BoxTransform.lerp` interpolates the parts, not the composed matrix, so a turning
+  box does not shrink through the middle.
+- `validateTree` reports an opacity outside `0` to `1`.
 - `BoxTransition` (a duration and a `BoxCurve`) and `BoxStyle.transition`, so the
   change from a resting look to a state look can be eased. It covers the paint
   tokens — background, border colour, radius, shadow — and never layout, and the

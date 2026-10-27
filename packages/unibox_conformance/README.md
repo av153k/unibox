@@ -52,6 +52,7 @@ it does. The line runs between what a renderer *declares* and what a text engine
 | ----------------------------------------------------------------- | --- |
 | the tokens a node declares                                        | one table, read back from each output |
 | the typography nobody declares                                    | yes: `BoxTextStyle.defaults` is the model's, and both renderers install it at the root — a `DefaultTextStyle` around the widget tree, a `:root` rule on the page |
+| an opacity, and a transform in its parts                          | yes: `Opacity`/`transform` on the web, `Opacity`/`Transform` (read back out of the matrix) in Flutter |
 | a transition: its duration and its curve                          | yes: one `BoxTransition` becomes a CSS `transition` on the paint properties and an implicit animation of the decoration in Flutter |
 | the height of a line box                                          | `fontSize * lineHeight` on both: CSS multiplies the unitless `line-height`, `TextStyle.height` does the same |
 | the layout of the boxes                                           | flexbox on one side, `Flex`/`Row`/`Column` on the other, with the same rules |

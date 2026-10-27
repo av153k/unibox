@@ -123,7 +123,9 @@ Box(
 | `border` | `BoxBorder?` | none | Line around the box, with a width and a colour. |
 | `borderRadius` | `double?` | square | Corner radius in logical pixels. |
 | `shadow` | `BoxShadow?` | none | Drop shadow: colour, offset, blur, spread. |
-| `transition` | `BoxTransition?` | none | How long a change of the paint takes, and how it eases. See [motion](#motion). |
+| `opacity` | `double?` | solid | `0` (invisible) to `1` (solid). The box keeps its room either way. |
+| `transform` | `BoxTransform?` | none | Moves, turns or scales the box about its centre (`scale`, `rotation` in degrees, `offsetX`, `offsetY`). It paints differently without taking different room, so text inside never reflows. |
+| `transition` | `BoxTransition?` | none | How long a change of the paint, the opacity or the transform takes, and how it eases. See [motion](#motion). |
 
 **Interaction**
 
@@ -398,11 +400,13 @@ Box(
 )
 ```
 
-It covers the paint — background, border colour, corner radius, shadow — and never
-the layout, and the curve is one of `linear`, `ease`, `easeIn`, `easeOut` or
-`easeInOut`: the five curves CSS and Flutter define the same way, so both targets
-ease identically. On the web the transition lives in the CSS, so a static page
-animates with no JavaScript at all.
+It covers the paint — background, border colour, corner radius, shadow, opacity
+and transform — and never the layout, and the curve is one of `linear`, `ease`,
+`easeIn`, `easeOut` or `easeInOut`: the five curves CSS and Flutter define the same
+way, so both targets ease identically. A state that *introduces* a scale or a fade
+eases in from the resting look rather than appearing, which is what the CSS does
+when the resting rule declares no transform. On the web all of it lives in the
+CSS, so a static page animates with no JavaScript at all.
 
 ## Semantics
 

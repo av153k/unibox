@@ -294,10 +294,14 @@ UINode _footer(SignupFormState state, TapCallback onSubmit) {
         borderRadius: 10,
         backgroundColor: ExamplePalette.accent,
         textStyle: ExampleType.button,
+        transition: ExampleType.transition,
         stateStyles: const <BoxState, BoxStyle>{
           BoxState.hover: BoxStyle(backgroundColor: ExamplePalette.accentHover),
+          // Pressed, the button gives a little: the scale is painted, so nothing
+          // around it moves and the label does not reflow.
           BoxState.pressed: BoxStyle(
             backgroundColor: ExamplePalette.accentPressed,
+            transform: BoxTransform(scale: 0.98),
           ),
           BoxState.focus: BoxStyle(
             border: BoxBorder(color: ExamplePalette.text),

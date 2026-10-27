@@ -261,9 +261,17 @@ never inherited (CSS does not inherit them either).
   curve, and the curve is one of the five CSS and Flutter define with the same
   control points, so a hover fade is interpolated identically on both targets. It
   covers the paint and never the layout: a transition that moved things would make
-  the two targets agree on the duration and disagree on the result. Anything that
-  moves, ripples from a pointer position or runs a timeline of its own is not a
-  transition, and that is what the next bullet is for.
+  the two targets agree on the duration and disagree on the result.
+- `opacity` and `transform` are paint too. Both are values the tree states
+  (`BoxTransform`: scale, rotation in degrees, offset in logical pixels), both paint
+  the box without giving it different room, and both are in the transitioned set —
+  which is what makes a press-scale or a fade-in a state style rather than an
+  animation. A transform is applied about the centre in a fixed order (translate,
+  rotate, scale) because CSS and Flutter both compose matrices left to right and
+  neither may choose the order, and its parts are interpolated one by one: a matrix
+  lerp would shrink a box that only turns. Anything that ripples from a pointer
+  position or runs a timeline of its own is not a token, and that is what the next
+  bullet is for.
 - The escape hatch is `EmbedNode`, and it is the one place the model admits that
   two implementations may differ: a node carries opaque objects, one per renderer
   that can draw it, and each renderer takes the first one whose type it

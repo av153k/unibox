@@ -115,7 +115,7 @@
 
 ### Phase 18: The portable route to effects (the ink question)
 - [x] Task 79: Core — `BoxStyle.transition` (duration and curve) as a token, animating the visual tokens a state can change (background, border, radius, shadow, opacity, transform) and never the layout ones: CSS writes the `transition` on the element, Flutter swaps in the implicit animation widgets, and the conformance package grows the case shape an animation needs.
-- [ ] Task 80: Core — `BoxStyle.opacity` and a static `transform` (scale, translate, rotate) so a press can shrink a control and a row can fade in; both are native on both targets, and together with Task 79 they are the whole of "an effect that is not an embed".
+- [x] Task 80: Core — `BoxStyle.opacity` and a static `transform` (scale, translate, rotate) so a press can shrink a control and a row can fade in; both are native on both targets, and together with Task 79 they are the whole of "an effect that is not an embed".
 - [ ] Task 81: Core — token keyframes with a semantic trigger (`press`, `hover`, `autoplay`): stops of the visual tokens, rendered as `@keyframes` plus `animation` and as a `TweenAnimationBuilder` keyed on the trigger. This is what lets a user build a ripple out of a clipped circle in a `Stack`; pointer-position-driven effects stay out of scope on purpose.
 
 ## Decisions

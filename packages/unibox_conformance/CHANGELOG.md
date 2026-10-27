@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `BoxAppearance` carries `opacity` and `transform`, with cases for both and both
+  tokens added to the "every token at once" case. The Flutter suite reads the
+  transform back out of the matrix the renderer composed; the web suite parses the
+  declaration. An identity transform compares as no transform.
 - `BoxAppearance` carries `transitionDuration` and `transitionCurve`, and the box
   table gains a case for them: both renderers have to state the same duration and
   the same curve for the same transition.

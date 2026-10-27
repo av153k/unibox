@@ -403,6 +403,13 @@ browser interpolates whenever a `:hover`, `:focus-visible`, `:active` or
 `[aria-disabled]` rule changes one of them, so nothing has to be scripted and a
 static export animates without JavaScript.
 
+`opacity` is the property of the same name and `transform` is CSS's own
+`translate(x, y) rotate(deg) scale(s)`, in that order, with no `transform-origin`:
+the browser centres a transform by default, which is where Flutter puts it too. Both
+are in the transitioned list, so a state that introduces a scale or a fade is
+interpolated by the browser — the lists match on both sides, which is what makes the
+interpolation mean the same thing.
+
 The shorthand only goes on the resting rule. A state rule restating the duration
 would repeat a token the change owns, which is the same rule the flex layout
 follows; layout never animates, and neither does the border width, because CSS

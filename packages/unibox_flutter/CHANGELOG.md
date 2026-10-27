@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `opacity` becomes an `Opacity` and `transform` a `Transform` about the centre,
+  inside the gesture handling so a scaled box is still tapped where it looks. A box
+  that can change its look gets `AnimatedOpacity` and a `TweenAnimationBuilder` over
+  `BoxTransform` instead, whether or not its resting look uses them, so a state that
+  introduces a scale eases in rather than jumping.
 - A box with a transition animates its decoration with a
   `TweenAnimationBuilder<Decoration>` from the look it painted last to the look the
   new state asks for; the five `BoxCurve` values map onto `Curves.linear`,

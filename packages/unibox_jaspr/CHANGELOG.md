@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `opacity` is written as the property of the same name and `transform` as
+  `translate(x, y) rotate(deg) scale(s)` with no `transform-origin`, because CSS
+  centres a transform by default. Both are part of the `transition` shorthand, so a
+  state that introduces one is interpolated by the browser.
 - A box with a transition writes a `transition` shorthand over the paint
   properties it animates, on the resting rule only, so a browser interpolates the
   change of a state rule without any script.
