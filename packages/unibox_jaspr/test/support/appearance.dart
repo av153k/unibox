@@ -87,6 +87,109 @@ core.CrossAlign _crossAlignOf(String? value) {
   };
 }
 
+/// The typesetting this renderer gave the text node rendered by [pumpNode].
+///
+/// The facts are read from the declarations the renderer emitted for the `<span>`
+/// of the text node, and never from the node tree. That is what makes the answer
+/// comparable with the `TextStyle` the Flutter renderer built: only what this
+/// target *said* is compared, not what a font engine made of it.
+///
+/// Declarations the node left alone read back as `null` even though the browser
+/// inherits a value from the page, which is the same line the Flutter suite draws
+/// with `DefaultTextStyle`.
+///
+/// A clamped text is reported as truncating with an ellipsis: `-webkit-line-clamp`
+/// is the only way to end a text after a number of lines in CSS, and it ends the
+/// last line with an ellipsis, which is why the model can leave `text-overflow`
+/// out of the declarations it writes.
+TextAppearance textAppearanceOf() {
+  final Map<String, String> styles = stylesOf(find.tag('span').first);
+  final String? clamp = styles['-webkit-line-clamp'];
+
+  return TextAppearance(
+    fontSize: _pixelsOrNull(styles['font-size']),
+    fontWeight: _fontWeightOrNull(styles['font-weight']),
+    color: _colorOrNull(styles['color']),
+    lineHeight: _lineHeightOrNull(styles['line-height']),
+    fontFamily: _familyOrNull(styles['font-family']),
+    letterSpacing: _pixelsOrNull(styles['letter-spacing']),
+    textAlign: _textAlignOrNull(styles['text-align']),
+    maxLines: clamp == null ? null : int.parse(clamp),
+    overflow: _textOverflowOrNull(
+      styles['text-overflow'],
+      clamped: clamp != null,
+    ),
+  );
+}
+
+/// The characters the renderer put into the element it built.
+String renderedTextOf() {
+  return elementOf(find.tag('span').first).children
+      .whereType<TestRenderText>()
+      .map((TestRenderText child) => child.text)
+      .join();
+}
+
+/// The weight a `font-weight` names.
+core.FontWeight? _fontWeightOrNull(String? value) {
+  return switch (value) {
+    null => null,
+    '400' || 'normal' => core.FontWeight.normal,
+    '500' => core.FontWeight.medium,
+    '600' => core.FontWeight.semiBold,
+    '700' || 'bold' => core.FontWeight.bold,
+    _ => throw FormatException('Not a font weight of the model: $value'),
+  };
+}
+
+/// The family a `font-family` names, without the quotes CSS writes it in.
+String? _familyOrNull(String? value) {
+  if (value == null) {
+    return null;
+  }
+  return value.replaceAll(RegExp(r"""^['"]|['"]$"""), '');
+}
+
+/// The multiple of the font size a `line-height` names.
+///
+/// The renderer writes the line height unitless, which is the only spelling that
+/// scales with a descendant's font size, so a unit here would be a difference the
+/// model did not ask for.
+double? _lineHeightOrNull(String? value) {
+  if (value == null) {
+    return null;
+  }
+  if (value.endsWith('px')) {
+    throw FormatException('Not a unitless line height: $value');
+  }
+  return double.parse(value);
+}
+
+/// The alignment a `text-align` names.
+core.TextAlign? _textAlignOrNull(String? value) {
+  return switch (value) {
+    null => null,
+    'left' || 'start' => core.TextAlign.left,
+    'center' => core.TextAlign.center,
+    'right' || 'end' => core.TextAlign.right,
+    'justify' => core.TextAlign.justify,
+    _ => throw FormatException('Not a text-align: $value'),
+  };
+}
+
+/// The truncation a `text-overflow` names.
+///
+/// A clamped box ([clamped]) truncates with an ellipsis without saying so, because
+/// `-webkit-line-clamp` implies it; only an explicit `clip` overrules that.
+core.TextOverflow? _textOverflowOrNull(String? value, {required bool clamped}) {
+  return switch (value) {
+    'clip' => core.TextOverflow.clip,
+    'ellipsis' => core.TextOverflow.ellipsis,
+    null => clamped ? core.TextOverflow.ellipsis : null,
+    _ => throw FormatException('Not a text-overflow: $value'),
+  };
+}
+
 /// The number of pixels in [value], which CSS may write with a unit.
 double _pixels(String value) {
   return double.parse(value.replaceAll('px', '').trim());

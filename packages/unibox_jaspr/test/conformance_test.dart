@@ -11,6 +11,12 @@ import 'support/harness.dart';
 /// of only looking different from the page the Flutter renderer draws. The
 /// Flutter suite walks the same table, which is what makes the two answers
 /// comparable.
+///
+/// The same is done for [textCases]: the declarations this renderer emitted for
+/// the text are compared with the typography the table asks for, so a text token
+/// that stops reaching the page fails here rather than in a screenshot. Both
+/// tables are walked by both suites, which is as close to "the two renderings look
+/// the same" as a test without a browser can come.
 void main() {
   group('box conformance', () {
     for (final BoxCase boxCase in boxCases) {
@@ -22,6 +28,28 @@ void main() {
           isEmpty,
           reason:
               'The web renderer renders "${boxCase.description}" differently.',
+        );
+      });
+    }
+  });
+
+  group('text conformance', () {
+    for (final TextCase textCase in textCases) {
+      testComponents(textCase.description, (ComponentTester tester) async {
+        pumpNode(tester, textCase.node);
+
+        expect(
+          textAppearanceOf().differencesFrom(textCase.expected),
+          isEmpty,
+          reason:
+              'The web renderer typesets "${textCase.description}" differently.',
+        );
+        expect(
+          renderedTextOf(),
+          textCase.node.text,
+          reason:
+              'The web renderer renders "${textCase.description}" without its '
+              'text.',
         );
       });
     }
