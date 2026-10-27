@@ -101,11 +101,15 @@ BoxShadow toBoxShadow(core.BoxShadow shadow) {
 }
 
 /// Converts a Unibox [core.ImageFit] to a Flutter [BoxFit].
+///
+/// Every value of the model has an exact counterpart, `scaleDown` included: both
+/// sides scale the picture down to fit and never enlarge it.
 BoxFit toBoxFit(core.ImageFit fit) {
   return switch (fit) {
     core.ImageFit.cover => BoxFit.cover,
     core.ImageFit.contain => BoxFit.contain,
     core.ImageFit.fill => BoxFit.fill,
+    core.ImageFit.scaleDown => BoxFit.scaleDown,
   };
 }
 

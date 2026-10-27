@@ -147,7 +147,7 @@ text from drifting apart.
 | `src` with an `http(s)` URL   | `Image(image: NetworkImage(src))`                   |
 | any other `src`               | `Image(image: AssetImage(src))`                     |
 | `width` / `height`            | `Image.width` / `Image.height`                      |
-| `fit`                         | `BoxFit` (`cover`, `contain`, `fill`)               |
+| `fit`                         | `BoxFit` (`cover`, `contain`, `fill`, `scaleDown`), `scaleDown` when the node names none |
 | `alt`                         | `Image.semanticLabel` (omitted when empty)          |
 | `borderRadius`                | `ClipRRect`                                          |
 

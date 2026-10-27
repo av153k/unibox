@@ -8,6 +8,10 @@ import 'values.dart';
 /// An image that fails to load keeps the declared size instead of throwing, so
 /// a broken source never breaks the surrounding layout. The [core.ImageNode.alt]
 /// text is exposed as the semantic label for screen readers.
+///
+/// The fit is always passed, even when the node names none: the renderer would
+/// otherwise leave the question to `Image`, whose answer is its own, while the
+/// web renderer would leave it to the browser's `object-fit: fill`.
 class UniboxImage extends StatelessWidget {
   /// Creates a renderer for [node].
   const UniboxImage({required this.node, super.key});
@@ -17,14 +21,13 @@ class UniboxImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final core.ImageFit? fit = node.fit;
     final double? borderRadius = node.borderRadius;
 
     final Widget image = Image(
       image: toImageProvider(node.src),
       width: node.width,
       height: node.height,
-      fit: fit == null ? null : toBoxFit(fit),
+      fit: toBoxFit(node.resolvedFit),
       semanticLabel: node.alt.isEmpty ? null : node.alt,
       errorBuilder: (
         BuildContext context,

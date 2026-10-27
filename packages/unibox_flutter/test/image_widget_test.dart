@@ -61,6 +61,7 @@ void main() {
         core.ImageFit.cover: BoxFit.cover,
         core.ImageFit.contain: BoxFit.contain,
         core.ImageFit.fill: BoxFit.fill,
+        core.ImageFit.scaleDown: BoxFit.scaleDown,
       };
 
       for (final MapEntry<core.ImageFit, BoxFit> entry in fits.entries) {
@@ -78,7 +79,7 @@ void main() {
       }
     });
 
-    testWidgets('leaves fit unset when the node does not ask for one', (
+    testWidgets('scales the image down when the node does not ask for a fit', (
       tester,
     ) async {
       await pumpNode(
@@ -86,7 +87,10 @@ void main() {
         const core.ImageNode('assets/logo.png', width: 10, height: 10),
       );
 
-      expect(renderedImage(tester).fit, isNull);
+      // Left to `Image`, the picture would scale down anyway; passing it means
+      // the web renderer can write the same answer into `object-fit` instead of
+      // letting a browser stretch the picture.
+      expect(renderedImage(tester).fit, BoxFit.scaleDown);
     });
 
     testWidgets('clips to the border radius', (tester) async {

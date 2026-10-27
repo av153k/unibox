@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- An `ImageNode` always receives a `fit`, `BoxFit.scaleDown` when the node names
+  none, so Flutter and the web renderer answer the question the same way instead
+  of each falling back to its own platform.
 - `renderFlutter` wraps the rendered tree in the typography of the model
   (`BoxTextStyle.defaults`) through a `DefaultTextStyle`, so a text that declares
   nothing is typeset at 16 logical pixels, black, with a 1.5 line height instead of
