@@ -98,6 +98,14 @@
 - [x] Task 66: Example — the pages become a real document: `main`, `nav`, `header`, `footer`, `h1` for the page title and `h2` for a section, `figure` for the map, and a live region for the form status, so the export can be read as an outline by a crawler and a screen reader.
 - [x] Task 67: Docs — `design.md` (a new §5.8: what the model says about semantics, what each target can express, and what stays host work), the package READMEs (mapping tables for elements, headings and state), the changelogs, and the SEO notes that still say a heading is only ARIA.
 
+### Phase 16: What a real page still needs
+- [ ] Task 68: A field can state what a form needs from it: `TextInputNode.required`, `.invalid` and `.description`, rendered as `aria-required`, `aria-invalid` and `aria-describedby` (plus `Semantics.isRequired` in Flutter), so a validation message can be attached to the field it belongs to instead of sitting in a status box.
+- [ ] Task 69: A box can be the current page of a navigation: `BoxSemantics.current` (`page`, `step`, `location`), rendered as `aria-current` and announced as the selected item of a set in Flutter.
+- [ ] Task 70: Tabs and disclosure without ARIA guesswork: `BoxRole.tab` and `BoxRole.tablist` (or a `selected` plus a `role`) so a tab bar is a tab bar on both targets, the same way a list item already is.
+- [ ] Task 71: `BoxElement.figcaption` and a `caption` slot for a figure, so the map's label can be its caption instead of a text node inside the panel.
+- [ ] Task 72: A page that can be crawled between documents: a `LinkNode` that points at an exported file (`index.html`, `apartments.html`) instead of switching host state, so the static export has a real navigation path and the `role="link"` boxes can go.
+- [ ] Task 73: Tables, if and when a real page needs one: `BoxElement.table`, `.tr`, `.th`, `.td` with the same validation rule a list item already has.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
