@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 import 'package:unibox_core/unibox_core.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
+import 'package:unibox_material/unibox_material.dart';
 
 import 'support/tree.dart';
 
@@ -62,15 +63,18 @@ void main() {
       }
     });
 
-    test('highlights a listing under the pointer', () {
-      final Box listing = flatten(buildApartmentsPage())
-          .whereType<Box>()
-          .firstWhere((Box box) => box.stateStyle(BoxState.hover) != null);
+    test('lays the cards out as a reflowing grid of Material cards', () {
+      final GridNode grid = flatten(buildApartmentsPage())
+          .whereType<GridNode>()
+          .single;
 
-      expect(textsIn(listing), contains('Via Bellavista 12'));
+      expect(grid.minItemWidth, 280);
+      expect(grid.maxColumns, 3);
+      expect(grid.gap, 16);
+      expect(grid.children, hasLength(exampleApartments.length));
       expect(
-        listing.stateStyle(BoxState.hover)?.border?.color,
-        ExamplePalette.accent,
+        grid.children.whereType<MaterialCard>(),
+        hasLength(exampleApartments.length),
       );
     });
   });

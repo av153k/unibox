@@ -1,4 +1,5 @@
 import 'package:unibox_core/unibox_core.dart';
+import 'package:unibox_material/unibox_material.dart';
 
 import 'theme.dart';
 
@@ -116,16 +117,17 @@ Box buildApartmentsPage() {
         textStyle: ExampleType.body,
         children: <UINode>[
           _heading(),
-          Box(
-            direction: Axis.vertical,
-            width: double.infinity,
-            gap: 12,
-            // A list of listings: the web gets `<ul>` and `<li>`, and a screen
-            // reader announces how many items there are.
-            semantics: const BoxSemantics(element: BoxElement.ul),
+          // The cards reflow on their own: one column when the page is narrow,
+          // two in the middle, three from 872 pixels on, with the width shared by
+          // the tracks. The count comes from the model's arithmetic on the web as
+          // well as in Flutter, so neither target needs a breakpoint.
+          GridNode(
+            minItemWidth: 280,
+            maxColumns: 3,
+            gap: 16,
             children: <UINode>[
               for (final Apartment apartment in exampleApartments)
-                _listing(apartment),
+                _card(apartment),
             ],
           ),
         ],
@@ -156,44 +158,42 @@ UINode _heading() {
   );
 }
 
-/// One listing: a coloured square for the photo, then what the rent gets you.
+/// One listing: a Material card with a coloured square for the photo, then what
+/// the rent gets you.
 ///
-/// The row is what makes the card work at any width: the text column takes the
-/// space that is left (`flex: 1`) and wraps inside it, so the card is as wide as
-/// the page and never wider than it.
-UINode _listing(Apartment apartment) {
-  return Box(
-    direction: Axis.horizontal,
-    width: double.infinity,
-    gap: 14,
-    crossAlign: CrossAlign.center,
-    padding: const BoxSpacing.all(14),
-    // One item of the list above: `<li>` inside the `<ul>`, which is the only
-    // place `validateTree` accepts one.
-    semantics: const BoxSemantics(element: BoxElement.li),
-    borderRadius: 14,
-    backgroundColor: ExamplePalette.surface,
-    border: const BoxBorder(color: ExamplePalette.border),
-    stateStyles: const <BoxState, BoxStyle>{
-      BoxState.hover: BoxStyle(border: BoxBorder(color: ExamplePalette.accent)),
-    },
-    transition: ExampleType.transition,
+/// The card is a `MaterialCard` — a `Box` with Material's surface, radius,
+/// elevation and body type — so the example shows the design system as well as the
+/// model. Its width is the grid's track and its height is its content; the grid
+/// top-aligns the cards of a row, so a shorter card does not stretch.
+UINode _card(Apartment apartment) {
+  return MaterialCard(
+    semantics: const BoxSemantics(element: BoxElement.article),
+    direction: Axis.vertical,
+    gap: 10,
     children: <UINode>[
       Box(
-        width: 88,
-        height: 88,
+        width: double.infinity,
+        height: 140,
         borderRadius: 10,
         backgroundColor: apartment.tint,
       ),
-      Box(
-        flex: 1,
-        direction: Axis.vertical,
-        gap: 4,
-        children: <UINode>[
-          TextNode(apartment.name, style: ExampleType.listingName),
-          TextNode(apartment.summary, style: ExampleType.muted),
-          TextNode(apartment.priceLine, style: ExampleType.listingPrice),
-        ],
+      TextNode(
+        apartment.name,
+        style: MaterialTypography.titleMedium.merge(
+          BoxTextStyle(color: MaterialPalette.light.onSurface),
+        ),
+      ),
+      TextNode(
+        apartment.summary,
+        style: MaterialTypography.bodyMedium.merge(
+          BoxTextStyle(color: MaterialPalette.light.onSurfaceVariant),
+        ),
+      ),
+      TextNode(
+        apartment.priceLine,
+        style: MaterialTypography.labelLarge.merge(
+          BoxTextStyle(color: MaterialPalette.light.primary),
+        ),
       ),
     ],
   );

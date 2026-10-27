@@ -10,7 +10,7 @@ the bar.
 
 | Package | Role |
 | --- | --- |
-| `unibox_example_shared` | The page as one node (`ExamplePageNode`, with `ExampleState` and `ExampleStore`) and the parts it is built from (`buildExamplePage`, `buildApartmentsPage`, `buildSignupDialog`), plus the palette. Pure Dart, no renderer. |
+| `unibox_example_shared` | The page as one node (`ExamplePageNode`, with `ExampleState` and `ExampleStore`) and the parts it is built from (`buildExamplePage`, `buildApartmentsPage`, `buildSignupDialog`), plus the palette. The listings are a `GridNode` of `MaterialCard`s, so the example also shows the design-system package. Pure Dart, no renderer. |
 | `unibox_example_flutter` | Flutter host: one file (`lib/main.dart`) — the surface and the link policy. |
 | `unibox_example_jaspr` | Jaspr host: one component file (`lib/main.dart`) and the document it is served in (`lib/document.dart`). |
 
@@ -62,6 +62,14 @@ form
 is its own url.
 
 ## The listings page
+
+The cards are a `GridNode`: at least 280 pixels each, three columns at most, a 16
+pixel gutter. The page therefore reflows from one column to two to three as its
+width grows — from the width of the grid, not of the window, so it works the same
+in a padded column or beside a sidebar, and the server render, the hydrated page
+and Flutter all count the same columns. Each card is a `MaterialCard` with a
+photo box and Material's type roles, so the example uses the design system as
+well as the model.
 
 The page scrolls, not the document. `Overflow.scroll` on the box below the
 navigation is a `SingleChildScrollView` in Flutter and `overflow: auto` in CSS,
