@@ -47,6 +47,8 @@ dependencies:
     path: ../unibox/packages/unibox_flutter
   unibox_material:           # optional: the Material 3 type scale
     path: ../unibox/packages/unibox_material
+  unibox_state:              # optional: StateStore for a StatefulNode
+    path: ../unibox/packages/unibox_state
 ```
 
 ```dart
@@ -64,16 +66,16 @@ a navigation bar shared by a Flutter app and a static site.
 
 ## The nodes
 
-There are eight node types. Each one is an immutable Dart object with a `const`
+There are nine node types. Each one is an immutable Dart object with a `const`
 constructor, and each one describes *what* it is rather than which framework draws
 it. Style values — colours, spacing, borders, typography — are separate objects
 that a node takes as parameters, so a look can be reused as one `const BoxStyle`
 instead of being repeated.
 
-The eight: [`Box`](#box), [`TextNode`](#textnode), [`ImageNode`](#imagenode),
+The nine: [`Box`](#box), [`TextNode`](#textnode), [`ImageNode`](#imagenode),
 [`LinkNode`](#linknode), [`StackNode`](#stacknode-and-positionednode) with
-[`PositionedNode`](#stacknode-and-positionednode), [`TextInputNode`](#textinputnode)
-and [`EmbedNode`](#embednode).
+[`PositionedNode`](#stacknode-and-positionednode), [`TextInputNode`](#textinputnode),
+[`StatefulNode`](#statefulnode) and [`EmbedNode`](#embednode).
 
 Every node accepts a `key`. Renderers hand it to the target's own key mechanism, so
 when a list is reordered each child keeps its state: typed text stays in the field
@@ -319,9 +321,52 @@ browser border, padding, background, focus ring or resize handle. The box around
 draws what a field should look like, which is the only way the same tree can look
 the same on both targets. The typography is the tree's, inherited like any text.
 
+### StatefulNode
+
+A subtree that owns its state. The node carries two functions — a factory for a
+*store* and a view — and a renderer creates the store once, subscribes to it, and
+rebuilds the view whenever the store publishes a new state.
+
+```dart
+final class SignupNode extends StatefulNode<SignupState, SignupStore> {
+  SignupNode() : super(create: SignupStore.new, view: signupView);
+}
+
+NodeView signupView(SignupState state, SignupStore store) => (
+  tree: Box(
+    children: <UINode>[
+      TextNode(state.pending ? 'Joining…' : 'Join'),
+      Box(onTap: store.submit, children: const <UINode>[TextNode('Continue')]),
+    ],
+  ),
+  overlays: <UINode>[if (state.help) TextNode('We only use this once.')],
+);
+```
+
+| Member | Type | Meaning |
+| --- | --- | --- |
+| `create` | `C Function()` | Makes the store for one mounting. The node never holds the instance, so the tree stays a description. |
+| `view` | `NodeView Function(S state, C store)` | Draws one state, with the store for the callbacks the view hands out. |
+| `key` | `Object?` | Keeps the state across rebuilds; a different key starts again. |
+
+`NodeView` is a record of `tree` — the content in flow — and `overlays`: trees a
+renderer shows above the rest, such as a dialog or a sheet. The renderer owns how
+an overlay is presented; focus, the barrier, `Escape` and the leave animation are
+the host's, not tokens.
+
+**State lives in a store, not in the node.** [`Store`](packages/unibox_core/README.md#state)
+is the contract and [`unibox_state`](packages/unibox_state/README.md) holds the
+ready-made `StateStore`, built on pure Dart listeners so one store runs in Flutter,
+on a server and in a browser. `onMount` is where an initial request starts, which
+is also why a server render can draw the first state without running it.
+
+The Flutter renderer draws a stateful node, including its overlays; the web
+renderer reports it until a client runtime exists, rather than rendering a page
+that silently does nothing.
+
 ### EmbedNode
 
-The escape hatch, for what the eight nodes cannot describe: a chart from a package,
+The escape hatch, for what the nine nodes cannot describe: a chart from a package,
 a video player, an effect that only exists on one platform.
 
 A node carries **one implementation per renderer**, and each renderer draws the
@@ -575,14 +620,15 @@ on both sides.
 | `packages/unibox_jaspr` | The Jaspr renderer: `renderJaspr(node)` and `node.toComponent()`. |
 | `packages/unibox_testing` | The tables both renderers are tested against. Development only, not published. |
 | `packages/unibox_material` | The Material 3 type scale and a card node, for an application that wants Material's typography. Optional: no renderer depends on it. |
+| `packages/unibox_state` | `StateStore`, the pure Dart store a `StatefulNode` draws. Optional: no renderer depends on it. |
 | `example/` | Two pages, one form and one navigation bar shared by a Flutter app and a static site. |
 
 Dependencies point one way: both renderers depend on `unibox_core`, never the other
 way around, which is what keeps the description available to a third renderer.
-`unibox_material` depends on `unibox_core` as well and sits beside the renderers
-rather than under them: a tree imports it for its typography and the renderers
-never see it, so a tree with Material's type scale is drawn by the same two
-renderers as one with hand written values.
+`unibox_material` and `unibox_state` depend on `unibox_core` as well and sit
+beside the renderers rather than under them: a tree imports them for its
+typography, its card and its stores, and the renderers never see them, so a tree
+that uses them is drawn by the same two renderers as one that does not.
 
 **Imports.** `unibox_core` declares `Axis`, `BoxBorder`, `BoxShadow`, `TextOverflow`,
 `TextAlign` and `FontWeight`, which Flutter also declares. Next to
@@ -626,6 +672,7 @@ dart analyze                                     # static analysis everywhere
 (cd packages/unibox_core && dart test)
 (cd packages/unibox_testing && dart test)
 (cd packages/unibox_material && dart test)
+(cd packages/unibox_state && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
 (cd example/unibox_example_shared && dart test)
@@ -633,13 +680,13 @@ dart analyze                                     # static analysis everywhere
 (cd example/unibox_example_flutter && flutter test)
 ```
 
-`tool/verify.sh` runs the format check, the analysis and all eight suites in that
+`tool/verify.sh` runs the format check, the analysis and all nine suites in that
 order, which is the command to reach for before a commit; `--fast` stops after the
 analysis, `--fix` formats the tree first and `--docs` adds the API docs of every
 package.
 
 The workspace targets Dart `^3.13.0` and pins Jaspr to the `0.24` line. Continuous
-integration runs the format check, `dart analyze`, the eight test suites and
+integration runs the format check, `dart analyze`, the nine test suites and
 `dart doc` for each package on every push (see
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
@@ -661,6 +708,7 @@ Where to read more:
 - The package READMEs hold the mapping tables, target by target:
   [core](packages/unibox_core/README.md),
   [material](packages/unibox_material/README.md),
+  [state](packages/unibox_state/README.md),
   [flutter](packages/unibox_flutter/README.md),
   [jaspr](packages/unibox_jaspr/README.md),
   [conformance](packages/unibox_testing/README.md).

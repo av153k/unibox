@@ -8,6 +8,7 @@ Unibox provides pure Dart layout primitives that compile natively to both Flutte
   - `packages/unibox_flutter`: Depends on `unibox_core` + Flutter SDK.
   - `packages/unibox_jaspr`: Depends on `unibox_core` + `jaspr: ^0.24.0`.
   - `packages/unibox_material`: Optional design-system tokens and one component (the Material 3 type scale and `MaterialCard`). Depends on `unibox_core` only; no renderer depends on it.
+  - `packages/unibox_state`: Optional state stores (`StateStore`) for `StatefulNode`. Pure Dart, on `package:listen`; no renderer depends on it.
 - **Engineering Agency:** You have permission to diverge, adjust signatures, or simplify types where it makes sense, as long as the packages remain decoupled and work seamlessly across both platforms.
 
 ---
@@ -338,3 +339,36 @@ never inherited (CSS does not inherit them either).
   change. The token vocabulary is therefore the layer to stabilise, and every
   convenience sits above it.
 
+
+
+### 5.10 A subtree that owns its state
+- `StatefulNode` is the one node with a lifecycle. It carries `create` — a factory,
+  never an instance — and `view`, a function of the state. A renderer calls
+  `createStore`, subscribes, calls `onMount`, rebuilds on a notification, and calls
+  `onUnmount` and `dispose` on unmount. The tree itself stays immutable, so it can
+  still be built, compared and rendered twice.
+- The state is a value. A `Store` publishes an immutable state and notifies a
+  listener; `StateStore` drops a published value equal to the current one, so a
+  rebuild follows a change of the description rather than a call.
+- The view is a record of a tree and a list of overlays. Overlays are the
+  renderer's business: the tree says *what* appears above the page, and the host
+  owns the modal mechanism — focus containment, the barrier, `Escape`, the leave
+  animation. That is why the model has no dialog node and no presence token, and
+  why the same view can be shown by Flutter's overlay and by a browser dialog.
+- A store is pure Dart. `unibox_state`'s `StateStore` is built on `package:listen`,
+  flutter.dev's extraction of Flutter's listenable family
+  (flutter/flutter#149466), so one store runs in Flutter, in a browser and in a
+  `dart test`; `flutter/foundation` cannot, because core and the web renderer may
+  not import Flutter, and a state layer per target is the drift this project
+  exists to remove.
+- `StatefulNode` is a component in the sense of §5.9 — a node built from nodes —
+  with one difference: its children come from a view the renderer builds at render
+  time, so `validateTree` sees an empty child list and a renderer validates each
+  view in debug builds.
+- The web runtime is a client component and waits for the client build. Until then
+  the web renderer reports a stateful node, in the same way it reports any node it
+  cannot draw, rather than rendering a page that cannot react.
+- The vocabulary is the model's: a node, a store, a state and a view. There are no
+  events, no cubits and no blocs — those are one naming of a pattern this model
+  describes in its own words, and borrowing them would promise an API the library
+  does not have.

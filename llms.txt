@@ -2,13 +2,14 @@
 
 > One immutable Dart description of a screen, rendered natively by Flutter and as HTML/CSS by Jaspr.
 
-Unibox is a Dart 3.13 workspace of five packages. `packages/unibox_core` holds the
+Unibox is a Dart 3.13 workspace of six packages. `packages/unibox_core` holds the
 node tree and the design tokens and has no dependencies at all; `packages/unibox_flutter`
 and `packages/unibox_jaspr` are two renderers of the same tree; `packages/unibox_conformance`
 holds one table of expected presentation that both renderer suites are checked
 against, so the two renderings cannot drift apart silently; and
 `packages/unibox_material` turns the Material 3 type scale into the same tokens, for
-an application that wants Material's typography on both targets.
+an application that wants Material's typography on both targets; and
+`packages/unibox_state` holds the `StateStore` a `StatefulNode` draws.
 
 Paths in this file are relative to the repository root. This is an index: the rules
 a coding agent needs are in [AGENTS.md](AGENTS.md), and every other document
@@ -46,10 +47,13 @@ assumes you have read the README's node sections.
   as `BoxTextStyle` values (`MaterialTypography`, `MaterialTypeRole`) and
   `MaterialCard`, a `Box` with the card's defaults — optional and pure Dart, for a
   tree that wants Material's typography on both targets.
+- [unibox_state](packages/unibox_state/README.md): `StateStore`, the pure Dart
+  store a `StatefulNode` draws, built on `package:listen` so one state runs in
+  Flutter, on a server and in a browser.
 
 ## Working on the repository
 
-- [tool/verify.sh](tool/verify.sh): format check, analysis and the eight test
+- [tool/verify.sh](tool/verify.sh): format check, analysis and the nine test
   suites, the way CI runs them. `--fast` skips the suites, `--docs` adds `dart doc`.
 - [.github/workflows/ci.yml](.github/workflows/ci.yml): what continuous integration
   actually runs, including the docs job that fails on a `dart doc` warning.
