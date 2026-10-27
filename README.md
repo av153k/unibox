@@ -141,21 +141,23 @@ Box(
 
 **Styles**
 
-Instead of the flat parameters above, a box can take `style: BoxStyle(...)`, and a
-flat parameter always wins over the same value in the style. `textStyle` is
-different from all the others: it is inherited by the texts inside the box (see
+Instead of the flat parameters above, a box can wear one or more reusable bags:
+`styles: <BoxStyle>[...]`. The bags merge left to right — a later bag wins a value
+over an earlier one — and a flat parameter wins over all of them. `textStyle` is
+different from the others: it is inherited by the texts inside the box (see
 [typography](#typography)).
 
 ```dart
-const cardStyle = BoxStyle(
+const cardBase = BoxStyle(
   padding: BoxSpacing.all(16),
   backgroundColor: BoxColor.white,
   borderRadius: 12,
 );
+const cardBusy = BoxStyle(backgroundColor: BoxColor.grey);
 
 const row = Box(
-  style: cardStyle,
-  padding: BoxSpacing.all(8), // wins over the style's 16
+  styles: <BoxStyle>[cardBase, cardBusy],
+  padding: BoxSpacing.all(8), // wins over both bags
 );
 ```
 
@@ -407,6 +409,32 @@ way, so both targets ease identically. A state that *introduces* a scale or a fa
 eases in from the resting look rather than appearing, which is what the CSS does
 when the resting rule declares no transform. On the web all of it lives in the
 CSS, so a static page animates with no JavaScript at all.
+
+The whole look shares one timing unless a part says otherwise, which is how a
+colour can settle before a scale starts:
+
+```dart
+transition: const BoxTransition(
+  duration: Duration(milliseconds: 200),
+  parts: <BoxTransitionPart>[
+    // the paint first…
+    BoxTransitionPart(
+      looks: BoxLook.paint,
+      duration: Duration(milliseconds: 100),
+    ),
+    // …then the scale, once it has settled
+    BoxTransitionPart(
+      looks: <BoxLook>{BoxLook.transform},
+      duration: Duration(milliseconds: 150),
+      delay: Duration(milliseconds: 100),
+    ),
+  ],
+),
+```
+
+The four paint looks share a timing, because a `BoxDecoration` interpolates as one
+on Flutter; a box that needs two paint speeds nests a box, and `validateTree` says
+so instead of the renderer approximating.
 
 ## Semantics
 

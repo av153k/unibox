@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- A transition with parts gives each look group its own timing, and a delay becomes
+  an `Interval` of the longest timeline, so an implicit animation can wait without an
+  `AnimationController` of its own.
+- A box with a transition always carries the opacity and transform wrappers, because
+  the host can change its look without a state change; an opacity of 1 and an
+  identity transform are read back as none.
+- A rounded box clips its content to its radius (`ClipRRect`) instead of cutting
+  square corners, for `Overflow.hidden` and for a rounded scrolling box.
 - `opacity` becomes an `Opacity` and `transform` a `Transform` about the centre,
   inside the gesture handling so a scaled box is still tapped where it looks. A box
   that can change its look gets `AnimatedOpacity` and a `TweenAnimationBuilder` over

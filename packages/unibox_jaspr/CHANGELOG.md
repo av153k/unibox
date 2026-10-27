@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- A transition with parts writes one `transition` entry per look, each with its own
+  duration, curve and `transition-delay`, in paint-first order.
 - `opacity` is written as the property of the same name and `transform` as
   `translate(x, y) rotate(deg) scale(s)` with no `transform-origin`, because CSS
   centres a transform by default. Both are part of the `transition` shorthand, so a

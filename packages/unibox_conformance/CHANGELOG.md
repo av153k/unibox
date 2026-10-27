@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- A box case for the merge order of `Box.styles`, so both renderers are held to the
+  same left-to-right result.
 - `BoxAppearance` carries `opacity` and `transform`, with cases for both and both
   tokens added to the "every token at once" case. The Flutter suite reads the
   transform back out of the matrix the renderer composed; the web suite parses the

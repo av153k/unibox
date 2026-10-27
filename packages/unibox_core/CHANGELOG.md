@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- `BoxLook` and `BoxTransitionPart`: a transition can ease one part of a look before
+  another. `BoxTransition.parts` overrides the base duration and curve per look,
+  `timingOf` resolves one look, `totalDuration` is the longest `delay + duration` and
+  `BoxLook.paint` is the four paint looks as one set, because a `BoxDecoration`
+  interpolates as a unit.
+- `Box.styles`: a list of style bags, merged left to right, with flat parameters
+  winning over all of them. **Breaking:** `style` is deprecated in favour of it.
+- `validateTree` reports a part that names no look, a look eased by two parts, a part
+  that changes nothing, and paint eased at two speeds.
 - `BoxStyle.opacity` and `BoxStyle.transform` (`BoxTransform`: `scale`, `rotation`
   in degrees, `offsetX`, `offsetY`), plus the flat `Box.opacity` and
   `Box.transform`. Both paint the box without giving it different room, and both are
