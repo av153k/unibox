@@ -633,7 +633,7 @@ dart analyze                                     # static analysis everywhere
 (cd example/unibox_example_flutter && flutter test)
 ```
 
-`tool/verify.sh` runs the format check, the analysis and all seven suites in that
+`tool/verify.sh` runs the format check, the analysis and all eight suites in that
 order, which is the command to reach for before a commit; `--fast` stops after the
 analysis, `--fix` formats the tree first and `--docs` adds the API docs of every
 package.

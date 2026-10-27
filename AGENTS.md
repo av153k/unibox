@@ -31,6 +31,7 @@ guide is [`README.md`](README.md).
 | `packages/unibox_flutter/lib/src/` | one file per node (`UniboxBox`, `UniboxText`, ...), `values.dart` (token → Flutter), `render.dart` (dispatch and the validation assert) | the Flutter target has to change |
 | `packages/unibox_jaspr/lib/src/` | the same for the web, plus `default_typography.dart` (the `:root` rule) | the web target has to change |
 | `packages/unibox_conformance/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases` | a presentational token is added or changed |
+| `packages/unibox_material/lib/src/` | the Material 3 type scale: `MaterialTypography` (the fifteen roles as `const BoxTextStyle` values) and `MaterialTypeRole` | a design-system role is added or a scale changes |
 | `packages/*/test/support/` | the harnesses (`pumpNode`, `inNode`, `stylesOf`, ...) and `appearance.dart`, which reads the presentation back out of the output | a test needs a new fact |
 | `example/unibox_example_shared/` | the two pages as pure Dart trees, the form state, the palette | the example content changes |
 | `example/unibox_example_flutter/`, `example/unibox_example_jaspr/` | hosts: state and surface, never layout | state, navigation or the surface changes |
@@ -53,11 +54,12 @@ so the packages share one resolution.
 | Also build the API docs | `tool/verify.sh --docs` |
 | One suite, the fast loop | `(cd packages/unibox_jaspr && dart test)` |
 
-The seven suites, exactly as CI runs them:
+The eight suites, exactly as CI runs them:
 
 ```shell
 (cd packages/unibox_core && dart test)
 (cd packages/unibox_conformance && dart test)
+(cd packages/unibox_material && dart test)
 (cd packages/unibox_jaspr && dart test)
 (cd packages/unibox_flutter && flutter test)
 (cd example/unibox_example_shared && dart test)
@@ -95,7 +97,12 @@ before a commit, and `dart analyze` is strict here (`strict-casts`,
    `CHANGELOG.md` it touches. `dart doc` warnings fail CI, which means every
    public member keeps a doc comment.
 7. **One direction of dependency.** Renderers depend on core; core never imports a
-   renderer. A renderer knows nothing of the other renderer.
+   renderer. A renderer knows nothing of the other renderer, and neither knows
+   `unibox_material`.
+8. **A design system is a package of values.** `unibox_material` holds the Material
+   3 type scale as `const` `BoxTextStyle` values and depends on `unibox_core`
+   alone. It exports no nodes: a preset is a value, never a `TitleText`-style
+   subclass, so an application can still re-theme it by merging a token.
 
 ## How a change lands
 
@@ -283,6 +290,7 @@ and two when each side is independently reviewable.
 | What does a token do on Flutter? | [`packages/unibox_flutter/README.md`](packages/unibox_flutter/README.md) |
 | What does a token do on the web? | [`packages/unibox_jaspr/README.md`](packages/unibox_jaspr/README.md) |
 | What is the model's default? | [`packages/unibox_core/README.md`](packages/unibox_core/README.md) |
+| Which Material type role should I use? | [`packages/unibox_material/README.md`](packages/unibox_material/README.md) |
 | What has to look the same on both? | [`packages/unibox_conformance/README.md`](packages/unibox_conformance/README.md) |
 | What is built, and what was deferred? | [`TASK_PLAN.md`](TASK_PLAN.md) |
 | How is a release cut? | [`RELEASE.md`](RELEASE.md) |

@@ -11,7 +11,7 @@ The three rules that are broken most often:
 - A change lands on both targets. `packages/unibox_conformance` is the single place
   where the expected appearance of a token is written down, and both renderer
   suites are checked against it.
-- `tool/verify.sh` runs what CI runs: the format check, `dart analyze` and the seven
+- `tool/verify.sh` runs what CI runs: the format check, `dart analyze` and the eight
   test suites. A `dart doc` warning also fails CI, so every public member keeps a
   doc comment.
 

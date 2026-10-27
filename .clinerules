@@ -19,11 +19,14 @@ What is not negotiable:
 4. **Defaults belong to the model, not to a host.** An unset token resolves in core
    (`BoxStyle.resolvedDirection`, `BoxTextStyle.defaults`, `ImageNode.resolvedFit`).
 5. **Verify before every commit.** `tool/verify.sh` runs the format check,
-   `dart analyze` and the seven test suites; `--docs` adds `dart doc`, which fails
+   `dart analyze` and the eight test suites; `--docs` adds `dart doc`, which fails
    on a warning.
 6. **Conventional Commits**, one verified change per commit
    (`feat(core): ...`, `fix(flutter): ...`, `test(conformance): ...`, `docs: ...`).
 7. **Do not publish, bump a version or remove `publish_to: none`**, and do not
    implement anything from the `Deferred` section of `TASK_PLAN.md` unless asked.
+8. **A design system is a package of values.** `unibox_material` holds the Material
+   3 type scale as `const` tokens and depends on `unibox_core` alone. A preset is a
+   value, never a node subclass, so an application can still re-theme it.
 
 When implementing `unibox_jaspr`, refer to Jaspr's official docs: https://jaspr.site/llms.txt
