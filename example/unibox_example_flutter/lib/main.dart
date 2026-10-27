@@ -36,7 +36,12 @@ class ExampleApp extends StatelessWidget {
       home: Scaffold(
         body: FlutterLinkScope(
           open: (String url) => debugPrint('Following $url'),
-          child: FlutterStateful(node: ExamplePageNode(signupOpen: signupOpen)),
+          child: UniboxThemeScope(
+            theme: ExamplePalette.theme,
+            child: FlutterStateful(
+              node: ExamplePageNode(signupOpen: signupOpen),
+            ),
+          ),
         ),
       ),
     );

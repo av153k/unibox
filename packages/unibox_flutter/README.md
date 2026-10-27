@@ -195,6 +195,24 @@ free improvement on the web. A density-aware Flutter image would need
 `ResizeImage` and the laid-out width, which is a measurement a rendering does not
 have.
 
+## Colour roles
+
+`renderFlutter(node, theme: myTheme)` resolves every role a tree names while the
+widget tree is built, so everything below reads a concrete colour and nothing looks
+anything up at paint time:
+
+| Unibox | Flutter |
+| --- | --- |
+| `BoxColor.role(AppColor.primary)` | the value `myTheme` gives that role |
+| a literal `BoxColor` | itself, theme or no theme |
+| a role and no theme | the tree is rejected by validation, naming the role |
+
+The theme travels down in `UniboxThemeScope`, which a host installing its own root —
+a `FlutterStateful`, say — can wrap around its tree instead. An overlay is the one
+place it has to be handed over by hand: its content lives on the root overlay, which
+is outside the tree the page was rendered in, so `FlutterOverlay` reads the scope and
+passes it on.
+
 ## Link mapping
 
 | Unibox   | Flutter                                        |

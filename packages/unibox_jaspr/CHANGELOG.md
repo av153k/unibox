@@ -17,6 +17,11 @@ on the server and readable without a client bundle.
 - Typography becomes the inherited CSS font properties, and `renderJaspr` emits the
   model's default typography in a `:root` rule so an undeclared text is typeset the
   same way the Flutter renderer typesets it.
+- A colour role is written as `var(--unibox-color-<name>)` and the theme as one
+  `:root` block — every role, whether or not a node names it — so a host stylesheet,
+  a `prefers-color-scheme: dark` block or an embed can outrank the tree without
+  touching it. `renderJaspr` takes the theme; a host composing the components itself
+  installs `JasprThemeScope`.
 - Every look is written once, as a class rule in a single `<style>` element, and the
   element carries the class instead of an inline style: the CSS grows with the number
   of distinct looks on a page rather than with the number of elements, and a host can

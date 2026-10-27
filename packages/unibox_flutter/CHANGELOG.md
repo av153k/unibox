@@ -12,6 +12,10 @@ The first release of the Flutter renderer: one node tree becomes a widget tree.
 - Typography is inherited through `DefaultTextStyle`, and the renderer installs
   `BoxTextStyle.defaults` around the tree so an undeclared text is typeset the same
   way the web renderer typesets it.
+- `renderFlutter` takes a `UniboxTheme` and resolves every colour role while it
+  builds the widget tree, through a `UniboxThemeScope` that a host installing its own
+  root can use directly. An overlay hands the theme to its content explicitly, since
+  the portal sits outside the tree the page was rendered in.
 - `FlutterImage` loads the node's `src`. The responsive fields of an `ImageNode`
   (`srcSet`, `sizes`, `loading`, `fetchPriority`) are web attributes and are not
   read here: Flutter loads one source, and the README records the difference.

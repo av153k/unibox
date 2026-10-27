@@ -16,6 +16,12 @@ and the checks that keep a tree renderable.
 - Typography is the one inherited axis: `Box.textStyle` reaches the texts inside, and
   `BoxTextStyle.defaults` (16 logical pixels, normal weight, black, 1.5, no letter
   spacing) is the default both renderers install at the root of a tree.
+- A colour can name a **role** — `BoxColor.role(AppColor.primary)` — and a
+  `UniboxTheme` says what each role is worth. The role is an enum member, so the
+  compiler checks it and the theme is keyed by the same value; `BoxStyle.resolve`,
+  `BoxBorder.resolve`, `BoxShadow.resolve` and `BoxTextStyle.resolve` turn a style
+  into concrete colours, and `validateTree(root, theme: theme)` reports a role no
+  theme can answer.
 - `ImageNode` carries the responsive fields a browser reads — `srcSet` (candidate
   widths and their URLs), `sizes`, `loading` and `fetchPriority` — and resolves the
   `srcset` attribute itself, narrowest candidate first, so the same candidates

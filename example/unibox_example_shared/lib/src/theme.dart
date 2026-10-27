@@ -1,10 +1,66 @@
 import 'package:unibox_core/unibox_core.dart';
 
+/// The colour roles of the example.
+///
+/// A role is what a tree names; the palette below says what it is worth. Keeping
+/// the two apart is what lets a host restyle the page — the exported document
+/// overrides three of these roles in a `prefers-color-scheme: dark` block — and it
+/// is why the same names are readable from CSS (`--unibox-color-canvas`) and from
+/// the Flutter theme built from this palette.
+enum ExampleColor {
+  /// The accent of the banner, the button and the checkbox.
+  accent,
+
+  /// The accent while the pointer is over the button.
+  accentHover,
+
+  /// The accent while the button is pressed.
+  accentPressed,
+
+  /// The tint behind the navigation item that is open.
+  accentSurface,
+
+  /// The background of the card and of the navigation bar.
+  surface,
+
+  /// The colour of the page behind the card.
+  canvas,
+
+  /// The default text colour.
+  text,
+
+  /// The colour of supporting text.
+  muted,
+
+  /// The colour of borders.
+  border,
+}
+
 /// The palette of the example.
 ///
 /// The colors are declared once because both renderers paint the same pages:
 /// Flutter translates them to a `Color`, the web renderer to a CSS color.
 abstract final class ExamplePalette {
+  /// The values of [ExampleColor], as one theme both hosts hand to the renderer.
+  ///
+  /// This is the single place the example's colours are written down: the tree
+  /// names a role, the web renderer writes the theme into `:root`, and the Flutter
+  /// renderer resolves the same map. A host that wants a dark page overrides the
+  /// variables or passes another theme; it does not touch the tree.
+  static const UniboxTheme theme = UniboxTheme(
+    colors: <ExampleColor, BoxColor>{
+      ExampleColor.accent: accent,
+      ExampleColor.accentHover: accentHover,
+      ExampleColor.accentPressed: accentPressed,
+      ExampleColor.accentSurface: accentSurface,
+      ExampleColor.surface: surface,
+      ExampleColor.canvas: canvas,
+      ExampleColor.text: text,
+      ExampleColor.muted: muted,
+      ExampleColor.border: border,
+    },
+  );
+
   /// The accent of the banner, the button and the checkbox.
   static const BoxColor accent = BoxColor.rgb(0x2D, 0x6C, 0xF3);
 

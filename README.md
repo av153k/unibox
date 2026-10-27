@@ -489,6 +489,36 @@ states it in Dart and passes it around, the way
 same colours are used by both hosts. Typography carries colour as well: `color` on
 a text, or `color` in a `BoxTextStyle` that a box passes down.
 
+## Roles and theming
+
+A colour can name a role the application owns instead of a value baked into the tree:
+
+```dart
+enum AppColor { primary, surface }
+
+const theme = UniboxTheme(
+  colors: <AppColor, BoxColor>{
+    AppColor.primary: BoxColor(0xFF2D6CF3),
+    AppColor.surface: BoxColor.white,
+  },
+);
+
+const Box(backgroundColor: BoxColor.role(AppColor.primary));
+
+renderFlutter(page, theme: theme);   // resolves each role while building
+renderJaspr(page, theme: theme);     // writes :root and points the rules at it
+```
+
+| | What it buys |
+| --- | --- |
+| the role is an enum member | a typo is a compile error, and the theme is keyed by the same value — no string is written by hand |
+| one theme value | the tree, the host's CSS (`var(--unibox-color-primary)`) and the app's `ColorScheme` all read the same palette |
+| the web writes `var()` | a host stylesheet or a `prefers-color-scheme: dark` block outranks the tree without touching it |
+| literals still work | a page that needs no theme never needs one, and a role with no theme is reported by name |
+
+`validateTree(root, theme: theme)` reports a role the theme does not define, so a
+missing colour is a message with a name in it rather than a blank box.
+
 ## Typography
 
 Typography is the one thing a box passes down to its children. It works like CSS

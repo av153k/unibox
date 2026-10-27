@@ -65,7 +65,7 @@ Box buildExamplePage({
     direction: Axis.vertical,
     width: double.infinity,
     height: double.infinity,
-    backgroundColor: ExamplePalette.canvas,
+    backgroundColor: const BoxColor.role(ExampleColor.canvas),
     children: <UINode>[
       _navigationBar(current: current, onNavigate: onNavigate),
       page,
@@ -93,7 +93,7 @@ UINode _navigationBar({
     padding: const BoxSpacing.symmetric(horizontal: 24, vertical: 12),
     // The bar is the navigation of the page, so the web renders a `<nav>`.
     semantics: const BoxSemantics(element: BoxElement.nav),
-    backgroundColor: ExamplePalette.surface,
+    backgroundColor: const BoxColor.role(ExampleColor.surface),
     shadow: const BoxShadow(
       color: BoxColor(0x14000000),
       offsetY: 1,

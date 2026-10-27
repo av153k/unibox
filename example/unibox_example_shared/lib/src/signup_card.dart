@@ -132,7 +132,7 @@ Box buildSignupCard({
     semantics: const BoxSemantics(element: BoxElement.article),
     textStyle: ExampleType.body,
     padding: const BoxSpacing.all(24),
-    backgroundColor: ExamplePalette.surface,
+    backgroundColor: const BoxColor.role(ExampleColor.surface),
     borderRadius: 16,
     border: const BoxBorder(color: ExamplePalette.border),
     shadow: const BoxShadow(

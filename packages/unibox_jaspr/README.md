@@ -129,6 +129,40 @@ Three things follow, and they are the reason it is done this way:
   response small once it is compressed and lets the CSS be cached next to the HTML
   instead of being rebuilt inside it.
 
+### Roles and the theme
+
+A colour role is written as a custom property, and the theme is written once, in
+`:root`:
+
+```html
+<style>
+  :root {
+    --unibox-color-primary: #2d6cf3;
+    --unibox-color-surface: #ffffff;
+  }
+  .unibox-box-1f3c9a7b { background-color: var(--unibox-color-primary); }
+</style>
+```
+
+Every role the theme defines is emitted, whether or not a node names it: a host
+stylesheet or an embed has to be able to read a role the tree happens to leave
+alone, and a block that changed with the content would be a different document
+every time the content did. The name is the enum member in kebab case.
+
+```dart
+renderJaspr(node, theme: myTheme);   // emits :root and points the rules at it
+```
+
+A host that composes the components itself — a page whose root is a
+`JasprStateful`, say — installs `JasprThemeScope` around its tree instead, and the
+stylesheet is written for it the same way. Overriding a role is then ordinary CSS:
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root { --unibox-color-canvas: #101216; }
+}
+```
+
 The rules are emitted as a single `<style>` element after the tree, so a page has
 that element once however many components registered a class; CSS applies wherever
 that element sits. A component rendered on its own — `JasprBox(box: box)` in a

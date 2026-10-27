@@ -18,6 +18,28 @@ void main() {
       html = utf8.decode(page.body);
     });
 
+    test('writes the palette into the root, as custom properties', () {
+      // The tree names roles; the document says what they are worth, once.
+      expect(html, contains('--unibox-color-canvas'));
+      expect(html, contains('--unibox-color-accent'));
+      expect(html, contains('--unibox-color-surface'));
+    });
+
+    test('points the tree at those properties instead of a value', () {
+      expect(html, contains('var(--unibox-color-canvas)'));
+    });
+
+    test('lets a dark browser outrank the tree', () {
+      // The host keeps the last word: a media block redefines the same roles, and
+      // not one node had to change.
+      expect(html, contains('prefers-color-scheme: dark'));
+      expect(
+        RegExp(r'--unibox-color-canvas:\s*#101216').hasMatch(html),
+        isTrue,
+        reason: 'the dark canvas of the host is missing',
+      );
+    });
+
     test('gives the page box a height to fill', () {
       // The card centres itself in a box that fills the page (`height: 100%`).
       // A percentage only resolves against a parent with a height, so the root

@@ -27,7 +27,8 @@ void main() {
 
       expect(page.width, double.infinity);
       expect(page.height, double.infinity);
-      expect(page.backgroundColor, ExamplePalette.canvas);
+      // The frame names the canvas role; the palette says what it is worth.
+      expect(page.backgroundColor, const BoxColor.role(ExampleColor.canvas));
       expect(page.direction, Axis.vertical);
     });
 

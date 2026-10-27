@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'render.dart';
+import 'theme_scope.dart';
 import 'values.dart';
 
 /// Presents a [core.OverlayNode] above the page.
@@ -84,6 +85,10 @@ class FlutterOverlayState extends State<FlutterOverlay> {
   Widget build(BuildContext context) {
     final core.OverlayNode node = widget.node;
     final void Function()? dismiss = node.onDismiss;
+    // The portal puts its content on the root overlay, which is *outside* the tree
+    // the page was rendered in — so the theme of that tree is read here, while the
+    // widget is still in it, and handed to the content explicitly.
+    final core.UniboxTheme? theme = UniboxThemeScope.of(context);
 
     return OverlayPortal(
       controller: _portal,
@@ -102,12 +107,19 @@ class FlutterOverlayState extends State<FlutterOverlay> {
               children: <Widget>[
                 Positioned.fill(
                   child: ModalBarrier(
-                    color: toColor(node.barrierColor),
+                    color: toColor(
+                      theme == null
+                          ? node.barrierColor
+                          : theme.resolve(node.barrierColor),
+                    ),
                     dismissible: node.barrierDismissible && dismiss != null,
                     onDismiss: dismiss,
                   ),
                 ),
-                Align(alignment: _alignment, child: renderFlutter(node.child)),
+                Align(
+                  alignment: _alignment,
+                  child: renderFlutter(node.child, theme: theme),
+                ),
               ],
             ),
           ),

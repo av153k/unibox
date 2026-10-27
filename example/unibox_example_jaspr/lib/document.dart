@@ -1,6 +1,7 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
+import 'package:unibox_jaspr/unibox_jaspr.dart';
 
 import 'main.dart';
 
@@ -57,6 +58,26 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.apartments}) {
       // The stack is written raw because a comma separated list is a CSS
       // construct, while a `BoxTextStyle.fontFamily` names one family, which
       // Flutter and CSS both understand the same way.
+      // A host keeps the last word: the tree says "the canvas role", and this block
+      // says what that role is worth in a dark browser. Nothing in the tree changes,
+      // which is the whole point of writing roles as custom properties.
+      const StyleRule.media(
+        query: MediaQuery.all(prefersColorScheme: ColorScheme.dark),
+        styles: <StyleRule>[
+          StyleRule(
+            selector: Selector(':root'),
+            styles: Styles(
+              raw: <String, String>{
+                '--unibox-color-canvas': '#101216',
+                '--unibox-color-surface': '#1a1d24',
+                '--unibox-color-text': '#e9eaee',
+                '--unibox-color-muted': '#a2a8b4',
+                '--unibox-color-border': '#2c313a',
+              },
+            ),
+          ),
+        ],
+      ),
       const StyleRule(
         selector: Selector('body'),
         styles: Styles(
@@ -68,7 +89,12 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.apartments}) {
         ),
       ),
     ],
-    body: ExampleApp(openSignup: page == ExamplePage.signup),
+    // The theme is the host's to install: the page names roles, and this is where
+    // they are given values. The `:root` block of the document follows from it.
+    body: JasprThemeScope(
+      theme: ExamplePalette.theme,
+      child: ExampleApp(openSignup: page == ExamplePage.signup),
+    ),
   );
 }
 

@@ -423,7 +423,33 @@ A component rendered outside a rendering — `renderNode` called directly, or a 
 renderer used in a test — still writes its declarations inline, because there is no
 sheet in scope to register them in.
 
-### 5.12 Overlays are nodes
+### 5.12 A colour role is a value the host answers
+
+A tree that carries literal colours is a third copy of a design system: the host has
+its `ColorScheme`, the page its stylesheet, and every element its own hex. So a
+colour can name a **role** — an `enum` member — and the application supplies a
+`UniboxTheme` that says what each role is worth.
+
+The role is typed rather than a string because a string is a name the compiler
+cannot check and a reader cannot rename; the theme is keyed by the same enum value,
+so "the colour this role is worth" is a map lookup on an identity, and
+`validateTree(root, theme: theme)` reports a role the theme does not define.
+
+The theme is an **argument**, not a scope a node looks up: `renderFlutter(node,
+theme:)` resolves each role while it builds the widget tree, `renderJaspr(node,
+theme:)` writes the theme once in `:root` and points the rules at
+`var(--unibox-color-…)`. Two pages rendered in one process can carry different
+themes, a tree stays `const`, and the whole palette is emitted on the web whether or
+not a node uses each role — a host stylesheet has to be able to read one the tree
+leaves alone.
+
+What follows honestly: a role is a runtime failure if no theme is given (it is
+reported, and the renderers refuse the tree rather than paint nothing), the
+conformance table compares a value in Flutter with a `var()` and a `:root` block on
+the web, and the CSS name follows the enum identifier, so renaming a member is a
+breaking change for a host stylesheet that names it.
+
+### 5.13 Overlays are nodes
 - Content above the page is a node, not a mode: `OverlayNode` wraps the content,
   sits in the tree where the state says it belongs, and disappears from the tree
   when the state says so. Presence is the tree's answer; there is no `open` flag

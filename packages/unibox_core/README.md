@@ -59,6 +59,42 @@ What is left to the host, because only the host can answer it: the font family (
 font file is an asset), the colour of a placeholder, a caret or a selection, the
 look of a scrollbar, and the rendering of the glyphs themselves.
 
+## Roles and the theme
+
+A colour can name a **role** instead of carrying channels, and the application says
+what the role is worth:
+
+```dart
+enum AppColor { primary, surface, outline }
+
+const theme = UniboxTheme(
+  colors: <AppColor, BoxColor>{
+    AppColor.primary: BoxColor(0xFF2D6CF3),
+    AppColor.surface: BoxColor(0xFFFFFFFF),
+    AppColor.outline: BoxColor(0xFFE5E7EB),
+  },
+);
+
+const Box(backgroundColor: BoxColor.role(AppColor.primary));
+```
+
+- The role is an **enum member**, so a misspelling is a compile error, and the
+theme's map is keyed by the same value: no string is typed anywhere.
+- The tree stays `const` and still says what it means — "this is the primary
+  surface" — instead of repeating a hex value per element.
+- `BoxColor.role(...)` has no channels until a theme answers it. Reading `value`
+  before that throws, and `validateTree(root, theme: theme)` reports the role by
+  name instead of letting a box paint nothing.
+- A literal colour keeps working, so a tree can mix roles and values, and a small
+  page that wants no theme never needs one.
+
+`BoxStyle.resolve(theme)` gives back a style whose colours are all concrete, which
+is what the Flutter renderer calls once per node. The web renderer does the
+opposite: it writes `var(--unibox-color-primary)` in the class rule and the theme
+once in a `:root` block, so a host stylesheet, a dark-mode block or an embed can
+outrank the tree without touching it. The property name is the enum member in
+kebab case (`onPrimary` → `--unibox-color-on-primary`).
+
 ## Motion
 
 `BoxTransition` is how one look becomes another: a duration and one of the five
