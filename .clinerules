@@ -35,4 +35,8 @@ What is not negotiable:
    a view has no overlay. The vocabulary is the model's: a store, a state, a
    view — no events, cubits or blocs.
 
+10. **An overlay is a node.** `OverlayNode` carries the policy (barrier, dismissal,
+    alignment) and sits in the tree where the state says it belongs; no view has an
+    overlay slot, and an overlay is never drawn in the flow of its parent.
+
 When implementing `unibox_jaspr`, refer to Jaspr's official docs: https://jaspr.site/llms.txt

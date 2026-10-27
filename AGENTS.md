@@ -24,13 +24,13 @@ guide is [`README.md`](README.md).
 
 | Path | What it holds | Touch it when |
 | --- | --- | --- |
-| `packages/unibox_core/lib/src/nodes/` | `UINode` and the eight nodes: `Box`, `TextNode`, `ImageNode`, `LinkNode`, `StackNode`, `PositionedNode`, `TextInputNode`, `EmbedNode` | a node gains or loses a parameter |
+| `packages/unibox_core/lib/src/nodes/` | `UINode` and the ten nodes: `Box`, `TextNode`, `ImageNode`, `LinkNode`, `StackNode`, `PositionedNode`, `TextInputNode`, `StatefulNode`, `OverlayNode`, `EmbedNode` | a node gains or loses a parameter |
 | `packages/unibox_core/lib/src/tokens/` | `BoxStyle`, `BoxTextStyle`, `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow`, `BoxTransform`, `BoxTransition`, `BoxSemantics` | a design token is added or its meaning changes |
 | `packages/unibox_core/lib/src/enums.dart` | layout, alignment, overflow and typography enums | a value both targets can express is missing |
 | `packages/unibox_core/lib/src/validation.dart` | `validateTree` and `TreeIssue` | a construct becomes impossible to render faithfully |
 | `packages/unibox_flutter/lib/src/` | one file per node (`UniboxBox`, `UniboxText`, ...), `values.dart` (token → Flutter), `render.dart` (dispatch and the validation assert) | the Flutter target has to change |
 | `packages/unibox_jaspr/lib/src/` | the same for the web, plus `default_typography.dart` (the `:root` rule) | the web target has to change |
-| `packages/unibox_testing/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases` | a presentational token is added or changed |
+| `packages/unibox_testing/lib/src/` | `BoxAppearance` + `boxCases`, `TextAppearance` + `textCases`, `OverlayAppearance` + `overlayCases` | a presentational token is added or changed |
 | `packages/unibox_material/lib/src/` | the Material 3 type scale: `MaterialTypography` (the fifteen roles as `const BoxTextStyle` values), `MaterialTypeRole`, and `MaterialCard` (a `Box` with the card's defaults) | a design-system role is added, a scale changes, or a component is added |
 | `packages/unibox_core/lib/src/state/` | `Store` and `StateStore`: the state a `StatefulNode` draws and the lifecycle a renderer calls | a store member, the publish rule or a lifecycle rule changes |
 | `packages/*/test/support/` | the harnesses (`pumpNode`, `inNode`, `stylesOf`, ...) and `appearance.dart`, which reads the presentation back out of the output | a test needs a new fact |
@@ -238,6 +238,19 @@ against it and CSS puts it in a media query.
    and `test/stateful_node_test.dart` pins both. Reacting in a browser waits for the
    client build.
 5. Docs: the state section of `README.md` and the core README, plus the changelogs.
+
+### G. An overlay
+
+1. `packages/unibox_core/lib/src/nodes/overlay_node.dart` — the node and its
+   policy, and `validation.dart` when a new combination can do nothing.
+2. Flutter: `lib/src/overlay_node.dart` presents it through an `OverlayPortal` on
+   the root overlay; the suite needs a test in `test/overlay_widget_test.dart`.
+3. Jaspr: `lib/src/overlay_node.dart` draws a fixed layer; it is never drawn in
+   the flow of its parent.
+4. The contract: `OverlayAppearance` and `overlayCases` in `unibox_testing`, read
+   back from each renderer's output.
+5. Docs: the node section of `README.md`, the core and renderer READMEs, and the
+   changelogs.
 
 ## Definition of done
 

@@ -148,6 +148,15 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [ ] Task 104: Jaspr renderer — the client build, blocked by the bundle: `UniboxStateful` is in place (one class, `kIsWeb` splits the server path that only reads the first state from the browser path that subscribes, calls `onMount`, rebuilds and disposes), and the server path is tested. What remains is the build itself — `jaspr_builder`, a client entrypoint, `ServerOptions` markers and the bundle in the export — plus an app `@client` subclass and a browser test, so that a page reacts.
 - [x] Task 105: Docs and workspace — `design.md` §5.10 (a stateful node and what a store is), the package READMEs, `AGENTS.md`/`.clinerules` vocabulary (no bloc words: the library has stores and states, not cubits and events), `tool/verify.sh` and CI stay in step.
 
+### Phase 23: Overlays as nodes
+- [x] Task 106: Core — `OverlayNode` and `OverlayAlignment`: content drawn above the page, with `onDismiss`, `barrierDismissible`, `barrierColor` and `alignment`. The node says policy; being in the tree is being shown, so no view gains an overlay slot and no `open` flag exists. `validateTree` reports the one combination that does nothing: a dismissible barrier with no `onDismiss`.
+- [x] Task 107: Flutter renderer — `UniboxOverlay` presented through an `OverlayPortal` on the root overlay: barrier in the node's colour, `Escape` and a barrier press calling `onDismiss`, a closed-loop `FocusScope` with the previous focus restored on exit, and the layer announced as a route. It takes no room in its parent and needs an `Overlay` ancestor. Tests cover the barrier, both dismissals, an inert barrier, content presses, all three alignments, focus in and back.
+- [x] Task 108: Jaspr renderer — an overlay is drawn as a fixed layer with the barrier and the alignment, with `role="dialog"` and `aria-modal="true"`; it is never drawn in the flow of its parent. `Escape`, a barrier press and focus wait for the client runtime (Task 104).
+- [x] Task 109: `unibox_testing` — `OverlayAppearance` (barrier colour, alignment) and `overlayCases`, with a conformance test in each renderer suite: Flutter reads the barrier and the `Align` out of its widget tree, the web reads the fixed layer and the barrier out of its CSS.
+- [x] Task 110: Docs — `design.md` §5.11, the `OverlayNode` section of the root README, the core and both renderer READMEs, the rules in `AGENTS.md` and `.clinerules`, and the four changelogs.
+- [ ] Task 111: `unibox_material` — `MaterialDialog` and `MaterialBottomSheet` as `OverlayNode` subclasses (surface, radius, padding, max width, body type), plus the `MaterialInkWell` and `MaterialTextField` that came with the overlays PR.
+- [ ] Task 112: Web interaction — `Escape`, a barrier press and focus containment in the client runtime, alongside Task 104.
+
 ## Decisions
 
 - **License:** MIT, at the root and in every package.
@@ -243,12 +252,6 @@ Deliberately out of scope for this pass, with the reason they were left:
   (`unibox_material`), not a concept the model has to carry. The outward projection
   that a core theme would have needed — `ThemeData` on one side, CSS variables on the
   other — is fifteen lines in a Material application, which is where it stays.
-- Overlays: a dialog or a sheet above the page. A view draws one tree, and the
-  model has no slot for something drawn over it, so the honest next step is a
-  decision about that slot first (one tree plus overlays? a separate node?) and
-  then each renderer's modal layer — focus containment, the barrier, `Escape`, the
-  leave animation, and on the web a `<dialog>`/fixed layer. Deferred until a real
-  screen needs one; `MaterialDialog` and `MaterialSheet` would go with it.
 - A triggered keyframe timeline (`BoxAnimation`: `press`/`hover`/`focus`/`autoplay`
   or a host `play` key, with stops per look, rendered as CSS `@keyframes` and a
   Flutter `TweenSequence`). The portable part of what it was for is already here:

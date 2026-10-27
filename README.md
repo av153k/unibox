@@ -64,16 +64,17 @@ a navigation bar shared by a Flutter app and a static site.
 
 ## The nodes
 
-There are nine node types. Each one is an immutable Dart object with a `const`
+There are ten node types. Each one is an immutable Dart object with a `const`
 constructor, and each one describes *what* it is rather than which framework draws
 it. Style values — colours, spacing, borders, typography — are separate objects
 that a node takes as parameters, so a look can be reused as one `const BoxStyle`
 instead of being repeated.
 
-The nine: [`Box`](#box), [`TextNode`](#textnode), [`ImageNode`](#imagenode),
+The ten: [`Box`](#box), [`TextNode`](#textnode), [`ImageNode`](#imagenode),
 [`LinkNode`](#linknode), [`StackNode`](#stacknode-and-positionednode) with
 [`PositionedNode`](#stacknode-and-positionednode), [`TextInputNode`](#textinputnode),
-[`StatefulNode`](#statefulnode) and [`EmbedNode`](#embednode).
+[`StatefulNode`](#statefulnode), [`OverlayNode`](#overlaynode) and
+[`EmbedNode`](#embednode).
 
 Every node accepts a `key`. Renderers hand it to the target's own key mechanism, so
 when a list is reordered each child keeps its state: typed text stays in the field
@@ -361,9 +362,43 @@ render draws **the state the store starts with** without calling `onMount`, so a
 page that loads is a page that says it is loading; reacting to a click needs a
 client build, which is the next step (`TASK_PLAN.md`, Phase 22).
 
+### OverlayNode
+
+Content drawn above the page instead of in the layout of its parent: a dialog, a
+sheet, a menu. Being in the tree is being shown, so the state decides presence and
+the node decides policy:
+
+```dart
+UINode details(StoreFrontState state, StoreFrontStore store) => Box(
+  children: <UINode>[
+    const TextNode('Store front'),
+    if (state.details != null)
+      OverlayNode(
+        onDismiss: store.closeDetails,
+        child: TextNode(state.details!.name),
+      ),
+  ],
+);
+```
+
+| Parameter | Type | Default | Meaning |
+| --- | --- | --- | --- |
+| `child` | `UINode` | required | The content shown above the page. |
+| `onDismiss` | `TapCallback?` | none | Called by `Escape` and by a press on the barrier. |
+| `barrierDismissible` | `bool` | `true` | Whether a press on the barrier dismisses. |
+| `barrierColor` | `BoxColor` | black at 32% | The scrim between the page and the content. |
+| `alignment` | `OverlayAlignment` | `center` | `center`, `top` or `bottom`. |
+
+**On each target.** Flutter presents it through an `OverlayPortal` on the root
+overlay, so it escapes the clipping and scrolling of the boxes around it: a
+barrier, `Escape`, focus kept inside and handed back on exit. The web renders a
+fixed layer with the barrier and the alignment, and the interaction waits for the
+client build. `validateTree` reports a dismissible barrier with no `onDismiss`,
+which could not dismiss anything.
+
 ### EmbedNode
 
-The escape hatch, for what the nine nodes cannot describe: a chart from a package,
+The escape hatch, for what the ten nodes cannot describe: a chart from a package,
 a video player, an effect that only exists on one platform.
 
 A node carries **one implementation per renderer**, and each renderer draws the

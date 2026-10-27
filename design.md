@@ -377,3 +377,23 @@ never inherited (CSS does not inherit them either).
   events, no cubits and no blocs — those are one naming of a pattern this model
   describes in its own words, and borrowing them would promise an API the library
   does not have.
+
+
+### 5.11 Overlays are nodes
+- Content above the page is a node, not a mode: `OverlayNode` wraps the content,
+  sits in the tree where the state says it belongs, and disappears from the tree
+  when the state says so. Presence is the tree's answer; there is no `open` flag
+  and no overlay slot on a view, so a `StatefulNode` never learns that a dialog
+  exists.
+- The node states policy, not mechanism: `onDismiss`, `barrierDismissible`,
+  `barrierColor` and `alignment`. How an overlay is presented belongs to the
+  renderer — an `OverlayPortal` on the root overlay in Flutter, a fixed layer in
+  the browser — which is what keeps it escaping the clipping of the box it sits
+  in.
+- An overlay is never drawn in the flow of its parent. A target that cannot
+  present one must say so; rendering the content inline would make the same tree
+  a modal on one side and a paragraph on the other.
+- `validateTree` reports the one combination that cannot do anything: a
+  dismissible barrier with no `onDismiss`.
+- Dismissing is interaction, so on the web it waits for the client build; the
+  server writes the layer and its barrier so the page looks right first.
