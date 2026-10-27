@@ -490,6 +490,18 @@ rather than passed in: a `@client` component may only receive simple values that
 survive being written into the page, and a node is a group of functions. The build
 is the next step (`TASK_PLAN.md`, Phase 22).
 
+## Overlays
+
+An `OverlayNode` is drawn as a **fixed layer** over the page: the barrier in the
+node's colour, the content aligned where the node asks, and `role="dialog"` with
+`aria-modal="true"` on the layer. It is never drawn in the flow of its parent —
+on the web an overlay is a layer or nothing.
+
+What a server cannot do is interact: `Escape`, a press on the barrier and moving
+focus need the client runtime (Task 104), so a static export shows the layer and
+leaves it there. The layer is drawn exactly where the client will draw it, which is
+what hydration needs.
+
 ## Testing
 
 ```sh

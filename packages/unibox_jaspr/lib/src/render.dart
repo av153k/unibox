@@ -7,6 +7,7 @@ import 'embed_node.dart';
 import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
+import 'overlay_node.dart';
 import 'stack_node.dart';
 import 'stateful_node.dart';
 import 'text_input_node.dart';
@@ -72,6 +73,7 @@ Component renderNode(core.UINode node) {
     final core.EmbedNode embed => Component.fragment(<Component>[
       _renderEmbed(embed),
     ], key: toJasprKey(embed.key)),
+    final core.OverlayNode overlay => overlayView(overlay),
     final core.StatefulNode<Object, core.Store<Object>> stateful =>
       statefulView(stateful),
     _ => throw UnsupportedError('No Jaspr renderer for ${node.runtimeType}.'),

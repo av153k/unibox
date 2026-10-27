@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- An `OverlayNode` is drawn as a fixed layer with the barrier in the node's colour
+  and the content aligned where the node asks, never in the flow of its parent.
+  `Escape`, a barrier press and moving focus need the client runtime, so a static
+  export paints the layer and leaves it there.
 - `UniboxStateful`, the Jaspr mirror of the Flutter runtime: a `@client` subclass
   marked `@client` returns its node from `createNode`. In a browser the store is
   created, subscribed, `onMount` is called and a notification rebuilds the tree; on
