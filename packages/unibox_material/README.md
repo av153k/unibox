@@ -233,6 +233,44 @@ ripples. None of those exist in the model yet: the surface is white, the variant
 is the elevated one, and a press is `stateStyles`. A colour scheme is the next
 decision, not a silent default.
 
+## The list tile
+
+`MaterialListTile` is the row Material builds a list out of: an optional leading
+node, a title with an optional subtitle, and an optional trailing node.
+
+```dart
+MaterialListTile(
+  leading: const TextNode('AL'),
+  title: const TextNode('Ada Lovelace'),
+  subtitle: const TextNode('ada@example.com'),
+  trailing: const TextNode('2m'),
+  onTap: openContact,
+);
+```
+
+It is a `Box` too — a row — so neither renderer has to know the name, and every
+token is a combination of ones the conformance table already pins:
+
+| Token | Value | Why |
+| --- | --- | --- |
+| layout | a row, centred across, filling its width | a tile is one line of a list |
+| gap | `16` between the leading node, the text and the trailing node | Material's `horizontalTitleGap` |
+| padding | `16` on the sides | the room Material gives a tile |
+| minHeight | `56` / `72`, or `48` / `64` when `dense` | Material's one line and two line heights |
+| title | `MaterialTypography.bodyLarge` | Material's title role |
+| subtitle | `MaterialListTile.subtitleTextStyle` | `bodyMedium` in `onSurfaceVariant` |
+| hover, press | black at 8% and 12% | Material's state layers, spelled as translucent colours |
+| role | `BoxRole.button` when it can be tapped | a tappable tile is a control, and the role is what makes it focusable |
+
+A subtitle sits in its own box inside the text column, because typography is the
+one thing this model inherits: the column states `bodyLarge` for the title and the
+inner box states the subtitle style for the line under it.
+
+The three things a colour scheme would fill in are constants for now —
+`subtitleColor`, and the two state tints — and the tile says so, along with what it
+is not: no ripple, no tonal surface, no `titleTextStyle` overrides beyond the two
+style parameters. A `Box` around it remains the escape hatch.
+
 ## Line heights
 
 A `BoxTextStyle.lineHeight` is a multiple of the font size, because that is the

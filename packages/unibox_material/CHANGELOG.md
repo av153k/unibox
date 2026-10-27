@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `MaterialListTile`: the Material 3 list tile as a node. A row that fills its
+  width, 16 logical pixels between its parts and 16 of side padding, the one and two
+  line heights Material gives a tile (and their dense variants), `bodyLarge` for the
+  title and `bodyMedium` in `onSurfaceVariant` for the subtitle, black at 8% and 12%
+  for the hover and press layers, and the button role when the tile can be tapped.
+  Every token is a parameter, and the colours a scheme would carry are documented
+  constants until one exists.
 - `MaterialCard`: the Material 3 card as a node. It extends `Box`, so it is drawn by
   the renderer each target already has and every token it sets is already in the
   conformance table: 16 logical pixels of padding, a `BoxColors.white` surface, a

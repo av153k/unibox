@@ -18,9 +18,10 @@
 /// );
 /// ```
 ///
-/// Typography, and the first component built from it. The fifteen roles are
-/// plain values a tree installs on a box or a text; [MaterialCard] is a node,
-/// because a card has children and a surface that have to travel together. A look
+/// Typography, and the components built from it. The fifteen roles are plain
+/// values a tree installs on a box or a text; [MaterialCard] and
+/// [MaterialListTile] are nodes, because a card has children and a surface that
+/// have to travel together, and a tile has parts that only make sense together. A look
 /// is a value and a component is a node built from the node that already draws
 /// it, so neither renderer has to know that this package exists.
 ///
@@ -30,5 +31,6 @@
 library;
 
 export 'src/material_card.dart';
+export 'src/material_list_tile.dart';
 export 'src/material_type_role.dart';
 export 'src/material_typography.dart';
