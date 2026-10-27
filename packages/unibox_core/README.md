@@ -15,7 +15,7 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `LinkNode`        | a link wrapping one child                                     |
 | `StackNode`       | layered children, with `PositionedNode` placing them           |
 | `TextInputNode`   | a single line or multiline field                              |
-| `StatefulNode`    | a subtree that owns a `Store` and draws a `NodeView`           |
+| `StatefulNode`    | a subtree that owns a `Store` and draws the tree of its state |
 | `Store`           | the state contract a `StatefulNode` draws                     |
 | `StateStore`      | the ready made `Store`: one state value and its listeners     |
 | `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |
@@ -160,16 +160,13 @@ final class SignupNode extends StatefulNode<SignupState, SignupStore> {
   SignupNode() : super(create: SignupStore.new, view: signupView);
 }
 
-NodeView signupView(SignupState state, SignupStore store) => (
-  tree: TextNode(state.pending ? 'Joining…' : 'Join'),
-  overlays: const <UINode>[],
-);
+UINode signupView(SignupState state, SignupStore store) =>
+    TextNode(state.pending ? 'Joining…' : 'Join');
 ```
 
-`NodeView` is a record: `tree` is the content in flow, `overlays` are trees the
-renderer shows above it — a dialog, a sheet. The renderer owns how an overlay is
-shown (focus, the barrier, `Escape`, the leave animation), which is why the
-model has no dialog node and no presence token.
+The view returns one tree for the state, so every state a component can be in is
+an ordinary tree the renderers already draw. A view draws no overlay: a dialog is
+not part of the model yet.
 
 `Store` names no platform, and `StateStore` is the ready made implementation: a
 value, a listener list that belongs to this package, and a guarded setter, so a

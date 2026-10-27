@@ -349,11 +349,12 @@ never inherited (CSS does not inherit them either).
 - The state is a value. A `Store` publishes an immutable state and notifies a
   listener; `StateStore` drops a published value equal to the current one, so a
   rebuild follows a change of the description rather than a call.
-- The view is a record of a tree and a list of overlays. Overlays are the
-  renderer's business: the tree says *what* appears above the page, and the host
-  owns the modal mechanism — focus containment, the barrier, `Escape`, the leave
-  animation. That is why the model has no dialog node and no presence token, and
-  why the same view can be shown by Flutter's overlay and by a browser dialog.
+- The view returns one tree for the state. Every state a component can be in — a
+  pending request, a result, an error — is therefore an ordinary tree that the
+  renderers, `validateTree` and the conformance table already handle. A view draws
+  no overlay: a dialog is not part of the model yet, and adding one is a decision
+  about the view's shape and each renderer's modal layer, recorded in the Deferred
+  list.
 - A store is pure Dart, in the core. `StateStore` keeps its own listener list and
   a guarded `state` setter, so the model keeps its promise of no package
   dependencies and one store still runs in Flutter, in a browser and in a
@@ -365,12 +366,11 @@ never inherited (CSS does not inherit them either).
   time, so `validateTree` sees an empty child list and a renderer validates each
   view in debug builds.
 - The web renderer draws the state the store starts with: it creates the store,
-  reads its state, renders the tree and the overlays that state asks for, and never
-  calls `onMount`. Interactivity is a client component and waits for the client
-  build; the node is constructed in the browser because its behaviour is Dart
-  closures, which no markup can carry. A first state of "loading" therefore renders
-  a page that loads, and a store that starts with the server's data renders the page
-  as it should look.
+  reads its state, renders the tree and never calls `onMount`. Interactivity is a
+  client component and waits for the client build; the node is constructed in the
+  browser because its behaviour is Dart closures, which no markup can carry. A first
+  state of "loading" therefore renders a page that loads, and a store that starts
+  with the server's data renders the page as it should look.
 - The vocabulary is the model's: a node, a store, a state and a view. There are no
   events, no cubits and no blocs — those are one naming of a pattern this model
   describes in its own words, and borrowing them would promise an API the library

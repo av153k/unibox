@@ -45,46 +45,13 @@ final class _Store implements core.Store<int> {
 _Store? _lastStore;
 _Store _createStore() => _lastStore = _Store();
 
-core.NodeView _view(int state, _Store store) => (
-  tree: core.Box(
-    onTap: store.increment,
-    children: <core.UINode>[core.TextNode('Count: $state')],
-  ),
-  overlays: const <core.UINode>[],
+core.UINode _view(int state, _Store store) => core.Box(
+  onTap: store.increment,
+  children: <core.UINode>[core.TextNode('Count: $state')],
 );
 
 final class _Node extends core.StatefulNode<int, _Store> {
   _Node() : super(create: _createStore, view: _view);
-}
-
-/// A node whose first state already asks for an overlay.
-final class _OpenStore implements core.Store<bool> {
-  @override
-  bool get state => true;
-
-  @override
-  void addListener(void Function() listener) {}
-
-  @override
-  void removeListener(void Function() listener) {}
-
-  @override
-  void onMount() {}
-
-  @override
-  void onUnmount() {}
-
-  @override
-  void dispose() {}
-}
-
-core.NodeView _openView(bool state, _OpenStore store) => (
-  tree: const core.TextNode('Page'),
-  overlays: const <core.UINode>[core.TextNode('Details')],
-);
-
-final class _OpenNode extends core.StatefulNode<bool, _OpenStore> {
-  _OpenNode() : super(create: _OpenStore.new, view: _openView);
 }
 
 void main() {
@@ -104,12 +71,5 @@ void main() {
     renderJaspr(_Node());
 
     expect(_lastStore!.disposed, isTrue);
-  });
-
-  testComponents('renders an overlay the first state asks for', (tester) async {
-    pumpNode(tester, _OpenNode());
-
-    expect(find.text('Page'), findsOneComponent);
-    expect(find.text('Details'), findsOneComponent);
   });
 }

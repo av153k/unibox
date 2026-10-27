@@ -1,33 +1,18 @@
 import '../state/store.dart';
 import 'ui_node.dart';
 
-/// What a [StatefulNode] draws for one state.
-///
-/// `tree` is the content in flow. `overlays` are trees a renderer shows above
-/// the rest — a dialog, a sheet — using its own modal mechanism: focus, the
-/// barrier, `Escape` and the leave animation belong to the host, which is why
-/// they are not tokens here.
-///
-/// The record is the whole answer for one state, so a view has no side effects:
-/// it reads the state, hands out callbacks on the store, and returns what should
-/// be on screen.
-typedef NodeView = ({UINode tree, List<UINode> overlays});
-
-/// A node that owns a state store and draws a view of that state.
+/// A node that owns a state store and draws the tree of that state.
 ///
 /// ```dart
 /// final class SignupNode extends StatefulNode<SignupState, SignupStore> {
 ///   SignupNode() : super(create: SignupStore.new, view: signupView);
 /// }
 ///
-/// NodeView signupView(SignupState state, SignupStore store) => (
-///   tree: Box(
-///     children: <UINode>[
-///       TextInputNode(value: state.email, onChanged: store.setEmail),
-///       Box(onTap: store.submit, children: const <UINode>[TextNode('Join')]),
-///     ],
-///   ),
-///   overlays: const <UINode>[],
+/// UINode signupView(SignupState state, SignupStore store) => Box(
+///   children: <UINode>[
+///     TextInputNode(value: state.email, onChanged: store.setEmail),
+///     Box(onTap: store.submit, children: const <UINode>[TextNode('Join')]),
+///   ],
 /// );
 /// ```
 ///
@@ -40,11 +25,11 @@ typedef NodeView = ({UINode tree, List<UINode> overlays});
 /// key starts again. That is what keeps the tree immutable: the description of
 /// the page is the node, and the mutable part is created next to it.
 ///
-/// **The view is a function of state.** [viewFor] returns the tree and the
-/// overlays for the current state, so every state a component can be in — a
-/// pending request, a result, an open dialog — is an ordinary tree that the
-/// renderers, `validateTree` and the conformance table already know how to
-/// handle.
+/// **The view is a function of state.** [viewFor] returns one tree for the
+/// current state, so every state a component can be in — a pending request, a
+/// result, an error — is an ordinary tree that the renderers, `validateTree` and
+/// the conformance table already know how to handle. A view draws no overlay: a
+/// dialog is not part of the model yet.
 ///
 /// A renderer reaches any stateful node through [StatefulNode]<[Object],
 /// [Store]<[Object]>, because generics are covariant and every instantiation is
@@ -67,7 +52,7 @@ class StatefulNode<S extends Object, C extends Store<S>> extends UINode {
   ///
   /// It is a function and not a method so that a view can be a top level
   /// function with its own types, shared by every node that draws it.
-  final NodeView Function(S state, C store) view;
+  final UINode Function(S state, C store) view;
 
   /// Creates the store for one mounting of this node.
   ///
@@ -75,12 +60,12 @@ class StatefulNode<S extends Object, C extends Store<S>> extends UINode {
   /// so the typed field is behind this method.
   Store<S> createStore() => create();
 
-  /// The view of [state], with [store] for the callbacks the view hands out.
+  /// The tree of [state], with [store] for the callbacks the view hands out.
   ///
   /// [state] and [store] are [Object] because a renderer only knows the erased
   /// form of this node; the node casts them back to [S] and [C], so a view is
   /// written with its own types.
-  NodeView viewFor(Object state, Object store) => view(state as S, store as C);
+  UINode viewFor(Object state, Object store) => view(state as S, store as C);
 
   @override
   List<UINode> get children => const <UINode>[];

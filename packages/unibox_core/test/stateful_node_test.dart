@@ -34,8 +34,7 @@ final class _Counter implements Store<int> {
   }
 }
 
-NodeView _counterView(int state, _Counter store) =>
-    (tree: TextNode('$state'), overlays: <UINode>[]);
+UINode _counterView(int state, _Counter store) => TextNode('$state');
 
 /// The spelling an application uses: a node of its own over a store of its own.
 final class _CounterNode extends StatefulNode<int, _Counter> {
@@ -59,11 +58,10 @@ void main() {
       final node = _CounterNode();
       final _Counter store = node.createStore() as _Counter;
 
-      final NodeView view = node.viewFor(3, store);
+      final UINode view = node.viewFor(3, store);
 
-      expect(view.tree, isA<TextNode>());
-      expect((view.tree as TextNode).text, '3');
-      expect(view.overlays, isEmpty);
+      expect(view, isA<TextNode>());
+      expect((view as TextNode).text, '3');
     });
 
     test('hands the typed store to the view', () {
@@ -93,7 +91,7 @@ void main() {
       final StatefulNode<Object, Store<Object>> node = _CounterNode();
 
       expect(node.createStore().state, 0);
-      expect(node.viewFor(2, node.createStore()).tree, isA<TextNode>());
+      expect(node.viewFor(2, node.createStore()), isA<TextNode>());
     });
 
     test('keeps the key of the node it is given', () {

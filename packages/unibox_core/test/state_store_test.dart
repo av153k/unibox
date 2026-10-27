@@ -25,8 +25,7 @@ final class _PlainStore extends StateStore<String> {
   void set(String value) => state = value;
 }
 
-NodeView _counterView(int state, _CounterStore store) =>
-    (tree: TextNode('$state'), overlays: <UINode>[]);
+UINode _counterView(int state, _CounterStore store) => TextNode('$state');
 
 final class _CounterNode extends StatefulNode<int, _CounterStore> {
   _CounterNode() : super(create: _CounterStore.new, view: _counterView);
@@ -118,9 +117,9 @@ void main() {
       store.addListener(() => calls++);
 
       store.increment();
-      final NodeView view = node.viewFor(store.state, store);
+      final UINode view = node.viewFor(store.state, store);
 
-      expect((view.tree as TextNode).text, '1');
+      expect((view as TextNode).text, '1');
       expect(calls, 1);
     });
 
@@ -129,7 +128,7 @@ void main() {
 
       final Store<Object> store = node.createStore();
       expect(store.state, 0);
-      expect((node.viewFor(4, store).tree as TextNode).text, '4');
+      expect((node.viewFor(4, store) as TextNode).text, '4');
     });
   });
 }

@@ -8,11 +8,10 @@
   disposed, and has the `onMount`/`onUnmount` hooks a renderer calls. The listener
   list belongs to the core, so the model keeps its no-dependency rule and one store
   runs in Flutter, on a server and in a browser.
-- `StatefulNode<S, C extends Store<S>>` and `NodeView`: the one node with a
-  lifecycle. It carries a factory for its store and a function of state that
-  returns the tree plus the overlays a renderer shows above it; the node never
-  holds the store, so the tree stays a description. `createStore` and `viewFor`
-  are the erased boundary a renderer uses.
+- `StatefulNode<S, C extends Store<S>>`: the one node with a lifecycle. It carries
+  a factory for its store and a function of state that returns the tree to draw;
+  the node never holds the store, so the tree stays a description. `createStore`
+  and `viewFor` are the erased boundary a renderer uses.
 - `BoxElement.figcaption`: the caption of a `figure`, so a picture can be named
   instead of holding a loose text node. `validateTree` reports a caption outside a
   figure, the same rule a list item already has.

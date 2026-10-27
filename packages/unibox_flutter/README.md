@@ -296,14 +296,8 @@ written once for every node an application defines:
   `dispose` on the store;
 - the view's tree is rendered in place, so it inherits the typography and the
   layout of the boxes around it;
-- each `NodeView.overlays` entry is rendered through `renderFlutter` into the root
-  `Overlay`, above a barrier, which is what lets an overlay escape the clipping and
-  the scrolling of the boxes around it. A view that emits an overlay needs an
-  `Overlay` above the tree — every `MaterialApp` or `WidgetsApp` provides one.
-
-What this layer does not do yet: focus containment, `Escape` and the back button,
-and the leave animation. They are the next step in `TASK_PLAN.md` (Phase 22), so an
-overlay currently closes when the store says so, not when the user presses `Escape`.
+- the view returns one tree; a dialog is not part of the model yet, so nothing in
+  this layer is modal.
 
 ## Testing
 

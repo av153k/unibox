@@ -330,27 +330,23 @@ final class SignupNode extends StatefulNode<SignupState, SignupStore> {
   SignupNode() : super(create: SignupStore.new, view: signupView);
 }
 
-NodeView signupView(SignupState state, SignupStore store) => (
-  tree: Box(
-    children: <UINode>[
-      TextNode(state.pending ? 'Joining…' : 'Join'),
-      Box(onTap: store.submit, children: const <UINode>[TextNode('Continue')]),
-    ],
-  ),
-  overlays: <UINode>[if (state.help) TextNode('We only use this once.')],
+UINode signupView(SignupState state, SignupStore store) => Box(
+  children: <UINode>[
+    TextNode(state.pending ? 'Joining…' : 'Join'),
+    Box(onTap: store.submit, children: const <UINode>[TextNode('Continue')]),
+  ],
 );
 ```
 
 | Member | Type | Meaning |
 | --- | --- | --- |
 | `create` | `C Function()` | Makes the store for one mounting. The node never holds the instance, so the tree stays a description. |
-| `view` | `NodeView Function(S state, C store)` | Draws one state, with the store for the callbacks the view hands out. |
+| `view` | `UINode Function(S state, C store)` | Draws one state, with the store for the callbacks the view hands out. |
 | `key` | `Object?` | Keeps the state across rebuilds; a different key starts again. |
 
-`NodeView` is a record of `tree` — the content in flow — and `overlays`: trees a
-renderer shows above the rest, such as a dialog or a sheet. The renderer owns how
-an overlay is presented; focus, the barrier, `Escape` and the leave animation are
-the host's, not tokens.
+The view returns one tree for the state, so every state a page can be in — a
+pending request, a result, an error — is an ordinary tree the renderers already
+know how to draw. A view draws no overlay: a dialog is not part of the model yet.
 
 **State lives in a store, not in the node.** [`Store`](packages/unibox_core/README.md#state)
 is the contract and `StateStore` is the ready-made implementation in the same
@@ -359,11 +355,10 @@ Flutter, on a server and in a browser. `onMount` is where an initial request
 starts, which is also why a server render can draw the first state without running
 it.
 
-The Flutter renderer draws a stateful node and drives it, overlays included. The
-web renderer draws **the state the store starts with** — the tree and the overlays
-that state asks for — without calling `onMount`, so a page that loads is a page
-that says it is loading; reacting to a click needs a client runtime, which is the
-next step (`TASK_PLAN.md`, Phase 22).
+The Flutter renderer draws a stateful node and drives it. The web renderer draws
+**the state the store starts with** without calling `onMount`, so a page that loads
+is a page that says it is loading; reacting to a click needs a client runtime,
+which is the next step (`TASK_PLAN.md`, Phase 22).
 
 ### EmbedNode
 

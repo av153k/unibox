@@ -2,10 +2,9 @@
 
 ## Unreleased
 
-- A `StatefulNode` renders the state its store starts with: the tree, the overlays
-  that first state asks for, and no `onMount` call, so a server render never starts
-  the work a page starts when it appears. Reacting to an event needs the client
-  runtime that is still on the plan.
+- A `StatefulNode` renders the state its store starts with: the tree, and no
+  `onMount` call, so a server render never starts the work a page starts when it
+  appears. Reacting to an event needs the client runtime that is still on the plan.
 - A box with `BoxElement.figcaption` renders `<figcaption>`, with no role repeating
   what the tag says.
 - A field writes `aria-required`, `aria-invalid` and `aria-description`, the last one

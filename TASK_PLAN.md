@@ -141,14 +141,12 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [x] Task 98: `unibox_material` — `MaterialListTile`: the Material 3 list tile as a node that extends `Box` — a row filling its width, 16 between its parts and 16 of side padding, the one and two line heights and their dense pair, `bodyLarge` for the title and `bodyMedium` in `onSurfaceVariant` for the subtitle, black at 8% and 12% for the state layers, and the button role when the tile can be tapped. It needed no palette because the three values a scheme would carry are documented constants, which is why it could land before Task 93.
 
 ### Phase 22: A node that owns its state
-- [x] Task 98: Core — `Store<S>` (`state`, `addListener`/`removeListener`, `onMount`/`onUnmount`, `dispose`) and `StatefulNode<S, C extends Store<S>>`: the node carries a factory for its store and a `NodeView` (`({UINode tree, List<UINode> overlays})`), never the store instance, so the tree stays a description; `createStore()` and `viewFor(state, store)` are the untyped boundary a renderer uses. A subclass with a narrower store type has to be reachable as `StatefulNode<Object, Store<Object>>`, which a test pins.
+- [x] Task 98: Core — `Store<S>` (`state`, `addListener`/`removeListener`, `onMount`/`onUnmount`, `dispose`) and `StatefulNode<S, C extends Store<S>>`: the node carries a factory for its store and a view that returns one `UINode` for a state, never the store instance, so the tree stays a description; `createStore()` and `viewFor(state, store)` are the untyped boundary a renderer uses. A subclass with a narrower store type has to be reachable as `StatefulNode<Object, Store<Object>>`, which a test pins.
 - [x] Task 99: Core — `StateStore<S>`, the ready made `Store`: one immutable state value, a guarded `state` setter (an equal state notifies nothing, and a disposed store ignores a late publish), its own listener list, and the `onMount`/`onUnmount` hooks a renderer calls. It stays in the model rather than in a package of its own: core keeps its no-dependency rule, and one store still runs in Flutter, on the server and in the browser. Tests cover the notification rule, self-removal during a notification and the lifecycle defaults.
-- [x] Task 100: Flutter renderer — `UniboxStateful`: create the store on mount, subscribe, call `onMount`, rebuild on a notification, `onUnmount` and dispose on unmount, render `view.tree` through `renderNode` and each `view.overlays` entry in an overlay layer that escapes ancestor clipping (an `OverlayPortal` on `OverlayChildLocation.rootOverlay`) behind a barrier. Tests: a tap publishes a state and the tree changes; a tap starts a request and the pending tree is replaced by the result; an overlay opens and closes; the store is disposed and unsubscribed.
-- [ ] Task 101: `unibox_material` — `MaterialDialog` and `MaterialSheet` content trees (surface, radius, padding, max width, body type, scrim) so a component's overlay is a themed tree rather than hand-built boxes.
-- [ ] Task 102: Modality — `Escape`/back to close, focus containment and restore, the barrier's dismissal policy, and the exit animation: the runtime keeps an overlay mounted while its transition runs, so a leave is presence the host owns and not a token. This is the "what stays approximate" section of the material README on the web side.
-- [ ] Task 103: Example — the listings page becomes a `StatefulNode` (request, pending spinner, details overlay), hosted by the Flutter app; the Jaspr host keeps the static page until Task 104.
+- [x] Task 100: Flutter renderer — `UniboxStateful`: create the store on mount, subscribe, call `onMount`, rebuild on a notification, `onUnmount` and dispose on unmount, and render the view's tree through `renderNode`. Tests: a tap publishes a state and the tree changes; a tap starts a request and the pending tree is replaced by the result; the store is mounted once, kept across an equal rebuild, and disposed and unsubscribed on unmount.
+- [ ] Task 103: Example — the listings page becomes a `StatefulNode` (a request and the pending spinner that replaces it), hosted by the Flutter app; the Jaspr host keeps the static page until Task 104.
 - [ ] Task 104: Jaspr renderer — the client runtime, blocked by the client build: the server render is in place (it draws the state the store starts with and never calls `onMount`), and a `@client` component that constructs the node in the browser, subscribes, rebuilds and disposes it is what remains, so the page becomes interactive once the bundle is wired.
-- [x] Task 105: Docs and workspace — `design.md` §5.10 (a stateful node, what a store is, overlays are the runtime's, why `listen` and #149466), the package READMEs, `AGENTS.md`/`.clinerules` vocabulary (no bloc words: the library has stores and states, not cubits and events), `tool/verify.sh` and CI stay in step.
+- [x] Task 105: Docs and workspace — `design.md` §5.10 (a stateful node and what a store is), the package READMEs, `AGENTS.md`/`.clinerules` vocabulary (no bloc words: the library has stores and states, not cubits and events), `tool/verify.sh` and CI stay in step.
 
 ## Decisions
 
@@ -181,16 +179,14 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
   measuring the window, the web host by asking CSS. The breakpoint constant lives
   in the shared example so the two answers cannot drift apart.
 - **State:** a `StatefulNode` creates a `Store`; the store publishes an immutable
-  state and the view is a pure function of it (`tree` plus `overlays`). The node
-  never holds the instance, so the tree stays a description; `onMount` is where work
-  starts, so a server render can draw the first state without running it. Overlays
-  belong to the renderer — focus, the barrier, `Escape` and the leave animation —
-  which is why there is no dialog node and why the same view can be presented by a
-  Flutter overlay and by a browser dialog. The vocabulary is the model's: a node, a
-  store, a state and a view, with no events, cubits or blocs. The store is pure Dart in the core:
-  `StateStore` keeps its own listener list, so the model keeps its no-dependency
-  rule, and a state layer per target — the drift this project exists to remove —
-  never appears.
+  state and the view is a pure function of it: one tree per state. The node never
+  holds the instance, so the tree stays a description; `onMount` is where work
+  starts, so a server render can draw the first state without running it. The
+  vocabulary is the model's: a node, a store, a state and a view, with no events,
+  cubits or blocs. The store is pure Dart in the core: `StateStore` keeps its own
+  listener list, so the model keeps its no-dependency rule, and a state layer per
+  target — the drift this project exists to remove — never appears. A view draws
+  one tree; a modal is not modelled yet, which is in Deferred.
 - **Design systems are packages:** the Material 3 type scale lives in
   `unibox_material`, not in `unibox_core` and not in a renderer. The core keeps
   one neutral default and no brand, a package of `const` tokens is what an
@@ -247,6 +243,12 @@ Deliberately out of scope for this pass, with the reason they were left:
   (`unibox_material`), not a concept the model has to carry. The outward projection
   that a core theme would have needed — `ThemeData` on one side, CSS variables on the
   other — is fifteen lines in a Material application, which is where it stays.
+- Overlays: a dialog or a sheet above the page. A view draws one tree, and the
+  model has no slot for something drawn over it, so the honest next step is a
+  decision about that slot first (one tree plus overlays? a separate node?) and
+  then each renderer's modal layer — focus containment, the barrier, `Escape`, the
+  leave animation, and on the web a `<dialog>`/fixed layer. Deferred until a real
+  screen needs one; `MaterialDialog` and `MaterialSheet` would go with it.
 - A triggered keyframe timeline (`BoxAnimation`: `press`/`hover`/`focus`/`autoplay`
   or a host `play` key, with stops per look, rendered as CSS `@keyframes` and a
   Flutter `TweenSequence`). The portable part of what it was for is already here:

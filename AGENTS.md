@@ -108,9 +108,8 @@ before a commit, and `dart analyze` is strict here (`strict-casts`,
    type.
 9. **State lives in a store, not in a node.** `StatefulNode` carries a factory
    and a view; the renderer creates the store, calls `onMount`, rebuilds and
-   disposes it. The tree stays immutable, and overlays are the renderer's — focus,
-   the barrier, `Escape` and the leave animation — so there is no dialog node and no
-   presence token.
+   disposes it. The tree stays immutable, and the view returns one tree — a view has
+   no overlay yet.
 
 ## How a change lands
 
@@ -232,8 +231,8 @@ against it and CSS puts it in a media query.
 2. The store implements `Store<S>`, or extends `StateStore` from `unibox_core`;
    its publish rule is tested in `packages/unibox_core/test/state_store_test.dart`.
 3. Flutter: `lib/src/stateful_node.dart` renders it once for every node; the suite
-   needs a test in `test/stateful_node_test.dart` (a publish, an overlay, a
-   dispose) rather than a renderer per component.
+   needs a test in `test/stateful_node_test.dart` (a publish, a dispose) rather
+   than a renderer per component.
 4. Jaspr: the server render draws the state the store starts with and never calls
    `onMount`; `test/stateful_node_test.dart` pins both. Reacting waits for the
    client runtime.

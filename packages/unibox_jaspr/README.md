@@ -448,8 +448,8 @@ cannot draw, or two of them, is reported by `renderJaspr` instead of being skipp
 ## Stateful nodes
 
 A `StatefulNode` is rendered as **the state its store starts with**. The renderer
-creates the store, reads its state, draws `view(state, store).tree` and the
-overlays that first state asks for, then releases the store.
+creates the store, reads its state, draws `view(state, store)`, then releases the
+store.
 
 What it deliberately does not do: call `onMount`. A server render must not start
 the work a page starts when it appears — the request, the timer — so a node whose
