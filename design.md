@@ -547,6 +547,24 @@ export time — and two subtrees duplicate the content in the crawlable DOM. So 
 node states a threshold and the renderer resolves it; the child is always present,
 on both targets, at every width.
 
+**Hidden is not absent.** `display: none` removes the *boxes*, not the markup: the
+element and its subtree stay in the DOM, stay in the HTML a crawler reads, and stay
+queryable — what they lose is layout, paint, focus and their place in the
+accessibility tree. That is the property the whole design leans on (the markup is the
+same at every width, so a hydrated page cannot disagree with the server), and it is
+also its price: a hidden subtree still ships, and an `<iframe>` inside one may still
+load. Hiding because of **state** is the opposite and stays the view's job — a node
+the view does not return is genuinely absent from the DOM, which is why the map's
+overlay only exists while it is open.
+
+That leaves one honest tension in this screen: the map appears inline on a wide
+surface and as an overlay on a narrow one, so while the overlay is open a phone holds
+two copies — one unpainted. A single instance would need the map's *placement* to
+depend on state and width together, which is the compound rule this design refuses.
+The rule that keeps it honest is therefore measurable: **exactly one map is painted at
+every width**, which the example's tests assert, and the unpainted copy is documented
+rather than assumed away.
+
 What that buys, stated as the invariants the feature has to keep:
 
 - the markup is identical at every width, so a hydrated page cannot disagree with
