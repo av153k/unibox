@@ -1,8 +1,7 @@
 import 'package:test/test.dart';
 import 'package:unibox_core/unibox_core.dart';
-import 'package:unibox_example_jaspr/site/gallery.dart';
-import 'package:unibox_example_jaspr/site/landing.dart';
-import 'package:unibox_example_jaspr/site/showcase.dart';
+import 'package:unibox_example_jaspr/site/iframe_node.dart';
+import 'package:unibox_example_shared/unibox_example_shared.dart';
 import 'package:unibox_material/unibox_material.dart';
 
 /// Pins the page trees the site is made of.
@@ -29,7 +28,10 @@ void main() {
   });
 
   test('the showcase puts the two renderings side by side', () {
-    final UINode showcase = buildShowcase();
+    final UINode showcase = buildShowcase(
+      frame: ({required String src, required String title}) =>
+          IframeNode(src: src, title: title),
+    );
 
     expect(validateTree(showcase, theme: MaterialPalette.lightTheme), isEmpty);
     expect(_embeds(showcase), hasLength(2));

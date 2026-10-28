@@ -1,7 +1,14 @@
 import 'package:unibox_core/unibox_core.dart';
 import 'package:unibox_material/unibox_material.dart';
 
-import 'iframe_node.dart';
+/// A frame of the showcase: the node that draws [src], which the host supplies.
+///
+/// A frame is an `EmbedNode` — an `<iframe>` on the web — which is the one thing
+/// this tree cannot describe, so it arrives as a builder instead of as an import.
+typedef ShowcaseFrame = UINode Function({
+  required String src,
+  required String title,
+});
 
 /// The same node tree, drawn twice: the web rendering on the left and the Flutter
 /// build of it on the right.
@@ -10,8 +17,8 @@ import 'iframe_node.dart';
 /// window and both answer the same breakpoint, on the same node tree. The page is a
 /// node tree as well — the bar and the two captions are boxes and texts, and the
 /// frames are the one thing the model cannot describe, so they arrive through
-/// [EmbedNode].
-UINode buildShowcase() {
+/// [ShowcaseFrame].
+UINode buildShowcase({required ShowcaseFrame frame}) {
   const MaterialPalette palette = MaterialPalette.light;
 
   return Box(
@@ -25,11 +32,13 @@ UINode buildShowcase() {
         title: 'Jaspr — HTML and CSS',
         src: '../web/listings/',
         palette: palette,
+        frame: frame,
       ),
       _panel(
         title: 'Flutter — the same tree',
         src: '../flutter/listings/',
         palette: palette,
+        frame: frame,
       ),
     ],
   );
@@ -40,6 +49,7 @@ UINode _panel({
   required String title,
   required String src,
   required MaterialPalette palette,
+  required ShowcaseFrame frame,
 }) {
   return Box(
     flex: 1,
@@ -62,7 +72,7 @@ UINode _panel({
       Box(
         flex: 1,
         width: double.infinity,
-        children: <UINode>[IframeNode(src: src, title: title)],
+        children: <UINode>[frame(src: src, title: title)],
       ),
     ],
   );

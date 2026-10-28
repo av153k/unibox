@@ -10,9 +10,9 @@ the bar.
 
 | Package | Role |
 | --- | --- |
-| `unibox_example_shared` | The page as one node (`ExamplePageNode`, with `ExampleState` and `ExampleStore`) and the parts it is built from (`buildExamplePage`, `buildApartmentsPage`, `buildSignupDialog`), plus the palette. The listings are a `GridNode` of `MaterialCard`s, so the example also shows the design-system package. Pure Dart, no renderer. |
+| `unibox_example_shared` | The page as one node (`ExamplePageNode`, with `ExampleState` and `ExampleStore`) and the parts it is built from (`buildExamplePage`, `buildApartmentsPage`, `buildSignupDialog`), the three site pages (`buildLanding`, `buildMaterialGallery`, `buildShowcase`), the site frame and its destinations, plus the palette. The listings are a `GridNode` of `MaterialCard`s, so the example also shows the design-system package. Pure Dart, no renderer. |
 | `unibox_example_flutter` | Flutter host: one file (`lib/main.dart`) — the surface and the link policy. |
-| `unibox_example_jaspr` | Jaspr host: one component file (`lib/main.dart`) and the document it is served in (`lib/document.dart`). |
+| `unibox_example_jaspr` | Jaspr host: the document, the shipped font faces, the one `<iframe>` node the showcase needs, and the build script — no page trees, which live in the shared package. |
 
 Neither host holds state. The page owns it in `ExampleStore`; the host renders the
 node through `FlutterStateful`, which creates the store, subscribes to it and

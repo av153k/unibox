@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:jaspr/server.dart';
 import 'package:unibox_example_jaspr/document.dart';
-import 'package:unibox_example_jaspr/site/site_page.dart';
+import 'package:unibox_example_jaspr/site/site_document.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
 
 /// Renders the site to static files: the Material gallery, the showcase and the
