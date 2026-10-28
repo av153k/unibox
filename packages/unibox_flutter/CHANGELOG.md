@@ -2,6 +2,8 @@
 
 ## 0.1.0
 
+- `FlutterProgress` draws a `ProgressNode` as a `CircularProgressIndicator` with the
+  node's colours, size and stroke instead of the theme's.
 - A `TextInputNode.placeholderStyle` becomes the field's `hintStyle`, so the hint of an
   empty field is drawn in the typography the tree asked for instead of the host's.
 

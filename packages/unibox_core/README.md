@@ -18,6 +18,7 @@ Flutter or Jaspr. Renderers live in `unibox_flutter` and `unibox_jaspr`.
 | `StatefulNode`    | a subtree that owns a `Store` and draws the tree of its state |
 | `GridNode`        | equal columns whose count follows the width of the box         |
 | `OverlayNode`     | content drawn above the page, with a barrier and a dismissal |
+| `ProgressNode`    | a circular progress ring: filled to a value, or turning       |
 | `Store`           | the state contract a `StatefulNode` draws                     |
 | `StateStore`      | the ready made `Store`: one state value and its listeners     |
 | `BoxColor`, `BoxColors`, `BoxSpacing`, `BoxBorder`, `BoxShadow` | visual tokens            |

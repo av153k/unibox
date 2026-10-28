@@ -8,6 +8,7 @@ import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
 import 'overlay_node.dart';
+import 'progress_node.dart';
 import 'stack_node.dart';
 import 'stateful_node.dart';
 import 'theme_scope.dart';
@@ -125,6 +126,10 @@ Widget renderNode(core.UINode node, {double? availableWidth}) {
     final core.EmbedNode embed => KeyedSubtree(
       key: toFlutterKey(embed.key),
       child: _renderEmbed(embed),
+    ),
+    final core.ProgressNode progress => FlutterProgress(
+      node: progress,
+      key: toFlutterKey(progress.key),
     ),
     final core.OverlayNode overlay => FlutterOverlay(
       node: overlay,

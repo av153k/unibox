@@ -34,6 +34,7 @@ void main() {
       JasprPositioned,
       JasprStack,
       JasprStateful,
+      JasprProgress,
       JasprText,
       JasprTextInput,
       renderJaspr,
@@ -41,7 +42,7 @@ void main() {
       noBuilder,
     ];
 
-    expect(exported, hasLength(14));
+    expect(exported, hasLength(15));
     expect(component, isA<Component>());
     expect(renderJaspr, isNotNull);
   });

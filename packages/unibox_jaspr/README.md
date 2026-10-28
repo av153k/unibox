@@ -598,6 +598,14 @@ page is rendered by one hand-written entrypoint (`web/main.client.dart`, compile
 node is a group of closures and is handed to the renderer in the same process, so
 nothing has to be serialised across the wire.
 
+## Progress
+
+A `ProgressNode` becomes a `<div role="progressbar">` drawn as a ring: a `conic-gradient`
+of the arc and the track cut by a radial `mask` of `strokeWidth`. Determinate, the
+gradient stops at the value and `aria-valuenow` is written; indeterminate, a quarter of
+the ring turns under a `@keyframes` rule. The ends of the arc are square where Flutter
+rounds them.
+
 ## Overlays
 
 An `OverlayNode` is drawn as a **fixed layer** over the page: the barrier in the

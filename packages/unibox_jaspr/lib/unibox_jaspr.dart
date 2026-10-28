@@ -30,6 +30,7 @@ export 'src/embed_node.dart'
 export 'src/grid_node.dart' show JasprGrid;
 export 'src/image_node.dart' show JasprImage;
 export 'src/link_node.dart' show JasprLink;
+export 'src/progress_node.dart' show JasprProgress;
 export 'src/render.dart';
 export 'src/stylesheet.dart' show JasprThemeScope, UniboxStylesheetScope;
 export 'src/stack_node.dart' show JasprPositioned, JasprStack;

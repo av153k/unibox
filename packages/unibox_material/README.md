@@ -492,6 +492,13 @@ is not draggable, shadows are one layer where Material has two, and the ink is o
 circle that grows and fades where Material draws a splash with a fading highlight
 and a second ripple when the press is released.
 
+## The progress indicator
+
+`MaterialProgressIndicator` is a `ProgressNode` with Material's 48 pixel ring, 4 pixel
+stroke and the `primary` role for the arc, plus `surfaceContainerHighest` behind it when
+`showTrack` is set. It is circular only, and the indeterminate motion is each platform's
+own.
+
 ## Line heights
 
 A `BoxTextStyle.lineHeight` is a multiple of the font size, because that is the

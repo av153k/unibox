@@ -2,6 +2,8 @@
 
 ## 0.1.0
 
+- `ProgressNode`: a circular progress ring, determinate (`value` from 0 to 1) or
+  turning, with a colour, a track, a size, a stroke and a screen reader label.
 - `TextInputNode.placeholderStyle` gives the hint its own typography, so a field can
   paint it quieter than the value without restyling the whole control. It is a token
   of the node rather than of the box around it because both targets hand the hint to

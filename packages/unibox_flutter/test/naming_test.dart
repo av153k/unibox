@@ -44,6 +44,7 @@ void main() {
       FlutterStack,
       FlutterStateful,
       FlutterText,
+      FlutterProgress,
       FlutterTextInput,
       FlutterTextStyleScope,
       FlutterWidgetNode,
@@ -53,7 +54,7 @@ void main() {
       noBuilder,
     ];
 
-    expect(exported, hasLength(16));
+    expect(exported, hasLength(17));
     expect(widget, isNotNull);
     expect(renderFlutter, isNotNull);
   });

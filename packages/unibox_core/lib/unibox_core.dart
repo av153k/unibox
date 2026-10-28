@@ -26,6 +26,7 @@ export 'src/nodes/grid_node.dart';
 export 'src/nodes/image_node.dart';
 export 'src/nodes/link_node.dart';
 export 'src/nodes/overlay_node.dart';
+export 'src/nodes/progress_node.dart';
 export 'src/nodes/positioned_node.dart';
 export 'src/nodes/stack_node.dart';
 export 'src/nodes/stateful_node.dart';

@@ -2,6 +2,8 @@
 
 ## 0.1.0
 
+- `JasprProgress` draws a `ProgressNode` as a `role="progressbar"` ring: a conic
+  gradient under a radial mask, turning under a `@keyframes` rule when indeterminate.
 - In a browser the stylesheet is an element in the head rather than the tree's
   `<style>`, and a look a redrawn subtree registers is appended to it: before, only
   the tree the server wrote had a rule, so a dialog opened by a store arrived

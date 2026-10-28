@@ -9,6 +9,7 @@ import 'image_node.dart';
 import 'keys.dart';
 import 'link_node.dart';
 import 'overlay_node.dart';
+import 'progress_node.dart';
 import 'stack_node.dart';
 import 'stateful_node.dart';
 import 'stylesheet.dart';
@@ -100,6 +101,10 @@ Component renderNode(core.UINode node) {
     final core.EmbedNode embed => Component.fragment(<Component>[
       _renderEmbed(embed),
     ], key: toJasprKey(embed.key)),
+    final core.ProgressNode progress => JasprProgress(
+      node: progress,
+      key: toJasprKey(progress.key),
+    ),
     final core.OverlayNode overlay => JasprOverlay(
       node: overlay,
       key: toJasprKey(overlay.key),

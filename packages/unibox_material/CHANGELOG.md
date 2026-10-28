@@ -2,6 +2,8 @@
 
 ## 0.1.0
 
+- `MaterialProgressIndicator`: a `ProgressNode` with Material's size, stroke and the
+  `primary` role.
 - `MaterialInkWell` is a tappable region: Material's hover, focus and press tints as
   roles, a 100ms fade, a button role when it can be tapped, and **the ink a press
   spreads** — a 12% drop that starts where the pointer landed, grows to 280 pixels and
