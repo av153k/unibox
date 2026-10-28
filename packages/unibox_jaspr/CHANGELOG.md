@@ -2,6 +2,13 @@
 
 ## 0.1.0
 
+- In a browser the stylesheet is an element in the head rather than the tree's
+  `<style>`, and a look a redrawn subtree registers is appended to it: before, only
+  the tree the server wrote had a rule, so a dialog opened by a store arrived
+  without its `position: fixed` layer.
+- `Escape` dismisses an overlay in a browser: the key is heard on the document while
+  the overlay is up, because nothing inside it holds focus yet.
+
 - A `TextInputNode.placeholderStyle` becomes a `::placeholder` rule next to the field's
   own class, and its declarations are part of that class's key, so two fields that
   differ only in the colour of their hint do not share a class.
