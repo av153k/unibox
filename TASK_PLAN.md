@@ -170,6 +170,8 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 - [x] Task 121: Material field — `TextInputNode.padding` (core, both renderers) and `MaterialTextField` as the filled Material 3 variant: fill, 4 pixel radius, a bottom line as a shadow (1 → 2 pixels on focus, error when invalid), the label inside the fill, the padding on the input so the whole field takes focus, 38% opacity when disabled. The outlined variant is refused: its label floats into a notch cut in the border, and a uniform `BoxBorder` cannot be cut.
 - [x] Task 122: Docs — `design.md` §5.6 (a grid is the second layout engine, and why it is admissible where tables were refused) and §5.13 (the rule, the clamp, the cap, the last-row rule and the measurements), the root and core READMEs, both renderer READMEs, `AGENTS.md`/`AI_INSTRUCTIONS.md`, and the three changelogs. The declaration was measured in Chromium and WebKit 18.2 at 250, 375, 600, 899, 900, 901, 1280 and 1440: counts and gutters match the model exactly, cards to the 1/64 pixel a browser lays out with.
 
+- [ ] Task 123: Example — hold at 360 logical pixels without a breakpoint: the card's fixed `width: 380`, the gallery's `width: 720`, `320` and `360` rows and the showcase's two frames become fluid (`width: double.infinity`, `maxWidth`, and a `GridNode` whose `minItemWidth` stacks the frames below two columns). Measured at 360 the navigation clips, the sign-up dialog is wider than the viewport, the showcase puts both frames in one row and the gallery's specimens overflow — every one of them a fixed width, so every one is a sizing fix, not a query. `design.md` §5.15 records why no breakpoint is needed.
+
 ### Phase 24: Material fidelity
 - [x] Task 116: Audit the Material components against the Material 3 specification and fix the gaps: card variants on the palette, list tile padding and palette colours, text field minimum height, focused outline, hover and disabled states, dialog content and action colours, a full-width bottom sheet with a drag handle and an upward shadow.
 - [x] Task 117: `unibox_material` — `MaterialIcon`: a glyph of an icon font in a square `Box`, by codepoint or by ligature name. A codepoint that comes from a const `IconData` is what the Flutter tree shaker can subset (10.7 MB became 3.6 kB in the check), a ligature name ships the whole font, and a web export serves whatever subset the host puts next to its `@font-face`; the README states the recipe and the Symbols codepoints.
@@ -231,6 +233,19 @@ heaviest thing left in it, and the rule stands for an application that has one.
 
 Deliberately out of scope for this pass, with the reason they were left:
 
+- **Width-dependent style ("P3")**: not built, because no screen needs it. The
+  model has no breakpoint token, and the site's sixteen `@media` blocks are thirteen
+  hover guards and three colour-scheme blocks — not one is a width query. Reflow is
+  `GridNode`'s arithmetic, and `flex`, `double.infinity` and `maxWidth` cover the
+  rest without knowing a viewport. The five places the phone rendering broke at 360
+  logical pixels were all **fixed pixel widths** in trees written for a wide screen
+  (`width: 380` on the card, `width: 720` and `width: 320` on the gallery rows, two
+  frames in a row), so the fix is fluid sizing, not a query. `design.md` §5.15 holds
+  the invariants a phase would have to keep — all variants in the CSS, a mobile-first
+  baseline, the same element and children at every width, one declaration per media
+  query, and the Flutter branch resolving the condition from the node's constraints
+  rather than from a viewport the web branch cannot see. The trigger is a named screen
+  in a pull request that needs different *styling* at a different width.
 - `Box.onScroll` and scroll position: needs a shared scroll model that neither
   `SingleChildScrollView` nor the browser state exposes the same way.
 - A focus frame around a field: the browser's native ring is stripped (it sits

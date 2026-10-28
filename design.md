@@ -474,7 +474,7 @@ breaking change for a host stylesheet that names it.
 - Dismissing is interaction, so on the web it waits for the client build; the
   server writes the layer and its barrier so the page looks right first.
 
-### 5.13 Reflow is a grid
+### 5.14 Reflow is a grid
 
 A tree states a rule, not a breakpoint. `GridNode(minItemWidth, maxColumns, gap)`
 means "fit as many columns of at least `minItemWidth` as the width allows, stop at
@@ -511,3 +511,50 @@ has one, joins that list).
 tallest card and shorter cards are not stretched, which is also what keeps the
 Flutter side free of intrinsic measurement a card containing a scroll view could
 not answer.
+### 5.15 A breakpoint would change styling only, and none is needed
+
+The model has no breakpoint token, and the output shows what replaces one: of the
+sixteen `@media` blocks the whole example site emits, thirteen guard the hover
+state (`@media (hover: hover)`, so a touch screen cannot get stuck in a hovered
+look) and three are the host's own dark-mode block. **None is a width query.**
+
+Different distribution comes from the layout tokens instead, and they are width
+independent by construction:
+
+| Want | Token | Why it needs no query |
+| --- | --- | --- |
+| 1 to 3 columns as the room allows | `GridNode(minItemWidth, maxColumns, gap)` | `repeat(auto-fill, minmax(…))` resolves against the grid's own width; Flutter runs the same arithmetic on its constraints (§5.14) |
+| an item that takes the room left over | `flex` | a flex factor has no width in it |
+| a surface that fills its line | `width: double.infinity`, `maxWidth` | percentages and maxima |
+| a control that may not grow past a reading width | `maxWidth` | a maximum, not a breakpoint |
+
+**When it was measured, no screen needed more.** At 360 logical pixels the phone
+rendering broke in five places — the navigation clipped, the sign-up dialog wider
+than the viewport, both panels of the showcase side by side, and the gallery's
+specimen rows overflowing — and every one of them was a **fixed pixel width** in a
+tree written for a wide screen (`width: 380` on the card, `width: 720` and
+`width: 320` on the gallery rows, two frames in a row). Sizing them fluidly fixes
+all five without a single query, and it keeps the promise the server has to keep:
+the markup is the same at every width, so the hydrated DOM cannot disagree with it.
+
+**What a phase would have to hold if a screen ever does need different styling.**
+A breakpoint may change styling only — never structure and never data — because a
+structural one duplicates content in the crawlable markup and cannot be honoured in
+Flutter without a second tree. Concretely:
+
+- every variant is present in the CSS with a mobile-first baseline, so the server
+  output is correct at every width without knowing any of them;
+- the element and its children are the same at every width, so the hydrated DOM
+  matches the server byte for byte;
+- the Flutter branch resolves the same condition from the **constraints of the
+  node**, the way the grid does, and never reads a viewport the web branch cannot
+  see;
+- removing a breakpoint removes exactly its rules, which means one declaration per
+  media query rather than a class per breakpoint.
+
+The trigger for building it is a named screen in a pull request, not a roadmap: a
+screen that genuinely needs *different styling* — not different distribution — at
+a different width. Until one exists, this section is the record of why the model
+has no breakpoint.
+
+
