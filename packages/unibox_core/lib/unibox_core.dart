@@ -19,6 +19,7 @@ library;
 
 export 'src/callbacks.dart';
 export 'src/enums.dart';
+export 'src/events.dart';
 export 'src/nodes/box.dart';
 export 'src/nodes/embed_node.dart';
 export 'src/nodes/grid_node.dart';

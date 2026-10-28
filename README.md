@@ -142,6 +142,7 @@ Box(
 | Parameter | Type | Default | Meaning |
 | --- | --- | --- | --- |
 | `onTap` | `TapCallback?` | none | Tapped, clicked, or activated with `Enter`/`Space` once the box is focusable. |
+| `onTapDown` | `TapDownCallback?` | none | A press lands: where it landed inside the box and what pressed it (touch, mouse, pen, keyboard). It fires before `onTap`, which is what an effect that starts at the pointer needs. |
 | `onLongPress` | `LongPressCallback?` | none | Pressed and held. |
 | `onHover` | `HoverCallback?` | none | Pointer entered or left the box. |
 | `enabled` | `bool` | `true` | A disabled box keeps its layout, drops its callbacks, leaves the tab order and is announced as disabled. |

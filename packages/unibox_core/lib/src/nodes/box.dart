@@ -70,6 +70,7 @@ class Box extends UINode {
     this.enabled = true,
     this.semantics,
     this.onTap,
+    this.onTapDown,
     this.onLongPress,
     this.onHover,
   });
@@ -226,6 +227,14 @@ class Box extends UINode {
 
   /// Called when the box is tapped.
   final TapCallback? onTap;
+
+  /// Called when a press lands on the box, before it is released.
+  ///
+  /// The event carries where the press landed inside the box and what pressed it,
+  /// which is what an effect that starts at the pointer needs. [onTap] stays for the
+  /// case where only the activation matters; a box can have either, both, or
+  /// neither.
+  final TapDownCallback? onTapDown;
 
   /// Called when the box is long pressed.
   final LongPressCallback? onLongPress;

@@ -2,6 +2,12 @@
 
 ## 0.1.0
 
+- `BoxTapEvent`, `BoxPoint`, `BoxPointerKind` and the flat `Box.onTapDown`: a press now
+  says where it landed inside the box and what pressed it. The position is the local
+  one because it is the coordinate both hosts can produce exactly — Flutter's
+  `localPosition`, a browser's `offsetX`/`offsetY` — while where a box sits on a page
+  is a host fact. `onTap()` stays for the case where only the activation matters.
+
 The first release of the platform agnostic core: the tree, the values it is made of,
 and the checks that keep a tree renderable.
 
