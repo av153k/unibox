@@ -43,6 +43,26 @@ abstract class JasprStateful extends StatefulComponent {
   State<JasprStateful> createState() => JasprStatefulState();
 }
 
+/// A [JasprStateful] that draws a node the tree already holds.
+///
+/// [JasprStateful] is for a page: a host subclasses it and builds its node. A node
+/// that sits in the middle of a tree already exists, so this component takes it and
+/// gives it the same lifecycle: a server reads the first state and lets the store
+/// go, a browser subscribes, calls `onMount` and redraws when it is notified. A node
+/// is a group of closures, so it is handed over in the same process and never has to
+/// cross the wire — which is why this needs neither a `@client` marker nor generated
+/// code, unlike a component whose *parameters* must be serialisable.
+class JasprStatefulNode extends JasprStateful {
+  /// Creates the component around [node].
+  const JasprStatefulNode({required this.node, super.key});
+
+  /// The node to draw, kept rather than built.
+  final core.StatefulNode<Object, core.Store<Object>> node;
+
+  @override
+  core.StatefulNode<Object, core.Store<Object>> createNode() => node;
+}
+
 class JasprStatefulState extends State<JasprStateful> {
   late final core.StatefulNode<Object, core.Store<Object>> _node = component
       .createNode();

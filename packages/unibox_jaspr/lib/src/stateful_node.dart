@@ -1,28 +1,19 @@
 import 'package:jaspr/jaspr.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
-import 'render.dart';
+import 'stateful_component.dart';
 
-/// Renders the state a [core.StatefulNode] starts with into a server page.
+/// Renders a [core.StatefulNode] wherever it sits in a tree.
 ///
-/// A server render has no events and no client store, so this draws the first
-/// state and stops: `onMount` is not called (a server must not start the work a
-/// page starts when it appears), no notification can arrive, and the callbacks
-/// the view hands out are inert until a client runtime rebuilds the node in the
-/// browser. What it does produce is exactly the markup the first client build
-/// will draw, which is what hydration has to match.
+/// A node in the middle of a page is a component like the page itself, so it goes
+/// through [JasprStateful] rather than being drawn once: a server reads the first
+/// state and lets the store go — `onMount` is not called, because a server must not
+/// start the work a page starts when it appears — and a browser keeps the store,
+/// calls `onMount`, and redraws that node when the store changes.
 ///
-/// A node whose first state is `loading` therefore renders a page that loads:
-/// the useful static shape is one whose store starts with data the server
-/// already has.
+/// Drawing the first state and stopping would have been enough while a page was
+/// static, and it is exactly what made a ripple never move on the web: the store a
+/// press wrote to had been disposed before the press could happen.
 Component statefulView(core.StatefulNode<Object, core.Store<Object>> node) {
-  final core.Store<Object> store = node.createStore();
-  final Component tree = renderNode(node.viewFor(store.state, store));
-
-  // Nothing will subscribe on the server, so the store is released as soon as
-  // its state has been read. The closures the view handed out refer to it, but
-  // a server render never calls them.
-  store.dispose();
-
-  return tree;
+  return JasprStatefulNode(node: node);
 }

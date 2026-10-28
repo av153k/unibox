@@ -33,6 +33,6 @@ export 'src/link_node.dart' show JasprLink;
 export 'src/render.dart';
 export 'src/stylesheet.dart' show JasprThemeScope, UniboxStylesheetScope;
 export 'src/stack_node.dart' show JasprPositioned, JasprStack;
-export 'src/stateful_component.dart' show JasprStateful;
+export 'src/stateful_component.dart' show JasprStateful, JasprStatefulNode;
 export 'src/text_input_node.dart' show JasprTextInput;
 export 'src/text_node.dart' show JasprText;

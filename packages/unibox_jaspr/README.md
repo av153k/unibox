@@ -557,48 +557,33 @@ cannot draw, or two of them, is reported by `renderJaspr` instead of being skipp
 
 ## Stateful nodes
 
-A `StatefulNode` is rendered as **the state its store starts with**. The renderer
-creates the store, reads its state, draws `view(state, store)`, then releases the
-store.
+A `StatefulNode` is a **component wherever it sits in a tree**, so it has the same two
+lives as a page: a server reads the state its store starts with, a browser subscribes
+to that store. `JasprStatefulNode` is the component — `JasprStateful` with the node
+handed in instead of built — and the renderer uses it for every stateful node it
+meets, so a ripple in the middle of a page reacts exactly like the page around it.
 
-What it deliberately does not do: call `onMount`. A server render must not start
-the work a page starts when it appears — the request, the timer — so a node whose
-first state is *loading* produces a page that says it is loading. The useful
-static shape is one whose store starts with data the server already has, or one
-whose first state is the meaningful one.
+On the server it creates the store, reads its state, draws `view(state, store)` and
+releases the store. What it deliberately does not do: call `onMount`. A server render
+must not start the work a page starts when it appears — the request, the timer — so a
+node whose first state is *loading* produces a page that says it is loading. The
+useful static shape is one whose store starts with data the server already has, or
+one whose first state is the meaningful one.
 
-What it cannot do at all: **react**. There are no events in a server render, no
-store subscription and no DOM listeners wired to the store, so the callbacks the
-view hands out are inert until a client component runs the same node in the
-browser.
+In a browser the store is created once, subscribed, `onMount` is called at mount and
+`onUnmount` and `dispose` at the end, and a notification redraws that node — and only
+that node keeps its state; the page around it is not rebuilt.
 
-`JasprStateful` is that component, and it is the Jaspr mirror of the Flutter
-widget: one class, with the two paths separated by `kIsWeb`. Write one subclass,
-mark it `@client` so Jaspr also compiles it for the browser, and return the node:
+`JasprStateful` is the page-level spelling of the same thing: a host subclasses it and
+returns its node from `createNode`, which is what a page whose state is the whole
+document wants (the example's `ExampleApp` is one). A node that already exists goes
+through `JasprStatefulNode` and needs nothing from the host.
 
-```dart
-@client
-class ListingsPage extends JasprStateful {
-  const ListingsPage({required this.apiBase, super.key});
-
-  final String apiBase;
-
-  @override
-  StatefulNode<Object, Store<Object>> createNode() =>
-      StoreFrontPageNode(api: HttpApi(apiBase));
-}
-```
-
-* on the server: the store is created only to read its first state, nothing
-  subscribes, `onMount` never runs, and the store is released;
-* in a browser: the store is created once, subscribed, `onMount` is called and a
-  change redraws the tree.
-
-Reacting needs the Jaspr client build, because a `@client` component is Dart
-compiled to JavaScript. That is also why the node is returned by `createNode`
-rather than passed in: a `@client` component may only receive simple values that
-survive being written into the page, and a node is a group of functions. The build
-is the next step (`TASK_PLAN.md`, Phase 22).
+Neither needs `jaspr_builder` or a `@client` marker in this repository's setup: the
+page is rendered by one hand-written entrypoint (`web/main.client.dart`, compiled by
+`dart compile js` in `tool/site.sh`), which builds the same root the export did. A
+node is a group of closures and is handed to the renderer in the same process, so
+nothing has to be serialised across the wire.
 
 ## Overlays
 

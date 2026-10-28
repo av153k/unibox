@@ -6,6 +6,11 @@
   it landed (`offsetX`/`offsetY`, the same local frame Flutter reports) and the device
   through `pointerType`. Like every other listener it stays inert until the client
   runtime exists, so a static export costs nothing.
+- A `StatefulNode` that sits in a tree is a component like the page it is drawn in: a
+  browser subscribes to its store, calls `onMount` and redraws that node when it is
+  notified, while a server still reads only the first state. Until now a node inside a
+  page was drawn once and its store released, so any state inside a page — a ripple, a
+  tab strip — was inert, and only a whole page could react.
 
 The first release of the Jaspr renderer: one node tree becomes HTML and CSS, rendered
 on the server and readable without a client bundle.

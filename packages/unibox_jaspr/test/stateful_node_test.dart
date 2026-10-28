@@ -1,5 +1,6 @@
 import 'package:jaspr_test/jaspr_test.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
+import 'package:unibox_jaspr/src/stateful_node.dart';
 import 'package:unibox_jaspr/unibox_jaspr.dart';
 
 import 'support/harness.dart';
@@ -63,6 +64,13 @@ final class _CounterPage extends JasprStateful {
 }
 
 void main() {
+  test('draws a node that sits in a tree as a component, not a snapshot', () {
+    // A node in the middle of a page subscribes like a page does, so it reacts
+    // wherever a client runtime listens. Drawing the first state and letting the
+    // store go made every node in a page inert — a ripple had nowhere to spread.
+    expect(statefulView(_Node()), isA<JasprStatefulNode>());
+  });
+
   testComponents('renders the state the store starts with', (tester) async {
     pumpNode(tester, _Node());
 
