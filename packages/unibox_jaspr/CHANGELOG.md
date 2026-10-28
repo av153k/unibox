@@ -2,6 +2,11 @@
 
 ## 0.1.0
 
+- A box with `onTapDown` writes a `pointerdown` listener that reports the press where
+  it landed (`offsetX`/`offsetY`, the same local frame Flutter reports) and the device
+  through `pointerType`. Like every other listener it stays inert until the client
+  runtime exists, so a static export costs nothing.
+
 The first release of the Jaspr renderer: one node tree becomes HTML and CSS, rendered
 on the server and readable without a client bundle.
 

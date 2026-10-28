@@ -304,12 +304,32 @@ class JasprBox extends StatelessComponent {
 /// tree renders without any JavaScript.
 Map<String, EventCallback> _buildEvents(core.Box box) {
   final core.TapCallback? onTap = box.onTap;
+  final core.TapDownCallback? onTapDown = box.onTapDown;
   final core.HoverCallback? onHover = box.onHover;
   final core.LongPressCallback? onLongPress = box.onLongPress;
   final Map<String, EventCallback> events = <String, EventCallback>{};
 
-  if (onTap == null && onHover == null && onLongPress == null) {
+  if (onTap == null &&
+      onTapDown == null &&
+      onHover == null &&
+      onLongPress == null) {
     return events;
+  }
+
+  // The press is reported where it landed: `offsetX`/`offsetY` are the position
+  // inside the element, the same local frame Flutter reports, and `pointerType`
+  // names the device. The listener only runs once the client runtime does.
+  if (onTapDown != null) {
+    events['pointerdown'] = (web.Event event) {
+      final web.PointerEvent pointer = event as web.PointerEvent;
+
+      onTapDown(
+        core.BoxTapEvent(
+          position: core.BoxPoint(pointer.offsetX, pointer.offsetY),
+          pointer: _pointerKind(pointer.pointerType),
+        ),
+      );
+    };
   }
 
   var longPressed = false;
@@ -424,3 +444,16 @@ String? _htmlRole(core.BoxRole role) {
 bool _isActivationKey(String key) => key == 'Enter' || key == ' ';
 
 /// Flattens [styles] into a stable `property:value;` string.
+
+/// Converts a DOM `pointerType` to the portable kind.
+///
+/// The browser names three devices and leaves the rest to the platform, so anything
+/// it does not know is reported as unknown rather than guessed.
+core.BoxPointerKind _pointerKind(String pointerType) {
+  return switch (pointerType) {
+    'touch' => core.BoxPointerKind.touch,
+    'mouse' => core.BoxPointerKind.mouse,
+    'pen' => core.BoxPointerKind.pen,
+    _ => core.BoxPointerKind.unknown,
+  };
+}

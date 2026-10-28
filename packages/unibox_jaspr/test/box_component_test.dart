@@ -420,6 +420,27 @@ void main() {
       expect(() => renderJaspr(const _UnknownNode()), throwsUnsupportedError);
     });
   });
+  group('Box press event', () {
+    testComponents('listens for the press when the tree asks for it', (
+      tester,
+    ) async {
+      pumpNode(tester, core.Box(onTapDown: (core.BoxTapEvent event) {}));
+
+      final TestRenderElement element = elementsOf(find.tag('div')).first;
+
+      expect(element.events?.keys, contains('pointerdown'));
+    });
+
+    testComponents('adds no listener to a box that does not ask', (
+      tester,
+    ) async {
+      pumpNode(tester, const core.Box());
+
+      final TestRenderElement element = elementsOf(find.tag('div')).first;
+
+      expect(element.events, isNull);
+    });
+  });
 }
 
 /// A node type no renderer knows about.
