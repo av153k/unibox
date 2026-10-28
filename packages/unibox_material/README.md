@@ -411,7 +411,8 @@ a glyph does not flash as text.
 ## Fidelity
 
 What the components state against the Material 3 specification: a card in its three
-variants (`MaterialCard.elevated`, `.filled`, `.outlined`); a list tile with the 8
+variants (`MaterialCard.elevated`, `.filled`, `.outlined`), each taking the card's
+whole parameter list as Flutter's `Card` does; a list tile with the 8
 pixel vertical padding and the palette's title, supporting text and state layers; a
 text field at least 56 pixels tall with a 2 pixel focused outline, a primary focused
 label, an `onSurface` hover outline and 38% opacity when disabled; a dialog whose

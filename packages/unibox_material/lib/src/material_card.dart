@@ -29,12 +29,13 @@ import 'material_typography.dart';
 /// `color: const BoxColor.role(MaterialColorRole.surfaceContainerLow)`, `border: BoxBorder(color:
 /// const BoxColor.role(MaterialColorRole.outlineVariant))` — from a `MaterialPalette`.
 ///
-/// The three official variants are named constructors that take a
-/// [MaterialPalette]: [MaterialCard.elevated] (`surfaceContainerLow` and the level
-/// one shadow), [MaterialCard.filled] (`surfaceContainerHighest`) and
-/// [MaterialCard.outlined] (`surface` and a 1 pixel `outlineVariant` border). It is
-/// not a ripple: a press is [stateStyles], the same as on any other
-/// control.
+/// The three official variants are named constructors, as in Flutter's `Card`:
+/// [MaterialCard.elevated] (`surfaceContainerLow` and the level one shadow),
+/// [MaterialCard.filled] (`surfaceContainerHighest`) and [MaterialCard.outlined]
+/// (`surface` and a 1 pixel `outlineVariant` border). Each takes the card's whole
+/// parameter list and lets the caller replace the surface, the line or the shadow
+/// it starts from. It is not a ripple: a press is [stateStyles], the same as on any
+/// other control.
 ///
 /// **The escape hatch is a [Box].** The card states its surface, the layout of
 /// its content and its interaction; anything else — a style bag, opacity, a
@@ -80,85 +81,187 @@ final class MaterialCard extends Box {
        );
 
   /// A filled card: `surfaceContainerHighest`, no shadow, 12 pixel radius.
+  ///
+  /// It takes the card's whole parameter list, as `Card.filled` does in Flutter:
+  /// the variant states the surface, the elevation and the line, and each of them
+  /// can be overridden without giving up the card.
   MaterialCard.filled({
     Object? key,
     List<UINode> children = const <UINode>[],
-    BoxSpacing padding = const BoxSpacing.all(16),
-    TapCallback? onTap,
+    Axis? direction,
+    MainAlign? mainAlign,
+    CrossAlign? crossAlign,
+    double? gap,
+    int? flex,
+    Overflow? overflow,
     double? width,
     double? height,
     BoxSpacing? margin,
-    Axis? direction,
-    double? gap,
+    BoxSpacing padding = const BoxSpacing.all(16),
+    BoxTransition? transition,
+    BoxStyle? hoverStyle,
+    Map<BoxState, BoxStyle>? stateStyles,
+    bool enabled = true,
+    BoxSemantics? semantics,
+    TapCallback? onTap,
+    LongPressCallback? onLongPress,
+    HoverCallback? onHover,
+    BoxColor? color,
+    BoxShadow? shadow,
+    BoxBorder? border,
+    double borderRadius = 12,
+    BoxTextStyle? textStyle,
   }) : this(
          key: key,
          children: children,
-         color: const BoxColor.role(MaterialColorRole.surfaceContainerHighest),
-         shadow: null,
-         padding: padding,
-         onTap: onTap,
+         direction: direction,
+         mainAlign: mainAlign,
+         crossAlign: crossAlign,
+         gap: gap,
+         flex: flex,
+         overflow: overflow,
          width: width,
          height: height,
          margin: margin,
-         direction: direction,
-         gap: gap,
-         textStyle: _bodyOn(),
+         padding: padding,
+         transition: transition,
+         hoverStyle: hoverStyle,
+         stateStyles: stateStyles,
+         enabled: enabled,
+         semantics: semantics,
+         onTap: onTap,
+         onLongPress: onLongPress,
+         onHover: onHover,
+         borderRadius: borderRadius,
+         textStyle: textStyle ?? _bodyOn(),
+         color:
+             color ??
+             const BoxColor.role(MaterialColorRole.surfaceContainerHighest),
+         shadow: shadow,
+         border: border,
        );
 
   /// An outlined card: `surface` with a 1 pixel `outlineVariant` border, no
   /// shadow, 12 pixel radius.
+  ///
+  /// The whole parameter list, like [MaterialCard.filled]; the border is the one
+  /// token the variant states, and passing another replaces it.
   MaterialCard.outlined({
     Object? key,
     List<UINode> children = const <UINode>[],
-    BoxSpacing padding = const BoxSpacing.all(16),
-    TapCallback? onTap,
+    Axis? direction,
+    MainAlign? mainAlign,
+    CrossAlign? crossAlign,
+    double? gap,
+    int? flex,
+    Overflow? overflow,
     double? width,
     double? height,
     BoxSpacing? margin,
-    Axis? direction,
-    double? gap,
+    BoxSpacing padding = const BoxSpacing.all(16),
+    BoxTransition? transition,
+    BoxStyle? hoverStyle,
+    Map<BoxState, BoxStyle>? stateStyles,
+    bool enabled = true,
+    BoxSemantics? semantics,
+    TapCallback? onTap,
+    LongPressCallback? onLongPress,
+    HoverCallback? onHover,
+    BoxColor? color,
+    BoxShadow? shadow,
+    BoxBorder? border,
+    double borderRadius = 12,
+    BoxTextStyle? textStyle,
   }) : this(
          key: key,
          children: children,
-         color: const BoxColor.role(MaterialColorRole.surface),
-         shadow: null,
-         border: BoxBorder(
-           color: const BoxColor.role(MaterialColorRole.outlineVariant),
-         ),
-         padding: padding,
-         onTap: onTap,
+         direction: direction,
+         mainAlign: mainAlign,
+         crossAlign: crossAlign,
+         gap: gap,
+         flex: flex,
+         overflow: overflow,
          width: width,
          height: height,
          margin: margin,
-         direction: direction,
-         gap: gap,
-         textStyle: _bodyOn(),
+         padding: padding,
+         transition: transition,
+         hoverStyle: hoverStyle,
+         stateStyles: stateStyles,
+         enabled: enabled,
+         semantics: semantics,
+         onTap: onTap,
+         onLongPress: onLongPress,
+         onHover: onHover,
+         borderRadius: borderRadius,
+         textStyle: textStyle ?? _bodyOn(),
+         color: color ?? const BoxColor.role(MaterialColorRole.surface),
+         shadow: shadow,
+         border:
+             border ??
+             BoxBorder(
+               color: const BoxColor.role(MaterialColorRole.outlineVariant),
+             ),
        );
 
   /// An elevated card: the `surfaceContainerLow` role with the level one shadow,
   /// which is the look the default constructor states.
+  ///
+  /// The whole parameter list, like [MaterialCard.filled].
   MaterialCard.elevated({
     Object? key,
     List<UINode> children = const <UINode>[],
-    BoxSpacing padding = const BoxSpacing.all(16),
-    TapCallback? onTap,
+    Axis? direction,
+    MainAlign? mainAlign,
+    CrossAlign? crossAlign,
+    double? gap,
+    int? flex,
+    Overflow? overflow,
     double? width,
     double? height,
     BoxSpacing? margin,
-    Axis? direction,
-    double? gap,
+    BoxSpacing padding = const BoxSpacing.all(16),
+    BoxTransition? transition,
+    BoxStyle? hoverStyle,
+    Map<BoxState, BoxStyle>? stateStyles,
+    bool enabled = true,
+    BoxSemantics? semantics,
+    TapCallback? onTap,
+    LongPressCallback? onLongPress,
+    HoverCallback? onHover,
+    BoxColor? color,
+    BoxShadow? shadow,
+    BoxBorder? border,
+    double borderRadius = 12,
+    BoxTextStyle? textStyle,
   }) : this(
          key: key,
          children: children,
-         color: const BoxColor.role(MaterialColorRole.surfaceContainerLow),
-         padding: padding,
-         onTap: onTap,
+         direction: direction,
+         mainAlign: mainAlign,
+         crossAlign: crossAlign,
+         gap: gap,
+         flex: flex,
+         overflow: overflow,
          width: width,
          height: height,
          margin: margin,
-         direction: direction,
-         gap: gap,
-         textStyle: _bodyOn(),
+         padding: padding,
+         transition: transition,
+         hoverStyle: hoverStyle,
+         stateStyles: stateStyles,
+         enabled: enabled,
+         semantics: semantics,
+         onTap: onTap,
+         onLongPress: onLongPress,
+         onHover: onHover,
+         borderRadius: borderRadius,
+         textStyle: textStyle ?? _bodyOn(),
+         color:
+             color ??
+             const BoxColor.role(MaterialColorRole.surfaceContainerLow),
+         shadow: shadow ?? elevatedShadow,
+         border: border,
        );
 
   static BoxTextStyle _bodyOn() => MaterialTypography.bodyMedium.merge(
