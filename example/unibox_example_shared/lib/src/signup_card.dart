@@ -211,6 +211,7 @@ UINode _closeRow(TapCallback onDismiss) {
 /// this box the only thing that draws a field, on either target.
 UINode _field(TextInputNode node) {
   return Box(
+    width: double.infinity,
     padding: const BoxSpacing.symmetric(horizontal: 12, vertical: 10),
     backgroundColor: ExamplePalette.surface,
     borderRadius: 10,
@@ -337,6 +338,7 @@ UINode _newsletterRow(SignupFormState state, TapCallback onToggle) {
 UINode _footer(SignupFormState state, TapCallback onSubmit) {
   return Box(
     direction: Axis.vertical,
+    width: double.infinity,
     gap: 12,
     children: <UINode>[
       Box(
