@@ -2,6 +2,11 @@
 
 ## 0.1.0
 
+- A box with `onTapDown` reports the press: `TapDownDetails.localPosition` becomes a
+  `BoxTapEvent` position and `PointerDeviceKind` becomes a `BoxPointerKind`, before
+  the tap fires. A box that only listens for the press counts as interactive, so it
+  still takes the pointer cursor.
+
 The first release of the Flutter renderer: one node tree becomes a widget tree.
 
 - A `TextInputNode` with padding hands it to the field as `contentPadding`, so the whole field takes focus and not only its text line.

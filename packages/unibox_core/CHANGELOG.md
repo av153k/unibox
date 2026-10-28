@@ -6,7 +6,9 @@
   says where it landed inside the box and what pressed it. The position is the local
   one because it is the coordinate both hosts can produce exactly — Flutter's
   `localPosition`, a browser's `offsetX`/`offsetY` — while where a box sits on a page
-  is a host fact. `onTap()` stays for the case where only the activation matters.
+  is a host fact. `onTap()` stays for the case where only the activation matters, and a box that
+  only carries `onTapDown` counts as interactive, so it takes the press it listens
+  for.
 
 The first release of the platform agnostic core: the tree, the values it is made of,
 and the checks that keep a tree renderable.

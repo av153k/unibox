@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
@@ -200,4 +201,20 @@ BoxConstraints? toConstraints(core.BoxStyle style) {
     minHeight: style.minHeight ?? 0,
     maxHeight: style.maxHeight ?? double.infinity,
   );
+}
+
+/// Converts a Flutter [PointerDeviceKind] to the portable kind.
+///
+/// A trackpad is a mouse as far as the tree is concerned, and a stylus and its
+/// inverted end are both a pen; the model names the devices both hosts can, not the
+/// ones one engine happens to distinguish.
+core.BoxPointerKind toPointerKind(PointerDeviceKind? kind) {
+  return switch (kind) {
+    PointerDeviceKind.touch => core.BoxPointerKind.touch,
+    PointerDeviceKind.mouse || null => core.BoxPointerKind.mouse,
+    PointerDeviceKind.trackpad => core.BoxPointerKind.mouse,
+    PointerDeviceKind.stylus ||
+    PointerDeviceKind.invertedStylus => core.BoxPointerKind.pen,
+    _ => core.BoxPointerKind.unknown,
+  };
 }

@@ -383,12 +383,12 @@ class FlutterBoxState extends State<FlutterBox> {
 
     Widget result = content;
 
-    if (box.onTap != null || box.onLongPress != null) {
+    if (box.onTap != null || box.onLongPress != null || box.onTapDown != null) {
       result = GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: interactive ? box.onTap : null,
         onLongPress: interactive ? box.onLongPress : null,
-        onTapDown: interactive ? (TapDownDetails _) => _setPressed(true) : null,
+        onTapDown: interactive ? _handleTapDown : null,
         onTapUp: interactive ? (TapUpDetails _) => _setPressed(false) : null,
         onTapCancel: interactive ? () => _setPressed(false) : null,
         child: result,
@@ -556,6 +556,29 @@ class FlutterBoxState extends State<FlutterBox> {
     setState(() {
       _focused = focused;
     });
+  }
+
+  /// Reports the press to the tree, then marks the box as pressed.
+  ///
+  /// The event is what an effect that starts at the pointer needs: where the press
+  /// landed inside the box, and what pressed it.
+  void _handleTapDown(TapDownDetails details) {
+    _setPressed(true);
+
+    final core.TapDownCallback? onTapDown = widget.box.onTapDown;
+    if (onTapDown == null) {
+      return;
+    }
+
+    onTapDown(
+      core.BoxTapEvent(
+        position: core.BoxPoint(
+          details.localPosition.dx,
+          details.localPosition.dy,
+        ),
+        pointer: toPointerKind(details.kind),
+      ),
+    );
   }
 
   void _setPressed(bool pressed) {

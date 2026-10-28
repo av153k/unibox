@@ -332,5 +332,6 @@ class Box extends UINode {
   ///
   /// A disabled box reports `false` even when it has callbacks, so renderers
   /// serve no pointer cursor, no hover and no press for it.
-  bool get isInteractive => enabled && (onTap != null || onLongPress != null);
+  bool get isInteractive =>
+      enabled && (onTap != null || onTapDown != null || onLongPress != null);
 }
