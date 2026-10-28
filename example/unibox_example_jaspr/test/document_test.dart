@@ -18,6 +18,14 @@ void main() {
       html = utf8.decode(page.body);
     });
 
+    test('loads the browser runtime, relative to the document', () {
+      // The pages sit two directories below the site root, where `tool/site.sh`
+      // writes the bundle; a root-relative path would break a project site served
+      // from a subdirectory.
+      expect(html, contains('src="../../main.client.js"'));
+      expect(html, contains('defer'));
+    });
+
     test('writes the palette into the root, as custom properties', () {
       // The tree names roles; the document says what they are worth, once.
       expect(html, contains('--unibox-color-canvas'));

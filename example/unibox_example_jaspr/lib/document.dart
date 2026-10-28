@@ -1,7 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
-import 'package:unibox_jaspr/unibox_jaspr.dart';
 
 import 'fonts.dart';
 import 'main.dart';
@@ -53,7 +52,20 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.apartments}) {
     viewport: 'width=device-width, initial-scale=1',
     meta: <String, String>{'description': _descriptionOf(page)},
     // The documents of the example sit two directories below the site root.
-    head: <Component>[fontFaces('../../')],
+    head: <Component>[
+      fontFaces('../../'),
+      // The browser runtime. The document is static HTML and CSS, which is what a
+      // crawler reads and what a page without JavaScript keeps; this script makes
+      // it react. It renders the same root the server rendered (see
+      // `buildExampleRoot`), so the page it replaces is the page it drew.
+      Component.element(
+        tag: 'script',
+        attributes: <String, String>{
+          'src': '../../main.client.js',
+          'defer': '',
+        },
+      ),
+    ],
     styles: <StyleRule>[
       StyleRule(
         selector: const Selector('html, body'),
@@ -100,10 +112,9 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.apartments}) {
     ],
     // The theme is the host's to install: the page names roles, and this is where
     // they are given values. The `:root` block of the document follows from it.
-    body: JasprThemeScope(
-      theme: ExamplePalette.theme,
-      child: ExampleApp(openSignup: page == ExamplePage.signup),
-    ),
+    // `buildExampleRoot` is the same call the browser runtime makes, so the page
+    // that arrives and the page it redraws are one root, not two that look alike.
+    body: buildExampleRoot(openSignup: page == ExamplePage.signup),
   );
 }
 

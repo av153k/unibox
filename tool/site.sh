@@ -60,6 +60,15 @@ rm -rf "$site"
 (cd example/unibox_example_jaspr && dart run bin/build_site.dart --out="$site") \
   || fail 'the site render'
 
+step 'Compiling the browser runtime'
+# The example's pages are HTML and CSS that a crawler can read; this bundle is what
+# makes them react in a browser. It is compiled from `web/main.client.dart` by hand
+# rather than by `jaspr_builder`, because the page is one component and needs no
+# generated entrypoint.
+(cd example/unibox_example_jaspr &&
+  dart compile js -O2 -o "$site/main.client.js" web/main.client.dart) \
+  || fail 'the client bundle'
+
 step 'Building the Flutter web app'
 # The service worker is off on purpose: a demo that caches its own old build is
 # worse than one that downloads again.
