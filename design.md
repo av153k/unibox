@@ -226,8 +226,21 @@ never inherited (CSS does not inherit them either).
   `!important`. Typography is the single inherited axis.
 - No style sheet abstraction with class names; shared looks are expressed as
   `const BoxStyle` values.
-- No breakpoint, no `Visibility` and no conditional node: the model describes one
-  layout, and how wide the surface is belongs to the host (see 5.4).
+- No breakpoint that changes *structure*: a width may dress a node differently
+  (`visibleFrom` / `visibleUntil`, §5.15), never decide which children exist, and
+  never be read from a viewport the other renderer cannot see.
+- No third-party component runtime as the implementation of a design system. A
+  Material view is a package of **values plus nodes** (`unibox_material`), drawn by
+  whatever renderer the host uses; it is not an `EmbedNode` pairing a Material web
+  component on one target with a Flutter widget on the other. That pairing is the
+  one thing conformance cannot check — it is two implementations of one design, and
+  the library's promise would be false exactly where most trees are built. The
+  embed door stays open for the components that are behaviour-heavy and
+  unportable (a date picker, a rich editor, a map), one at a time, documented as
+  outside the contract. Two further facts decide it in practice: `@material/web` is
+  in maintenance mode pending new maintainers by its own README, and either
+  library brings its own token layer (`--md-sys-*`, `--mdui-*`) that would become a
+  fourth source of truth next to the tree, the host theme and the CSS variables.
 - No SEO or document metadata: a title, a language, a description, a canonical
   url and structured data describe a *document*, while a tree describes a region
   of one. The host owns them, which is also what keeps the same tree usable as a

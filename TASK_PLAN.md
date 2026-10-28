@@ -245,6 +245,15 @@ heaviest thing left in it, and the rule stands for an application that has one.
 
 Deliberately out of scope for this pass, with the reason they were left:
 
+- **mdui / Material web components as the Material implementation**: not adopted,
+  and `design.md` §5.6 records why. A design system here is values plus nodes
+  (`unibox_material`, `unibox_core` alone), so both renderers draw it and the
+  conformance table can hold it; pairing a Material web component on the web with a
+  Flutter widget on Flutter would put every design-system component outside the
+  contract, add a fourth token layer (`--md-sys-*`, `--mdui-*`), and require a JS
+  bundle for pages that render today without one. `@material/web` is also in
+  maintenance mode pending new maintainers. The embed door stays open per component,
+  for the behaviour-heavy and unportable ones.
 - `Box.onScroll` and scroll position: needs a shared scroll model that neither
   `SingleChildScrollView` nor the browser state exposes the same way.
 - A focus frame around a field: the browser's native ring is stripped (it sits
