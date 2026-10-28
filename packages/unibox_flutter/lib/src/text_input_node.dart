@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'text_style_scope.dart';
+import 'values.dart';
 
 /// Renders a [core.TextInputNode] as a Material [TextField].
 ///
@@ -92,7 +93,14 @@ class FlutterTextInputState extends State<FlutterTextInput> {
       // field then occupies exactly its line box, which is what a plain
       // `<input>` does on the web, and the enclosing box decides how a field
       // looks on both targets instead of each platform styling it its own way.
-      decoration: InputDecoration.collapsed(hintText: node.placeholder),
+      decoration: node.padding == null
+          ? InputDecoration.collapsed(hintText: node.placeholder)
+          : InputDecoration(
+              hintText: node.placeholder,
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: toEdgeInsets(node.padding!),
+            ),
     );
 
     // A field states what the form needs from it as well as its name, so the

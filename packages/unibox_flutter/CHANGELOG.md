@@ -8,6 +8,7 @@
 
 The first release of the Flutter renderer: one node tree becomes a widget tree.
 
+- A `TextInputNode` with padding hands it to the field as `contentPadding`, so the whole field takes focus and not only its text line.
 - `FlutterGrid` lays a `GridNode` out from the constraints it is given, one row
   per line of fixed-width slots, empty slots for a short last line and no
   `Expanded`, so a last-row card keeps its track.

@@ -2,30 +2,57 @@ import 'package:test/test.dart';
 import 'package:unibox_core/unibox_core.dart';
 import 'package:unibox_material/unibox_material.dart';
 
+/// The painted field: the surface the label and the input sit on.
+Box fillOf(MaterialTextField field) => field.children.whereType<Box>().first;
+
+TextInputNode inputOf(MaterialTextField field) =>
+    fillOf(field).children.whereType<TextInputNode>().single;
+
 void main() {
   group('MaterialTextField', () {
-    test('is the label, the field and the message, in that order', () {
+    test('fills the surface and keeps the label inside it', () {
       final field = MaterialTextField(
         label: 'Email',
         value: 'ada@example.com',
         message: 'We only use it for the receipt.',
       );
+      final Box fill = fillOf(field);
 
-      expect(field.children, hasLength(3));
-      expect((field.children[0] as TextNode).text, 'Email');
-      expect(field.children[1], isA<Box>());
-      expect((field.children[2] as TextNode).text, contains('receipt'));
+      expect(
+        fill.backgroundColor,
+        const BoxColor.role(MaterialColorRole.surfaceContainerHighest),
+      );
+      expect(fill.borderRadius, 4);
+      expect(fill.minHeight, 56);
+      expect(fill.border, isNull);
+
+      final Box label = fill.children.first as Box;
+
+      expect((label.children.single as TextNode).text, 'Email');
+      expect(label.padding?.left, 16);
+      expect(field.children.last, isA<Box>());
     });
 
-    test('keeps the input, and its state, inside the outlined box', () {
-      final field = MaterialTextField(
-        label: 'Email',
-        placeholder: 'you@example.com',
-        required: true,
-        invalid: true,
-        description: 'Used for the receipt',
+    test('puts the padding on the input, so the whole field is tappable', () {
+      final TextInputNode input = inputOf(MaterialTextField(label: 'Email'));
+
+      expect(input.padding?.left, 16);
+      expect(input.padding?.right, 16);
+      expect(input.padding?.top, 4);
+      expect(input.padding?.bottom, 10);
+      // The padding is inside the control; the box around it has none.
+      expect(fillOf(MaterialTextField()).padding, isNull);
+    });
+
+    test('keeps the input and its state', () {
+      final TextInputNode input = inputOf(
+        MaterialTextField(
+          placeholder: 'you@example.com',
+          required: true,
+          invalid: true,
+          description: 'Used for the receipt',
+        ),
       );
-      final input = (field.children[1] as Box).children.single as TextInputNode;
 
       expect(input.placeholder, 'you@example.com');
       expect(input.required, isTrue);
@@ -33,84 +60,46 @@ void main() {
       expect(input.description, 'Used for the receipt');
     });
 
-    test('draws the outline from roles, one colour per state', () {
-      BoxColor borderOf(MaterialTextField field) =>
-          field.children.whereType<Box>().single.border?.color ??
-          (throw StateError('expected a border'));
+    test('draws the bottom line from roles, one colour per state', () {
+      BoxColor lineOf(MaterialTextField field) => fillOf(field).shadow!.color;
 
       expect(
-        borderOf(MaterialTextField()),
-        const BoxColor.role(MaterialColorRole.outline),
+        lineOf(MaterialTextField()),
+        const BoxColor.role(MaterialColorRole.onSurfaceVariant),
       );
       expect(
-        borderOf(MaterialTextField(focused: true)),
+        lineOf(MaterialTextField(focused: true)),
         const BoxColor.role(MaterialColorRole.primary),
       );
       expect(
-        borderOf(MaterialTextField(invalid: true)),
+        lineOf(MaterialTextField(invalid: true)),
         const BoxColor.role(MaterialColorRole.error),
       );
-      // An invalid field is invalid whether or not it has focus.
       expect(
-        borderOf(MaterialTextField(invalid: true, focused: true)),
+        lineOf(MaterialTextField(invalid: true, focused: true)),
         const BoxColor.role(MaterialColorRole.error),
       );
+      // Focused, the line is two pixels: the offset is what thickens it.
+      expect(fillOf(MaterialTextField()).shadow?.offsetY, 1);
+      expect(fillOf(MaterialTextField(focused: true)).shadow?.offsetY, 2);
+      expect(fillOf(MaterialTextField()).shadow?.blurRadius, 0);
     });
 
-    test('typesets the text with the body role, in the on-surface colour', () {
-      final field = MaterialTextField();
-      final style = (field.children.single as Box).textStyle;
+    test('typesets the value with the body role, in the on-surface colour', () {
+      final BoxTextStyle? style = fillOf(MaterialTextField()).textStyle;
 
       expect(style?.color, const BoxColor.role(MaterialColorRole.onSurface));
       expect(style?.fontSize, MaterialTypography.bodyLarge.fontSize);
     });
 
-    test('names roles, so a dark theme is the choice of the host', () {
-      final field = MaterialTextField();
-      final box = field.children.single as Box;
-
-      expect(box.border?.color, const BoxColor.role(MaterialColorRole.outline));
+    test('fades out when disabled, and lifts the line under the pointer', () {
+      expect(fillOf(MaterialTextField()).opacity, isNull);
+      expect(fillOf(MaterialTextField(enabled: false)).opacity, 0.38);
       expect(
-        box.textStyle?.color,
+        fillOf(MaterialTextField()).hoverStyle?.shadow?.color,
         const BoxColor.role(MaterialColorRole.onSurface),
       );
-    });
-
-    test('is a single field when it has neither label nor message', () {
-      expect(MaterialTextField().children, hasLength(1));
-    });
-  });
-
-  group('MaterialTextField fidelity', () {
-    Box outlineOf(MaterialTextField field) =>
-        field.children.whereType<Box>().first;
-
-    test('is at least 56 pixels tall', () {
-      expect(outlineOf(MaterialTextField(label: 'Email')).minHeight, 56);
-    });
-
-    test('thickens the outline to 2 pixels when focused', () {
-      final resting = outlineOf(MaterialTextField(label: 'Email'));
-      final focused = outlineOf(
-        MaterialTextField(label: 'Email', focused: true),
-      );
-
-      expect(resting.border?.width, 1);
-      expect(focused.border?.width, 2);
-    });
-
-    test('darkens the outline on hover, but not while focused or invalid', () {
-      expect(
-        outlineOf(MaterialTextField()).hoverStyle?.border?.color,
-        const BoxColor.role(MaterialColorRole.onSurface),
-      );
-      expect(outlineOf(MaterialTextField(focused: true)).hoverStyle, isNull);
-      expect(outlineOf(MaterialTextField(invalid: true)).hoverStyle, isNull);
-    });
-
-    test('fades to 38% when disabled', () {
-      expect(outlineOf(MaterialTextField(enabled: false)).opacity, 0.38);
-      expect(outlineOf(MaterialTextField()).opacity, isNull);
+      expect(fillOf(MaterialTextField(focused: true)).hoverStyle, isNull);
     });
   });
 }

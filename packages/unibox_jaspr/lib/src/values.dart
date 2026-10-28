@@ -508,15 +508,15 @@ Spacing? _userAgentMargin(core.BoxElement element) {
 /// `:focus-visible` on the focused element. So a focused field shows its caret and
 /// nothing else, on both targets — the same cue on both is worth more than a
 /// browser frame on one.
-Styles toTextInputStyles() {
+Styles toTextInputStyles({core.BoxSpacing? padding}) {
   return Styles(
     boxSizing: BoxSizing.borderBox,
     width: const Unit.percent(100),
-    raw: const <String, String>{
+    raw: <String, String>{
       'font': 'inherit',
       'color': 'inherit',
       'border': 'none',
-      'padding': '0',
+      'padding': padding == null ? '0' : _cssSpacingShorthand(padding),
       'background-color': 'transparent',
       'outline': 'none',
       // A text area comes with a grip in its bottom corner that lets the user
@@ -525,6 +525,15 @@ Styles toTextInputStyles() {
       'resize': 'none',
     },
   );
+}
+
+/// A [core.BoxSpacing] as the four-value CSS shorthand.
+String _cssSpacingShorthand(core.BoxSpacing spacing) {
+  String px(double value) =>
+      value == value.roundToDouble() ? '${value.toInt()}px' : '${value}px';
+
+  return '${px(spacing.top)} ${px(spacing.right)} '
+      '${px(spacing.bottom)} ${px(spacing.left)}';
 }
 
 /// Builds the CSS of a box from its resolved [core.BoxStyle].

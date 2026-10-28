@@ -202,6 +202,7 @@ TextNode('Join Unibox', fontSize: 22, fontWeight: FontWeight.bold);
 | `fontFamily` | `String?` | the platform's UI font | One family name, resolved by the host. |
 | `letterSpacing` | `double?` | inherited | Extra space between characters, in logical pixels. |
 | `textAlign` | `TextAlign?` | start | `left`, `center`, `right`, `justify`. |
+| `padding` | `BoxSpacing?` | none | The space inside the field; padding on the box around it sits outside the control. |
 | `maxLines` | `int?` | unlimited | Number of lines the text may occupy. |
 | `overflow` | `TextOverflow?` | none | How text too long for its lines is cut: `clip` or `ellipsis`. With `maxLines` it cuts after those lines, without it on the single line. |
 | `style` | `BoxTextStyle?` | none | A bundle of the typography values; a flat parameter wins. |

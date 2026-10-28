@@ -9,6 +9,7 @@
 The first release of the Jaspr renderer: one node tree becomes HTML and CSS, rendered
 on the server and readable without a client bundle.
 
+- A `TextInputNode` with padding writes it on the `<input>`/`<textarea>` itself, so the padding is inside the control the pointer hits.
 - `JasprGrid` writes a `GridNode` as one `repeat(auto-fill, minmax(…))`
   declaration with the clamped minimum and the derived cap, so a build sends no
   media query and a resize sends no request.

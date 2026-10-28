@@ -9,6 +9,7 @@
 The first release of the platform agnostic core: the tree, the values it is made of,
 and the checks that keep a tree renderable.
 
+- `TextInputNode.padding`: the space inside the field, which is the only padding a press can reach; a box around the input keeps the paint.
 - `GridNode`: equal columns whose count follows the width of the box, with a
   minimum item width, an optional column cap and a gutter, and `columnsFor` /
   `cellWidthFor` as the arithmetic both renderers apply. `validateTree` reports a

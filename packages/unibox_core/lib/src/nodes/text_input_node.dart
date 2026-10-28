@@ -1,5 +1,6 @@
 import '../callbacks.dart';
 import '../enums.dart';
+import '../tokens/box_spacing.dart';
 import 'ui_node.dart';
 
 /// A single line or multiline text input.
@@ -17,6 +18,7 @@ class TextInputNode extends UINode {
     this.obscureText = false,
     this.multiline = false,
     this.maxLines,
+    this.padding,
     this.enabled = true,
     this.readOnly = false,
     this.autofocus = false,
@@ -50,6 +52,14 @@ class TextInputNode extends UINode {
 
   /// The maximum number of visible lines of a [multiline] input.
   final int? maxLines;
+
+  /// The space inside the input, between its edge and the text.
+  ///
+  /// It belongs to the input and not to a box around it: padding on the box sits
+  /// outside the control's hit area on both targets, so a press in it focuses
+  /// nothing. A padding here is inside the field, which is what makes the whole
+  /// surface tappable — the way a Material field is.
+  final BoxSpacing? padding;
 
   /// Whether the field accepts input.
   ///

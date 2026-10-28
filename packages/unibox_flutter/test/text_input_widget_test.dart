@@ -267,4 +267,30 @@ void main() {
       handle.dispose();
     });
   });
+
+  testWidgets('takes focus from a press inside its padding', (tester) async {
+    await pumpMaterialNode(
+      tester,
+      const core.TextInputNode(padding: core.BoxSpacing.all(16)),
+    );
+
+    final Rect box = tester.getRect(find.byType(TextField));
+
+    // The padding belongs to the field, so a press three pixels in is a press on
+    // the input: without it, this corner is a dead strip.
+    await tester.tapAt(box.topLeft + const Offset(3, 3));
+    await tester.pump();
+
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<TextField>(find.byType(TextField))
+          .decoration
+          ?.contentPadding,
+      const EdgeInsets.all(16),
+    );
+  });
 }

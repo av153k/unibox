@@ -9,6 +9,7 @@ The first release: Material 3 as a package of values, plus the components built
 from them. Every value here is a plain token of `unibox_core`, so neither renderer
 has to know this package exists.
 
+- `MaterialTextField` is Material 3's filled field: `surfaceContainerHighest`, a 4 pixel radius, a bottom line drawn as a shadow (one pixel, two when focused, the error colour when invalid), the label inside the fill and the padding on the input, so the whole field takes focus.
 - `MaterialIcon`: one glyph of an icon font in a square `Box`, by codepoint (which the
   Flutter tree shaker can subset from a const `IconData`) or by ligature name (which it
   cannot), recoloured and scaled like text. The font is a host asset.

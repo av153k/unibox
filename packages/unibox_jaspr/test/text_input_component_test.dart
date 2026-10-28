@@ -253,4 +253,17 @@ void main() {
       expect(focuses, <bool>[true, false]);
     });
   });
+
+  testComponents('puts the padding on the input itself', (tester) async {
+    pumpNode(
+      tester,
+      const core.TextInputNode(
+        padding: core.BoxSpacing.only(left: 16, right: 16, top: 4, bottom: 10),
+      ),
+    );
+
+    // The shorthand is top right bottom left, and it is on the input: a padding
+    // on the box around it would be outside the control's hit area.
+    expect(stylesOf(find.tag('input'))['padding'], '4px 16px 10px 16px');
+  });
 }

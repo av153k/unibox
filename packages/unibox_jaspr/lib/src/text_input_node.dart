@@ -37,7 +37,7 @@ class JasprTextInput extends StatelessComponent {
   Component build(BuildContext context) {
     final String? placeholder = node.placeholder;
     final Map<String, EventCallback>? listeners = _events();
-    final Styles styles = toTextInputStyles();
+    final Styles styles = toTextInputStyles(padding: node.padding);
     final String? className = UniboxStylesheetScope.of(context)?.classFor(
       'field',
       declarationsOf(styles),
