@@ -10,6 +10,9 @@
 The first release of the Jaspr renderer: one node tree becomes HTML and CSS, rendered
 on the server and readable without a client bundle.
 
+- The barrier of an `OverlayNode` carries the `click` that dismisses, and the layer the
+  `Escape` key that does the same, so the page behaves like the Flutter overlay once the
+  client runtime is on it.
 - A `TextInputNode` with padding writes it on the `<input>`/`<textarea>` itself, so the padding is inside the control the pointer hits.
 - `JasprGrid` writes a `GridNode` as one `repeat(auto-fill, minmax(…))`
   declaration with the clamped minimum and the derived cap, so a build sends no

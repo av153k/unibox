@@ -55,4 +55,36 @@ void main() {
     pumpNode(tester, overlay());
     expect(stylesOf(find.tag('div').first)['align-items'], 'center');
   });
+
+  testComponents('dismisses when the barrier is pressed', (tester) async {
+    var dismissals = 0;
+
+    pumpNode(
+      tester,
+      core.OverlayNode(
+        onDismiss: () => dismissals++,
+        child: const core.TextNode('Details'),
+      ),
+    );
+
+    tester.dispatchEvent(find.tag('div').at(1), 'click');
+
+    expect(dismissals, 1);
+  });
+
+  testComponents('does not listen when the barrier is inert', (tester) async {
+    pumpNode(
+      tester,
+      core.OverlayNode(
+        barrierDismissible: false,
+        onDismiss: () => fail('an inert barrier called onDismiss'),
+        child: const core.TextNode('Details'),
+      ),
+    );
+
+    expect(
+      elementsOf(find.tag('div'))[1].events?.containsKey('click') ?? false,
+      isFalse,
+    );
+  });
 }

@@ -88,7 +88,9 @@ void main() {
 
         // Two navigation items, the dialog's close control and the opt-in row; the
         // submit button is disabled until the form is complete.
-        expect(clickable, hasLength(4));
+        // Two navigation items, the opt-in row and the barrier that dismisses
+        // the sign-up dialog; the button is disabled until the form is complete.
+        expect(clickable, hasLength(5));
 
         // The bar's sign-up trigger is a button too, and it comes first; the
         // submit button is the last one in the tree.
@@ -117,7 +119,7 @@ void main() {
           )
           .toList();
 
-      expect(clickable, hasLength(5));
+      expect(clickable, hasLength(6));
 
       final TestRenderElement button = elementsOf(find.tag('div')).lastWhere(
         (TestRenderElement element) => element.attributes?['role'] == 'button',
