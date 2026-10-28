@@ -2,11 +2,10 @@ import 'package:jaspr/dom.dart' hide BoxShadow;
 import 'package:jaspr/server.dart';
 import 'package:unibox_core/unibox_core.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
-import 'package:unibox_jaspr/unibox_jaspr.dart';
 import 'package:unibox_material/unibox_material.dart';
 
 import '../fonts.dart';
-import 'iframe_node.dart';
+import 'site_root.dart';
 
 /// The document a page of the site is served as.
 ///
@@ -46,7 +45,18 @@ Document buildSiteDocument({required SitePage page}) {
     },
     // The home document is the site root; the gallery and the showcase live one
     // directory below it.
-    head: <Component>[fontFaces(page == SitePage.home ? '' : '../')],
+    head: <Component>[
+      fontFaces(page == SitePage.home ? '' : '../'),
+      // The browser runtime, one directory up from every page but the root. It is
+      // what makes the gallery's ripple move; the page reads without it.
+      Component.element(
+        tag: 'script',
+        attributes: <String, String>{
+          'src': '${'../' * page.depth}main.client.js',
+          'defer': '',
+        },
+      ),
+    ],
     styles: <StyleRule>[
       StyleRule(
         selector: const Selector('html, body'),
@@ -62,16 +72,9 @@ Document buildSiteDocument({required SitePage page}) {
         ),
       ),
     ],
-    body: renderJaspr(
-      // The gallery and the bar are built from material components, which name
-      // colour roles: the document installs the palette as their theme.
-      theme: MaterialPalette.lightTheme,
-      buildSitePage(
-        page,
-        frame: ({required String src, required String title}) =>
-            IframeNode(src: src, title: title),
-      ),
-    ),
+    // The shell the browser redraws: the runtime renders the same root, so the
+    // gallery arrives and keeps arriving as one tree.
+    body: buildSiteRoot(page),
   );
 }
 
