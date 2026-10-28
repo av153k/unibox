@@ -135,6 +135,42 @@ class JasprStylesheet extends StatelessComponent {
   }
 }
 
+/// One `@container` block: the declarations a selector takes at a width.
+///
+/// A width is measured on the *layout box*, not on the window: the box that holds a
+/// threshold declares `container-type: inline-size`, and a rule like this one is
+/// resolved against the nearest such ancestor. That is the same box Flutter measures
+/// with its constraints, which is what keeps the two renderings equal inside a panel
+/// as well as on a full page.
+class ContainerStyleRule implements StyleRule {
+  /// Creates a rule for [selector] that applies from [minWidth] up.
+  const ContainerStyleRule({
+    required this.minWidth,
+    required this.selector,
+    required this.styles,
+  });
+
+  /// The narrowest width, in logical pixels, the block applies at.
+  final double minWidth;
+
+  /// The selector the declarations belong to.
+  final Selector selector;
+
+  /// The declarations.
+  final Styles styles;
+
+  @override
+  String toCss([String indent = '']) {
+    final String width = minWidth == minWidth.roundToDouble()
+        ? '${minWidth.toInt()}px'
+        : '${minWidth}px';
+
+    return '$indent@container (min-width: $width) {'
+        '\n${StyleRule(selector: selector, styles: styles).toCss('$indent  ')}\n'
+        '$indent}';
+  }
+}
+
 /// Hands the theme of a rendering to the components inside it.
 ///
 /// `renderJaspr` installs it from its `theme` argument; a host that composes the

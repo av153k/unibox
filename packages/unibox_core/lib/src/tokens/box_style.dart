@@ -51,6 +51,8 @@ final class BoxStyle {
     this.transition,
     this.opacity,
     this.transform,
+    this.visibleFrom,
+    this.visibleUntil,
   });
 
   // Layout.
@@ -147,6 +149,36 @@ final class BoxStyle {
   /// box paints nothing rather than leaving the layout.
   final double? opacity;
 
+  /// The narrowest layout box, in logical pixels, that draws this one.
+  ///
+  /// Unset means "at every width". The threshold measures the box the node is
+  /// drawn in — not the window — so a card inside a panel answers for the panel.
+  /// It is a style, not a structure: the node stays in the tree, in the DOM and in
+  /// the crawl at every width, and only its `display` changes.
+  final double? visibleFrom;
+
+  /// The widest layout box, in logical pixels, that still draws this one.
+  ///
+  /// The range is half open — `[visibleFrom, visibleUntil)` — so `visibleFrom:
+  /// 600, visibleUntil: 900` is drawn from 600 up to, but not including, 900.
+  final double? visibleUntil;
+
+  /// Whether the box is drawn at every width.
+  bool get isVisibleEverywhere => visibleFrom == null && visibleUntil == null;
+
+  /// Whether a layout box of [width] logical pixels draws this style.
+  ///
+  /// The one piece of arithmetic both renderers share, the way [GridNode]
+  /// shares its column count: the web writes it as a container query and Flutter
+  /// runs it against the constraints of the same box, so the two cannot disagree
+  /// about which width shows what.
+  bool isShownAt(double width) {
+    final double? from = visibleFrom;
+    final double? until = visibleUntil;
+
+    return (from == null || width >= from) && (until == null || width < until);
+  }
+
   /// How the box is moved, turned or scaled, about its centre.
   ///
   /// Unset means untransformed. Like a `Transform` in Flutter, this paints the
@@ -231,6 +263,8 @@ final class BoxStyle {
     BoxTransition? transition,
     double? opacity,
     BoxTransform? transform,
+    double? visibleFrom,
+    double? visibleUntil,
   }) {
     return BoxStyle(
       direction: direction ?? this.direction,
@@ -255,6 +289,8 @@ final class BoxStyle {
       transition: transition ?? this.transition,
       opacity: opacity ?? this.opacity,
       transform: transform ?? this.transform,
+      visibleFrom: visibleFrom ?? this.visibleFrom,
+      visibleUntil: visibleUntil ?? this.visibleUntil,
     );
   }
 
@@ -294,6 +330,8 @@ final class BoxStyle {
       transition: other.transition ?? transition,
       opacity: other.opacity ?? opacity,
       transform: other.transform ?? transform,
+      visibleFrom: other.visibleFrom ?? visibleFrom,
+      visibleUntil: other.visibleUntil ?? visibleUntil,
     );
   }
 
@@ -321,7 +359,9 @@ final class BoxStyle {
       other.textStyle == textStyle &&
       other.transition == transition &&
       other.opacity == opacity &&
-      other.transform == transform;
+      other.transform == transform &&
+      other.visibleFrom == visibleFrom &&
+      other.visibleUntil == visibleUntil;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -374,6 +414,8 @@ final class BoxStyle {
       if (transition != null) 'transition: $transition',
       if (opacity != null) 'opacity: $opacity',
       if (transform != null) 'transform: $transform',
+      if (visibleFrom != null) 'visibleFrom: $visibleFrom',
+      if (visibleUntil != null) 'visibleUntil: $visibleUntil',
     ];
     return 'BoxStyle(${tokens.join(', ')})';
   }

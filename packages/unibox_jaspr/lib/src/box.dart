@@ -47,11 +47,24 @@ class JasprBox extends StatelessComponent {
     final Map<String, EventCallback>? events = _events();
     final core.BoxElement element =
         box.semantics?.element ?? core.BoxElement.div;
-    final Styles restingStyles = toBoxStyles(
-      box.computedStyle,
+    final core.BoxStyle style = box.computedStyle;
+    Styles restingStyles = toBoxStyles(
+      style,
       interactive: box.isInteractive,
       element: element,
     );
+    // Mobile first: a box that only appears above a threshold starts hidden and the
+    // container query below brings it back, so a browser without container queries
+    // renders the narrow layout rather than a broken wide one.
+    if (style.visibleFrom != null) {
+      restingStyles = restingStyles.combine(Styles(display: Display.none));
+    }
+    // A box that holds a threshold is the box that threshold measures.
+    if (_holdsThreshold) {
+      restingStyles = restingStyles.combine(
+        Styles(raw: <String, String>{'container-type': 'inline-size'}),
+      );
+    }
     final UniboxStylesheet? sheet = UniboxStylesheetScope.of(context);
 
     // Inside a rendering every look becomes a class, so six listings with one look
@@ -64,6 +77,7 @@ class JasprBox extends StatelessComponent {
         (String name) => <StyleRule>[
           StyleRule(selector: Selector.className(name), styles: restingStyles),
           ..._stateRules(name),
+          ..._thresholdRules(name, style: style),
         ],
       );
 
@@ -77,7 +91,7 @@ class JasprBox extends StatelessComponent {
     }
 
     // A box rendered on its own has no sheet to register in.
-    if (!_hasStateStyles) {
+    if (!_hasStateStyles && _thresholdRules('x', style: style).isEmpty) {
       return _element(
         element,
         children,
@@ -98,6 +112,7 @@ class JasprBox extends StatelessComponent {
             styles: restingStyles,
           ),
           ..._stateRules(className),
+          ..._thresholdRules(className, style: box.computedStyle),
         ],
       ),
       _element(
@@ -132,6 +147,52 @@ class JasprBox extends StatelessComponent {
   bool get _hasStateStyles => core.BoxState.values.any(
     (core.BoxState state) => box.stateStyle(state) != null,
   );
+
+  /// Whether a child of this box declares a width threshold, which makes this box
+  /// the box that threshold measures.
+  bool get _holdsThreshold => box.children.any(
+    (core.UINode child) =>
+        child is core.Box && !child.computedStyle.isVisibleEverywhere,
+  );
+
+  /// The container queries that draw the box at only some widths.
+  ///
+  /// A wide-only box is hidden in its own rule and brought back here; a
+  /// narrow-only one is drawn by its rule and taken away here. Both blocks are
+  /// resolved against the nearest box that declares `container-type: inline-size`
+  /// — the parent — so the width is the one the box is drawn in, not the window's.
+  List<StyleRule> _thresholdRules(
+    String className, {
+    required core.BoxStyle style,
+  }) {
+    final Selector selector = Selector.className(className);
+    final double? from = style.visibleFrom;
+    final double? until = style.visibleUntil;
+    final List<StyleRule> rules = <StyleRule>[];
+
+    if (from != null) {
+      rules.add(
+        ContainerStyleRule(
+          minWidth: from,
+          selector: selector,
+          // What the box's own rule said before it was hidden.
+          styles: Styles(display: Display.flex),
+        ),
+      );
+    }
+
+    if (until != null) {
+      rules.add(
+        ContainerStyleRule(
+          minWidth: until,
+          selector: selector,
+          styles: Styles(display: Display.none),
+        ),
+      );
+    }
+
+    return rules;
+  }
 
   /// The pseudo class rules of the box, in cascade order.
   ///

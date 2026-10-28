@@ -79,6 +79,7 @@ class TreeIssue {
 /// * a transition with a duration that changes nothing,
 /// * an opacity outside the `0` to `1` that both targets accept,
 /// * a colour role no theme can answer, when a theme is passed to the check,
+/// * a visibility range that is empty or negative, which no width can show,
 /// * an image candidate whose width is not positive, which no browser can pick,
 /// * an image that gives `sizes` without a `srcSet`, which a browser never reads.
 List<TreeIssue> validateTree(UINode root, {UniboxTheme? theme}) {
@@ -192,6 +193,48 @@ void _validate(
             'the child renders at its natural position.',
       ),
     );
+  }
+
+  if (node is Box) {
+    final BoxStyle style = node.computedStyle;
+    final double? from = style.visibleFrom;
+    final double? until = style.visibleUntil;
+
+    if ((from != null && from < 0) || (until != null && until < 0)) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A Box declares a visibility threshold below zero, which no width '
+              'can satisfy. Thresholds are logical pixels.',
+        ),
+      );
+    }
+
+    if (!style.isVisibleEverywhere && parent is! Box) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          message:
+              'A Box names a width threshold but is not inside another box, so '
+              'there is no layout box for it to measure. Put it in the box whose '
+              'width decides whether it is drawn.',
+        ),
+      );
+    }
+
+    if (from != null && until != null && from >= until) {
+      issues.add(
+        TreeIssue(
+          node: node,
+          severity: TreeIssueSeverity.error,
+          message:
+              'A Box is drawn from $from up to $until, which is empty: the range '
+              'is half open, so visibleFrom has to be smaller than visibleUntil.',
+        ),
+      );
+    }
   }
 
   if (node is ImageNode) {

@@ -360,6 +360,41 @@ void main() {
       );
     });
   });
+
+  group('visibility', () {
+    test('accepts a threshold inside a box', () {
+      expect(
+        validateTree(
+          const Box(width: 800, children: <UINode>[Box(visibleFrom: 900)]),
+        ),
+        isEmpty,
+      );
+    });
+
+    test('reports a range no width can show', () {
+      final List<TreeIssue> issues = validateTree(
+        const Box(children: <UINode>[Box(visibleFrom: 900, visibleUntil: 900)]),
+      );
+
+      expect(issues.single.isError, isTrue);
+      expect(issues.single.message, contains('empty'));
+    });
+
+    test('reports a threshold below zero', () {
+      final List<TreeIssue> issues = validateTree(
+        const Box(children: <UINode>[Box(visibleUntil: -1)]),
+      );
+
+      expect(issues.single.isError, isTrue);
+      expect(issues.single.message, contains('below zero'));
+    });
+
+    test('reports a threshold with no box to measure', () {
+      final List<TreeIssue> issues = validateTree(const Box(visibleFrom: 900));
+
+      expect(issues.single.message, contains('not inside another box'));
+    });
+  });
 }
 
 /// An embed that carries nothing, which no renderer can draw.

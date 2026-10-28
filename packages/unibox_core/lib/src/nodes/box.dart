@@ -62,6 +62,8 @@ class Box extends UINode {
     this.transition,
     this.opacity,
     this.transform,
+    this.visibleFrom,
+    this.visibleUntil,
     this.styles = const <BoxStyle>[],
     // ignore: deprecated_member_use_from_same_package
     @Deprecated('Use styles: a list of bags, merged in order.') this._style,
@@ -196,6 +198,21 @@ class Box extends UINode {
 
   /// Tokens applied while the box is hovered, overriding the base style.
   ///
+  /// The narrowest layout box, in logical pixels, that draws this box.
+  ///
+  /// The box names a threshold instead of measuring the screen: the renderer asks
+  /// the width of the layout box this one is drawn in — a container query on the
+  /// web, the constraints of the same box in Flutter — and hides this one below
+  /// it. Hiding is a style, so the node stays in the tree and in the DOM at every
+  /// width; a box this one is *not* drawn in still ships its markup.
+  final double? visibleFrom;
+
+  /// The widest layout box, in logical pixels, that still draws this box.
+  ///
+  /// The range is half open, so `visibleFrom: 600, visibleUntil: 900` is drawn
+  /// from 600 up to, but not including, 900.
+  final double? visibleUntil;
+
   /// Sugar for `stateStyles: {BoxState.hover: hoverStyle}`. An entry in
   /// [stateStyles] wins over this one.
   final BoxStyle? hoverStyle;
@@ -266,6 +283,8 @@ class Box extends UINode {
     transition: transition,
     opacity: opacity,
     transform: transform,
+    visibleFrom: visibleFrom,
+    visibleUntil: visibleUntil,
   );
 
   /// The resolved style of this box in its resting state.

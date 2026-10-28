@@ -668,4 +668,65 @@ void main() {
       expect(semantics.toString(), contains('checked: false'));
     });
   });
+
+  group('BoxStyle visibility', () {
+    test('is visible at every width by default', () {
+      const BoxStyle style = BoxStyle();
+
+      expect(style.isVisibleEverywhere, isTrue);
+      expect(style.isShownAt(0), isTrue);
+      expect(style.isShownAt(5000), isTrue);
+    });
+
+    test('draws a wide-only box from its threshold up', () {
+      const BoxStyle style = BoxStyle(visibleFrom: 900);
+
+      expect(style.isVisibleEverywhere, isFalse);
+      expect(style.isShownAt(899), isFalse);
+      expect(style.isShownAt(900), isTrue);
+      expect(style.isShownAt(1400), isTrue);
+    });
+
+    test('stops drawing a narrow-only box at its threshold', () {
+      const BoxStyle style = BoxStyle(visibleUntil: 900);
+
+      expect(style.isShownAt(899), isTrue);
+      expect(style.isShownAt(900), isFalse);
+    });
+
+    test('reads a range as half open', () {
+      const BoxStyle style = BoxStyle(visibleFrom: 600, visibleUntil: 900);
+
+      expect(style.isShownAt(599), isFalse);
+      expect(style.isShownAt(600), isTrue);
+      expect(style.isShownAt(899), isTrue);
+      expect(style.isShownAt(900), isFalse);
+    });
+
+    test('merges per field like every other token', () {
+      const BoxStyle base = BoxStyle(visibleUntil: 900);
+      final BoxStyle merged = base.merge(const BoxStyle(visibleFrom: 600));
+
+      expect(merged.visibleFrom, 600);
+      expect(merged.visibleUntil, 900);
+    });
+
+    test('compares and prints its thresholds', () {
+      expect(
+        const BoxStyle(visibleFrom: 900),
+        const BoxStyle(visibleFrom: 900),
+      );
+      expect(
+        const BoxStyle(visibleFrom: 900),
+        isNot(const BoxStyle(visibleFrom: 600)),
+      );
+      expect(const BoxStyle(visibleUntil: 900).toString(), contains('900'));
+    });
+
+    test('is reachable from the flat parameter, and that wins', () {
+      const Box box = Box(visibleFrom: 600, style: BoxStyle(visibleFrom: 2000));
+
+      expect(box.computedStyle.visibleFrom, 600);
+    });
+  });
 }

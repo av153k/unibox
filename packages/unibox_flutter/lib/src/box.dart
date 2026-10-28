@@ -15,10 +15,19 @@ import 'values.dart';
 /// clipping, dimensions, interactions and finally margin.
 class FlutterBox extends StatefulWidget {
   /// Creates a renderer for [box].
-  const FlutterBox({required this.box, super.key});
+  const FlutterBox({required this.box, this.availableWidth, super.key});
 
   /// The node being rendered.
   final core.Box box;
+
+  /// The width of the layout box this one is drawn in, or `null` when it is not
+  /// known.
+  ///
+  /// A box that names a width threshold hides itself when this is narrower than the
+  /// threshold, and a box that holds such a child measures itself so its children can
+  /// answer. It is the same quantity the web renderer resolves with a container
+  /// query, which is what keeps the two renderings equal at every width.
+  final double? availableWidth;
 
   @override
   State<FlutterBox> createState() => FlutterBoxState();
@@ -35,7 +44,12 @@ class FlutterBoxState extends State<FlutterBox> {
     final core.BoxStyle style = _resolvedStyle(box)
         .resolve(UniboxThemeScope.of(context) ?? core.UniboxTheme.none);
 
-    Widget content = _buildContent(box, style);
+    Widget content = _holdsThreshold
+        ? LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) =>
+                _buildContent(box, style, availableWidth: constraints.maxWidth),
+          )
+        : _buildContent(box, style, availableWidth: null);
 
     final core.BoxTextStyle textStyle =
         style.textStyle ?? const core.BoxTextStyle();
@@ -81,7 +95,7 @@ class FlutterBoxState extends State<FlutterBox> {
       content = Padding(padding: toEdgeInsets(margin), child: content);
     }
 
-    return content;
+    return _visibleEverywhere(content, style);
   }
 
   /// Paints [decoration] behind [child], interpolating when the box asks for it.
@@ -282,7 +296,11 @@ class FlutterBoxState extends State<FlutterBox> {
   /// nothing either way, but the web renderer marks every box as a flex
   /// container, so leaving the empty one out would make the two trees describe
   /// the same box differently.
-  Widget _buildContent(core.Box box, core.BoxStyle style) {
+  Widget _buildContent(
+    core.Box box,
+    core.BoxStyle style, {
+    required double? availableWidth,
+  }) {
     final core.Axis direction = style.resolvedDirection;
     final double? gap = style.gap;
     final List<Widget> children = <Widget>[];
@@ -295,7 +313,13 @@ class FlutterBoxState extends State<FlutterBox> {
               : SizedBox(height: gap),
         );
       }
-      children.add(_buildChild(box.children[index], direction));
+      children.add(
+        _buildChild(
+          box.children[index],
+          direction,
+          availableWidth: availableWidth,
+        ),
+      );
     }
 
     final MainAxisAlignment mainAxisAlignment = toMainAxisAlignment(
@@ -324,8 +348,12 @@ class FlutterBoxState extends State<FlutterBox> {
 
   /// Renders [node] and makes it flexible along the parent's `direction` when it
   /// declares a [core.BoxStyle.flex] factor or an infinite main dimension.
-  Widget _buildChild(core.UINode node, core.Axis direction) {
-    final Widget child = renderNode(node);
+  Widget _buildChild(
+    core.UINode node,
+    core.Axis direction, {
+    required double? availableWidth,
+  }) {
+    final Widget child = renderNode(node, availableWidth: availableWidth);
 
     if (node is! core.Box) {
       return child;
@@ -507,6 +535,30 @@ class FlutterBoxState extends State<FlutterBox> {
           semantics?.selected ?? (semantics?.current == null ? null : true),
       hidden: semantics?.hidden ?? false,
       liveRegion: semantics?.liveRegion ?? false,
+      child: content,
+    );
+  }
+
+  /// Whether a child of this box names a width threshold, which makes this box the
+  /// one that threshold measures.
+  bool get _holdsThreshold => widget.box.children.any(
+    (core.UINode child) =>
+        child is core.Box && !child.computedStyle.isVisibleEverywhere,
+  );
+
+  /// [content] with the whole box gone when this width does not draw it.
+  ///
+  /// `maintainState` keeps the subtree alive, so a box a wider width draws again
+  /// comes back with the state it had, and a hidden box takes no room, exactly like
+  /// the `display: none` the web renderer writes.
+  Widget _visibleEverywhere(Widget content, core.BoxStyle style) {
+    if (style.isVisibleEverywhere) {
+      return content;
+    }
+
+    return Visibility(
+      visible: style.isShownAt(widget.availableWidth ?? double.infinity),
+      maintainState: true,
       child: content,
     );
   }

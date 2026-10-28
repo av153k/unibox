@@ -81,9 +81,19 @@ Widget _withDefaultTypography(Widget child) {
 ///
 /// The renderers use it for children, which were validated as part of the tree
 /// their caller rendered. Prefer [renderFlutter].
-Widget renderNode(core.UINode node) {
+///
+/// [availableWidth] is the width, in logical pixels, of the layout box the node is
+/// drawn in. A box hands it to the children that name a width threshold, which is
+/// how a threshold measures the box it is drawn in rather than the window — the
+/// same measurement the web renderer makes with a container query. `null` means the
+/// width is unknown, and a threshold then reads as unbounded.
+Widget renderNode(core.UINode node, {double? availableWidth}) {
   return switch (node) {
-    final core.Box box => FlutterBox(box: box, key: toFlutterKey(box.key)),
+    final core.Box box => FlutterBox(
+      box: box,
+      availableWidth: availableWidth,
+      key: toFlutterKey(box.key),
+    ),
     final core.TextNode text => FlutterText(
       node: text,
       key: toFlutterKey(text.key),
