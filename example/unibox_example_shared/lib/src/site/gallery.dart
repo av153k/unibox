@@ -316,7 +316,8 @@ UINode _components(MaterialPalette palette) {
             background: palette.primary,
             foreground: palette.onPrimary,
             ink: palette.onPrimary,
-            hover: palette.primary,
+            // A wash, not a colour: it is painted above the ink.
+            hover: const BoxColor(0x1F000000),
             radius: 20,
           ),
         ],

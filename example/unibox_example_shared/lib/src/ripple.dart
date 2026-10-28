@@ -154,9 +154,16 @@ final class RippleButton extends StatefulNode<RippleState, RippleStore> {
 
 /// The button and its ink, as one stack.
 ///
-/// A stack is what a layer needs: the button sizes it, and the ink is a positioned
-/// child clipped to the button's radius. `PositionedNode` places each drop where the
-/// press landed, which is the whole reason a press carries a local position.
+/// Three layers, painted in this order: the fill, the ink, and the label. Only the
+/// last one carries the press, and it is last on purpose. A layer drawn above the
+/// gesture wins the hit test on both targets — in Flutter a box whose only
+/// decoration is a radius still claims the pointer, and in CSS an element claims
+/// it whatever its background — so an ink layer drawn on top would swallow the
+/// press it exists to show. Underneath it costs nothing: nothing above it is
+/// listening.
+///
+/// A stack is what a layer needs. The label's box sizes the stack, because the two
+/// layers below it are positioned and take no room of their own.
 UINode _rippleView(
   RippleState state,
   RippleStore store, {
@@ -170,25 +177,11 @@ UINode _rippleView(
 }) {
   return StackNode(
     children: <UINode>[
-      Box(
-        borderRadius: radius,
-        padding: const BoxSpacing.symmetric(horizontal: 20, vertical: 10),
-        backgroundColor: background,
-        onTap: onTap,
-        onTapDown: (BoxTapEvent event) => store.press(event.position),
-        semantics: const BoxSemantics(role: BoxRole.button),
-        transition: const BoxTransition(duration: Duration(milliseconds: 100)),
-        stateStyles: <BoxState, BoxStyle>{
-          BoxState.hover: BoxStyle(backgroundColor: hover),
-        },
-        children: <UINode>[TextNode(label, color: foreground)],
-      ),
-      PositionedNode(
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        child: Box(
+      // The fill, so the ink has something to sit on.
+      _layer(Box(borderRadius: radius, backgroundColor: background)),
+      // The ink, clipped to the radius so a drop cannot spill out of the button.
+      _layer(
+        Box(
           overflow: Overflow.hidden,
           borderRadius: radius,
           children: <UINode>[
@@ -200,8 +193,28 @@ UINode _rippleView(
           ],
         ),
       ),
+      // The label, and the only layer that listens. Its hover is a wash rather than
+      // a colour: it is painted above the ink, so an opaque hover would hide the
+      // drop the press just started.
+      Box(
+        borderRadius: radius,
+        padding: const BoxSpacing.symmetric(horizontal: 20, vertical: 10),
+        onTap: onTap,
+        onTapDown: (BoxTapEvent event) => store.press(event.position),
+        semantics: const BoxSemantics(role: BoxRole.button),
+        transition: const BoxTransition(duration: Duration(milliseconds: 100)),
+        stateStyles: <BoxState, BoxStyle>{
+          BoxState.hover: BoxStyle(backgroundColor: hover),
+        },
+        children: <UINode>[TextNode(label, color: foreground)],
+      ),
     ],
   );
+}
+
+/// [child] stretched over the whole button, taking no room in the stack's size.
+UINode _layer(UINode child) {
+  return PositionedNode(top: 0, left: 0, right: 0, bottom: 0, child: child);
 }
 
 /// One drop: a circle centred on the press, growing as it fades.
