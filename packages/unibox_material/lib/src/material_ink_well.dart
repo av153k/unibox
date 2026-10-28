@@ -49,8 +49,11 @@ final class MaterialInkWell extends Box {
     BoxStyle? pressedStyle,
   }) : super(
          transition: transition,
-         // Material paints the press as ink: 12% of onSurface, spreading in 450ms.
-         ripple: BoxRipple(color: palette.onSurface.withOpacity(0.12)),
+         // Material paints the press as ink over the fill, not only as a tint: the
+         // palette's press layer, spreading over 450ms.
+         ripple: const BoxRipple(
+           color: BoxColor.role(MaterialColorRole.pressedLayer),
+         ),
          onTap: onTap,
          semantics:
              semantics ??

@@ -2,7 +2,7 @@
 
 ## 0.1.0
 
-- `MaterialInkWell` ripples: the press is 12% of `onSurface` spreading over the fill,
+- `MaterialInkWell` ripples: the press is the palette's press layer spreading over the fill,
   which is the ink Material paints and not just the state layer.
 
 The first release: Material 3 as a package of values, plus the components built
