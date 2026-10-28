@@ -6,6 +6,10 @@
   `BoxTapEvent` position and `PointerDeviceKind` becomes a `BoxPointerKind`, before
   the tap fires. A box that only listens for the press counts as interactive, so it
   still takes the pointer cursor.
+- A box that holds a stack lays the stack out with the box's own constraints, so
+  `Box(overflow: hidden, child: StackNode(...))` clips a layer instead of failing. A
+  flex hands its children an unbounded main axis, and a stack cannot be laid out in
+  one; the web renderer already drew that shape.
 
 The first release of the Flutter renderer: one node tree becomes a widget tree.
 

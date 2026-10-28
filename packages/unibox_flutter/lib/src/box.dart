@@ -322,12 +322,29 @@ class FlutterBoxState extends State<FlutterBox> {
       );
     }
 
+    final core.CrossAlign crossAlign =
+        style.crossAlign ?? core.CrossAlign.start;
     final MainAxisAlignment mainAxisAlignment = toMainAxisAlignment(
       style.mainAlign ?? core.MainAlign.start,
     );
     final CrossAxisAlignment crossAxisAlignment = toCrossAxisAlignment(
-      style.crossAlign ?? core.CrossAlign.start,
+      crossAlign,
     );
+
+    // A stack is a layer, not a flow child, so it takes the box's own constraints
+    // instead of a flex's: a flex hands its children an unbounded main axis, and a
+    // stack cannot be laid out in one. It is the shape that clips a layer —
+    // `Box(overflow: hidden, child: StackNode(...))` — and the web renderer already
+    // draws it, since an absolutely positioned child of a flow-sized item lands
+    // where it was put. Alignment applies to flow children, so a box whose only
+    // child is a layer has none to align.
+    if (box.children.length == 1 && box.children.single is core.StackNode) {
+      return _buildChild(
+        box.children.single,
+        direction,
+        availableWidth: availableWidth,
+      );
+    }
 
     if (direction == core.Axis.horizontal) {
       return Row(
