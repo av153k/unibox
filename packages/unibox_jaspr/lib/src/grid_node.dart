@@ -51,6 +51,13 @@ class JasprGrid extends StatelessComponent {
   Map<String, String> _declarations() {
     return <String, String>{
       'display': 'grid',
+      // A grid takes the width it is given: the tracks are counted from it, which
+      // is what the Flutter renderer does with the constraints of the same box. A
+      // block-level grid already fills its parent, but a box aligns its children to
+      // the start by default, and a flex item that is not stretched shrinks to fit
+      // — where `auto-fill` would then find room for exactly one column.
+      'width': '100%',
+      'min-width': '0',
       if (node.gap > 0) 'gap': _pixels(node.gap),
       'align-items': 'start',
       'grid-template-columns': _tracks(),

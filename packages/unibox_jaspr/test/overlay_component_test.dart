@@ -34,6 +34,17 @@ void main() {
     expect(barrier['background-color'], 'rgba(0, 0, 0, 0.322)');
   });
 
+  testComponents('paints the content above the barrier', (tester) async {
+    pumpNode(tester, overlay());
+
+    // The barrier is positioned, and a positioned box paints above an in-flow one
+    // whatever the document order — so the content is positioned too, which puts
+    // the later sibling on top. Left static, a dialog was dimmed by its own scrim.
+    final Map<String, String> content = stylesOf(find.tag('div').at(2));
+
+    expect(content['position'], 'relative');
+  });
+
   testComponents('places the content where the node asks', (tester) async {
     pumpNode(tester, overlay(alignment: core.OverlayAlignment.top));
     expect(stylesOf(find.tag('div').first)['align-items'], 'flex-start');

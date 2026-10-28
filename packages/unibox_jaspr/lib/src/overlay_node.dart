@@ -46,6 +46,13 @@ class JasprOverlay extends StatelessComponent {
             toCssColor(node.barrierColor).value,
       },
     );
+    // Positioned boxes paint above in-flow ones, in that order whichever comes
+    // first in the document — so the content is positioned too, and the later
+    // sibling wins. Left static it would sit *under* the scrim and be dimmed with
+    // the page behind it, which is not what a modal looks like.
+    final Styles content = Styles(
+      raw: <String, String>{'position': 'relative'},
+    );
     final UniboxStylesheet? sheet = UniboxStylesheetScope.of(context);
 
     return div(
@@ -55,7 +62,11 @@ class JasprOverlay extends StatelessComponent {
           classes: _className(sheet, 'overlay-barrier', barrier),
           styles: sheet == null ? barrier : null,
         ),
-        div(<Component>[renderNode(node.child)]),
+        div(
+          <Component>[renderNode(node.child)],
+          classes: _className(sheet, 'overlay-content', content),
+          styles: sheet == null ? content : null,
+        ),
       ],
       attributes: const <String, String>{
         'role': 'dialog',

@@ -79,5 +79,29 @@ void main() {
 
       expect(texts, <String>['one', 'two', 'three']);
     });
+    testComponents(
+      'takes the width it is given, so the tracks are counted from it',
+      (tester) async {
+        pumpNode(
+          tester,
+          const core.Box(
+            // A box aligns its children to the start by default: a grid that did not
+            // ask for the full width would shrink to one column.
+            children: <core.UINode>[
+              core.GridNode(
+                minItemWidth: 280,
+                children: <core.UINode>[core.TextNode('One')],
+              ),
+            ],
+          ),
+        );
+
+        final Map<String, String> styles = stylesOf(find.tag('div').last);
+
+        expect(styles['display'], 'grid');
+        expect(styles['width'], '100%');
+        expect(styles['min-width'], '0');
+      },
+    );
   });
 }
