@@ -1,6 +1,7 @@
 import '../callbacks.dart';
 import '../enums.dart';
 import '../tokens/box_spacing.dart';
+import '../tokens/box_text_style.dart';
 import 'ui_node.dart';
 
 /// A single line or multiline text input.
@@ -14,6 +15,7 @@ class TextInputNode extends UINode {
     super.key,
     this.value,
     this.placeholder,
+    this.placeholderStyle,
     this.inputType = InputType.text,
     this.obscureText = false,
     this.multiline = false,
@@ -38,6 +40,15 @@ class TextInputNode extends UINode {
 
   /// The hint shown while the input is empty.
   final String? placeholder;
+
+  /// The typography of [placeholder], when it should differ from the value's.
+  ///
+  /// A hint is secondary text, so a design system usually paints it in a quieter
+  /// colour than the text the user types. It is a token of its own rather than an
+  /// inherited one because both targets hand the hint to the control: Flutter's
+  /// `hintStyle`, the browser's `::placeholder`. Inheriting the value style would
+  /// make an empty field look filled.
+  final BoxTextStyle? placeholderStyle;
 
   /// The kind of value the input expects.
   ///

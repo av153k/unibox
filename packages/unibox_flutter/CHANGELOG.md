@@ -2,6 +2,9 @@
 
 ## 0.1.0
 
+- A `TextInputNode.placeholderStyle` becomes the field's `hintStyle`, so the hint of an
+  empty field is drawn in the typography the tree asked for instead of the host's.
+
 - A box with `onTapDown` reports the press: `TapDownDetails.localPosition` becomes a
   `BoxTapEvent` position and `PointerDeviceKind` becomes a `BoxPointerKind`, before
   the tap fires. A box that only listens for the press counts as interactive, so it

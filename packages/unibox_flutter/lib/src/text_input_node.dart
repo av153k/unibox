@@ -60,6 +60,16 @@ class FlutterTextInputState extends State<FlutterTextInput> {
     super.dispose();
   }
 
+  /// The hint's typography, or `null` to let the control keep its own.
+  ///
+  /// The hint is drawn by the field, not by the enclosing box, so it is handed to
+  /// the control as `hintStyle` — the web renderer answers with a `::placeholder`
+  /// rule — and an unset token means the field says nothing about it.
+  TextStyle? get _hintStyle {
+    final core.BoxTextStyle? style = widget.node.placeholderStyle;
+    return style == null ? null : toTextStyle(style);
+  }
+
   @override
   Widget build(BuildContext context) {
     final core.TextInputNode node = widget.node;
@@ -94,9 +104,13 @@ class FlutterTextInputState extends State<FlutterTextInput> {
       // `<input>` does on the web, and the enclosing box decides how a field
       // looks on both targets instead of each platform styling it its own way.
       decoration: node.padding == null
-          ? InputDecoration.collapsed(hintText: node.placeholder)
+          ? InputDecoration.collapsed(
+              hintText: node.placeholder,
+              hintStyle: _hintStyle,
+            )
           : InputDecoration(
               hintText: node.placeholder,
+              hintStyle: _hintStyle,
               border: InputBorder.none,
               isDense: true,
               contentPadding: toEdgeInsets(node.padding!),

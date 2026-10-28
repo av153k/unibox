@@ -38,11 +38,27 @@ class JasprTextInput extends StatelessComponent {
     final String? placeholder = node.placeholder;
     final Map<String, EventCallback>? listeners = _events();
     final Styles styles = toTextInputStyles(padding: node.padding);
+    final Styles? hint = _hintStyles();
+    // The hint is a rule of its own — `::placeholder` is not a declaration the field
+    // carries — so its declarations are part of the class key. Without that, two
+    // fields that differ only in the colour of their hint would share a class and the
+    // first hint colour would win for both.
+    final String key = hint == null
+        ? declarationsOf(styles)
+        : '${declarationsOf(styles)}|::placeholder:${declarationsOf(hint)}';
     final String? className = UniboxStylesheetScope.of(context)?.classFor(
       'field',
-      declarationsOf(styles),
+      key,
       (String name) => <StyleRule>[
         StyleRule(selector: Selector.className(name), styles: styles),
+        if (hint != null)
+          StyleRule(
+            selector: Selector.chain(<Selector>[
+              Selector.className(name),
+              const Selector.pseudoElem('placeholder'),
+            ]),
+            styles: hint,
+          ),
       ],
     );
 
@@ -72,6 +88,13 @@ class JasprTextInput extends StatelessComponent {
       styles: className == null ? styles : null,
       events: listeners,
     );
+  }
+
+  /// The declarations of [core.TextInputNode.placeholderStyle], or `null` when the
+  /// node says nothing about the hint.
+  Styles? _hintStyles() {
+    final core.BoxTextStyle? style = node.placeholderStyle;
+    return style == null ? null : toTypographyStyles(style);
   }
 
   /// The attributes the field needs beyond the typed parameters.

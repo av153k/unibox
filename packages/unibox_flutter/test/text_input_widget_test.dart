@@ -88,6 +88,26 @@ void main() {
       expect(currentText(tester), 'typed');
     });
 
+    testWidgets('gives the hint the typography the node asks for', (
+      tester,
+    ) async {
+      await pumpMaterialNode(
+        tester,
+        const core.TextInputNode(
+          placeholder: 'ada@example.com',
+          placeholderStyle: core.BoxTextStyle(
+            color: core.BoxColors.grey,
+            fontSize: 18,
+          ),
+        ),
+      );
+
+      final TextStyle? hint = renderedField(tester).decoration!.hintStyle;
+
+      expect(hint?.fontSize, 18);
+      expect(hint?.color, const Color(0xFF9E9E9E));
+    });
+
     testWidgets('renders the placeholder as a hint', (tester) async {
       await pumpMaterialNode(
         tester,

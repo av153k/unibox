@@ -2,6 +2,10 @@
 
 ## 0.1.0
 
+- A `TextInputNode.placeholderStyle` becomes a `::placeholder` rule next to the field's
+  own class, and its declarations are part of that class's key, so two fields that
+  differ only in the colour of their hint do not share a class.
+
 - A box with `onTapDown` writes a `pointerdown` listener that reports the press where
   it landed (`offsetX`/`offsetY`, the same local frame Flutter reports) and the device
   through `pointerType`. Like every other listener it stays inert until the client

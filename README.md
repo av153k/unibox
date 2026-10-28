@@ -317,6 +317,7 @@ TextInputNode(
 | --- | --- | --- | --- |
 | `value` | `String?` | `null` | Controlled value. `null` lets the field keep what the user types; a value replaces it. |
 | `placeholder` | `String?` | none | Hint shown while the field is empty. |
+| `placeholderStyle` | `BoxTextStyle?` | inherit | The hint's typography: `hintStyle` on Flutter, a `::placeholder` rule on the web. |
 | `inputType` | `InputType` | `text` | `text`, `email`, `number`, `phone`, `url`: picks the on-screen keyboard and the browser's validation hints. |
 | `obscureText` | `bool` | `false` | Hides the characters, for passwords. |
 | `multiline` | `bool` | `false` | Renders a text area instead of a single line field. |

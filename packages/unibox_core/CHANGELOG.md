@@ -2,6 +2,11 @@
 
 ## 0.1.0
 
+- `TextInputNode.placeholderStyle` gives the hint its own typography, so a field can
+  paint it quieter than the value without restyling the whole control. It is a token
+  of the node rather than of the box around it because both targets hand the hint to
+  the control itself.
+
 - `BoxTapEvent`, `BoxPoint`, `BoxPointerKind` and the flat `Box.onTapDown`: a press now
   says where it landed inside the box and what pressed it. The position is the local
   one because it is the coordinate both hosts can produce exactly — Flutter's

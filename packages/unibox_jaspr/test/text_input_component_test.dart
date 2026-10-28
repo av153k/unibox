@@ -25,6 +25,55 @@ void main() {
       });
     });
 
+    testComponents("writes the hint's look as a placeholder rule", (
+      tester,
+    ) async {
+      pumpNode(
+        tester,
+        const core.TextInputNode(
+          placeholder: 'ada@example.com',
+          placeholderStyle: core.BoxTextStyle(
+            color: core.BoxColors.grey,
+            fontSize: 18,
+          ),
+        ),
+      );
+
+      final String className = classNamesOf(find.tag('input')).single;
+      final Map<String, String> placeholder = declarationsOf(
+        '.$className::placeholder',
+      );
+
+      expect(placeholder['font-size'], '18px');
+      expect(placeholder['color'], '#9e9e9e');
+    });
+
+    testComponents('gives two fields with different hints different classes', (
+      tester,
+    ) async {
+      // The hint is a rule of its own, so it has to key the class: otherwise the
+      // first hint colour in a page would be the hint colour of every field.
+      pumpNode(
+        tester,
+        const core.Box(
+          children: <core.UINode>[
+            core.TextInputNode(
+              placeholder: 'a',
+              placeholderStyle: core.BoxTextStyle(color: core.BoxColors.grey),
+            ),
+            core.TextInputNode(
+              placeholder: 'b',
+              placeholderStyle: core.BoxTextStyle(color: core.BoxColors.blue),
+            ),
+          ],
+        ),
+      );
+
+      final List<TestRenderElement> fields = elementsOf(find.tag('input'));
+      expect(fields, hasLength(2));
+      expect(fields.first.classes, isNot(fields.last.classes));
+    });
+
     testComponents('renders a text input without the browser form chrome', (
       tester,
     ) async {
