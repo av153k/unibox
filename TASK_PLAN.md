@@ -172,6 +172,18 @@ Tasks 87 and 88 — a triggered keyframe timeline and the ripple built out of it
 
 - [ ] Task 123: Example — hold at 360 logical pixels without a breakpoint: the card's fixed `width: 380`, the gallery's `width: 720`, `320` and `360` rows and the showcase's two frames become fluid (`width: double.infinity`, `maxWidth`, and a `GridNode` whose `minItemWidth` stacks the frames below two columns). Measured at 360 the navigation clips, the sign-up dialog is wider than the viewport, the showcase puts both frames in one row and the gallery's specimens overflow — every one of them a fixed width, so every one is a sizing fix, not a query. `design.md` §5.15 records why no breakpoint is needed.
 
+### Phase 26: A width that dresses a node differently
+
+The listings page: cards in a grid with a map beside them on a wide surface, and a
+column of cards with a floating button that opens the map as an overlay below 900
+logical pixels. `design.md` §5.15 holds the reasoning; these are the pieces.
+
+- [ ] Task 124: Core — `Box.visibleFrom` and `Box.visibleUntil` as layout tokens of `BoxStyle` (a half-open width range, both optional), with `merge`, equality, `toString`, the flat parameters, and `validateTree` reporting a range that can never show (`visibleFrom >= visibleUntil`, a negative threshold). The child is never removed: the token is a *style*, so the node stays in the tree, in the DOM and in the crawl. A boolean `visible` is deliberately not added — hiding a subtree because of **state** is the view's job, and the view already omits it.
+- [ ] Task 125: Jaspr renderer — the box declares `container-type: inline-size` and the threshold becomes one `@container` block: mobile-first, so the base rule is the narrow layout and the query adds the wide one, and a browser without container queries still renders the base. Measured in Chromium for its `@container` support. Tests pin the declarations, the base rule, both directions, and that removing the threshold removes exactly its rule.
+- [ ] Task 126: Flutter renderer — `LayoutBuilder` over the box's own constraints (the place `FlutterGrid` already measures, and never `MediaQuery`), `Visibility` with the subtree kept in the element tree, so a hidden box takes no room and keeps its state.
+- [ ] Task 127: `unibox_testing` — `BoxAppearance.visibleFrom`/`visibleUntil`, read back from the CSS of the web renderer and from the widget tree of the Flutter one, in the "every token at once" case.
+- [ ] Task 128: Example — the map returns to the listings page as the wide-only column, the grid takes `maxColumns: 2` beside it, and below 900 a floating button opens the map as an `OverlayNode` (state, not width). Four widths are checked in both renderings, and the DOM is compared between the widths to prove it is identical.
+
 ### Phase 24: Material fidelity
 - [x] Task 116: Audit the Material components against the Material 3 specification and fix the gaps: card variants on the palette, list tile padding and palette colours, text field minimum height, focused outline, hover and disabled states, dialog content and action colours, a full-width bottom sheet with a drag handle and an upward shadow.
 - [x] Task 117: `unibox_material` — `MaterialIcon`: a glyph of an icon font in a square `Box`, by codepoint or by ligature name. A codepoint that comes from a const `IconData` is what the Flutter tree shaker can subset (10.7 MB became 3.6 kB in the check), a ligature name ships the whole font, and a web export serves whatever subset the host puts next to its `@font-face`; the README states the recipe and the Symbols codepoints.
@@ -233,19 +245,6 @@ heaviest thing left in it, and the rule stands for an application that has one.
 
 Deliberately out of scope for this pass, with the reason they were left:
 
-- **Width-dependent style ("P3")**: not built, because no screen needs it. The
-  model has no breakpoint token, and the site's sixteen `@media` blocks are thirteen
-  hover guards and three colour-scheme blocks — not one is a width query. Reflow is
-  `GridNode`'s arithmetic, and `flex`, `double.infinity` and `maxWidth` cover the
-  rest without knowing a viewport. The five places the phone rendering broke at 360
-  logical pixels were all **fixed pixel widths** in trees written for a wide screen
-  (`width: 380` on the card, `width: 720` and `width: 320` on the gallery rows, two
-  frames in a row), so the fix is fluid sizing, not a query. `design.md` §5.15 holds
-  the invariants a phase would have to keep — all variants in the CSS, a mobile-first
-  baseline, the same element and children at every width, one declaration per media
-  query, and the Flutter branch resolving the condition from the node's constraints
-  rather than from a viewport the web branch cannot see. The trigger is a named screen
-  in a pull request that needs different *styling* at a different width.
 - `Box.onScroll` and scroll position: needs a shared scroll model that neither
   `SingleChildScrollView` nor the browser state exposes the same way.
 - A focus frame around a field: the browser's native ring is stripped (it sits

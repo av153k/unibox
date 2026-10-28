@@ -511,50 +511,51 @@ has one, joins that list).
 tallest card and shorter cards are not stretched, which is also what keeps the
 Flutter side free of intrinsic measurement a card containing a scroll view could
 not answer.
-### 5.15 A breakpoint would change styling only, and none is needed
+### 5.15 Visibility is a style, and a width is measured where it is drawn
 
-The model has no breakpoint token, and the output shows what replaces one: of the
-sixteen `@media` blocks the whole example site emits, thirteen guard the hover
-state (`@media (hover: hover)`, so a touch screen cannot get stuck in a hovered
-look) and three are the host's own dark-mode block. **None is a width query.**
+**The screen.** A listings page: cards in a grid on a wide surface with a map beside
+them, and below 900 logical pixels a single column of cards with a floating button
+that opens the map as an overlay. It is the first screen in this project that
+genuinely needs to *dress* a node differently at a different width — not just
+distribute it differently — so it is also the first one that pins this rule.
 
-Different distribution comes from the layout tokens instead, and they are width
-independent by construction:
+Four mechanisms carry it, and only one of them is new:
 
-| Want | Token | Why it needs no query |
+| What the screen needs | Mechanism | Why it is not a breakpoint in the tree |
 | --- | --- | --- |
-| 1 to 3 columns as the room allows | `GridNode(minItemWidth, maxColumns, gap)` | `repeat(auto-fill, minmax(…))` resolves against the grid's own width; Flutter runs the same arithmetic on its constraints (§5.14) |
-| an item that takes the room left over | `flex` | a flex factor has no width in it |
-| a surface that fills its line | `width: double.infinity`, `maxWidth` | percentages and maxima |
-| a control that may not grow past a reading width | `maxWidth` | a maximum, not a breakpoint |
+| two cards per row, then one | `GridNode(minItemWidth: 280, maxColumns: 2)` | arithmetic on the grid's own width (§5.14) |
+| the map beside the cards, and absent when narrow | `Box.visibleFrom: 900` | the map stays in the tree and in the DOM; only its `display` changes |
+| the floating button when narrow, and gone when wide | `Box.visibleUntil: 900` | the same token, the other direction |
+| the map as its own view on a phone | `StatefulNode` state plus an `OverlayNode` | state may change structure; width may not |
 
-**When it was measured, no screen needed more.** At 360 logical pixels the phone
-rendering broke in five places — the navigation clipped, the sign-up dialog wider
-than the viewport, both panels of the showcase side by side, and the gallery's
-specimen rows overflowing — and every one of them was a **fixed pixel width** in a
-tree written for a wide screen (`width: 380` on the card, `width: 720` and
-`width: 320` on the gallery rows, two frames in a row). Sizing them fluidly fixes
-all five without a single query, and it keeps the promise the server has to keep:
-the markup is the same at every width, so the hydrated DOM cannot disagree with it.
+**Why a width is measured on the box, not on the window.** `visibleFrom` becomes a
+**container query** on the web — `container-type: inline-size` on the box, then
+`@container (min-width: 900px) { … }` — and a `LayoutBuilder` over the box's
+constraints in Flutter. A media query would measure the *viewport* while Flutter
+measures the *node*, and the two disagree the moment a node is not full bleed: in
+the showcase each panel is about 640 pixels wide inside a 1280 pixel window, so a
+media query would say "wide" exactly where Flutter says 640. Container queries ask
+the same question of the same box, which is what makes the two renderings agree at
+every width rather than on full-width pages only.
 
-**What a phase would have to hold if a screen ever does need different styling.**
-A breakpoint may change styling only — never structure and never data — because a
-structural one duplicates content in the crawlable markup and cannot be honoured in
-Flutter without a second tree. Concretely:
+**Why not a `LayoutBuilder` in the tree.** A tree that measures the surface and
+returns a *different* subtree cannot be rendered by a server — no viewport exists at
+export time — and two subtrees duplicate the content in the crawlable DOM. So the
+node states a threshold and the renderer resolves it; the child is always present,
+on both targets, at every width.
 
-- every variant is present in the CSS with a mobile-first baseline, so the server
-  output is correct at every width without knowing any of them;
-- the element and its children are the same at every width, so the hydrated DOM
-  matches the server byte for byte;
-- the Flutter branch resolves the same condition from the **constraints of the
-  node**, the way the grid does, and never reads a viewport the web branch cannot
-  see;
-- removing a breakpoint removes exactly its rules, which means one declaration per
-  media query rather than a class per breakpoint.
+What that buys, stated as the invariants the feature has to keep:
 
-The trigger for building it is a named screen in a pull request, not a roadmap: a
-screen that genuinely needs *different styling* — not different distribution — at
-a different width. Until one exists, this section is the record of why the model
-has no breakpoint.
+- the markup is identical at every width, so a hydrated page cannot disagree with
+  the server's;
+- every variant is in the CSS, mobile-first: the base rule describes the narrow
+  layout and the container query adds the wide one, so a browser without container
+  queries still renders the mobile layout rather than a broken desktop one;
+- a hidden box takes no room, exactly like an absent node, which is what Flutter's
+  `Visibility` does with the same threshold;
+- removing a threshold removes exactly its rules — the box's own class rule and its
+  one query block — and nothing else;
+- no renderer reads a viewport anywhere: the web asks CSS, Flutter asks the
+  constraints of the node it is drawing.
 
 
