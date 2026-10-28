@@ -17,10 +17,11 @@ has to know this package exists.
 - `MaterialTypography`: the fifteen roles of the Material 3 type scale as `const`
   `BoxTextStyle` values, with `MaterialTypeRole` to name one in a table or a test and
   `MaterialTypography.of` to look one up.
-- `MaterialPalette`: the colour roles as `const` `BoxColor` values, with a baseline
-  light and dark instance and the state layers Material derives from `onSurface` —
-  8% hover, 10% focus and press, 16% dragged, and the 32% scrim. A palette is a value
-  a tree wears, not a theme that resolves at render time.
+- `MaterialPalette` and `MaterialColorRole`: the colour roles as `const` `BoxColor`
+  values, with a baseline light and dark scheme and the state layers Material derives
+  from `onSurface` — 8% hover, 10% focus and press, 16% dragged, and the 32% scrim.
+  `MaterialPalette.lightTheme` and `darkTheme` are those palettes as a `UniboxTheme`,
+  which is what a component's role resolves against.
 - `MaterialCard`: a card as a node that extends `Box` — 16 of padding, a white
   surface, a 12 pixel radius, the shade of elevation level one and `bodyMedium` for
   the texts inside, every one of them a parameter.
@@ -36,6 +37,11 @@ has to know this package exists.
 - `MaterialDialog` and `MaterialBottomSheet`: `OverlayNode`s with the policy they
   need — scrim, dismissal, alignment — and a raised surface with a title and a row of
   actions.
+
+Every component names a **role** rather than a colour, so one theme restyles all of
+them: a dark application renders the same tree with `theme: MaterialPalette.darkTheme`.
+The components no longer take a `palette:` argument, because a role is the indirection
+that argument used to provide.
 
 What the components leave to the platform is written on each of them: the ripple, the
 floating label, the caret and selection colours, and Material's modal transitions.

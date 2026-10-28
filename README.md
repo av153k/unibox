@@ -737,7 +737,7 @@ written inline.
 | `packages/unibox_flutter` | The Flutter renderer: `renderFlutter(node)` and `node.toWidget()`. |
 | `packages/unibox_jaspr` | The Jaspr renderer: `renderJaspr(node)` and `node.toComponent()`. |
 | `packages/unibox_testing` | The tables both renderers are tested against. Development only, not published. |
-| `packages/unibox_material` | The Material 3 type scale and palette, and the components built from them (card, list tile, ink well, text field, dialog, bottom sheet). Optional: no renderer depends on it. |
+| `packages/unibox_material` | The Material 3 type scale, the colour roles as a theme, and the components built from them (card, list tile, ink well, text field, dialog, bottom sheet). Optional: no renderer depends on it. |
 | `example/` | Two pages, one form and one navigation bar shared by a Flutter app and a static site. |
 
 Dependencies point one way: both renderers depend on `unibox_core`, never the other

@@ -68,6 +68,21 @@ final class UniboxTheme {
     return value;
   }
 
+  /// This theme with [other]'s colours laid over it.
+  ///
+  /// A page built from one design system and drawn with another's components needs
+  /// both vocabularies: the roles of the second fill in what the first does not
+  /// define, and a role both define keeps the value of this theme.
+  UniboxTheme merge(UniboxTheme other) {
+    if (other.isEmpty) {
+      return this;
+    }
+
+    // This theme wins a role both define: it is the page's own vocabulary, and the
+    // other is lending the roles the page does not name.
+    return UniboxTheme(colors: <Enum, BoxColor>{...other.colors, ...colors});
+  }
+
   /// The CSS custom property a colour role is written as: `--unibox-color-primary`.
   ///
   /// The name is the enum member in kebab case, so it is stable, greppable and

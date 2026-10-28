@@ -1,5 +1,73 @@
 import 'package:unibox_core/unibox_core.dart';
 
+/// The colour roles of the Material 3 specification.
+///
+/// A component names one of these instead of a value, so the tree says "the
+/// surface a card sits on" and the theme says what that is worth. The names are
+/// the specification's own, in kebab case where they reach CSS
+/// (`surfaceContainerHigh` → `--unibox-color-surface-container-high`).
+enum MaterialColorRole {
+  /// The accent a primary action is painted with.
+  primary,
+
+  /// The text and icons drawn on [primary].
+  onPrimary,
+
+  /// The less prominent container of a primary accent.
+  primaryContainer,
+
+  /// The text and icons drawn on [primaryContainer].
+  onPrimaryContainer,
+
+  /// The page itself.
+  surface,
+
+  /// The text and icons drawn on [surface].
+  onSurface,
+
+  /// The supporting text and icons: captions, hints, secondary labels.
+  onSurfaceVariant,
+
+  /// The highest surface tone, which is a white sheet on a light page.
+  surfaceContainerLowest,
+
+  /// The surface of a resting card, which sits just above the page.
+  surfaceContainerLow,
+
+  /// The surface of a dialog or a menu.
+  surfaceContainerHigh,
+
+  /// The surface of the most prominent container, such as a filled field.
+  surfaceContainerHighest,
+
+  /// The line around a control at rest.
+  outline,
+
+  /// The fainter line: dividers, the edge of a card.
+  outlineVariant,
+
+  /// The colour of a failure.
+  error,
+
+  /// The text and icons drawn on [error].
+  onError,
+
+  /// What covers the page behind a modal: black at 32%.
+  scrim,
+
+  /// The layer a pointer paints: 8% of [onSurface].
+  hoverLayer,
+
+  /// The layer keyboard focus paints: 10%.
+  focusLayer,
+
+  /// The layer a press paints: 10%.
+  pressedLayer,
+
+  /// The layer a drag paints: 16%.
+  draggedLayer,
+}
+
 /// The Material 3 colour roles, as `const` values a tree can wear.
 ///
 /// A Material application has a colour scheme; this package has a palette of the
@@ -113,6 +181,42 @@ final class MaterialPalette {
 
   /// The layer Material paints over a control something is dragged onto: 16%.
   BoxColor get draggedLayer => _layerOver(onSurface, 0.16);
+
+  /// This palette as a theme, so a tree can name roles instead of values.
+  ///
+  /// Every role is present, including the four state layers, which is what makes
+  /// `BoxColor.role(MaterialColorRole.primary)` resolve in a component without the
+  /// component knowing which palette is in force.
+  UniboxTheme get theme => UniboxTheme(
+    colors: <MaterialColorRole, BoxColor>{
+      MaterialColorRole.primary: primary,
+      MaterialColorRole.onPrimary: onPrimary,
+      MaterialColorRole.primaryContainer: primaryContainer,
+      MaterialColorRole.onPrimaryContainer: onPrimaryContainer,
+      MaterialColorRole.surface: surface,
+      MaterialColorRole.onSurface: onSurface,
+      MaterialColorRole.onSurfaceVariant: onSurfaceVariant,
+      MaterialColorRole.surfaceContainerLowest: surfaceContainerLowest,
+      MaterialColorRole.surfaceContainerLow: surfaceContainerLow,
+      MaterialColorRole.surfaceContainerHigh: surfaceContainerHigh,
+      MaterialColorRole.surfaceContainerHighest: surfaceContainerHighest,
+      MaterialColorRole.outline: outline,
+      MaterialColorRole.outlineVariant: outlineVariant,
+      MaterialColorRole.error: error,
+      MaterialColorRole.onError: onError,
+      MaterialColorRole.scrim: scrim,
+      MaterialColorRole.hoverLayer: hoverLayer,
+      MaterialColorRole.focusLayer: focusLayer,
+      MaterialColorRole.pressedLayer: pressedLayer,
+      MaterialColorRole.draggedLayer: draggedLayer,
+    },
+  );
+
+  /// The baseline light scheme, as the theme a material tree is rendered with.
+  static final UniboxTheme lightTheme = MaterialPalette.light.theme;
+
+  /// The baseline dark scheme, as the theme a material tree is rendered with.
+  static final UniboxTheme darkTheme = MaterialPalette.dark.theme;
 
   /// The resting palette of Material 3's baseline light scheme.
   static const MaterialPalette light = MaterialPalette(

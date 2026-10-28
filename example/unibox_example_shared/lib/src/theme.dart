@@ -1,4 +1,5 @@
 import 'package:unibox_core/unibox_core.dart';
+import 'package:unibox_material/unibox_material.dart';
 
 /// The colour roles of the example.
 ///
@@ -47,7 +48,11 @@ abstract final class ExamplePalette {
   /// names a role, the web renderer writes the theme into `:root`, and the Flutter
   /// renderer resolves the same map. A host that wants a dark page overrides the
   /// variables or passes another theme; it does not touch the tree.
-  static const UniboxTheme theme = UniboxTheme(
+  ///
+  /// The page also uses components from `unibox_material`, which name
+  /// `MaterialColorRole`s of their own, so the material scheme is merged in: two
+  /// vocabularies, one theme, and the roles the example defines still win.
+  static final UniboxTheme theme = UniboxTheme(
     colors: <ExampleColor, BoxColor>{
       ExampleColor.accent: accent,
       ExampleColor.accentHover: accentHover,
@@ -59,7 +64,7 @@ abstract final class ExamplePalette {
       ExampleColor.muted: muted,
       ExampleColor.border: border,
     },
-  );
+  ).merge(MaterialPalette.lightTheme);
 
   /// The accent of the banner, the button and the checkbox.
   static const BoxColor accent = BoxColor.rgb(0x2D, 0x6C, 0xF3);

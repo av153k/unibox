@@ -61,28 +61,59 @@ void main() {
       );
     });
 
-    test('leaves the components to take the values it holds', () {
-      const MaterialPalette palette = MaterialPalette.light;
+    test('gives every role a value, in both schemes', () {
+      // A component names a role and expects the theme to answer it, so a role
+      // missing from a scheme would be a colour nobody notices until it is drawn.
+      for (final UniboxTheme theme in <UniboxTheme>[
+        MaterialPalette.lightTheme,
+        MaterialPalette.darkTheme,
+      ]) {
+        for (final MaterialColorRole role in MaterialColorRole.values) {
+          expect(theme.colorOf(role), isNotNull, reason: '$role has no colour');
+        }
+      }
+    });
 
-      final MaterialCard card = MaterialCard(
-        color: palette.surfaceContainerLow,
-        border: BoxBorder(color: palette.outlineVariant),
-      );
-      final MaterialListTile tile = MaterialListTile(
-        title: const TextNode('Ada Lovelace'),
-        color: palette.surfaceContainerLowest,
-        subtitleStyle: MaterialTypography.bodyMedium.merge(
-          BoxTextStyle(color: palette.onSurfaceVariant),
-        ),
-      );
-
-      expect(card.backgroundColor, palette.surfaceContainerLow);
-      expect(tile.backgroundColor, palette.surfaceContainerLowest);
+    test('resolves a role to the value the palette holds', () {
       expect(
-        (tile.children.first as Box).textStyle,
-        MaterialTypography.bodyLarge.merge(
-          BoxTextStyle(color: palette.onSurface),
+        MaterialPalette.lightTheme.resolve(
+          const BoxColor.role(MaterialColorRole.onSurface),
         ),
+        MaterialPalette.light.onSurface,
+      );
+      expect(
+        MaterialPalette.darkTheme.resolve(
+          const BoxColor.role(MaterialColorRole.primary),
+        ),
+        MaterialPalette.dark.primary,
+      );
+    });
+
+    test('spells its roles as custom properties of their names', () {
+      expect(
+        MaterialPalette.lightTheme.variables.keys,
+        contains('--unibox-color-surface-container-high'),
+      );
+      expect(
+        MaterialPalette.lightTheme.variables.keys,
+        contains('--unibox-color-hover-layer'),
+      );
+    });
+
+    test('lets a component be restyled by another theme', () {
+      final MaterialCard card = MaterialCard(
+        children: <UINode>[const TextNode('Order summary')],
+      );
+
+      // The card names roles, so it is the same card in a dark scheme: nothing in
+      // the tree changes, only the theme the renderer is given.
+      expect(
+        card.backgroundColor,
+        const BoxColor.role(MaterialColorRole.surfaceContainerLow),
+      );
+      expect(
+        MaterialPalette.darkTheme.resolve(card.backgroundColor!),
+        MaterialPalette.dark.surfaceContainerLow,
       );
     });
   });

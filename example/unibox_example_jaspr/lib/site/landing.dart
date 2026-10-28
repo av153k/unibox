@@ -81,7 +81,6 @@ UINode buildLanding() {
                 'The fifteen type roles, the colour roles and six components, '
                 'typeset and painted by the same node tree.',
             href: 'material/',
-            palette: palette,
           ),
           _choice(
             title: 'The same tree, drawn twice',
@@ -89,7 +88,6 @@ UINode buildLanding() {
                 'The example page rendered by Jaspr on the left and Flutter on the '
                 'right. Resize the window: both answer the same breakpoint.',
             href: 'showcase/',
-            palette: palette,
           ),
         ],
       ),
@@ -106,17 +104,17 @@ UINode _choice({
   required String title,
   required String body,
   required String href,
-  required MaterialPalette palette,
 }) {
   return LinkNode(
     href,
     child: Box(
       width: 360,
       borderRadius: 12,
-      border: BoxBorder(color: palette.outlineVariant),
+      border: const BoxBorder(
+        color: BoxColor.role(MaterialColorRole.outlineVariant),
+      ),
       children: <UINode>[
         MaterialInkWell(
-          palette: palette,
           borderRadius: 12,
           padding: const BoxSpacing.all(20),
           child: Box(
@@ -126,13 +124,15 @@ UINode _choice({
               TextNode(
                 body,
                 style: MaterialTypography.bodyMedium.copyWith(
-                  color: palette.onSurfaceVariant,
+                  color: const BoxColor.role(
+                    MaterialColorRole.onSurfaceVariant,
+                  ),
                 ),
               ),
               TextNode(
                 href,
                 style: MaterialTypography.labelSmall.copyWith(
-                  color: palette.primary,
+                  color: const BoxColor.role(MaterialColorRole.primary),
                 ),
               ),
             ],

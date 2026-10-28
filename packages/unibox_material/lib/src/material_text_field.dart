@@ -24,8 +24,9 @@ import 'material_typography.dart';
 /// **What it is not.** The label sits *above* the field and the message *below* it.
 /// Material floats the label onto the border once there is a value, and that is an
 /// animation the model has no triggered timeline for yet. The caret and selection
-/// colours are the platform's too, so a dark scheme is a different [palette] here and
-/// a matching `ColorScheme` on the Flutter side, not a token this node carries.
+/// colours are the platform's too, so a dark scheme is `theme: MaterialPalette.darkTheme`
+/// at the renderer and a matching `ColorScheme` on the Flutter side, not a token this
+/// node carries.
 final class MaterialTextField extends Box {
   /// Creates the field, its label and its message.
   MaterialTextField({
@@ -46,7 +47,6 @@ final class MaterialTextField extends Box {
     String? description,
     int? maxLines,
     InputType inputType = InputType.text,
-    MaterialPalette palette = MaterialPalette.light,
     double borderRadius = 4,
     super.width,
   }) : super(
@@ -55,19 +55,23 @@ final class MaterialTextField extends Box {
            if (label != null)
              TextNode(
                label,
-               style: _labelStyle(palette, invalid: invalid, focused: focused),
+               style: _labelStyle(invalid: invalid, focused: focused),
              ),
            Box(
-             textStyle: _valueStyle(palette),
+             textStyle: _valueStyle(),
              borderRadius: borderRadius,
              minHeight: 56,
              opacity: enabled ? null : 0.38,
              border: BoxBorder(
                width: focused ? 2 : 1,
-               color: _borderColor(palette, focused: focused, invalid: invalid),
+               color: _borderColor(focused: focused, invalid: invalid),
              ),
              hoverStyle: enabled && !focused && !invalid
-                 ? BoxStyle(border: BoxBorder(color: palette.onSurface))
+                 ? BoxStyle(
+                     border: BoxBorder(
+                       color: const BoxColor.role(MaterialColorRole.onSurface),
+                     ),
+                   )
                  : null,
              padding: const BoxSpacing.symmetric(horizontal: 16, vertical: 14),
              children: <UINode>[
@@ -89,38 +93,35 @@ final class MaterialTextField extends Box {
              ],
            ),
            if (message != null)
-             TextNode(message, style: _labelStyle(palette, invalid: invalid)),
+             TextNode(message, style: _labelStyle(invalid: invalid)),
          ],
        );
 
   /// The outline: the accent while the field has focus, the error colour while it
   /// is invalid, and the palette's line otherwise.
-  static BoxColor _borderColor(
-    MaterialPalette palette, {
-    required bool focused,
-    required bool invalid,
-  }) {
-    if (invalid) return palette.error;
-    return focused ? palette.primary : palette.outline;
+  static BoxColor _borderColor({required bool focused, required bool invalid}) {
+    if (invalid) return const BoxColor.role(MaterialColorRole.error);
+    return focused
+        ? const BoxColor.role(MaterialColorRole.primary)
+        : const BoxColor.role(MaterialColorRole.outline);
   }
 
   /// The label and the message: small, and the error colour when invalid.
-  static BoxTextStyle _labelStyle(
-    MaterialPalette palette, {
+  static BoxTextStyle _labelStyle({
     required bool invalid,
     bool focused = false,
   }) => MaterialTypography.bodySmall.merge(
     BoxTextStyle(
       color: invalid
-          ? palette.error
+          ? const BoxColor.role(MaterialColorRole.error)
           : focused
-          ? palette.primary
-          : palette.onSurfaceVariant,
+          ? const BoxColor.role(MaterialColorRole.primary)
+          : const BoxColor.role(MaterialColorRole.onSurfaceVariant),
     ),
   );
 
   /// The text the user types: the body role, in the on-surface colour.
-  static BoxTextStyle _valueStyle(MaterialPalette palette) => MaterialTypography
-      .bodyLarge
-      .merge(BoxTextStyle(color: palette.onSurface));
+  static BoxTextStyle _valueStyle() => MaterialTypography.bodyLarge.merge(
+    BoxTextStyle(color: const BoxColor.role(MaterialColorRole.onSurface)),
+  );
 }

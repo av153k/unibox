@@ -15,23 +15,19 @@ void main() {
     });
 
     test('tints its states with the palette layers', () {
-      const MaterialPalette palette = MaterialPalette.dark;
-      final well = MaterialInkWell(
-        palette: palette,
-        child: const TextNode('Ada'),
-      );
+      final well = MaterialInkWell(child: const TextNode('Ada'));
 
       expect(
         well.stateStyle(BoxState.hover)?.backgroundColor,
-        palette.hoverLayer,
+        const BoxColor.role(MaterialColorRole.hoverLayer),
       );
       expect(
         well.stateStyle(BoxState.focus)?.backgroundColor,
-        palette.focusLayer,
+        const BoxColor.role(MaterialColorRole.focusLayer),
       );
       expect(
         well.stateStyle(BoxState.pressed)?.backgroundColor,
-        palette.pressedLayer,
+        const BoxColor.role(MaterialColorRole.pressedLayer),
       );
     });
 

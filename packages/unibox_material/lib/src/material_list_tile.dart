@@ -62,7 +62,6 @@ final class MaterialListTile extends Box {
     BoxSemantics? semantics,
     BoxColor? color,
     double? width,
-    MaterialPalette palette = MaterialPalette.light,
     BoxSpacing padding = _padding,
     double gap = _gap,
     BoxTextStyle? titleStyle,
@@ -82,13 +81,24 @@ final class MaterialListTile extends Box {
          onTap: onTap,
          semantics: semantics ?? _roleFor(onTap),
          hoverStyle:
-             hoverStyle ?? BoxStyle(backgroundColor: palette.hoverLayer),
+             hoverStyle ??
+             BoxStyle(
+               backgroundColor: const BoxColor.role(
+                 MaterialColorRole.hoverLayer,
+               ),
+             ),
          stateStyles:
              stateStyles ??
              <BoxState, BoxStyle>{
-               BoxState.focus: BoxStyle(backgroundColor: palette.focusLayer),
+               BoxState.focus: BoxStyle(
+                 backgroundColor: const BoxColor.role(
+                   MaterialColorRole.focusLayer,
+                 ),
+               ),
                BoxState.pressed: BoxStyle(
-                 backgroundColor: palette.pressedLayer,
+                 backgroundColor: const BoxColor.role(
+                   MaterialColorRole.pressedLayer,
+                 ),
                ),
              },
          children: <UINode>[
@@ -100,7 +110,9 @@ final class MaterialListTile extends Box {
              textStyle:
                  titleStyle ??
                  MaterialTypography.bodyLarge.merge(
-                   BoxTextStyle(color: palette.onSurface),
+                   BoxTextStyle(
+                     color: const BoxColor.role(MaterialColorRole.onSurface),
+                   ),
                  ),
              children: <UINode>[
                title,
@@ -109,7 +121,11 @@ final class MaterialListTile extends Box {
                    textStyle:
                        subtitleStyle ??
                        MaterialTypography.bodyMedium.merge(
-                         BoxTextStyle(color: palette.onSurfaceVariant),
+                         BoxTextStyle(
+                           color: const BoxColor.role(
+                             MaterialColorRole.onSurfaceVariant,
+                           ),
+                         ),
                        ),
                    children: <UINode>[subtitle],
                  ),
@@ -143,7 +159,9 @@ final class MaterialListTile extends Box {
   /// It is the same value [MaterialPalette.light] states for `onSurfaceVariant`,
   /// written out so a tile needs no palette to look like Material; a themed
   /// application passes `subtitleStyle` with the role it wants instead.
-  static const BoxColor subtitleColor = BoxColor(0xFF49454F);
+  static const BoxColor subtitleColor = BoxColor.role(
+    MaterialColorRole.onSurfaceVariant,
+  );
 
   /// The typography of a subtitle: `bodyMedium` in [subtitleColor].
   ///

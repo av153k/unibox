@@ -183,44 +183,47 @@ Keep those four lines in the application that wants them. The package exports
 three names, and the day a preset needs a theme token it is a `BoxTextStyle`
 again.
 
-## The palette
+## The palette and the theme
 
 `MaterialPalette` is the colour half of the design system: the Material 3 roles as
-`const` `BoxColor` values, with a light and a dark instance.
+`const` `BoxColor` values, with a light and a dark instance. `MaterialColorRole` is
+the vocabulary the components name, and a palette turns it into a theme:
 
 ```dart
-const palette = MaterialPalette.light;
+// what a component says
+Box(backgroundColor: const BoxColor.role(MaterialColorRole.surfaceContainerLow))
 
-MaterialCard(
-  color: palette.surfaceContainerLow,
-  border: BoxBorder(color: palette.outlineVariant),
-  textStyle: MaterialTypography.bodyMedium.merge(
-    BoxTextStyle(color: palette.onSurface),
-  ),
-  children: <UINode>[TextNode('Order summary')],
-);
+// what the application says, once, when it renders
+renderJaspr(page, theme: MaterialPalette.lightTheme);
+renderFlutter(page, theme: MaterialPalette.lightTheme);
 ```
 
 | Role | What Material paints with it |
 | --- | --- |
 | `primary`, `onPrimary`, `primaryContainer`, `onPrimaryContainer` | an accent and the text on it |
 | `surface`, `onSurface`, `onSurfaceVariant` | the page, its text, and its lower emphasis text |
-| `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainerHighest` | the three surface tones a card, a sheet and a filled field sit at |
+| `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainerHigh`, `surfaceContainerHighest` | the tones a card, a dialog and a filled field sit at |
 | `outline`, `outlineVariant` | a line that frames a control, and one that only separates |
 | `error`, `onError` | what went wrong, and the text on it |
 | `scrim` | what covers the page behind a modal |
-| `hoverLayer`, `pressedLayer`, `draggedLayer` | 8%, 12% and 16% of `onSurface`, the state layers as translucent colours |
+| `hoverLayer`, `focusLayer`, `pressedLayer`, `draggedLayer` | 8%, 10%, 10% and 16% of `onSurface`, the state layers as translucent colours |
 
 The layers are derived rather than listed, because Material states them as an
 opacity over the on-surface colour: a translucent colour reads correctly over any
 surface tone, which is what a CSS state layer does.
 
-**How a colour reaches the page.** The application passes the palette to its tree
-builders *and* installs the same roles as its platform theme — `ColorScheme` on a
-`MaterialApp`, CSS custom properties on the web. Those two wirings belong to the
-application: this package depends on `unibox_core` alone and never imports Flutter,
-so it cannot install a theme even if it wanted to. A change of palette is a rebuild,
-like a change of state.
+**A component names a role, and the host answers it.** Every component in this
+package names roles, so *one* value themes it everywhere: `MaterialPalette.lightTheme`
+and `MaterialPalette.darkTheme` are the two ready-made ones, and `UniboxTheme` is a
+value, so a dark app is the same tree with another theme. On the web the roles are
+written as custom properties and the theme once in `:root`, which is what lets a
+stylesheet of the host override any of them — a `prefers-color-scheme: dark` block is
+enough. In Flutter they are resolved while the widget tree is built.
+
+**The one thing this package cannot do itself**: install the theme. It depends on
+`unibox_core` alone and never imports Flutter, so the two wirings that make the
+values reach a `ColorScheme` and a page's CSS are the application's — which is also
+what keeps the tree and any embedded Material widget in step.
 
 ## The card
 
@@ -358,8 +361,8 @@ MaterialTextField(
 The label sits above the field and the message below it. Material floats the label
 onto the border once the field has a value, and that is an animation the model has no
 timeline for. The caret, the selection, the IME and autofill are the platform's,
-because the input node delegates them — so a dark app passes `palette:
-MaterialPalette.dark` here *and* a matching `ColorScheme` to `MaterialApp`.
+because the input node delegates them — so a dark app renders the same field with
+`theme: MaterialPalette.darkTheme` *and* a matching `ColorScheme` to `MaterialApp`.
 
 `focused` is the host's: it is the value `onFocusChanged` last reported.
 
@@ -405,7 +408,7 @@ text, and needs no embed.
 ```dart
 MaterialIcon.codePoint(Symbols.home.codePoint);             // by codepoint
 MaterialIcon.ligature('home');                               // by ligature name
-MaterialIcon.ligature('delete', color: palette.error, label: 'Delete');
+MaterialIcon.ligature('delete', label: 'Delete'); // on-surface by default
 ```
 
 The font file is the host's, like any other font: declare the family in the

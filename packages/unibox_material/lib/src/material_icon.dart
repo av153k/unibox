@@ -44,14 +44,14 @@ final class MaterialIcon extends Box {
     Object? key,
     double size = defaultSize,
     BoxColor? color,
-    MaterialPalette palette = MaterialPalette.light,
     String fontFamily = defaultFontFamily,
     String? label,
   }) : this._(
          glyph: String.fromCharCode(codePoint),
          key: key,
          size: size,
-         color: color ?? palette.onSurfaceVariant,
+         color:
+             color ?? const BoxColor.role(MaterialColorRole.onSurfaceVariant),
          fontFamily: fontFamily,
          label: label,
        );
@@ -66,14 +66,14 @@ final class MaterialIcon extends Box {
     Object? key,
     double size = defaultSize,
     BoxColor? color,
-    MaterialPalette palette = MaterialPalette.light,
     String fontFamily = defaultFontFamily,
     String? label,
   }) : this._(
          glyph: name,
          key: key,
          size: size,
-         color: color ?? palette.onSurfaceVariant,
+         color:
+             color ?? const BoxColor.role(MaterialColorRole.onSurfaceVariant),
          fontFamily: fontFamily,
          label: label,
        );

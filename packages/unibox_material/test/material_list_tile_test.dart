@@ -76,7 +76,7 @@ void main() {
       expect(
         column.textStyle,
         MaterialTypography.bodyLarge.merge(
-          BoxTextStyle(color: MaterialPalette.light.onSurface),
+          BoxTextStyle(color: const BoxColor.role(MaterialColorRole.onSurface)),
         ),
       );
 
@@ -84,7 +84,9 @@ void main() {
       expect(
         subtitleBox.textStyle,
         MaterialTypography.bodyMedium.merge(
-          BoxTextStyle(color: MaterialPalette.light.onSurfaceVariant),
+          BoxTextStyle(
+            color: const BoxColor.role(MaterialColorRole.onSurfaceVariant),
+          ),
         ),
       );
 
@@ -133,11 +135,11 @@ void main() {
 
       expect(
         tile.stateStyle(BoxState.hover)?.backgroundColor,
-        MaterialPalette.light.hoverLayer,
+        const BoxColor.role(MaterialColorRole.hoverLayer),
       );
       expect(
         tile.stateStyle(BoxState.pressed)?.backgroundColor,
-        MaterialPalette.light.pressedLayer,
+        const BoxColor.role(MaterialColorRole.pressedLayer),
       );
       expect(
         themed.stateStyle(BoxState.hover)?.backgroundColor,

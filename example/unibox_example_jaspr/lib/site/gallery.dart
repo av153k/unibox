@@ -208,7 +208,6 @@ UINode _button(
         : null,
     children: <UINode>[
       MaterialInkWell(
-        palette: palette,
         borderRadius: 20,
         padding: const BoxSpacing.symmetric(horizontal: 20, vertical: 10),
         onTap: () {},

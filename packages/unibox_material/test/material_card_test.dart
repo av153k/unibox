@@ -11,7 +11,10 @@ void main() {
 
       expect(card, isA<Box>());
       expect(card.padding, const BoxSpacing.all(16));
-      expect(card.backgroundColor, MaterialPalette.light.surfaceContainerLow);
+      expect(
+        card.backgroundColor,
+        const BoxColor.role(MaterialColorRole.surfaceContainerLow),
+      );
       expect(card.borderRadius, 12);
       expect(card.shadow, MaterialCard.elevatedShadow);
       expect(card.border, isNull);
@@ -76,7 +79,7 @@ void main() {
       final UINode text = card.children.single;
 
       expect((text as TextNode).computedStyle, const BoxTextStyle());
-      expect(validateTree(card), isEmpty);
+      expect(validateTree(card, theme: MaterialPalette.lightTheme), isEmpty);
     });
 
     test('is validated like any other box', () {
@@ -84,7 +87,7 @@ void main() {
         children: <UINode>[PositionedNode(child: TextNode('Outside a stack'))],
       );
 
-      final issues = validateTree(card);
+      final issues = validateTree(card, theme: MaterialPalette.lightTheme);
 
       expect(issues, hasLength(1));
       expect(issues.single.node, isA<PositionedNode>());
@@ -93,36 +96,49 @@ void main() {
   });
 
   group('MaterialCard variants', () {
-    final palette = MaterialPalette.dark;
-
     test('elevated is the tonal surface with the level one shadow', () {
-      final card = MaterialCard.elevated(palette: palette);
+      final card = MaterialCard.elevated();
 
-      expect(card.backgroundColor, palette.surfaceContainerLow);
+      expect(
+        card.backgroundColor,
+        const BoxColor.role(MaterialColorRole.surfaceContainerLow),
+      );
       expect(card.shadow, MaterialCard.elevatedShadow);
       expect(card.border, isNull);
     });
 
     test('filled is the highest tone and casts no shadow', () {
-      final card = MaterialCard.filled(palette: palette);
+      final card = MaterialCard.filled();
 
-      expect(card.backgroundColor, palette.surfaceContainerHighest);
+      expect(
+        card.backgroundColor,
+        const BoxColor.role(MaterialColorRole.surfaceContainerHighest),
+      );
       expect(card.shadow, isNull);
     });
 
     test('outlined is the surface with an outline variant border', () {
-      final card = MaterialCard.outlined(palette: palette);
+      final card = MaterialCard.outlined();
 
-      expect(card.backgroundColor, palette.surface);
+      expect(
+        card.backgroundColor,
+        const BoxColor.role(MaterialColorRole.surface),
+      );
       expect(card.shadow, isNull);
-      expect(card.border?.color, palette.outlineVariant);
+      expect(
+        card.border?.color,
+        const BoxColor.role(MaterialColorRole.outlineVariant),
+      );
       expect(card.borderRadius, 12);
     });
 
-    test('types the text in the on-surface colour of the palette', () {
-      final card = MaterialCard.filled(palette: palette);
+    test('types the text in the on-surface role', () {
+      final card = MaterialCard.filled();
 
-      expect(card.textStyle?.color, palette.onSurface);
+      expect(
+        card.textStyle?.color,
+        const BoxColor.role(MaterialColorRole.onSurface),
+      );
     });
   });
 }

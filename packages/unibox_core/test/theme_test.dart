@@ -107,6 +107,40 @@ void main() {
     });
   });
 
+  group('merging themes', () {
+    test('keeps the value of a role both define', () {
+      const UniboxTheme base = UniboxTheme(
+        colors: <Enum, BoxColor>{AppColor.primary: BoxColor(0xFF000001)},
+      );
+      final UniboxTheme merged = base.merge(theme);
+
+      expect(
+        merged.resolve(const BoxColor.role(AppColor.primary)).value,
+        0xFF000001,
+      );
+    });
+
+    test('adds the roles it does not define', () {
+      const UniboxTheme base = UniboxTheme(
+        colors: <Enum, BoxColor>{BrandColor.accent: BoxColor(0xFF00FF00)},
+      );
+      final UniboxTheme merged = base.merge(theme);
+
+      expect(
+        merged.resolve(const BoxColor.role(AppColor.error)).value,
+        0xFFB3261E,
+      );
+      expect(
+        merged.resolve(const BoxColor.role(BrandColor.accent)).value,
+        0xFF00FF00,
+      );
+    });
+
+    test('is the same theme when the other defines nothing', () {
+      expect(identical(theme.merge(UniboxTheme.none), theme), isTrue);
+    });
+  });
+
   group('resolving a style', () {
     const UniboxTheme theme = UniboxTheme(
       colors: <AppColor, BoxColor>{

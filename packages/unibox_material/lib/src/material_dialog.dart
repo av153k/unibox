@@ -36,14 +36,15 @@ final class MaterialDialog extends OverlayNode {
     List<UINode> actions = const <UINode>[],
     super.onDismiss,
     super.barrierDismissible,
-    MaterialPalette palette = MaterialPalette.light,
     double minWidth = 280,
     double maxWidth = 560,
   }) : super(
-         barrierColor: palette.scrim,
+         barrierColor: const BoxColor.role(MaterialColorRole.scrim),
          alignment: OverlayAlignment.center,
          child: Box(
-           backgroundColor: palette.surfaceContainerHigh,
+           backgroundColor: const BoxColor.role(
+             MaterialColorRole.surfaceContainerHigh,
+           ),
            borderRadius: 28,
            padding: const BoxSpacing.all(24),
            gap: 16,
@@ -51,14 +52,10 @@ final class MaterialDialog extends OverlayNode {
            maxWidth: maxWidth,
            shadow: elevation,
            children: <UINode>[
-             TextNode(title, style: _titleStyle(palette)),
+             TextNode(title, style: _titleStyle()),
              if (content != null)
-               Box(
-                 textStyle: _contentStyle(palette),
-                 children: <UINode>[content],
-               ),
-             if (actions.isNotEmpty)
-               _ActionRow(actions: actions, palette: palette),
+               Box(textStyle: _contentStyle(), children: <UINode>[content]),
+             if (actions.isNotEmpty) _ActionRow(actions: actions),
            ],
          ),
        );
@@ -71,26 +68,27 @@ final class MaterialDialog extends OverlayNode {
   );
 
   /// The title: the headline role, in the on-surface colour.
-  static BoxTextStyle _contentStyle(MaterialPalette palette) =>
-      MaterialTypography.bodyMedium.merge(
-        BoxTextStyle(color: palette.onSurfaceVariant),
-      );
+  static BoxTextStyle _contentStyle() => MaterialTypography.bodyMedium.merge(
+    BoxTextStyle(
+      color: const BoxColor.role(MaterialColorRole.onSurfaceVariant),
+    ),
+  );
 
-  static BoxTextStyle _titleStyle(MaterialPalette palette) => MaterialTypography
-      .headlineSmall
-      .merge(BoxTextStyle(color: palette.onSurface));
+  static BoxTextStyle _titleStyle() => MaterialTypography.headlineSmall.merge(
+    BoxTextStyle(color: const BoxColor.role(MaterialColorRole.onSurface)),
+  );
 }
 
 /// The actions of a dialog or a sheet: a row packed against its end.
 final class _ActionRow extends Box {
-  _ActionRow({required List<UINode> actions, required MaterialPalette palette})
+  _ActionRow({required List<UINode> actions})
     : super(
         direction: Axis.horizontal,
         mainAlign: MainAlign.end,
         gap: 8,
         margin: const BoxSpacing.only(top: 8),
         textStyle: MaterialTypography.labelLarge.merge(
-          BoxTextStyle(color: palette.primary),
+          BoxTextStyle(color: const BoxColor.role(MaterialColorRole.primary)),
         ),
         children: actions,
       );

@@ -32,7 +32,6 @@ final class MaterialInkWell extends Box {
   MaterialInkWell({
     super.key,
     required UINode child,
-    MaterialPalette palette = MaterialPalette.light,
     TapCallback? onTap,
     super.onLongPress,
     super.onHover,
@@ -54,10 +53,16 @@ final class MaterialInkWell extends Box {
          semantics:
              semantics ??
              (onTap == null ? null : const BoxSemantics(role: BoxRole.button)),
-         hoverStyle: hoverStyle ?? _tint(palette.hoverLayer),
+         hoverStyle:
+             hoverStyle ??
+             _tint(const BoxColor.role(MaterialColorRole.hoverLayer)),
          stateStyles: <BoxState, BoxStyle>{
-           BoxState.focus: focusStyle ?? _tint(palette.focusLayer),
-           BoxState.pressed: pressedStyle ?? _tint(palette.pressedLayer),
+           BoxState.focus:
+               focusStyle ??
+               _tint(const BoxColor.role(MaterialColorRole.focusLayer)),
+           BoxState.pressed:
+               pressedStyle ??
+               _tint(const BoxColor.role(MaterialColorRole.pressedLayer)),
          },
          children: <UINode>[child],
        );

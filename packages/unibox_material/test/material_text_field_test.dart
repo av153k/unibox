@@ -33,19 +33,27 @@ void main() {
       expect(input.description, 'Used for the receipt');
     });
 
-    test('draws the outline from the palette, one colour per state', () {
+    test('draws the outline from roles, one colour per state', () {
       BoxColor borderOf(MaterialTextField field) =>
           field.children.whereType<Box>().single.border?.color ??
           (throw StateError('expected a border'));
 
-      const MaterialPalette palette = MaterialPalette.light;
-      expect(borderOf(MaterialTextField()), palette.outline);
-      expect(borderOf(MaterialTextField(focused: true)), palette.primary);
-      expect(borderOf(MaterialTextField(invalid: true)), palette.error);
+      expect(
+        borderOf(MaterialTextField()),
+        const BoxColor.role(MaterialColorRole.outline),
+      );
+      expect(
+        borderOf(MaterialTextField(focused: true)),
+        const BoxColor.role(MaterialColorRole.primary),
+      );
+      expect(
+        borderOf(MaterialTextField(invalid: true)),
+        const BoxColor.role(MaterialColorRole.error),
+      );
       // An invalid field is invalid whether or not it has focus.
       expect(
         borderOf(MaterialTextField(invalid: true, focused: true)),
-        palette.error,
+        const BoxColor.role(MaterialColorRole.error),
       );
     });
 
@@ -53,16 +61,19 @@ void main() {
       final field = MaterialTextField();
       final style = (field.children.single as Box).textStyle;
 
-      expect(style?.color, MaterialPalette.light.onSurface);
+      expect(style?.color, const BoxColor.role(MaterialColorRole.onSurface));
       expect(style?.fontSize, MaterialTypography.bodyLarge.fontSize);
     });
 
-    test('follows a dark palette', () {
-      final field = MaterialTextField(palette: MaterialPalette.dark);
+    test('names roles, so a dark theme is the choice of the host', () {
+      final field = MaterialTextField();
       final box = field.children.single as Box;
 
-      expect(box.border?.color, MaterialPalette.dark.outline);
-      expect(box.textStyle?.color, MaterialPalette.dark.onSurface);
+      expect(box.border?.color, const BoxColor.role(MaterialColorRole.outline));
+      expect(
+        box.textStyle?.color,
+        const BoxColor.role(MaterialColorRole.onSurface),
+      );
     });
 
     test('is a single field when it has neither label nor message', () {
@@ -89,11 +100,9 @@ void main() {
     });
 
     test('darkens the outline on hover, but not while focused or invalid', () {
-      final palette = MaterialPalette.light;
-
       expect(
         outlineOf(MaterialTextField()).hoverStyle?.border?.color,
-        palette.onSurface,
+        const BoxColor.role(MaterialColorRole.onSurface),
       );
       expect(outlineOf(MaterialTextField(focused: true)).hoverStyle, isNull);
       expect(outlineOf(MaterialTextField(invalid: true)).hoverStyle, isNull);

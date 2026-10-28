@@ -17,7 +17,10 @@ void main() {
       expect(icon.textStyle?.fontFamily, 'Material Symbols Outlined');
       expect(icon.textStyle?.fontSize, 24);
       expect(icon.textStyle?.lineHeight, 1);
-      expect(icon.textStyle?.color, MaterialPalette.light.onSurfaceVariant);
+      expect(
+        icon.textStyle?.color,
+        const BoxColor.role(MaterialColorRole.onSurfaceVariant),
+      );
     });
 
     test('takes the glyph of a codepoint', () {

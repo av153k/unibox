@@ -14,7 +14,7 @@ void main() {
 
       expect(dialog, isA<OverlayNode>());
       expect(dialog.alignment, OverlayAlignment.center);
-      expect(dialog.barrierColor, MaterialPalette.light.scrim);
+      expect(dialog.barrierColor, const BoxColor.role(MaterialColorRole.scrim));
       expect(dialog.barrierDismissible, isTrue);
     });
 
@@ -56,7 +56,7 @@ void main() {
 
       expect(
         surface.backgroundColor,
-        MaterialPalette.light.surfaceContainerHigh,
+        const BoxColor.role(MaterialColorRole.surfaceContainerHigh),
       );
       expect(surface.borderRadius, 28);
       expect(surface.shadow, MaterialDialog.elevation);
@@ -69,7 +69,10 @@ void main() {
           _surfaceOf(MaterialDialog(title: 'Hi')).children.first as TextNode;
 
       expect(title.style?.fontSize, MaterialTypography.headlineSmall.fontSize);
-      expect(title.style?.color, MaterialPalette.light.onSurface);
+      expect(
+        title.style?.color,
+        const BoxColor.role(MaterialColorRole.onSurface),
+      );
     });
   });
 
@@ -79,7 +82,7 @@ void main() {
 
       expect(sheet, isA<OverlayNode>());
       expect(sheet.alignment, OverlayAlignment.bottom);
-      expect(sheet.barrierColor, MaterialPalette.light.scrim);
+      expect(sheet.barrierColor, const BoxColor.role(MaterialColorRole.scrim));
     });
 
     test('is a dialog-shaped surface in a lower tone, wider than a dialog', () {
@@ -87,7 +90,7 @@ void main() {
 
       expect(
         surface.backgroundColor,
-        MaterialPalette.light.surfaceContainerLow,
+        const BoxColor.role(MaterialColorRole.surfaceContainerLow),
       );
       expect(surface.maxWidth, 640);
       expect(surface.width, double.infinity);

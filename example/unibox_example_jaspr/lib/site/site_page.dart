@@ -189,6 +189,9 @@ Document buildSiteDocument({required SitePage page}) {
       ),
     ],
     body: renderJaspr(
+      // The gallery and the bar are built from material components, which name
+      // colour roles: the document installs the palette as their theme.
+      theme: MaterialPalette.lightTheme,
       buildSiteFrame(
         current: page,
         fill: page == SitePage.showcase,

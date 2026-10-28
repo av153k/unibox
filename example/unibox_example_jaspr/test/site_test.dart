@@ -3,6 +3,7 @@ import 'package:unibox_core/unibox_core.dart';
 import 'package:unibox_example_jaspr/site/gallery.dart';
 import 'package:unibox_example_jaspr/site/landing.dart';
 import 'package:unibox_example_jaspr/site/showcase.dart';
+import 'package:unibox_material/unibox_material.dart';
 
 /// Pins the page trees the site is made of.
 ///
@@ -13,7 +14,7 @@ void main() {
   test('the front page says what the library is and offers both ways in', () {
     final UINode landing = buildLanding();
 
-    expect(validateTree(landing), isEmpty);
+    expect(validateTree(landing, theme: MaterialPalette.lightTheme), isEmpty);
     expect(_texts(landing), contains('Describe a screen once.'));
     expect(_links(landing), containsAll(<String>['material/', 'showcase/']));
   });
@@ -21,7 +22,7 @@ void main() {
   test('the gallery is a valid tree that shows the Material package', () {
     final UINode gallery = buildMaterialGallery();
 
-    expect(validateTree(gallery), isEmpty);
+    expect(validateTree(gallery, theme: MaterialPalette.lightTheme), isEmpty);
     expect(_texts(gallery), contains('Material 3'));
     expect(_texts(gallery), contains('Sphinx of black quartz'));
     expect(_texts(gallery), contains('Ada Lovelace'));
@@ -30,7 +31,7 @@ void main() {
   test('the showcase puts the two renderings side by side', () {
     final UINode showcase = buildShowcase();
 
-    expect(validateTree(showcase), isEmpty);
+    expect(validateTree(showcase, theme: MaterialPalette.lightTheme), isEmpty);
     expect(_embeds(showcase), hasLength(2));
   });
 }

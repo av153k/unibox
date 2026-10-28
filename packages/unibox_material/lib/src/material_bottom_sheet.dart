@@ -31,13 +31,14 @@ final class MaterialBottomSheet extends OverlayNode {
     List<UINode> actions = const <UINode>[],
     super.onDismiss,
     super.barrierDismissible,
-    MaterialPalette palette = MaterialPalette.light,
     double maxWidth = 640,
   }) : super(
-         barrierColor: palette.scrim,
+         barrierColor: const BoxColor.role(MaterialColorRole.scrim),
          alignment: OverlayAlignment.bottom,
          child: Box(
-           backgroundColor: palette.surfaceContainerLow,
+           backgroundColor: const BoxColor.role(
+             MaterialColorRole.surfaceContainerLow,
+           ),
            borderRadius: 28,
            padding: const BoxSpacing.all(24),
            gap: 16,
@@ -52,20 +53,28 @@ final class MaterialBottomSheet extends OverlayNode {
                    width: 32,
                    height: 4,
                    borderRadius: 2,
-                   backgroundColor: palette.onSurfaceVariant.withOpacity(0.4),
+                   backgroundColor: const BoxColor.role(
+                     MaterialColorRole.outlineVariant,
+                   ),
                  ),
                ],
              ),
              TextNode(
                title,
                style: MaterialTypography.headlineSmall.merge(
-                 BoxTextStyle(color: palette.onSurface),
+                 BoxTextStyle(
+                   color: const BoxColor.role(MaterialColorRole.onSurface),
+                 ),
                ),
              ),
              if (content != null)
                Box(
                  textStyle: MaterialTypography.bodyMedium.merge(
-                   BoxTextStyle(color: palette.onSurfaceVariant),
+                   BoxTextStyle(
+                     color: const BoxColor.role(
+                       MaterialColorRole.onSurfaceVariant,
+                     ),
+                   ),
                  ),
                  children: <UINode>[content],
                ),
@@ -75,7 +84,9 @@ final class MaterialBottomSheet extends OverlayNode {
                  mainAlign: MainAlign.end,
                  gap: 8,
                  textStyle: MaterialTypography.labelLarge.merge(
-                   BoxTextStyle(color: palette.primary),
+                   BoxTextStyle(
+                     color: const BoxColor.role(MaterialColorRole.primary),
+                   ),
                  ),
                  children: actions,
                ),
