@@ -1,6 +1,7 @@
 import '../enums.dart';
 import 'box_border.dart';
 import 'box_color.dart';
+import 'box_ripple.dart';
 import 'box_shadow.dart';
 import 'box_spacing.dart';
 import 'box_text_style.dart';
@@ -51,6 +52,7 @@ final class BoxStyle {
     this.transition,
     this.opacity,
     this.transform,
+    this.ripple,
   });
 
   // Layout.
@@ -152,6 +154,13 @@ final class BoxStyle {
   /// Unset means untransformed. Like a `Transform` in Flutter, this paints the
   /// box differently without changing the room it takes.
   final BoxTransform? transform;
+
+  /// The ink a press spreads across the box, or `null` for no ripple.
+  ///
+  /// Motion rather than a look, so it is outside the appearance contract: the two
+  /// renderers draw it with what their platform has and the result is close, not
+  /// identical. Unset means a press changes the look through a state style only.
+  final BoxRipple? ripple;
 
   /// Whether no token is set.
   /// Whether any token here names a colour the theme has to resolve.
@@ -294,6 +303,7 @@ final class BoxStyle {
       transition: other.transition ?? transition,
       opacity: other.opacity ?? opacity,
       transform: other.transform ?? transform,
+      ripple: other.ripple ?? ripple,
     );
   }
 
@@ -321,7 +331,8 @@ final class BoxStyle {
       other.textStyle == textStyle &&
       other.transition == transition &&
       other.opacity == opacity &&
-      other.transform == transform;
+      other.transform == transform &&
+      other.ripple == ripple;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -347,6 +358,7 @@ final class BoxStyle {
     transition,
     opacity,
     transform,
+    ripple,
   ]);
 
   @override
@@ -374,6 +386,7 @@ final class BoxStyle {
       if (transition != null) 'transition: $transition',
       if (opacity != null) 'opacity: $opacity',
       if (transform != null) 'transform: $transform',
+      if (ripple != null) 'ripple: $ripple',
     ];
     return 'BoxStyle(${tokens.join(', ')})';
   }

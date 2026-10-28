@@ -2,6 +2,10 @@
 
 ## 0.1.0
 
+- A box with a ripple splashes through an `InkResponse`, inside the decoration so the
+  ink shows over the fill. The response takes the tap, so the callback still runs
+  once.
+
 The first release of the Flutter renderer: one node tree becomes a widget tree.
 
 - `FlutterGrid` lays a `GridNode` out from the constraints it is given, one row

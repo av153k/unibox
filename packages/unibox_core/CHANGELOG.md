@@ -2,6 +2,10 @@
 
 ## 0.1.0
 
+- `BoxRipple` and the flat `Box.ripple`: the ink a press spreads, with a colour and a
+  duration. It is motion rather than a look, so it is outside the appearance
+  contract; each renderer draws it with what its platform has.
+
 The first release of the platform agnostic core: the tree, the values it is made of,
 and the checks that keep a tree renderable.
 

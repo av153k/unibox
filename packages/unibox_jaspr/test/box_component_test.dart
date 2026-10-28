@@ -420,6 +420,31 @@ void main() {
       expect(() => renderJaspr(const _UnknownNode()), throwsUnsupportedError);
     });
   });
+
+  group('Box ripple', () {
+    testComponents('paints the press as a pseudo-element', (tester) async {
+      pumpNode(
+        tester,
+        core.Box(
+          ripple: const core.BoxRipple(),
+          onTap: () {},
+          children: const <core.UINode>[core.TextNode('Tap')],
+        ),
+      );
+
+      final String css = cssOf(find.tag('style').last);
+
+      expect(css, contains('::after'));
+      expect(css, contains(':active::after'));
+      expect(css, contains('rgba(0, 0, 0, 0.122)'));
+    });
+
+    testComponents('leaves a box without a ripple alone', (tester) async {
+      pumpNode(tester, const core.Box());
+
+      expect(cssOf(find.tag('style').last), isNot(contains('::after')));
+    });
+  });
 }
 
 /// A node type no renderer knows about.

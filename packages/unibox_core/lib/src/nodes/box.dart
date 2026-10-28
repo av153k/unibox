@@ -2,6 +2,7 @@ import '../callbacks.dart';
 import '../enums.dart';
 import '../tokens/box_border.dart';
 import '../tokens/box_color.dart';
+import '../tokens/box_ripple.dart';
 import '../tokens/box_semantics.dart';
 import '../tokens/box_shadow.dart';
 import '../tokens/box_spacing.dart';
@@ -62,6 +63,7 @@ class Box extends UINode {
     this.transition,
     this.opacity,
     this.transform,
+    this.ripple,
     this.styles = const <BoxStyle>[],
     // ignore: deprecated_member_use_from_same_package
     @Deprecated('Use styles: a list of bags, merged in order.') this._style,
@@ -167,6 +169,14 @@ class Box extends UINode {
   /// scaling never makes the text inside reflow.
   final BoxTransform? transform;
 
+  /// The ink a press spreads across the box, or `null` for no ripple.
+  ///
+  /// A ripple is motion rather than a look, so it is outside the appearance
+  /// contract: Flutter draws it as an ink response, the web as a CSS
+  /// pseudo-element. It needs a tap, so a box without a callback ripples on
+  /// nothing.
+  final BoxRipple? ripple;
+
   // Style tokens.
 
   /// The bags of tokens this box wears, merged in the order they are given.
@@ -257,6 +267,7 @@ class Box extends UINode {
     transition: transition,
     opacity: opacity,
     transform: transform,
+    ripple: ripple,
   );
 
   /// The resolved style of this box in its resting state.

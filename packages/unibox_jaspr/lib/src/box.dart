@@ -128,10 +128,12 @@ class JasprBox extends StatelessComponent {
     return seed.toString();
   }
 
-  /// Whether the box styles any interaction state at all.
-  bool get _hasStateStyles => core.BoxState.values.any(
-    (core.BoxState state) => box.stateStyle(state) != null,
-  );
+  /// Whether the box needs a class of its own: a state style or a ripple.
+  bool get _hasStateStyles =>
+      box.computedStyle.ripple != null ||
+      core.BoxState.values.any(
+        (core.BoxState state) => box.stateStyle(state) != null,
+      );
 
   /// The pseudo class rules of the box, in cascade order.
   ///
@@ -182,7 +184,64 @@ class JasprBox extends StatelessComponent {
       );
     }
 
+    rules.addAll(_rippleRules(className));
+
     return rules;
+  }
+
+  /// The rules that draw a press ripple, or nothing when the box asks for none.
+  ///
+  /// A ripple is motion, so it cannot be an appearance the contract compares. The
+  /// web draws it with a pseudo-element: an ink circle at the centre that grows when
+  /// the element is active and fades back when it is released. It starts at the
+  /// centre rather than at the pointer because a page without a client runtime has
+  /// no pointer position to read, which is the one place the two renderers differ.
+  List<StyleRule> _rippleRules(String className) {
+    final core.BoxRipple? ripple = box.computedStyle.ripple;
+    if (ripple == null) {
+      return const <StyleRule>[];
+    }
+
+    final String ink = toCssColor(ripple.color).value;
+    final int ms = ripple.duration.inMilliseconds;
+
+    return <StyleRule>[
+      StyleRule(
+        selector: Selector('.$className'),
+        styles: const Styles(
+          raw: <String, String>{'position': 'relative', 'overflow': 'hidden'},
+        ),
+      ),
+      StyleRule(
+        selector: Selector('.$className::after'),
+        styles: Styles(
+          raw: <String, String>{
+            'content': '""',
+            'position': 'absolute',
+            'left': '50%',
+            'top': '50%',
+            'width': '100%',
+            'height': '100%',
+            'border-radius': '50%',
+            'background-color': ink,
+            'opacity': '0',
+            'transform': 'translate(-50%, -50%) scale(0)',
+            'pointer-events': 'none',
+            'transition':
+                'transform ${ms}ms ease-out, opacity ${ms}ms ease-out',
+          },
+        ),
+      ),
+      StyleRule(
+        selector: Selector('.$className:active::after'),
+        styles: const Styles(
+          raw: <String, String>{
+            'transform': 'translate(-50%, -50%) scale(2.2)',
+            'opacity': '0.16',
+          },
+        ),
+      ),
+    ];
   }
 
   /// The CSS of [state], or `null` when the box styles nothing for it.

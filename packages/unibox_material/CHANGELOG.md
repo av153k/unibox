@@ -2,6 +2,9 @@
 
 ## 0.1.0
 
+- `MaterialInkWell` ripples: the press is 12% of `onSurface` spreading over the fill,
+  which is the ink Material paints and not just the state layer.
+
 The first release: Material 3 as a package of values, plus the components built
 from them. Every value here is a plain token of `unibox_core`, so neither renderer
 has to know this package exists.

@@ -1,7 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+// Material is here for one widget: `InkResponse`, which is how Flutter paints a
+// ripple. It is used only when a tree asks for one with `Box.ripple`, and it draws
+// ink, not chrome.
+import 'package:flutter/material.dart';
 import 'package:unibox_core/unibox_core.dart' as core;
 
 import 'render.dart';
@@ -74,7 +77,13 @@ class FlutterBoxState extends State<FlutterBox> {
 
     content = _applyDimensions(content, style);
     content = _applyLook(content, style, box);
-    content = _applyInteractions(content, box);
+
+    final core.BoxRipple? ripple = style.ripple;
+    if (ripple != null) {
+      content = _ripple(content, ripple, box);
+    }
+
+    content = _applyInteractions(content, box, tapsHandled: ripple != null);
 
     final core.BoxSpacing? margin = style.margin;
     if (margin != null && !margin.isZero) {
@@ -371,7 +380,11 @@ class FlutterBoxState extends State<FlutterBox> {
   /// A disabled box keeps the same widget shape but serves no handler, no
   /// pointer cursor and no focus, so disabling never moves anything and only
   /// removes what the user can do.
-  Widget _applyInteractions(Widget content, core.Box box) {
+  Widget _applyInteractions(
+    Widget content,
+    core.Box box, {
+    required bool tapsHandled,
+  }) {
     final bool interactive = box.isInteractive;
     final bool focusable = box.isFocusable && box.enabled;
     final bool tracksState =
@@ -383,7 +396,9 @@ class FlutterBoxState extends State<FlutterBox> {
 
     Widget result = content;
 
-    if (box.onTap != null || box.onLongPress != null) {
+    // A ripple's ink response takes the taps itself: two recognisers for one tap
+    // would run the callback twice.
+    if (!tapsHandled && (box.onTap != null || box.onLongPress != null)) {
       result = GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: interactive ? box.onTap : null,
@@ -566,6 +581,34 @@ class FlutterBoxState extends State<FlutterBox> {
     setState(() {
       _pressed = pressed;
     });
+  }
+
+  /// Lets an ink response splash over the box.
+  ///
+  /// The `Material` sits *inside* the decoration, because a splash is painted by
+  /// the nearest material: outside it, the box's own background would cover the
+  /// ink. The response also takes the taps, which is why the gesture detector is
+  /// left out for a rippling box.
+  Widget _ripple(Widget content, core.BoxRipple ripple, core.Box box) {
+    if (box.onTap == null && box.onLongPress == null) {
+      return content;
+    }
+
+    final bool interactive = box.isInteractive;
+
+    return Material(
+      type: MaterialType.transparency,
+      child: InkResponse(
+        onTap: interactive ? box.onTap : null,
+        onLongPress: interactive ? box.onLongPress : null,
+        onTapDown: interactive ? (TapDownDetails _) => _setPressed(true) : null,
+        onTapUp: interactive ? (TapUpDetails _) => _setPressed(false) : null,
+        onTapCancel: interactive ? () => _setPressed(false) : null,
+        splashColor: toColor(ripple.color),
+        highlightColor: toColor(ripple.color),
+        child: content,
+      ),
+    );
   }
 }
 
