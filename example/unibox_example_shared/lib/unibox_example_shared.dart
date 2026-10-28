@@ -14,5 +14,6 @@ export 'src/apartments.dart';
 export 'src/page_node.dart';
 export 'src/page.dart';
 export 'src/page_state.dart';
+export 'src/ripple.dart';
 export 'src/signup_card.dart';
 export 'src/theme.dart';

@@ -1,4 +1,5 @@
 import 'package:unibox_core/unibox_core.dart';
+import 'package:unibox_example_shared/unibox_example_shared.dart';
 import 'package:unibox_material/unibox_material.dart';
 
 /// The Material library as one node tree: the type scale, the colour roles and the
@@ -308,6 +309,16 @@ UINode _components(MaterialPalette palette) {
             palette,
           ),
           _button('Outlined', palette.surface, palette.primary, palette),
+          // A press that leaves ink: the ripple is state, not a token. The button
+          // lives in the shared example because a store and a view are all it is.
+          RippleButton(
+            label: 'Rippled',
+            background: palette.primary,
+            foreground: palette.onPrimary,
+            ink: palette.onPrimary,
+            hover: palette.primary,
+            radius: 20,
+          ),
         ],
       ),
       Box(
@@ -317,9 +328,7 @@ UINode _components(MaterialPalette palette) {
             'Hover, focus or press a button: the state layer is a tint over the fill '
             '— 8% of onSurface for a hover, 10% for a focus and a press — which is '
             'why it reads clearly on the tonal and outlined buttons and only faintly '
-            "on the filled one. That is Material's value, not a weaker one. A ripple "
-            'is an effect the model does not have, and a plain click is inert here '
-            'until the client runtime arrives.',
+            'on the filled one. That is Material\'s value, not a weaker one.',
             style: MaterialTypography.labelSmall.copyWith(
               color: palette.onSurfaceVariant,
             ),
