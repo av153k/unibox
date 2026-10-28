@@ -318,6 +318,11 @@ Deliberately out of scope for this pass, with the reason they were left:
   hand (a probe page, a container per width, `getBoundingClientRect`); wiring it into CI needs a
   browser driver the repository does not carry, and the acceptance for the hydrated page waits
   for the client build (Task 104). **Deferred**; the numbers are recorded in `design.md` §5.13.
+- A child that fills a `PositionedNode` whose four edges are set. Flutter hands it tight
+  constraints, so it fills; the web positions a flex container whose child keeps its
+  content height, so the example's ripple ink painted a zero-height layer and the
+  button looked empty. It needs a fill rule in the model (or a cross-axis alignment
+  that reaches the child) before the rippled button returns to the Material page.
 - An icon subset for the web export. Flutter's `--tree-shake-icons` is a build feature of
   the Flutter target; a Jaspr export serves whatever font the host puts beside its
   `@font-face`. The subset has to be produced once — the Flutter build already writes it,

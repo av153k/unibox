@@ -25,6 +25,11 @@ void main() {
     expect(_texts(gallery), contains('Material 3'));
     expect(_texts(gallery), contains('Sphinx of black quartz'));
     expect(_texts(gallery), contains('Ada Lovelace'));
+    // A simple dialog of its own, not the app's sign-up form, and no link to the
+    // comparison: the gallery is the Material page, the showcase has its own.
+    expect(_texts(gallery), contains('Delete listing?'));
+    expect(_texts(gallery), isNot(contains('Open the sign-up dialog')));
+    expect(_texts(gallery), isNot(contains('Compare both renderings')));
   });
 
   test('the showcase puts the two renderings side by side', () {

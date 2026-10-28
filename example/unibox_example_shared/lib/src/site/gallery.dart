@@ -1,5 +1,4 @@
 import 'package:unibox_core/unibox_core.dart';
-import 'package:unibox_example_shared/unibox_example_shared.dart';
 import 'package:unibox_material/unibox_material.dart';
 
 /// The Material library as one node tree: the type scale, the colour roles and the
@@ -16,24 +15,7 @@ UINode buildMaterialGallery() {
     padding: const BoxSpacing.symmetric(horizontal: 32, vertical: 32),
     gap: 48,
     children: <UINode>[
-      Box(
-        gap: 8,
-        children: <UINode>[
-          TextNode('Material 3', style: MaterialTypography.displaySmall),
-          Box(
-            width: 720,
-            children: <UINode>[
-              TextNode(
-                'The fifteen type roles, the colour roles and the components of '
-                'Material 3, written as values and nodes. Both renderers draw them '
-                'from the same tree.',
-                style: MaterialTypography.bodyLarge,
-                color: palette.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ],
-      ),
+      _header(palette),
       _section(
         'Type scale',
         'The fifteen roles as const BoxTextStyle values. A box passes one down; a '
@@ -47,12 +29,54 @@ UINode buildMaterialGallery() {
         _palette(palette),
       ),
       _section(
-        'Components',
-        'Built from the nodes the renderers already draw: a card, a tile and a field '
-            'are boxes, and a dialog is an overlay.',
-        _components(palette),
+        'Buttons',
+        'A button is a box with a state layer: the hover, focus and press tints are '
+            'the ink well, painted over the fill so the colour stays.',
+        _buttons(palette),
       ),
-      _overlays(palette),
+      _section(
+        'Text fields',
+        'The filled field: surfaceContainerHighest, a bottom line that thickens and '
+            'turns primary on focus, the label inside the fill, and the padding on '
+            'the input so the whole field takes focus.',
+        _fields(palette),
+      ),
+      _section(
+        'Cards and tiles',
+        'A card is a box with the Material surface, radius and elevation; a list tile '
+            'is a box with a leading, a title, an optional supporting text and a '
+            'trailing node.',
+        _cards(palette),
+      ),
+      _section(
+        'Dialog',
+        'A dialog is an OverlayNode rather than a call: it covers the tree behind a '
+            'barrier and leaves on Escape or a press on the barrier. This is the '
+            'surface it draws, shown inline.',
+        _dialog(),
+      ),
+    ],
+  );
+}
+
+/// The name of the package and what the page shows.
+UINode _header(MaterialPalette palette) {
+  return Box(
+    gap: 8,
+    children: <UINode>[
+      TextNode('Material 3', style: MaterialTypography.displaySmall),
+      Box(
+        width: 720,
+        children: <UINode>[
+          TextNode(
+            'The fifteen type roles, the colour roles and the components of '
+            'Material 3, written as values and nodes. Both renderers draw them '
+            'from the same tree.',
+            style: MaterialTypography.bodyLarge,
+            color: palette.onSurfaceVariant,
+          ),
+        ],
+      ),
     ],
   );
 }
@@ -238,44 +262,6 @@ UINode _button(
   );
 }
 
-/// The two overlays, which a page cannot show inline, and where to see them.
-UINode _overlays(MaterialPalette palette) {
-  return _section(
-    'Overlays',
-    'A dialog and a bottom sheet are nodes rather than calls, so a page cannot show '
-        'one inline without covering itself. The example opens its sign-up form as a '
-        'dialog: open it below, or see both renderings in the showcase.',
-    Box(
-      direction: Axis.horizontal,
-      gap: 24,
-      children: <UINode>[
-        _linkCard('Open the sign-up dialog', '../web/signup/', palette),
-        _linkCard('Compare both renderings', '../showcase/', palette),
-      ],
-    ),
-  );
-}
-
-/// A card that is a link, which is what a static page can offer instead of a click.
-UINode _linkCard(String label, String href, MaterialPalette palette) {
-  return LinkNode(
-    href,
-    child: MaterialCard(
-      width: 320,
-      gap: 4,
-      children: <UINode>[
-        TextNode(label, style: MaterialTypography.titleMedium),
-        TextNode(
-          href,
-          style: MaterialTypography.labelSmall.copyWith(
-            color: palette.onSurfaceVariant,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
 /// `surfaceContainerLow` as `Surface container low`, for a label a reader can scan.
 String _label(String camelCase) {
   final String spaced = camelCase.replaceAllMapped(
@@ -291,130 +277,144 @@ String _hex(BoxColor color) {
   return '#${digits.substring(2).toUpperCase()}';
 }
 
-/// The components the package ships, each in the state a static page can show.
-UINode _components(MaterialPalette palette) {
+/// The button shapes, each in a resting state a static page can show.
+UINode _buttons(MaterialPalette palette) {
   return Box(
-    gap: 32,
+    direction: Axis.horizontal,
+    crossAlign: CrossAlign.center,
+    gap: 16,
+    children: <UINode>[
+      _button('Filled', palette.primary, palette.onPrimary, palette),
+      _button(
+        'Tonal',
+        palette.primaryContainer,
+        palette.onPrimaryContainer,
+        palette,
+      ),
+      _button('Outlined', palette.surface, palette.primary, palette),
+    ],
+  );
+}
+
+/// A field at rest and a field that says what is wrong with the value.
+UINode _fields(MaterialPalette palette) {
+  return Box(
+    direction: Axis.horizontal,
+    crossAlign: CrossAlign.start,
+    gap: 24,
     children: <UINode>[
       Box(
-        direction: Axis.horizontal,
-        crossAlign: CrossAlign.center,
-        gap: 16,
+        width: 320,
         children: <UINode>[
-          _button('Filled', palette.primary, palette.onPrimary, palette),
-          _button(
-            'Tonal',
-            palette.primaryContainer,
-            palette.onPrimaryContainer,
-            palette,
-          ),
-          _button('Outlined', palette.surface, palette.primary, palette),
-          // A press that leaves ink: the ripple is state, not a token. The button
-          // lives in the shared example because a store and a view are all it is.
-          RippleButton(
-            label: 'Rippled',
-            background: palette.primary,
-            foreground: palette.onPrimary,
-            ink: palette.onPrimary,
-            // A wash, not a colour: it is painted above the ink.
-            hover: const BoxColor(0x1F000000),
-            radius: 20,
+          MaterialTextField(
+            width: double.infinity,
+            label: 'Email',
+            placeholder: 'you@example.com',
+            inputType: InputType.email,
           ),
         ],
       ),
       Box(
-        width: 720,
+        width: 320,
         children: <UINode>[
+          MaterialTextField(
+            width: double.infinity,
+            label: 'Email',
+            placeholder: 'you@example.com',
+            value: 'ada@',
+            invalid: true,
+            message: 'Enter a complete address.',
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+/// A card with a call to action, and two tiled rows.
+UINode _cards(MaterialPalette palette) {
+  return Box(
+    direction: Axis.horizontal,
+    crossAlign: CrossAlign.start,
+    gap: 24,
+    children: <UINode>[
+      MaterialCard(
+        width: 360,
+        gap: 8,
+        children: <UINode>[
+          TextNode('Order summary', style: MaterialTypography.titleLarge),
           TextNode(
-            'Hover, focus or press a button: the state layer is a tint over the fill '
-            '— 8% of onSurface for a hover, 10% for a focus and a press — which is '
-            'why it reads clearly on the tonal and outlined buttons and only faintly '
-            'on the filled one. That is Material\'s value, not a weaker one.',
-            style: MaterialTypography.labelSmall.copyWith(
+            'Two nights, one room. Check-in on Friday.',
+            style: MaterialTypography.bodyMedium.copyWith(
               color: palette.onSurfaceVariant,
+            ),
+          ),
+          _button('Confirm', palette.primary, palette.onPrimary, palette),
+        ],
+      ),
+      Box(
+        flex: 1,
+        borderRadius: 12,
+        border: BoxBorder(color: palette.outlineVariant),
+        children: <UINode>[
+          MaterialListTile(
+            leading: TextNode(
+              'AL',
+              style: MaterialTypography.titleMedium,
+              color: palette.primary,
+            ),
+            title: const TextNode('Ada Lovelace'),
+            subtitle: const TextNode('ada@example.com'),
+            trailing: TextNode(
+              '2m',
+              style: MaterialTypography.labelMedium.copyWith(
+                color: palette.onSurfaceVariant,
+              ),
+            ),
+          ),
+          MaterialListTile(
+            title: const TextNode('Charles Babbage'),
+            subtitle: const TextNode('charles@example.com'),
+            trailing: TextNode(
+              '1h',
+              style: MaterialTypography.labelMedium.copyWith(
+                color: palette.onSurfaceVariant,
+              ),
             ),
           ),
         ],
       ),
+    ],
+  );
+}
+
+/// A plain dialog, shown as the surface it draws rather than as an overlay.
+///
+/// The alternative would cover the page it demonstrates, so the gallery renders
+/// [core.OverlayNode.child] — the same tree the overlay puts above the barrier.
+UINode _dialog() {
+  const MaterialPalette palette = MaterialPalette.light;
+  final MaterialDialog dialog = MaterialDialog(
+    title: 'Delete listing?',
+    content: const TextNode('The photos go with it.'),
+    actions: <UINode>[const TextNode('Cancel'), const TextNode('Delete')],
+  );
+
+  return Box(
+    direction: Axis.horizontal,
+    crossAlign: CrossAlign.start,
+    gap: 24,
+    children: <UINode>[
+      dialog.child,
       Box(
-        direction: Axis.horizontal,
-        crossAlign: CrossAlign.start,
-        gap: 24,
+        width: 320,
         children: <UINode>[
-          Box(
-            width: 320,
-            children: <UINode>[
-              MaterialTextField(
-                label: 'Email',
-                placeholder: 'you@example.com',
-                inputType: InputType.email,
-              ),
-            ],
-          ),
-          Box(
-            width: 320,
-            children: <UINode>[
-              MaterialTextField(
-                label: 'Email',
-                placeholder: 'you@example.com',
-                value: 'ada@',
-                invalid: true,
-                message: 'Enter a complete address.',
-              ),
-            ],
-          ),
-        ],
-      ),
-      Box(
-        direction: Axis.horizontal,
-        crossAlign: CrossAlign.start,
-        gap: 24,
-        children: <UINode>[
-          MaterialCard(
-            width: 360,
-            gap: 8,
-            children: <UINode>[
-              TextNode('Order summary', style: MaterialTypography.titleLarge),
-              TextNode(
-                'Two nights, one room. Check-in on Friday.',
-                style: MaterialTypography.bodyMedium.copyWith(
-                  color: palette.onSurfaceVariant,
-                ),
-              ),
-              _button('Confirm', palette.primary, palette.onPrimary, palette),
-            ],
-          ),
-          Box(
-            flex: 1,
-            borderRadius: 12,
-            border: BoxBorder(color: palette.outlineVariant),
-            children: <UINode>[
-              MaterialListTile(
-                leading: TextNode(
-                  'AL',
-                  style: MaterialTypography.titleMedium,
-                  color: palette.primary,
-                ),
-                title: const TextNode('Ada Lovelace'),
-                subtitle: const TextNode('ada@example.com'),
-                trailing: TextNode(
-                  '2m',
-                  style: MaterialTypography.labelMedium.copyWith(
-                    color: palette.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              MaterialListTile(
-                title: const TextNode('Charles Babbage'),
-                subtitle: const TextNode('charles@example.com'),
-                trailing: TextNode(
-                  '1h',
-                  style: MaterialTypography.labelMedium.copyWith(
-                    color: palette.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
+          TextNode(
+            'Title, content and actions, on the surface a dialog is raised by. '
+            'Opening one is the state of the page that owns it.',
+            style: MaterialTypography.labelSmall.copyWith(
+              color: palette.onSurfaceVariant,
+            ),
           ),
         ],
       ),
