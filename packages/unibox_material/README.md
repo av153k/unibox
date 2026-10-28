@@ -316,26 +316,6 @@ style parameters. A `Box` around it remains the escape hatch.
 
 ## The ink well
 
-A region that reads as tappable: `MaterialInkWell` is a `Box` around one child, whose
-hover, focus and press layers are the palette's, over Material's short fade.
-
-```dart
-MaterialInkWell(
-  onTap: openContact,
-  borderRadius: 12,
-  child: const TextNode('Ada Lovelace'),
-)
-```
-
-| | |
-| --- | --- |
-| layers | `hoverLayer` (8%), `focusLayer` (10%), `pressedLayer` (10%) of `onSurface` |
-| easing | 100 ms |
-| role | `button` when `onTap` is given, so a resting region is not focusable |
-
-There is no ripple: a splash starts at the pointer and grows over a timeline of its
-own, which needs a triggered animation the model does not have. A press is a tint.
-
 ## The text field
 
 `MaterialTextField` is a label, an outlined `Box` and a message, with a

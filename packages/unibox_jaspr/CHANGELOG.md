@@ -2,10 +2,6 @@
 
 ## 0.1.0
 
-- A box with a ripple draws it as a pseudo-element that grows while the element is
-  `:active` and fades back on release - no script, and the ink is a token rather than
-  a stylesheet of its own.
-
 The first release of the Jaspr renderer: one node tree becomes HTML and CSS, rendered
 on the server and readable without a client bundle.
 

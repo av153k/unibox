@@ -2,9 +2,6 @@
 
 ## 0.1.0
 
-- `MaterialInkWell` ripples: the press is the palette's press layer spreading over the fill,
-  which is the ink Material paints and not just the state layer.
-
 The first release: Material 3 as a package of values, plus the components built
 from them. Every value here is a plain token of `unibox_core`, so neither renderer
 has to know this package exists.
@@ -34,7 +31,8 @@ has to know this package exists.
   Material gives a tile (and their dense pair), `bodyLarge` for the title,
   `bodyMedium` in `onSurfaceVariant` for the subtitle, the 8% and 10% hover and press
   layers, and the button role when the tile can be tapped.
-- `MaterialInkWell`: a state layer around one child, easing its tint over 100 ms.
+- ~~`MaterialInkWell`~~ was withdrawn: a button is a box with a state layer, and the
+  name promised an ink ripple the web cannot draw yet.
 - `MaterialTextField`: a label, an outlined box and a message around a
   `TextInputNode`, its outline taking the accent on focus and the error colour when
   invalid.

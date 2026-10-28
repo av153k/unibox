@@ -207,14 +207,31 @@ UINode _button(
         ? BoxBorder(color: palette.outline)
         : null,
     children: <UINode>[
-      MaterialInkWell(
+      // A button is a box with a state layer: the layer paints translucent ink
+      // over the fill, so the colour stays and the hover, focus and press read.
+      Box(
         borderRadius: 20,
         padding: const BoxSpacing.symmetric(horizontal: 20, vertical: 10),
         onTap: () {},
-        child: TextNode(
-          label,
-          style: MaterialTypography.labelLarge.copyWith(color: foreground),
-        ),
+        transition: const BoxTransition(duration: Duration(milliseconds: 100)),
+        semantics: const BoxSemantics(role: BoxRole.button),
+        stateStyles: const <BoxState, BoxStyle>{
+          BoxState.hover: BoxStyle(
+            backgroundColor: BoxColor.role(MaterialColorRole.hoverLayer),
+          ),
+          BoxState.focus: BoxStyle(
+            backgroundColor: BoxColor.role(MaterialColorRole.focusLayer),
+          ),
+          BoxState.pressed: BoxStyle(
+            backgroundColor: BoxColor.role(MaterialColorRole.pressedLayer),
+          ),
+        },
+        children: <UINode>[
+          TextNode(
+            label,
+            style: MaterialTypography.labelLarge.copyWith(color: foreground),
+          ),
+        ],
       ),
     ],
   );

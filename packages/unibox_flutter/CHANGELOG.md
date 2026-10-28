@@ -2,10 +2,6 @@
 
 ## 0.1.0
 
-- A box with a ripple splashes through an `InkResponse`, inside the decoration so the
-  ink shows over the fill. The response takes the tap, so the callback still runs
-  once.
-
 The first release of the Flutter renderer: one node tree becomes a widget tree.
 
 - A `TextInputNode` with padding hands it to the field as `contentPadding`, so the whole field takes focus and not only its text line.

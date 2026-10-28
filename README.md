@@ -148,7 +148,6 @@ Box(
 | `semantics` | `BoxSemantics?` | none | What the box *is* for a screen reader: role, label, state, element. |
 | `stateStyles` | `Map<BoxState, BoxStyle>?` | none | Looks for `hover`, `focus`, `pressed` and `disabled`, layered over the resting one. |
 | `hoverStyle` | `BoxStyle?` | none | Shorthand for the `hover` entry of `stateStyles`. |
-| `ripple` | `BoxRipple?` | none | Ink a press spreads across the box. Motion, not a look, so it is outside the appearance contract: Flutter splashes, the web draws a pseudo-element. |
 
 **Styles**
 

@@ -95,11 +95,11 @@ UINode buildLanding() {
   );
 }
 
-/// One way in: a bordered card that is a link and tints like a control.
+/// One way in: a bordered card that is a link and tints under the pointer.
 ///
-/// The tint belongs to the [MaterialInkWell] inside the border, not around it,
-/// because a state layer paints *above* the surface it belongs to: wrapped the
-/// other way round, the card's own background would cover it.
+/// The tint is a state layer inside the border, not around it, because a layer
+/// paints *above* the surface it belongs to: wrapped the other way round, the
+/// card's own background would cover it.
 UINode _choice({
   required String title,
   required String body,
@@ -114,29 +114,39 @@ UINode _choice({
         color: BoxColor.role(MaterialColorRole.outlineVariant),
       ),
       children: <UINode>[
-        MaterialInkWell(
+        Box(
           borderRadius: 12,
           padding: const BoxSpacing.all(20),
-          child: Box(
-            gap: 8,
-            children: <UINode>[
-              TextNode(title, style: MaterialTypography.titleLarge),
-              TextNode(
-                body,
-                style: MaterialTypography.bodyMedium.copyWith(
-                  color: const BoxColor.role(
-                    MaterialColorRole.onSurfaceVariant,
+          transition: const BoxTransition(
+            duration: Duration(milliseconds: 100),
+          ),
+          stateStyles: const <BoxState, BoxStyle>{
+            BoxState.hover: BoxStyle(
+              backgroundColor: BoxColor.role(MaterialColorRole.hoverLayer),
+            ),
+          },
+          children: <UINode>[
+            Box(
+              gap: 8,
+              children: <UINode>[
+                TextNode(title, style: MaterialTypography.titleLarge),
+                TextNode(
+                  body,
+                  style: MaterialTypography.bodyMedium.copyWith(
+                    color: const BoxColor.role(
+                      MaterialColorRole.onSurfaceVariant,
+                    ),
                   ),
                 ),
-              ),
-              TextNode(
-                href,
-                style: MaterialTypography.labelSmall.copyWith(
-                  color: const BoxColor.role(MaterialColorRole.primary),
+                TextNode(
+                  href,
+                  style: MaterialTypography.labelSmall.copyWith(
+                    color: const BoxColor.role(MaterialColorRole.primary),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ],
     ),
