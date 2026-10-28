@@ -9,6 +9,11 @@ has to know this package exists.
 - `MaterialCard.filled`, `.outlined` and `.elevated` take the card's whole parameter list,
   as `Card.filled` and `Card.outlined` do in Flutter, and let the surface, the line
   and the shadow they start from be replaced.
+- `MaterialTextField` has Material 3's two label states: empty and unfocused, the
+  label is the line inside the field at body size in the quieter colour and the hint
+  waits behind it; with a value or focus, the label shrinks to the top of the fill and
+  the value takes the row below, so the field is 56 pixels in both states. The move
+  steps rather than eases: a layout change has no transition in the model.
 - `MaterialTextField` is Material 3's filled field: `surfaceContainerHighest`, a 4 pixel radius, a bottom line drawn as a shadow (one pixel, two when focused, the error colour when invalid), the label inside the fill and the padding on the input, so the whole field takes focus.
 - `MaterialIcon`: one glyph of an icon font in a square `Box`, by codepoint (which the
   Flutter tree shaker can subset from a const `IconData`) or by ligature name (which it

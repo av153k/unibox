@@ -36,12 +36,34 @@ void main() {
     test('puts the padding on the input, so the whole field is tappable', () {
       final TextInputNode input = inputOf(MaterialTextField(label: 'Email'));
 
+      // Sixteen above and below a line of body text is Material's 56 pixels with
+      // the label resting on that line.
       expect(input.padding?.left, 16);
       expect(input.padding?.right, 16);
-      expect(input.padding?.top, 4);
-      expect(input.padding?.bottom, 10);
+      expect(input.padding?.top, 16);
+      expect(input.padding?.bottom, 16);
       // The padding is inside the control; the box around it has none.
       expect(fillOf(MaterialTextField()).padding, isNull);
+    });
+
+    test('moves the label to the top of the fill once there is a value', () {
+      final MaterialTextField resting = MaterialTextField(label: 'Email');
+      final MaterialTextField filled = MaterialTextField(
+        label: 'Email',
+        value: 'ada@',
+      );
+
+      // At rest the label is the line itself, so it is the input's hint and nothing
+      // is drawn above it.
+      expect(inputOf(resting).placeholder, 'Email');
+      expect(fillOf(resting).children.first, isA<TextInputNode>());
+
+      // With a value it is a small label at the top, and the input takes the row
+      // under it.
+      expect(fillOf(filled).children.first, isA<Box>());
+      expect(inputOf(filled).placeholder, isNull);
+      expect(inputOf(filled).padding?.top, 0);
+      expect(inputOf(filled).padding?.bottom, 8);
     });
 
     test('keeps the input and its state', () {
@@ -54,6 +76,7 @@ void main() {
         ),
       );
 
+      // No label to rest on the line, so the placeholder is the hint.
       expect(input.placeholder, 'you@example.com');
       expect(input.required, isTrue);
       expect(input.invalid, isTrue);

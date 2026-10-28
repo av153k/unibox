@@ -28,12 +28,24 @@ import 'material_typography.dart';
 /// difference between a field that feels like a field and one that only responds on
 /// its text line.
 ///
+/// **The label has the two positions Material gives it.** While the field is empty
+/// and unfocused, the label *is* the line inside the field, at the value's size and
+/// the quieter colour — drawn as the input's own hint, so the caret, the hint and the
+/// label are one piece of text and the field stays 56 pixels tall. Once the field is
+/// focused or holds a value, the label shrinks and moves to the top of the fill and
+/// the input takes the row below it. Material animates that move; the model has no
+/// triggered timeline for a layout change, so this one steps.
+///
 /// **Filled, not outlined.** Material's outlined field floats its label into a notch
 /// cut in the border, and a uniform `BoxBorder` cannot be cut; the filled variant
 /// needs only a surface, a radius and a bottom line, and the line is a shadow with no
-/// blur because a border cannot be one-sided. The label sits inside the fill and
-/// turns primary on focus, like Material's resting filled field; floating it onto
-/// the line is an animation the model has no triggered timeline for.
+/// blur because a border cannot be one-sided.
+///
+/// **The radius is one number, and Material's is not.** A filled field rounds its top
+/// corners by 4 and leaves the bottom square, while `BoxStyle.borderRadius` is one
+/// radius for all four; a field here is rounded on every corner. Cutting two corners
+/// needs a corner token the model does not have yet, and it would have to land on both
+/// renderers and in the conformance table to be worth having.
 ///
 /// Every colour is a role, so a dark scheme is the host's theme rather than a
 /// parameter here (see [MaterialColorRole]).
@@ -81,8 +93,11 @@ final class MaterialTextField extends Box {
                    )
                  : null,
              children: <UINode>[
-               if (label != null)
+               if (_floats(value, focused: focused, multiline: multiline) &&
+                   label != null)
                  Box(
+                   // Eight pixels to the top of the fill, then the label's own line:
+                   // the value's row begins 24 pixels down, where Material puts it.
                    padding: const BoxSpacing.only(left: 16, right: 16, top: 8),
                    children: <UINode>[
                      TextNode(
@@ -93,7 +108,26 @@ final class MaterialTextField extends Box {
                  ),
                TextInputNode(
                  value: value,
-                 placeholder: placeholder,
+                 // Empty and unfocused, the label sits where the value would be, so it
+                 // is the hint; a field with no label keeps its own hint throughout.
+                 placeholder:
+                     _restsOnTheLine(
+                       label,
+                       value: value,
+                       focused: focused,
+                       multiline: multiline,
+                     )
+                     ? label
+                     : placeholder,
+                 placeholderStyle:
+                     _restsOnTheLine(
+                       label,
+                       value: value,
+                       focused: focused,
+                       multiline: multiline,
+                     )
+                     ? _restingLabelStyle(invalid: invalid)
+                     : _hintStyle(),
                  inputType: inputType,
                  obscureText: obscureText,
                  multiline: multiline,
@@ -102,12 +136,17 @@ final class MaterialTextField extends Box {
                  required: required,
                  invalid: invalid,
                  description: description,
-                 padding: const BoxSpacing.only(
-                   left: 16,
-                   right: 16,
-                   top: 4,
-                   bottom: 10,
-                 ),
+                 // Sixteen and sixteen with the label at rest fills Material's 56
+                 // pixels with one line of body text; floated, the label has taken
+                 // the top of the fill and the value sits under it.
+                 padding: _floats(value, focused: focused, multiline: multiline)
+                     ? const BoxSpacing.only(left: 16, right: 16, bottom: 8)
+                     : const BoxSpacing.only(
+                         left: 16,
+                         right: 16,
+                         top: 16,
+                         bottom: 16,
+                       ),
                  onChanged: onChanged,
                  onSubmitted: onSubmitted,
                  onFocusChanged: onFocusChanged,
@@ -123,6 +162,32 @@ final class MaterialTextField extends Box {
              ),
          ],
        );
+
+  /// Whether [label] is drawn *inside* the field rather than above it: only a
+  /// labelled field that is empty and unfocused has a label to rest on the line.
+  static bool _restsOnTheLine(
+    String? label, {
+    required String? value,
+    required bool focused,
+    required bool multiline,
+  }) {
+    if (label == null) {
+      return false;
+    }
+
+    return !_floats(value, focused: focused, multiline: multiline);
+  }
+
+  /// Whether the label has left the line: it floats as soon as the field holds a
+  /// value, takes focus, or is a text area — a multi-line field has no single line
+  /// for a label to rest on, so Material floats it there from the start.
+  static bool _floats(
+    String? value, {
+    required bool focused,
+    required bool multiline,
+  }) {
+    return multiline || focused || (value != null && value.isNotEmpty);
+  }
 
   /// The bottom line: two pixels of primary while focused, one otherwise, and the
   /// error colour whenever the field is invalid.
@@ -152,6 +217,26 @@ final class MaterialTextField extends Box {
           : focused
           ? const BoxColor.role(MaterialColorRole.primary)
           : const BoxColor.role(MaterialColorRole.onSurfaceVariant),
+    ),
+  );
+
+  /// The label while it rests on the line: the value's size, in the quieter colour.
+  ///
+  /// It is handed to the input as its hint, which is why it is named for the label:
+  /// at rest the two are the same piece of text.
+  static BoxTextStyle _restingLabelStyle({required bool invalid}) =>
+      MaterialTypography.bodyLarge.merge(
+        BoxTextStyle(
+          color: invalid
+              ? const BoxColor.role(MaterialColorRole.error)
+              : const BoxColor.role(MaterialColorRole.onSurfaceVariant),
+        ),
+      );
+
+  /// The hint that waits for the label to float, in the same quieter colour.
+  static BoxTextStyle _hintStyle() => MaterialTypography.bodyLarge.merge(
+    const BoxTextStyle(
+      color: BoxColor.role(MaterialColorRole.onSurfaceVariant),
     ),
   );
 

@@ -318,8 +318,8 @@ style parameters. A `Box` around it remains the escape hatch.
 
 ## The text field
 
-`MaterialTextField` is a label, an outlined `Box` and a message, with a
-`TextInputNode` inside the outline.
+`MaterialTextField` is a filled `Box` with a `TextInputNode` inside it and a message
+below.
 
 ```dart
 MaterialTextField(
@@ -332,18 +332,34 @@ MaterialTextField(
 )
 ```
 
-| State | Outline |
+| State | Line |
 | --- | --- |
-| resting | `outline` |
-| `focused: true` | `primary` |
-| `invalid: true` | `error`, and the label and message with it |
+| resting | `onSurfaceVariant`, one pixel |
+| hover | `onSurface`, one pixel |
+| `focused: true` | `primary`, two pixels |
+| `invalid: true` | `error`, and the label and message with it; two pixels when focused |
 
-The label sits above the field and the message below it. Material floats the label
-onto the border once the field has a value, and that is an animation the model has no
-timeline for. The caret, the selection, the IME and autofill are the platform's,
-because the input node delegates them — so a dark app renders the same field with
+The line is a shadow with no blur, because `BoxBorder` draws all four sides and a
+filled field has none, and the value's padding lives on the input so a press anywhere
+in the fill focuses the field.
+
+**The label has Material's two positions.** Empty and unfocused, the label *is* the
+line inside the field: body size, `onSurfaceVariant`, drawn as the input's own hint so
+that the caret and the label are one piece of text and the field is 56 pixels tall.
+Once the field holds a value or takes focus, the label shrinks to `bodySmall` at the top
+of the fill — `primary` while focused, `error` while invalid — and the value takes the
+row below it, which keeps the same 56 pixels. Material animates the move and the model
+has no triggered timeline for a layout change, so this one steps.
+
+**The radius is one number.** Material rounds the top two corners of a filled field and
+leaves the bottom two square; `BoxStyle.borderRadius` is one radius for all four, so a
+field here is rounded on every corner. A corner token would have to land on both
+renderers and in the conformance table before it is worth having, and until then this
+is the difference the README states rather than hides.
+
+The caret, the selection, the IME and autofill are the platform's, because the input
+node delegates them — so a dark app renders the same field with
 `theme: MaterialPalette.darkTheme` *and* a matching `ColorScheme` to `MaterialApp`.
-
 `focused` is the host's: it is the value `onFocusChanged` last reported.
 
 ## The dialog and the bottom sheet
