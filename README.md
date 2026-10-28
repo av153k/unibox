@@ -725,6 +725,13 @@ to the text engine, and a browser is not Skia. What is promised is the layout, t
 sizes, the spacing, the typography and a line box of exactly `fontSize * lineHeight`
 on both sides.
 
+One consequence is easy to miss: a **weight is only as real as the family's faces**.
+Both renderers ask for the same `font-weight`, but if the family has no face at that
+weight a browser synthesises one and Skia snaps to the nearest it has — from a
+different family, if the two hosts were never given the same files. `semiBold` is the
+one that shows it first. Ship the same font to both, as the example does, and the
+weights agree.
+
 One more thing is shared on purpose: where the values go. The web renderer writes
 every distinct look once, as a class rule in a single `<style>`, and puts the class
 on the element — so six rows that look alike cost one declaration, and a host can

@@ -61,6 +61,24 @@ the listings document is the one that can be read without dismissing anything, a
 form
 is its own url.
 
+## One font, one set of weights
+
+Both hosts ship the **same four font files**, 400/500/600/700 of one family:
+`assets/fonts` in the Flutter app (declared with `flutter: fonts:` in its pubspec)
+and the same files under `assets/fonts` of the site, declared with `@font-face` in
+the documents.
+
+It is not a detail. Without them the page asked for `system-ui` — SF Pro on a Mac,
+which has a real semibold — while Flutter web ships no font at all and draws with
+Roboto's 400/500/700, so a `FontWeight.semiBold` came out *visibly lighter* on the
+Flutter side of the showcase than on the HTML side. The weight was the same in the
+tree and in the CSS; what differed was whether the family had a face to draw it
+with.
+
+The family is still the host's decision, not the model's (`BoxTextStyle` names no
+family): the app sets it on `ThemeData`, the documents set it on `body`, and both
+point at files the example ships.
+
 ## The listings page
 
 The cards are a `GridNode`: at least 280 pixels each, three columns at most, a 16

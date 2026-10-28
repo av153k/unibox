@@ -4,6 +4,7 @@ import 'package:unibox_core/unibox_core.dart';
 import 'package:unibox_jaspr/unibox_jaspr.dart';
 import 'package:unibox_material/unibox_material.dart';
 
+import '../fonts.dart';
 import 'gallery.dart';
 import 'landing.dart';
 import 'showcase.dart';
@@ -172,6 +173,9 @@ Document buildSiteDocument({required SitePage page}) {
               'Flutter on the right.',
       },
     },
+    // The home document is the site root; the gallery and the showcase live one
+    // directory below it.
+    head: <Component>[fontFaces(page == SitePage.home ? '' : '../')],
     styles: <StyleRule>[
       StyleRule(
         selector: const Selector('html, body'),
@@ -182,8 +186,7 @@ Document buildSiteDocument({required SitePage page}) {
         styles: Styles(
           raw: <String, String>{
             'background-color': '#${_hex(palette.surface)}',
-            'font-family':
-                "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+            'font-family': "UniboxText, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
           },
         ),
       ),

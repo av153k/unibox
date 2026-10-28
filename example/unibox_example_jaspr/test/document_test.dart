@@ -56,11 +56,21 @@ void main() {
       expect(html, contains('margin: 0;'));
     });
 
-    test('asks for the platform UI font', () {
-      // Flutter hands the tree the platform font through its theme; the stack is
-      // the CSS way of asking for the same face.
-      expect(html, contains('font-family: system-ui'));
+    test('asks for the family both hosts ship', () {
+      // The app bundles the same four faces through its pubspec, so a weight is a
+      // drawn face here and there. The platform stack stays behind it as the
+      // fallback a document always needs.
+      expect(html, contains('font-family: UniboxText, system-ui'));
       expect(html, contains('sans-serif'));
+    });
+
+    test('declares the four weights of that family', () {
+      for (final String weight in <String>['400', '500', '600', '700']) {
+        expect(html, contains('font-weight: $weight;'));
+        expect(html, contains('roboto-$weight.ttf'));
+      }
+
+      expect(html, contains("font-family: 'UniboxText';"));
     });
 
     test('renders the shared card', () {

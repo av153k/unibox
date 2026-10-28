@@ -3,6 +3,7 @@ import 'package:jaspr/server.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
 import 'package:unibox_jaspr/unibox_jaspr.dart';
 
+import 'fonts.dart';
 import 'main.dart';
 
 /// The document the example is served as.
@@ -51,6 +52,8 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.apartments}) {
     title: _titleOf(page),
     viewport: 'width=device-width, initial-scale=1',
     meta: <String, String>{'description': _descriptionOf(page)},
+    // The documents of the example sit two directories below the site root.
+    head: <Component>[fontFaces('../../')],
     styles: <StyleRule>[
       StyleRule(
         selector: const Selector('html, body'),
@@ -89,7 +92,7 @@ Document buildExampleDocument({ExamplePage page = ExamplePage.apartments}) {
         styles: Styles(
           raw: <String, String>{
             'font-family':
-                "system-ui, -apple-system, 'Segoe UI', Roboto, "
+                "UniboxText, system-ui, -apple-system, 'Segoe UI', Roboto, "
                 'sans-serif',
           },
         ),

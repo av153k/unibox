@@ -68,8 +68,10 @@ step 'Building the Flutter web app'
   --pwa-strategy=none) || fail 'flutter build web'
 
 step 'Assembling the site'
-mkdir -p "$site/flutter" "$site/assets"
+mkdir -p "$site/flutter" "$site/assets/fonts"
 cp docs/hero.svg docs/hero-compact.svg "$site/assets/"
+# The same four faces the Flutter app bundles, so a weight is drawn on both sides.
+cp example/unibox_example_flutter/assets/fonts/*.ttf "$site/assets/fonts/"
 cp -R example/unibox_example_flutter/build/web/. "$site/flutter/"
 
 # A static host has no rewrite rule, so a Flutter route is a real file. The build's

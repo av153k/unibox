@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:unibox_example_shared/unibox_example_shared.dart';
 import 'package:unibox_flutter/unibox_flutter.dart';
 
+/// The family both hosts ship: `assets/fonts` in this app, the same files in
+/// `assets/fonts` of the site.
+const String fontFamily = 'UniboxText';
+
 void main() => runApp(ExampleApp(signupOpen: signupOpenFromUrl()));
 
 /// Whether the sign-up dialog starts open, read from the path the page is served at.
@@ -32,6 +36,9 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Unibox example',
+      // The family the pubspec bundles, so the tree is drawn with the same four
+      // files the site ships: a weight means the same thing on both renderings.
+      theme: ThemeData(fontFamily: fontFamily),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: FlutterLinkScope(
