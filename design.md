@@ -529,9 +529,12 @@ Four mechanisms carry it, and only one of them is new:
 | the map as its own view on a phone | `StatefulNode` state plus an `OverlayNode` | state may change structure; width may not |
 
 **Why a width is measured on the box, not on the window.** `visibleFrom` becomes a
-**container query** on the web — `container-type: inline-size` on the box, then
-`@container (min-width: 900px) { … }` — and a `LayoutBuilder` over the box's
-constraints in Flutter. A media query would measure the *viewport* while Flutter
+**container query** on the web — `@container (min-width: 900px) { … }` — and a
+`LayoutBuilder` over the box's constraints in Flutter. *Which* box declares the
+container is the renderer's decision, not the author's: a box whose subtree holds a
+threshold becomes `container-type: inline-size`, so the nearest enclosing layout box
+is what a threshold measures, on both targets, and a node drawn in a panel — a card
+in a sidebar, one half of the showcase — measures the panel rather than the window. A media query would measure the *viewport* while Flutter
 measures the *node*, and the two disagree the moment a node is not full bleed: in
 the showcase each panel is about 640 pixels wide inside a 1280 pixel window, so a
 media query would say "wide" exactly where Flutter says 640. Container queries ask
